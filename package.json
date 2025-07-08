@@ -6,14 +6,15 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "compile": "npm run build && npm run start",
+    "lint": "eslint \"./src/**/*.{js,jsx,ts,tsx}\" --report-unused-disable-directives --ignore-pattern .gitignore",
+    "format:check": "prettier --check \"./src/**/*.{js,jsx,ts,tsx,json,css,md}\" --ignore-path .gitignore"
   },
   "dependencies": {
     "next": "15.3.5",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "zustand": "^5.0.6"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

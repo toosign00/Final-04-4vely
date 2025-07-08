@@ -22,11 +22,9 @@ const eslintConfig = [
       'no-empty': 'error', // 빈 블록문 금지 (if, for, while 등)
       'no-redeclare': 'error', // 변수 중복 선언 금지
       'no-param-reassign': 'error', // 함수 매개변수 재할당 금지
-      'prefer-template': 'warn', // 문자열 연결 시 템플릿 리터럴 사용 권장
 
       // === TypeScript 관련 규칙 ===
       '@typescript-eslint/no-explicit-any': 'warn', // any 타입 사용 금지
-      '@typescript-eslint/no-floating-promises': 'error', // Promise 처리 누락 방지
 
       // === React 관련 규칙 ===
       'react/jsx-key': 'error', // 배열 렌더링 시 key prop 필수
@@ -37,14 +35,6 @@ const eslintConfig = [
       // === Next.js 관련 규칙 ===
       '@next/next/no-img-element': 'error', // HTML img 대신 next/image 사용 강제
       '@next/next/no-html-link-for-pages': 'error', // 페이지 링크는 next/link 사용
-      '@next/next/no-sync-scripts': 'error', // 동기 스크립트 사용 금지
-      '@next/next/no-css-tags': 'warn', // CSS 파일은 next/head가 아닌 import로
-      '@next/next/no-head-element': 'warn', // HTML head 대신 next/head 사용
-
-      // === 접근성(a11y) 관련 규칙 ===
-      'jsx-a11y/alt-text': 'warn', // 이미지 요소에 alt 속성 필수
-      'jsx-a11y/no-autofocus': 'warn', // autofocus 사용 시 경고 (접근성 문제)
-      'jsx-a11y/anchor-is-valid': 'error', // a 태그 href 속성 유효성 검사
     },
   },
   {

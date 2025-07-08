@@ -6,7 +6,7 @@ const prettierConfig = {
   // 문자열에 작은따옴표 사용
   singleQuote: true,
   // 한 줄 최대 길이 (100자)
-  printWidth: 100,
+  printWidth: 250,
   // 탭 크기 (스페이스 2개)
   tabWidth: 2,
   // 탭 대신 스페이스 사용

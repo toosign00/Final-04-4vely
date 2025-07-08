@@ -6,14 +6,19 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
+    "compile": "npm run build && npm run start",
     "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "format:check": "prettier --check .",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "code:check": "npm run format:check && npm run lint",
+    "code:fix": "npm run format && npm run lint:fix"
   },
   "dependencies": {
     "next": "15.3.5",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "zustand": "^5.0.6"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

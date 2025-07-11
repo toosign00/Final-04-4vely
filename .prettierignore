@@ -28,9 +28,6 @@ yarn.lock
 public/
 assets/
 
-# API 폴더
-api/
-
 # 임시 파일
 *.tmp
 *.temp

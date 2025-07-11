@@ -1,0 +1,47 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-neutral-*: initial;
+
+  /* Primary 컬러 (메인 컬러, 60%) */
+  --color-primary-50: #f0f9f3;
+  --color-primary-100: #dcf4e3;
+  --color-primary-500: #39ac52;
+  --color-primary-600: #2f8f42;
+  --color-primary-700: #267233;
+
+  /* Secondary 컬러 (서브 컬러, 30%) */
+  --color-secondary-50: #fdf9f7;
+  --color-secondary-100: #f5ede6;
+  --color-secondary-500: #a0522d;
+  --color-secondary-600: #8b4626;
+  --color-secondary-700: #76391f;
+
+  /* Accent 컬러 (강조 컬러, 10%) */
+  --color-accent-50: #fef8f0;
+  --color-accent-100: #fdebd3;
+  --color-accent-500: #f39c12;
+  --color-accent-600: #d68910;
+  --color-accent-700: #b8750e;
+
+  /* Neutral 컬러 (배경 & 텍스트) */
+  --color-neutral-50: #fdfdfd;
+  --color-neutral-100: #f8f8f8;
+  --color-neutral-200: #f3f3f3;
+  --color-neutral-300: #d4d4d4;
+  --color-neutral-500: #737373;
+  --color-neutral-700: #404040;
+  --color-neutral-900: #121212;
+  --color-neutral-inverse: #fafafa;
+
+  /* Functional 컬러 (상태 표시) */
+  --color-success: #39ac52;
+  --color-warning: #f39c12;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
+
+  /* Border 컬러 */
+  --color-border-light: #e5e5e5;
+  --color-border-default: #d4d4d4;
+  --color-border-strong: #a3a3a3;
+}

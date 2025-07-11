@@ -1,0 +1,48 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  /* 기본 컬러들을 모두 비활성화 */
+  --color-green-*: initial;
+  --color-orange-*: initial;
+  --color-brown-*: initial;
+  --color-neutral-*: initial;
+  --color-status-*: initial;
+
+  /* 커스텀 그린 컬러 */
+  --color-green-50: #cbfdd2;
+  --color-green-100: #69fb86;
+  --color-green-200: #4cdf6c;
+  --color-green-300: #42c45f;
+  --color-green-400: #39ac52; /* 메인 컬러 */
+  --color-green-500: #309646;
+  --color-green-600: #257837;
+  --color-green-700: #195726;
+  --color-green-800: #0c3615;
+  --color-green-900: #021505;
+
+  /* 오렌지 컬러 (CTA & 강조) */
+  --color-orange-400: #f5b041;
+  --color-orange-500: #f39c12; /* 메인 컬러 */
+  --color-orange-600: #e67e22;
+
+  /* 브라운 컬러 (자연 톤) */
+  --color-brown-600: #a0522d;
+
+  /* 뉴트럴 컬러 (배경 & 텍스트) */
+  --color-neutral-50: #fcfcfc;
+  --color-neutral-100: #eaeaea;
+  --color-neutral-200: #d0d0d0;
+  --color-neutral-300: #a0a0a0;
+  --color-neutral-500: #5a5a5a;
+  --color-neutral-700: #2d2d2d;
+  --color-neutral-800: #1a1a1a;
+
+  /* 상태 컬러 */
+  --color-status-success: #27ae60;
+  --color-status-warning: #f39c12;
+  --color-status-error: #e74c3c;
+  --color-status-info: #3498db;
+}

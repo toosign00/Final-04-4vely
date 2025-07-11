@@ -7,7 +7,7 @@ export default function Home() {
 
       <p className='mb-8 text-xl font-medium text-neutral-700'>메인 페이지입니다</p>
 
-      <Link href='/navigation' className='rounded-lg bg-green-500 px-6 py-3 font-semibold text-neutral-50 shadow-md transition-colors duration-200 hover:bg-green-700 hover:shadow-lg'>
+      <Link href='/navigation' className='bg-primary-500 rounded-lg px-6 py-3 font-semibold text-neutral-50 shadow-md transition-colors duration-200 hover:opacity-90 hover:shadow-lg'>
         네비게이션으로 이동
       </Link>
     </div>

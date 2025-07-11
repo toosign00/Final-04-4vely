@@ -1,48 +1,47 @@
 @import 'tailwindcss';
-@import 'tw-animate-css';
-
-@custom-variant dark (&:is(.dark *));
 
 @theme {
-  /* 기본 컬러들을 모두 비활성화 */
-  --color-green-*: initial;
-  --color-orange-*: initial;
-  --color-brown-*: initial;
   --color-neutral-*: initial;
-  --color-status-*: initial;
 
-  /* 커스텀 그린 컬러 */
-  --color-green-50: #cbfdd2;
-  --color-green-100: #69fb86;
-  --color-green-200: #4cdf6c;
-  --color-green-300: #42c45f;
-  --color-green-400: #39ac52; /* 메인 컬러 */
-  --color-green-500: #309646;
-  --color-green-600: #257837;
-  --color-green-700: #195726;
-  --color-green-800: #0c3615;
-  --color-green-900: #021505;
+  /* Primary 컬러 (메인 컬러, 60%) */
+  --color-primary-50: #f0f9f3;
+  --color-primary-100: #dcf4e3;
+  --color-primary-500: #39ac52;
+  --color-primary-600: #2f8f42;
+  --color-primary-700: #267233;
 
-  /* 오렌지 컬러 (CTA & 강조) */
-  --color-orange-400: #f5b041;
-  --color-orange-500: #f39c12; /* 메인 컬러 */
-  --color-orange-600: #e67e22;
+  /* Secondary 컬러 (서브 컬러, 30%) */
+  --color-secondary-50: #fdf9f7;
+  --color-secondary-100: #f5ede6;
+  --color-secondary-500: #a0522d;
+  --color-secondary-600: #8b4626;
+  --color-secondary-700: #76391f;
 
-  /* 브라운 컬러 (자연 톤) */
-  --color-brown-600: #a0522d;
+  /* Accent 컬러 (강조 컬러, 10%) */
+  --color-accent-50: #fef8f0;
+  --color-accent-100: #fdebd3;
+  --color-accent-500: #f39c12;
+  --color-accent-600: #d68910;
+  --color-accent-700: #b8750e;
 
-  /* 뉴트럴 컬러 (배경 & 텍스트) */
-  --color-neutral-50: #fcfcfc;
-  --color-neutral-100: #eaeaea;
-  --color-neutral-200: #d0d0d0;
-  --color-neutral-300: #a0a0a0;
-  --color-neutral-500: #5a5a5a;
-  --color-neutral-700: #2d2d2d;
-  --color-neutral-800: #1a1a1a;
+  /* Neutral 컬러 (배경 & 텍스트) */
+  --color-neutral-50: #fdfdfd;
+  --color-neutral-100: #f8f8f8;
+  --color-neutral-200: #f3f3f3;
+  --color-neutral-300: #d4d4d4;
+  --color-neutral-500: #737373;
+  --color-neutral-700: #404040;
+  --color-neutral-900: #121212;
+  --color-neutral-inverse: #fafafa;
 
-  /* 상태 컬러 */
-  --color-status-success: #27ae60;
-  --color-status-warning: #f39c12;
-  --color-status-error: #e74c3c;
-  --color-status-info: #3498db;
+  /* Functional 컬러 (상태 표시) */
+  --color-success: #39ac52;
+  --color-warning: #f39c12;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
+
+  /* Border 컬러 */
+  --color-border-light: #e5e5e5;
+  --color-border-default: #d4d4d4;
+  --color-border-strong: #a3a3a3;
 }

@@ -13,7 +13,7 @@ function Card({ className, ...props }: CardProps) {
   return (
     <div
       data-slot='card'
-      className={cn('flex w-full max-w-[22rem] min-w-[16rem] cursor-pointer flex-col gap-6 overflow-hidden rounded-2xl border-0 bg-neutral-50 text-neutral-900 shadow-lg transition-all duration-300 hover:shadow-xl', className)}
+      className={cn('flex w-full max-w-[22rem] min-w-[16rem] cursor-pointer flex-col gap-6 overflow-hidden rounded-2xl border-0 bg-neutral-100 text-neutral-900 shadow-lg transition-all duration-300 hover:shadow-xl', className)}
       {...props}
     />
   );

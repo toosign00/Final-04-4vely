@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "compile": "npm run build && npm run start",
-    "lint": "eslint \"./src/**/*.{js,jsx,ts,tsx}\" --report-unused-disable-directives --ignore-pattern .gitignore",
+    "lint": "next lint",
     "format:check": "prettier --check \"./src/**/*.{js,jsx,ts,tsx,json,css,md}\" --ignore-path .gitignore"
   },
   "dependencies": {

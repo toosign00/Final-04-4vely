@@ -1,3 +1,5 @@
+'use client';
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { cn } from '@/lib/utils';
 import type { CardAvatarProps, CardContentProps, CardDescriptionProps, CardFooterProps, CardImageProps, CardProps, CardTitleProps } from '@/types/card.types';

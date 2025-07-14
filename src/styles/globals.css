@@ -1,4 +1,6 @@
 @import 'tailwindcss';
+@import 'tw-animate-css';
+@import './variables.css';
 
 @theme {
   --color-neutral-*: initial;
@@ -35,8 +37,8 @@
   --color-neutral-inverse: #fafafa;
 
   /* Functional 컬러 (상태 표시) */
-  --color-success: #39ac52;
-  --color-warning: #f39c12;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
   --color-error: #ef4444;
   --color-info: #3b82f6;
 
@@ -44,4 +46,43 @@
   --color-border-light: #e5e5e5;
   --color-border-default: #d4d4d4;
   --color-border-strong: #a3a3a3;
+}
+
+@layer utilities {
+  /* 헤딩 스타일 */
+  .t-h1 {
+    @apply scroll-m-16 text-2xl leading-tight font-bold tracking-tighter text-balance text-neutral-900 md:scroll-m-20 md:text-3xl md:tracking-tight lg:scroll-m-24 lg:text-4xl lg:tracking-normal;
+  }
+
+  .t-h2 {
+    @apply scroll-m-14 text-xl leading-tight font-semibold tracking-tighter text-neutral-900 first:mt-0 md:scroll-m-18 md:text-2xl md:tracking-tight lg:scroll-m-22 lg:text-3xl lg:tracking-normal;
+  }
+
+  .t-h3 {
+    @apply scroll-m-12 text-lg leading-snug font-semibold tracking-tighter text-neutral-900 md:scroll-m-16 md:text-xl md:tracking-tight lg:scroll-m-20 lg:text-2xl lg:tracking-normal;
+  }
+
+  .t-h4 {
+    @apply scroll-m-10 text-base leading-snug font-semibold tracking-tighter text-neutral-900 md:scroll-m-14 md:text-lg md:tracking-tight lg:scroll-m-18 lg:text-xl lg:tracking-normal;
+  }
+
+  .t-body {
+    @apply text-sm leading-relaxed font-normal tracking-tighter text-neutral-900 md:text-base md:tracking-tight lg:text-lg lg:tracking-normal;
+  }
+
+  .t-small {
+    @apply text-xs leading-normal font-normal tracking-tighter text-neutral-900 md:text-sm md:tracking-tight lg:text-base lg:tracking-normal;
+  }
+
+  .t-large {
+    @apply text-base leading-relaxed font-semibold tracking-tighter text-neutral-900 md:text-lg md:tracking-tight lg:text-xl lg:tracking-normal;
+  }
+
+  .t-desc {
+    @apply text-xs leading-normal font-normal tracking-tighter text-neutral-500 md:text-sm md:tracking-tight lg:text-base lg:tracking-normal;
+  }
+
+  .focus-visible {
+    @apply focus-visible:ring-primary-500 focus-visible:border-transparent focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white focus-visible:outline-none;
+  }
 }

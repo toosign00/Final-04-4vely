@@ -120,6 +120,27 @@ export default function NavigationPage() {
           </div>
         </div>
 
+        {/* 컴포넌트 섹션 */}
+        <div className='mt-6 grid grid-cols-1 gap-6 md:grid-cols-2'>
+          <div className='border-border-light rounded-lg border bg-neutral-100 p-6'>
+            <h2 className='mb-4 text-xl font-semibold text-neutral-900'>💡 컴포넌트</h2>
+            <div className='grid grid-cols-1 gap-2 sm:grid-cols-2'>
+              <Link href='/example/button' className='hover:border-primary-100 hover:bg-primary-50 hover:text-primary-600 block rounded border border-transparent bg-neutral-200 px-3 py-2 text-neutral-700 transition-colors'>
+                버튼
+              </Link>
+              <Link href='/example/avatar' className='hover:border-primary-100 hover:bg-primary-50 hover:text-primary-600 block rounded border border-transparent bg-neutral-200 px-3 py-2 text-neutral-700 transition-colors'>
+                아바타
+              </Link>
+              <Link href='/example/card' className='hover:border-primary-100 hover:bg-primary-50 hover:text-primary-600 block rounded border border-transparent bg-neutral-200 px-3 py-2 text-neutral-700 transition-colors'>
+                카드
+              </Link>
+              <Link href='/example/select' className='hover:border-primary-100 hover:bg-primary-50 hover:text-primary-600 block rounded border border-transparent bg-neutral-200 px-3 py-2 text-neutral-700 transition-colors'>
+                드롭다운 셀렉트
+              </Link>
+            </div>
+          </div>
+        </div>
+
         {/* 하단 정보 */}
         <div className='border-border-light mt-8 rounded-lg border bg-neutral-100 p-4 text-center'>
           <p className='text-sm text-neutral-700'>💡 개발 중인 페이지입니다. 각 링크를 클릭하여 페이지를 확인하세요.</p>

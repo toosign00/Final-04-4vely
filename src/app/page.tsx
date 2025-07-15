@@ -1,15 +1,16 @@
+import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 
 export default function Home() {
   return (
     <div className='flex h-screen flex-col items-center justify-center'>
-      <h1 className='mb-4 text-5xl font-bold text-neutral-800'>Final-04-4vely</h1>
+      <h1 className='text-secondary mb-4 text-5xl font-bold'>Final-04-4vely</h1>
 
-      <p className='mb-8 text-xl font-medium text-neutral-700'>메인 페이지입니다</p>
+      <p className='text-secondary mb-8 text-xl font-medium'>메인 페이지입니다</p>
 
-      <Link href='/navigation' className='bg-primary-500 rounded-lg px-6 py-3 font-semibold text-neutral-50 shadow-md transition-colors duration-200 hover:opacity-90 hover:shadow-lg'>
-        네비게이션으로 이동
-      </Link>
+      <Button asChild variant='default' size='lg'>
+        <Link href='/navigation'>네비게이션으로 이동</Link>
+      </Button>
     </div>
   );
 }

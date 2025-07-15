@@ -1,47 +1,57 @@
 @import 'tailwindcss';
+@import 'tw-animate-css';
+@import './variables.css';
 
 @theme {
-  --color-neutral-*: initial;
-
-  /* Primary 컬러 (메인 컬러, 60%) */
-  --color-primary-50: #f0f9f3;
-  --color-primary-100: #dcf4e3;
-  --color-primary-500: #39ac52;
-  --color-primary-600: #2f8f42;
-  --color-primary-700: #267233;
-
-  /* Secondary 컬러 (서브 컬러, 30%) */
-  --color-secondary-50: #fdf9f7;
-  --color-secondary-100: #f5ede6;
-  --color-secondary-500: #a0522d;
-  --color-secondary-600: #8b4626;
-  --color-secondary-700: #76391f;
-
-  /* Accent 컬러 (강조 컬러, 10%) */
-  --color-accent-50: #fef8f0;
-  --color-accent-100: #fdebd3;
-  --color-accent-500: #f39c12;
-  --color-accent-600: #d68910;
-  --color-accent-700: #b8750e;
-
-  /* Neutral 컬러 (배경 & 텍스트) */
-  --color-neutral-50: #fdfdfd;
-  --color-neutral-100: #f8f8f8;
-  --color-neutral-200: #f3f3f3;
-  --color-neutral-300: #d4d4d4;
-  --color-neutral-500: #737373;
-  --color-neutral-700: #404040;
-  --color-neutral-900: #121212;
-  --color-neutral-inverse: #fafafa;
+  /* white 컬러 white 사용 */
+  --color-surface: #f3f1ea;
+  --color-primary: #c1d72f;
+  --color-secondary: #221b16;
 
   /* Functional 컬러 (상태 표시) */
-  --color-success: #39ac52;
-  --color-warning: #f39c12;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
   --color-error: #ef4444;
   --color-info: #3b82f6;
 
-  /* Border 컬러 */
-  --color-border-light: #e5e5e5;
-  --color-border-default: #d4d4d4;
-  --color-border-strong: #a3a3a3;
+  /* Border 컬러 gray-300 사용 */
+}
+
+@layer utilities {
+  /* 헤딩 스타일 */
+  .t-h1 {
+    @apply scroll-m-16 text-2xl leading-tight font-bold tracking-tighter text-balance md:scroll-m-20 md:text-3xl md:tracking-tight lg:scroll-m-24 lg:text-4xl lg:tracking-normal;
+  }
+
+  .t-h2 {
+    @apply scroll-m-14 text-xl leading-tight font-semibold tracking-tighter first:mt-0 md:scroll-m-18 md:text-2xl md:tracking-tight lg:scroll-m-22 lg:text-3xl lg:tracking-normal;
+  }
+
+  .t-h3 {
+    @apply scroll-m-12 text-lg leading-snug font-semibold tracking-tighter md:scroll-m-16 md:text-xl md:tracking-tight lg:scroll-m-20 lg:text-2xl lg:tracking-normal;
+  }
+
+  .t-h4 {
+    @apply scroll-m-10 text-base leading-snug font-semibold tracking-tighter md:scroll-m-14 md:text-lg md:tracking-tight lg:scroll-m-18 lg:text-xl lg:tracking-normal;
+  }
+
+  .t-body {
+    @apply text-sm leading-relaxed font-normal tracking-tighter md:text-base md:tracking-tight lg:text-lg lg:tracking-normal;
+  }
+
+  .t-small {
+    @apply text-xs leading-normal font-normal tracking-tighter md:text-sm md:tracking-tight lg:text-base lg:tracking-normal;
+  }
+
+  .t-large {
+    @apply text-base leading-relaxed font-semibold tracking-tighter md:text-lg md:tracking-tight lg:text-xl lg:tracking-normal;
+  }
+
+  .t-desc {
+    @apply text-xs leading-normal font-normal tracking-tighter md:text-sm md:tracking-tight lg:text-base lg:tracking-normal;
+  }
+
+  .focus-visible {
+    @apply focus-visible:ring-primary focus-visible:ring-offset-surface focus-visible:border-transparent focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none;
+  }
 }

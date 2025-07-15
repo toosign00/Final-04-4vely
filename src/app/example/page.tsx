@@ -32,12 +32,12 @@ export default function ExamplePage() {
   ];
 
   return (
-    <div className='min-h-screen bg-neutral-50 p-8'>
+    <div className='bg-surface min-h-screen p-8'>
       <div className='mx-auto max-w-4xl'>
         {/* 헤더 */}
         <div className='mb-12 text-center'>
-          <h1 className='t-h1 mb-4 text-neutral-900'>shadcn/ui 컴포넌트 네비게이션</h1>
-          <p className='t-body text-neutral-600'>프로젝트에서 사용하는 주요 UI 컴포넌트들을 확인할 수 있습니다.</p>
+          <h1 className='t-h1 text-secondary mb-4'>shadcn/ui 컴포넌트 네비게이션</h1>
+          <p className='t-body text-secondary'>프로젝트에서 사용하는 주요 UI 컴포넌트들을 확인할 수 있습니다.</p>
         </div>
 
         {/* 컴포넌트 그리드 */}
@@ -46,8 +46,8 @@ export default function ExamplePage() {
             <div key={component.title} className='group rounded-2xl bg-white p-6 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl'>
               <div className='mb-4'>
                 <div className='flex-1'>
-                  <h3 className='t-h3 text-neutral-900'>{component.title}</h3>
-                  <p className='t-body mt-1 text-neutral-600'>{component.description}</p>
+                  <h3 className='t-h3 text-secondary'>{component.title}</h3>
+                  <p className='t-body text-secondary mt-1'>{component.description}</p>
                 </div>
               </div>
 

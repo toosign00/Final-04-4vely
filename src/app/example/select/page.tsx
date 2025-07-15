@@ -9,7 +9,7 @@ export default function SelectTestPage() {
   const [selectedCountry, setSelectedCountry] = useState('');
 
   return (
-    <div className='min-h-screen space-y-8 bg-neutral-50 p-8'>
+    <div className='bg-surface min-h-screen space-y-8 p-8'>
       <h1 className='t-h1 mb-10 text-center'>Select 컴포넌트 예시</h1>
 
       {/* 기본 */}
@@ -69,7 +69,7 @@ export default function SelectTestPage() {
           </Select>
 
           {selectedRole && (
-            <p className='flex items-center text-sm text-neutral-600'>
+            <p className='text-secondary flex items-center text-sm'>
               선택된 역할: <span className='ml-1 font-medium'>{selectedRole}</span>
             </p>
           )}
@@ -132,7 +132,7 @@ export default function SelectTestPage() {
           </Select>
 
           {selectedCountry && (
-            <p className='flex items-center text-sm text-neutral-600'>
+            <p className='text-secondary flex items-center text-sm'>
               선택된 국가: <span className='ml-1 font-medium'>{selectedCountry}</span>
             </p>
           )}

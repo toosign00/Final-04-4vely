@@ -13,7 +13,7 @@ function Card({ className, ...props }: CardProps) {
   return (
     <div
       data-slot='card'
-      className={cn('flex w-full max-w-[22rem] min-w-[16rem] cursor-pointer flex-col gap-6 overflow-hidden rounded-2xl border-0 bg-neutral-100 text-neutral-900 shadow-lg transition-all duration-300 hover:shadow-xl', className)}
+      className={cn('text-secondary flex w-full max-w-[22rem] min-w-[16rem] cursor-pointer flex-col gap-6 overflow-hidden rounded-2xl border-0 bg-white shadow-lg transition-all duration-300 hover:shadow-xl', className)}
       {...props}
     />
   );
@@ -39,8 +39,8 @@ function CardImage({ className, alt = '', sizes = '(max-width: 640px) 100vw, (ma
     <div className='relative h-48 w-full overflow-hidden'>
       {!hasError && src && <Image data-slot='card-image' className={cn('object-cover transition-opacity duration-300', className)} alt={alt} sizes={sizes} fill={fill} src={src} onError={handleError} {...props} />}
       {hasError && (
-        <div className='absolute inset-0 flex items-center justify-center bg-neutral-200'>
-          <span className='text-sm text-neutral-500'>이미지를 불러올 수 없습니다</span>
+        <div className='absolute inset-0 flex items-center justify-center bg-white'>
+          <span className='text-secondary text-sm'>이미지를 불러올 수 없습니다</span>
         </div>
       )}
     </div>
@@ -72,9 +72,9 @@ function CardAvatar({ className, src, alt = '사용자 아바타', fallback = '�
     <div className={cn('mb-2 flex items-center gap-2', className)} {...props}>
       <Avatar className='h-8 w-8'>
         <AvatarImage src={src} alt={alt} />
-        <AvatarFallback className='bg-primary-500 text-xs text-neutral-50'>{fallback}</AvatarFallback>
+        <AvatarFallback className='bg-primary text-surface text-xs'>{fallback}</AvatarFallback>
       </Avatar>
-      <span className='t-small text-neutral-600'>{username}</span>
+      <span className='t-small text-secondary'>{username}</span>
     </div>
   );
 }
@@ -83,7 +83,7 @@ function CardAvatar({ className, src, alt = '사용자 아바타', fallback = '�
 // 좋아요, 댓글, 조회수 등의 상호작용 요소
 function CardFooter({ className, likes = 0, comments = 0, views = 0, timeAgo = '', onLike, isLiked = false, dateTime, ...props }: CardFooterProps) {
   return (
-    <div className={cn('t-desc flex items-center justify-between border-t pt-3', className)} {...props}>
+    <div className={cn('t-desc flex items-center justify-between border-t border-gray-300 pt-3', className)} {...props}>
       <div className='flex items-center gap-3'>
         {/* 좋아요 버튼/표시 */}
         {onLike ? (
@@ -112,7 +112,7 @@ function CardFooter({ className, likes = 0, comments = 0, views = 0, timeAgo = '
       </div>
 
       {/* 시간 정보 */}
-      <time dateTime={dateTime || timeAgo} className='text-neutral-500'>
+      <time dateTime={dateTime || timeAgo} className='text-surface0'>
         {timeAgo}
       </time>
     </div>

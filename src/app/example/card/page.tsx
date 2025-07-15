@@ -14,7 +14,7 @@ export default function CardTestPage() {
   };
 
   return (
-    <div className='flex min-h-screen flex-col items-center bg-neutral-50 p-8'>
+    <div className='flex min-h-screen flex-col items-center bg-[#F3F1EA] p-8'>
       <h1 className='t-h1 mb-10'>Card 컴포넌트 예시</h1>
       <Card>
         <CardImage src='https://placehold.co/400x300/4ade80/ffffff' alt='식물 사진' priority />

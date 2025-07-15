@@ -10,14 +10,12 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-primary-500 text-neutral-900 shadow-sm hover:bg-primary-500/90 active:bg-primary-600',
-        secondary: 'bg-secondary-500 text-neutral-inverse shadow-sm hover:bg-secondary-500/90 active:bg-secondary-600',
-        accent: 'bg-accent-500 text-neutral-900 shadow-sm hover:bg-accent-500/90 active:bg-accent-600',
-        ghost: 'text-neutral-700 hover:bg-neutral-200 hover:text-neutral-900 active:bg-neutral-300',
-        link: 'text-neutral-900 underline-offset-4 hover:underline hover:text-neutral-900/90',
-        outline: 'border border-border-default bg-neutral-50 text-neutral-900 shadow-sm hover:bg-neutral-200 hover:border-border-strong active:bg-neutral-300',
-        destructive: 'bg-error text-neutral-inverse shadow-sm hover:bg-error/90 active:bg-error/80 focus-visible:ring-error/20',
-        warning: 'bg-warning text-neutral-900 shadow-sm hover:bg-warning/90 active:bg-warning/80',
+        default: 'bg-white text-secondary shadow-sm hover:bg-secondary hover:text-white border border-[0.5px] border-gray-300',
+        secondary: 'bg-secondary text-white shadow-sm hover:bg-secondary/80 active:bg-secondary',
+        primary: 'bg-primary text-secondary shadow-sm hover:bg-primary/80 active:bg-primary',
+        ghost: 'text-secondary hover:bg-surface hover:text-secondary active:bg-surface',
+        link: 'text-secondary underline-offset-4 hover:underline',
+        destructive: 'bg-error text-white shadow-sm hover:bg-error/90 active:bg-error/80',
       },
       size: {
         default: 'h-9 px-4 py-2 has-[>svg]:px-3',
@@ -41,7 +39,7 @@ const buttonVariants = cva(
   },
 );
 
-type BaseVariant = 'default' | 'secondary' | 'accent' | 'ghost' | 'link' | 'outline' | 'destructive' | 'warning';
+type BaseVariant = 'default' | 'primary' | 'secondary' | 'ghost' | 'link' | 'destructive';
 
 interface ButtonProps extends React.ComponentProps<'button'>, VariantProps<typeof buttonVariants> {
   variant?: BaseVariant;

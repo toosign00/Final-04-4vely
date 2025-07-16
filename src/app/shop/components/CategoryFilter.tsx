@@ -12,8 +12,15 @@ interface CategoryFilterProps {
   isMobile?: boolean;
 }
 
+/**
+ * 카테고리 필터 사이드바
+ * - 데스크톱: 좌측 고정 사이드바
+ * - 모바일: Sheet 모달 내부에서 사용
+ * - 아코디언 형태로 필터 옵션 표시
+ */
 export default function CategoryFilterSidebar({ filters, onFilterChange, isMobile = false }: CategoryFilterProps) {
-  const filterOptions = {
+  // 필터 옵션 정의
+  const FILTER_OPTIONS = {
     size: [
       { value: 'small', label: '소형' },
       { value: 'medium', label: '중형' },
@@ -45,7 +52,8 @@ export default function CategoryFilterSidebar({ filters, onFilterChange, isMobil
     ],
   };
 
-  const sectionTitles = {
+  // 섹션 제목 정의
+  const SECTION_TITLES = {
     size: '크기',
     difficulty: '난이도',
     light: '빛',
@@ -53,13 +61,14 @@ export default function CategoryFilterSidebar({ filters, onFilterChange, isMobil
     season: '계절',
   };
 
+  // 모바일 레이아웃
   if (isMobile) {
     return (
       <div className='space-y-4 px-4 pb-6'>
-        <Accordion type='multiple' defaultValue={['size', 'difficulty', 'light', 'space', 'season']} className='w-full'>
-          {Object.entries(filterOptions).map(([key, options]) => (
+        <Accordion type='multiple' defaultValue={[]} className='w-full'>
+          {Object.entries(FILTER_OPTIONS).map(([key, options]) => (
             <AccordionItem key={key} value={key} className='border-b border-gray-300'>
-              <AccordionTrigger className='t-h4 text-secondary py-3 hover:no-underline'>{sectionTitles[key as keyof typeof sectionTitles]}</AccordionTrigger>
+              <AccordionTrigger className='text-secondary t-h4 py-3 hover:no-underline'>{SECTION_TITLES[key as keyof typeof SECTION_TITLES]}</AccordionTrigger>
               <AccordionContent>
                 <div className='space-y-3 pt-2 pb-3'>
                   {options.map((option) => (
@@ -68,9 +77,9 @@ export default function CategoryFilterSidebar({ filters, onFilterChange, isMobil
                         id={`mobile-${key}-${option.value}`}
                         checked={filters[key as keyof CategoryFilter].includes(option.value)}
                         onCheckedChange={() => onFilterChange(key as keyof CategoryFilter, option.value)}
-                        className='data-[state=checked]:bg-primary data-[state=checked]:border-primary border-gray-300'
+                        className='data-[state=checked]:border-primary data-[state=checked]:bg-primary border-gray-300'
                       />
-                      <label htmlFor={`mobile-${key}-${option.value}`} className='t-body text-secondary cursor-pointer'>
+                      <label htmlFor={`mobile-${key}-${option.value}`} className='text-secondary t-body cursor-pointer'>
                         {option.label}
                       </label>
                     </div>
@@ -84,11 +93,12 @@ export default function CategoryFilterSidebar({ filters, onFilterChange, isMobil
     );
   }
 
+  // 데스크톱 레이아웃
   return (
     <div className='bg-surface w-64 border-r border-gray-200 p-4 pt-8'>
       {/* 카테고리 헤더 */}
       <div className='mb-6'>
-        <h2 className='t-h2 text-secondary mb-4'>Category</h2>
+        <h2 className='text-secondary t-h2 mb-4'>Category</h2>
         <div className='space-y-1'>
           <Button variant='ghost' className='t-desc w-full justify-start'>
             신상품
@@ -104,12 +114,11 @@ export default function CategoryFilterSidebar({ filters, onFilterChange, isMobil
 
       {/* 필터 섹션 */}
       <div className='space-y-4'>
-        <h3 className='t-h3 text-secondary'>Filter By</h3>
-
-        <Accordion type='multiple' defaultValue={['size', 'difficulty', 'light', 'space', 'season']} className='w-full pl-3'>
-          {Object.entries(filterOptions).map(([key, options]) => (
+        <h3 className='text-secondary t-h3'>Filter By</h3>
+        <Accordion type='multiple' defaultValue={[]} className='w-full pl-3'>
+          {Object.entries(FILTER_OPTIONS).map(([key, options]) => (
             <AccordionItem key={key} value={key} className='border-b border-gray-300'>
-              <AccordionTrigger className='t-body text-secondary hover:no-underline'>{sectionTitles[key as keyof typeof sectionTitles]}</AccordionTrigger>
+              <AccordionTrigger className='text-secondary t-body hover:no-underline'>{SECTION_TITLES[key as keyof typeof SECTION_TITLES]}</AccordionTrigger>
               <AccordionContent>
                 <div className='space-y-3 pt-2'>
                   {options.map((option) => (
@@ -118,9 +127,9 @@ export default function CategoryFilterSidebar({ filters, onFilterChange, isMobil
                         id={`${key}-${option.value}`}
                         checked={filters[key as keyof CategoryFilter].includes(option.value)}
                         onCheckedChange={() => onFilterChange(key as keyof CategoryFilter, option.value)}
-                        className='data-[state=checked]:bg-primary data-[state=checked]:border-primary border-gray-300'
+                        className='data-[state=checked]:border-primary data-[state=checked]:bg-primary border-gray-300'
                       />
-                      <label htmlFor={`${key}-${option.value}`} className='t-desc text-secondary cursor-pointer'>
+                      <label htmlFor={`${key}-${option.value}`} className='text-secondary t-desc cursor-pointer'>
                         {option.label}
                       </label>
                     </div>

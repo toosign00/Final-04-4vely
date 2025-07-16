@@ -14,11 +14,19 @@ import { CategoryFilter, Product, SortOption } from '@/types/product';
 import { Filter, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
+/**
+ * 쇼핑몰 메인 페이지
+ * - 상품 목록 표시
+ * - 필터링 및 정렬 기능
+ * - 반응형 레이아웃 (모바일/태블릿/데스크톱)
+ * - 페이지네이션
+ */
 export default function ShopPage() {
+  // 상태 관리
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('name');
+  const [sortBy, setSortBy] = useState('recommend');
   const [currentPage, setCurrentPage] = useState(1);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [filters, setFilters] = useState<CategoryFilter>({
@@ -28,27 +36,10 @@ export default function ShopPage() {
     space: [],
     season: [],
   });
-
   const [itemsPerPage, setItemsPerPage] = useState(9);
 
-  // 반응형 아이템 개수 설정
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 640) {
-        setItemsPerPage(6); // 모바일 - 2x3 그리드
-      } else if (window.innerWidth < 1024) {
-        setItemsPerPage(6); // 태블릿 - 2x3 또는 3x2 그리드
-      } else {
-        setItemsPerPage(9); // 데스크톱 - 3x3 그리드
-      }
-    };
-
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const sortOptions: SortOption[] = [
+  // 정렬 옵션 상수
+  const SORT_OPTIONS: SortOption[] = [
     { value: 'recommend', label: '추천순' },
     { value: 'price-low', label: '가격 낮은 순' },
     { value: 'price-high', label: '가격 높은 순' },
@@ -57,7 +48,24 @@ export default function ShopPage() {
     { value: 'bookmark-level', label: '인기순' },
   ];
 
-  // 목업 데이터 로드
+  // 반응형 페이지당 아이템 수 설정
+  useEffect(() => {
+    const updateItemsPerPage = () => {
+      if (window.innerWidth < 640) {
+        setItemsPerPage(6); // 모바일: 2x3 그리드
+      } else if (window.innerWidth < 1024) {
+        setItemsPerPage(6); // 태블릿: 2x3 그리드
+      } else {
+        setItemsPerPage(9); // 데스크톱: 3x3 그리드
+      }
+    };
+
+    updateItemsPerPage();
+    window.addEventListener('resize', updateItemsPerPage);
+    return () => window.removeEventListener('resize', updateItemsPerPage);
+  }, []);
+
+  // 목업 데이터 초기화
   useEffect(() => {
     const mockProducts: Product[] = [
       {
@@ -200,7 +208,7 @@ export default function ShopPage() {
     setFilteredProducts(mockProducts);
   }, []);
 
-  // 필터 변경 핸들러
+  // 필터 상태 업데이트 핸들러
   const handleFilterChange = (category: keyof CategoryFilter, value: string) => {
     setFilters((prev) => ({
       ...prev,
@@ -208,30 +216,33 @@ export default function ShopPage() {
     }));
   };
 
-  // 상품 클릭 핸들러
+  // 상품 클릭 핸들러 (상품 상세 페이지 이동)
   const handleProductClick = (id: string) => {
     console.log('상품 클릭:', id);
-    // 실제 구현에서는 router.push(`/shop/products/${id}`) 사용
+    // TODO: 실제 구현 시 router.push(`/shop/products/${id}`) 사용
   };
 
-  // 필터링 및 정렬 로직
+  // 상품 필터링 및 정렬 로직
   useEffect(() => {
     let result = [...products];
 
-    // 검색 필터
+    // 검색어 필터링
     if (searchTerm) {
       result = result.filter((product) => product.name.toLowerCase().includes(searchTerm.toLowerCase()) || product.category.toLowerCase().includes(searchTerm.toLowerCase()));
     }
 
-    // 카테고리 필터
+    // 카테고리 필터링
     Object.entries(filters).forEach(([key, values]) => {
       if (values.length > 0) {
         result = result.filter((product) => values.includes(product[key as keyof Product] as string));
       }
     });
 
-    // 정렬
+    // 정렬 적용
     switch (sortBy) {
+      case 'recommend':
+        result.sort((a, b) => (b.recommend ? 1 : 0) - (a.recommend ? 1 : 0));
+        break;
       case 'price-low':
         result.sort((a, b) => a.price - b.price);
         break;
@@ -241,6 +252,12 @@ export default function ShopPage() {
       case 'new':
         result.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
         break;
+      case 'old':
+        result.sort((a, b) => (a.isNew ? 1 : 0) - (b.isNew ? 1 : 0));
+        break;
+      case 'bookmark-level':
+        result.sort((a, b) => (b.isBookmarked ? 1 : 0) - (a.isBookmarked ? 1 : 0));
+        break;
       default:
         result.sort((a, b) => a.name.localeCompare(b.name));
     }
@@ -249,10 +266,11 @@ export default function ShopPage() {
     setCurrentPage(1);
   }, [products, searchTerm, filters, sortBy]);
 
+  // 페이지네이션 계산
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
   const paginatedProducts = filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-  // 페이지네이션 렌더링 함수
+  // 페이지네이션 아이템 렌더링
   const renderPaginationItems = () => {
     const items = [];
     const maxVisiblePages = 5;
@@ -281,13 +299,14 @@ export default function ShopPage() {
     <div className='bg-surface min-h-screen'>
       <Header />
 
-      {/* 모바일~태블릿 레이아웃 (1023px 이하) */}
+      {/* 모바일/태블릿 레이아웃 */}
       <div className='px-3 py-3 sm:px-4 sm:py-4 md:px-6 lg:hidden'>
-        {/* 타이틀 */}
-        <h1 className='text-secondary mb-3 text-xl font-bold sm:text-2xl md:text-3xl'>Our Plants</h1>
+        {/* 페이지 타이틀 */}
+        <h1 className='text-secondary mb-3 text-xl font-bold sm:text-2xl md:text-3xl'>OUR PLANTS</h1>
 
-        {/* 필터 버튼과 정렬 */}
+        {/* 필터 및 정렬 컨트롤 */}
         <div className='mb-3 flex items-center gap-2'>
+          {/* 필터 버튼 (모바일 전용) */}
           <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
             <SheetTrigger asChild>
               <Button variant='default' size='sm' className='flex h-8 items-center gap-1.5 px-2.5 py-1.5'>
@@ -299,22 +318,22 @@ export default function ShopPage() {
               <SheetHeader className='flex-shrink-0'>
                 <SheetTitle className='t-h1 mb-4 text-left'>필터</SheetTitle>
               </SheetHeader>
-
-              {/* 스크롤 가능한 필터 컨텐츠 영역 */}
               <div className='flex-1 overflow-y-auto'>
                 <CategoryFilterSidebar filters={filters} onFilterChange={handleFilterChange} isMobile={true} />
               </div>
             </SheetContent>
           </Sheet>
 
+          {/* 상품 개수 표시 */}
           <span className='text-surface0 mr-1 ml-auto text-[11px] sm:text-xs'>{filteredProducts.length} products</span>
 
+          {/* 정렬 선택 */}
           <Select value={sortBy} onValueChange={setSortBy}>
             <SelectTrigger className='h-8 w-[95px] text-xs sm:h-9 sm:w-[115px] sm:text-sm md:w-[135px]'>
               <SelectValue placeholder='정렬' />
             </SelectTrigger>
-            <SelectContent>
-              {sortOptions.map((option) => (
+            <SelectContent className='[&_[data-radix-select-item-indicator]]:hidden'>
+              {SORT_OPTIONS.map((option) => (
                 <SelectItem key={option.value} value={option.value} className='text-xs sm:text-sm'>
                   {option.label}
                 </SelectItem>
@@ -329,7 +348,7 @@ export default function ShopPage() {
           <Input placeholder='식물을 검색하세요' value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className='h-8 w-full pl-8 text-xs sm:h-9 sm:text-sm' />
         </div>
 
-        {/* 상품 목록 - Flexbox 사용 */}
+        {/* 상품 목록 */}
         <div className='my-6'>
           <div className='flex flex-wrap justify-center gap-12 sm:gap-12 md:gap-12'>
             {paginatedProducts.map((product) => (
@@ -354,36 +373,37 @@ export default function ShopPage() {
         )}
       </div>
 
-      {/* 데스크톱 레이아웃 (1024px 이상) */}
+      {/* 데스크톱 레이아웃 */}
       <div className='hidden pt-8 lg:flex'>
+        {/* 좌측 사이드바 */}
         <div className='w-64'>
-          {/* 타이틀 */}
           <div className='mb-6 pl-4'>
-            <h1 className='t-h1 text-secondary'>Our Plants</h1>
+            <h1 className='text-secondary t-h1'>Our Plants</h1>
           </div>
-
-          {/* 사이드바 컴포넌트 */}
           <CategoryFilterSidebar filters={filters} onFilterChange={handleFilterChange} />
         </div>
 
-        {/* 메인 컨텐츠 */}
+        {/* 메인 컨텐츠 영역 */}
         <div className='flex-1'>
           {/* 상품 정보 및 컨트롤 */}
           <div className='mb-8 flex items-center justify-between px-16'>
-            <span className='t-h4 text-surface0'>{filteredProducts.length} products</span>
+            <span className='text-surface0 t-h4'>{filteredProducts.length} products</span>
             <div className='flex items-center space-x-4'>
+              {/* 정렬 선택 */}
               <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger className='w-[180px]'>
                   <SelectValue placeholder='정렬 기준' />
                 </SelectTrigger>
-                <SelectContent>
-                  {sortOptions.map((option) => (
+                <SelectContent className='[&_[data-radix-select-item-indicator]]:hidden'>
+                  {SORT_OPTIONS.map((option) => (
                     <SelectItem key={option.value} value={option.value}>
                       {option.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+
+              {/* 검색바 */}
               <div className='relative max-w-md'>
                 <Search className='text-surface0 absolute top-1/2 left-3 -translate-y-1/2 transform' size={20} />
                 <Input placeholder='상품을 검색하세요...' value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className='w-80 pl-10' />
@@ -391,7 +411,7 @@ export default function ShopPage() {
             </div>
           </div>
 
-          {/* 데스크톱 상품 목록 */}
+          {/* 상품 목록 */}
           <div className='mb-8 px-16'>
             <div className='flex flex-wrap gap-8 pl-12'>
               {paginatedProducts.map((product) => (

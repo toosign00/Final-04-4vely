@@ -1,3 +1,5 @@
+import Footer from '@/components/layout/Footer';
+import Header from '@/components/layout/Header';
 import '@/styles/globals.css';
 import localFont from 'next/font/local';
 
@@ -15,7 +17,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='ko' className={pretendard.variable}>
-      <body className={`${pretendard.className} bg-surface`}>{children}</body>
+      <body className={`${pretendard.className} bg-surface`}>
+        <Header />
+        <main>{children}</main>
+        <Footer />
+      </body>
     </html>
   );
 }

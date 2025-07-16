@@ -1,8 +1,8 @@
-// src/components/ui/BookmarkButton.tsx
+// src/app/shop/components/BookmarkButton.tsx
 'use client';
 
 import { Bookmark } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface BookmarkButtonProps {
   productId: string;
@@ -10,26 +10,30 @@ interface BookmarkButtonProps {
   size?: number;
   className?: string;
   variant?: 'default' | 'floating' | 'inline';
-  onToggle?: (productId: string, isBookmarked: boolean) => void; // 나중에 API 연동용
+  onToggle?: (productId: string, isBookmarked: boolean) => void;
 }
 
 export default function BookmarkButton({ productId, initialBookmarked = false, size = 28, className = '', variant = 'default', onToggle }: BookmarkButtonProps) {
   const [isBookmarked, setIsBookmarked] = useState(initialBookmarked);
+
+  // initialBookmarked 값이 변경될 때 상태 업데이트
+  useEffect(() => {
+    setIsBookmarked(initialBookmarked);
+  }, [initialBookmarked]);
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     const newBookmarked = !isBookmarked;
     setIsBookmarked(newBookmarked);
 
-    // 나중에 API 연동할 때 사용할 콜백
     onToggle?.(productId, newBookmarked);
   };
 
   const baseClasses = 'cursor-pointer transition-all hover:scale-110';
   const variantClasses = {
-    default: 'absolute top-3 right-3 z-10 p-1',
-    floating: 'absolute top-2 right-2 z-10 p-2 rounded-full bg-white/80 backdrop-blur-sm shadow-sm',
-    inline: 'p-1',
+    default: 'p-0.5',
+    floating: 'p-1.5 sm:p-2 rounded-full bg-white/80 backdrop-blur-sm shadow-sm',
+    inline: 'p-0.5 sm:p-1',
   };
 
   return (

@@ -12,17 +12,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/Sheet';
 import { CategoryFilter, Product, SortOption } from '@/types/product';
 import { Filter, Search } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-/**
- * 쇼핑몰 메인 페이지
- * - 상품 목록 표시
- * - 필터링 및 정렬 기능
- * - 반응형 레이아웃 (모바일/태블릿/데스크톱)
- * - 페이지네이션
- */
 export default function ShopPage() {
-  // 상태 관리
+  const router = useRouter();
+
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -52,11 +47,11 @@ export default function ShopPage() {
   useEffect(() => {
     const updateItemsPerPage = () => {
       if (window.innerWidth < 640) {
-        setItemsPerPage(6); // 모바일: 2x3 그리드
+        setItemsPerPage(6);
       } else if (window.innerWidth < 1024) {
-        setItemsPerPage(6); // 태블릿: 2x3 그리드
+        setItemsPerPage(6);
       } else {
-        setItemsPerPage(9); // 데스크톱: 3x3 그리드
+        setItemsPerPage(9);
       }
     };
 
@@ -216,10 +211,9 @@ export default function ShopPage() {
     }));
   };
 
-  // 상품 클릭 핸들러 (상품 상세 페이지 이동)
+  // 상품 클릭 핸들러
   const handleProductClick = (id: string) => {
-    console.log('상품 클릭:', id);
-    // TODO: 실제 구현 시 router.push(`/shop/products/${id}`) 사용
+    router.push(`/shop/products/${id}`);
   };
 
   // 상품 필터링 및 정렬 로직
@@ -301,12 +295,9 @@ export default function ShopPage() {
 
       {/* 모바일/태블릿 레이아웃 */}
       <div className='px-3 py-3 sm:px-4 sm:py-4 md:px-6 lg:hidden'>
-        {/* 페이지 타이틀 */}
         <h1 className='text-secondary mb-3 text-xl font-bold sm:text-2xl md:text-3xl'>OUR PLANTS</h1>
 
-        {/* 필터 및 정렬 컨트롤 */}
         <div className='mb-3 flex items-center gap-2'>
-          {/* 필터 버튼 (모바일 전용) */}
           <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
             <SheetTrigger asChild>
               <Button variant='default' size='sm' className='flex h-8 items-center gap-1.5 px-2.5 py-1.5'>
@@ -324,10 +315,8 @@ export default function ShopPage() {
             </SheetContent>
           </Sheet>
 
-          {/* 상품 개수 표시 */}
           <span className='text-surface0 mr-1 ml-auto text-[11px] sm:text-xs'>{filteredProducts.length} products</span>
 
-          {/* 정렬 선택 */}
           <Select value={sortBy} onValueChange={setSortBy}>
             <SelectTrigger className='h-8 w-[95px] text-xs sm:h-9 sm:w-[115px] sm:text-sm md:w-[135px]'>
               <SelectValue placeholder='정렬' />
@@ -342,13 +331,11 @@ export default function ShopPage() {
           </Select>
         </div>
 
-        {/* 검색바 */}
         <div className='relative mb-4'>
           <Search className='text-surface0 absolute top-1/2 left-2.5 -translate-y-1/2 transform' size={16} />
           <Input placeholder='식물을 검색하세요' value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className='h-8 w-full pl-8 text-xs sm:h-9 sm:text-sm' />
         </div>
 
-        {/* 상품 목록 */}
         <div className='my-6'>
           <div className='flex flex-wrap justify-center gap-12 sm:gap-12 md:gap-12'>
             {paginatedProducts.map((product) => (
@@ -357,7 +344,6 @@ export default function ShopPage() {
           </div>
         </div>
 
-        {/* 모바일 페이지네이션 */}
         {totalPages > 1 && (
           <Pagination className='mt-4'>
             <PaginationContent>
@@ -375,7 +361,6 @@ export default function ShopPage() {
 
       {/* 데스크톱 레이아웃 */}
       <div className='hidden pt-8 lg:flex'>
-        {/* 좌측 사이드바 */}
         <div className='w-64'>
           <div className='mb-6 pl-4'>
             <h1 className='text-secondary t-h1'>Our Plants</h1>
@@ -383,13 +368,10 @@ export default function ShopPage() {
           <CategoryFilterSidebar filters={filters} onFilterChange={handleFilterChange} />
         </div>
 
-        {/* 메인 컨텐츠 영역 */}
         <div className='flex-1'>
-          {/* 상품 정보 및 컨트롤 */}
           <div className='mb-8 flex items-center justify-between px-16'>
             <span className='text-surface0 t-h4'>{filteredProducts.length} products</span>
             <div className='flex items-center space-x-4'>
-              {/* 정렬 선택 */}
               <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger className='w-[180px]'>
                   <SelectValue placeholder='정렬 기준' />
@@ -403,7 +385,6 @@ export default function ShopPage() {
                 </SelectContent>
               </Select>
 
-              {/* 검색바 */}
               <div className='relative max-w-md'>
                 <Search className='text-surface0 absolute top-1/2 left-3 -translate-y-1/2 transform' size={20} />
                 <Input placeholder='상품을 검색하세요...' value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className='w-80 pl-10' />
@@ -411,7 +392,6 @@ export default function ShopPage() {
             </div>
           </div>
 
-          {/* 상품 목록 */}
           <div className='mb-8 px-16'>
             <div className='flex flex-wrap gap-8 pl-12'>
               {paginatedProducts.map((product) => (
@@ -420,7 +400,6 @@ export default function ShopPage() {
             </div>
           </div>
 
-          {/* 데스크톱 페이지네이션 */}
           {totalPages > 1 && (
             <Pagination className='mb-8 px-16'>
               <PaginationContent>

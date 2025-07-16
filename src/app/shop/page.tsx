@@ -3,8 +3,6 @@
 
 import CategoryFilterSidebar from '@/app/shop/components/CategoryFilter';
 import ProductCard from '@/app/shop/components/ProductCard';
-import Footer from '@/components/layout/Footer';
-import Header from '@/components/layout/Header';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/Pagination';
@@ -291,8 +289,6 @@ export default function ShopPage() {
 
   return (
     <div className='bg-surface min-h-screen'>
-      <Header />
-
       {/* 모바일/태블릿 레이아웃 */}
       <div className='px-3 py-3 sm:px-4 sm:py-4 md:px-6 lg:hidden'>
         <h1 className='text-secondary mb-3 text-xl font-bold sm:text-2xl md:text-3xl'>OUR PLANTS</h1>
@@ -415,8 +411,6 @@ export default function ShopPage() {
           )}
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 }

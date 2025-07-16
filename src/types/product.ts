@@ -12,6 +12,7 @@ export interface Product {
   season: 'spring' | 'summer' | 'fall' | 'winter';
   isNew: boolean;
   isBookmarked: boolean;
+  recommend: boolean;
 }
 
 export interface CategoryFilter {

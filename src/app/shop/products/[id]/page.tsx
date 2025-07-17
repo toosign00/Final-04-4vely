@@ -244,11 +244,11 @@ export default function ProductDetailPage({ params: { id } }: { params: { id: st
     <Dialog open={isCartModalOpen} onOpenChange={setIsCartModalOpen}>
       <DialogContent className='p-8 sm:max-w-lg lg:max-w-xl' showCloseButton={false}>
         <DialogHeader>
-          <DialogTitle className='flex items-center justify-center gap-2 text-lg sm:text-xl'>
+          <DialogTitle className='flex items-center justify-center gap-2 t-h3'>
             <ShoppingCart size={24} />
             상품이 장바구니에 추가되었습니다.
           </DialogTitle>
-          <DialogDescription className='mt-4 text-center text-base sm:text-lg'>장바구니 페이지로 이동하시겠습니까?</DialogDescription>
+          <DialogDescription className='mt-4 text-center t-h4'>장바구니 페이지로 이동하시겠습니까?</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className='mt-6 flex gap-3'>

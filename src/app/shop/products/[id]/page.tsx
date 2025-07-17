@@ -252,10 +252,10 @@ export default function ProductDetailPage({ params: { id } }: { params: { id: st
         </DialogHeader>
 
         <DialogFooter className='mt-6 flex gap-3'>
-          <Button variant='primary' onClick={handleGoToCart} className='bg-primary hover:bg-primary/90 flex-1 py-3 text-base font-medium text-white'>
+          <Button variant='primary' onClick={handleGoToCart} className='flex-1 py-3 t-h3'>
             예
           </Button>
-          <Button variant='default' onClick={handleStayOnPage} className='flex-1 py-3 text-base font-medium'>
+          <Button variant='default' onClick={handleStayOnPage} className='flex-1 py-3 t-h3'>
             아니오
           </Button>
         </DialogFooter>

@@ -8,7 +8,6 @@ import { Label } from '@/components/ui/Label';
 import { Eye, EyeOff } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-
 import { useState } from 'react';
 
 export default function LoginPage() {
@@ -21,7 +20,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className='mb-10 flex w-full flex-col items-center p-8'>
+    <div className='mb-10 flex w-full flex-col items-center'>
       <h1 className='t-h1'>
         <span className='text-accent'>작은 초록,</span> 당신의 하루를 반짝이게.
       </h1>
@@ -29,7 +28,7 @@ export default function LoginPage() {
         당신의 반려 식물을 지금 만나보세요.
         <Image className='h-8 w-4 md:h-10 md:w-5' src={loginPlantIcon} alt='식물 캐릭터' />
       </p>
-      <div className='border-login w-full max-w-xl rounded-lg border-[0.5px] bg-white p-8'>
+      <div className='w-full max-w-xl rounded-lg border-[0.5px] border-[#4c956c] bg-white p-8'>
         <form className='flex w-full flex-col justify-center'>
           <div className='mb-2'>
             <Label htmlFor='email'>이메일</Label>
@@ -38,7 +37,7 @@ export default function LoginPage() {
           <div className='relative mb-2'>
             <Label htmlFor='password'>비밀번호</Label>
             <Input id='password' placeholder='비밀번호를 입력하세요.' className='my-2 pr-10' type={showPassword ? 'text' : 'password'} autoComplete='current-password' />
-            <button type='button' onClick={handleTogglePassword} className='text-muted absolute top-1/2 right-3 cursor-pointer' aria-label={showPassword ? '비밀번호 보기' : '비밀번호 숨기기'}>
+            <button type='button' onClick={handleTogglePassword} className='text-muted absolute top-1/2 right-3 cursor-pointer' aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'}>
               {showPassword ? <Eye size={16} /> : <EyeOff size={16} />}
             </button>
           </div>
@@ -46,8 +45,8 @@ export default function LoginPage() {
             <Checkbox id='remember-login' name='remember' />
             <Label htmlFor='remember-login'>자동 로그인</Label>
           </div>
-          <Button fullWidth variant='default' size='lg' className='mt-8'>
-            로그인
+          <Button asChild fullWidth variant='default' size='lg' className='mt-8'>
+            <Link href='/'>로그인</Link>
           </Button>
           <div className='mt-4 mb-8 space-x-2 text-center text-xs font-semibold md:text-sm'>
             <span>아이디 찾기</span>
@@ -58,11 +57,11 @@ export default function LoginPage() {
               회원가입
             </Link>
           </div>
-          <Button className='mb-4 bg-green-500 hover:bg-green-700' fullWidth variant='primary' size='lg'>
-            네이버 로그인
+          <Button asChild className='mb-4 bg-green-500 hover:bg-green-700' fullWidth variant='primary' size='lg'>
+            <Link href='/'>네이버 로그인</Link>
           </Button>
-          <Button className='mb-4 bg-yellow-300 hover:bg-amber-300' fullWidth variant='default' size='lg'>
-            카카오 로그인
+          <Button asChild className='mb-4 bg-yellow-300 hover:bg-amber-300' fullWidth variant='default' size='lg'>
+            <Link href='/'>카카오 로그인</Link>
           </Button>
         </form>
       </div>

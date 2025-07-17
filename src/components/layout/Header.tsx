@@ -16,7 +16,7 @@ export default function Header() {
   };
 
   return (
-    <header className='bg-surface text-secondary border-secondary/30 relative w-full border-b transition-all duration-300' role='banner'>
+    <header className='bg-surface text-secondary border-secondary/30 relative z-1 w-full border-b transition-all duration-300' role='banner'>
       <div className={HEADER_CONTAINER}>
         {/* 로고 */}
         <div className='t-h4'>

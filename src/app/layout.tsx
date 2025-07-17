@@ -1,5 +1,5 @@
-import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import Header from '@/components/layout/Header';
 import '@/styles/globals.css';
 import localFont from 'next/font/local';
 
@@ -19,7 +19,7 @@ export default function RootLayout({
     <html lang='ko' className={pretendard.variable}>
       <body className={`${pretendard.className} bg-surface`}>
         <Header />
-        <main className='w-full px-4 py-4 sm:px-6 md:px-8 md:py-6'>{children}</main>
+        <main className='p-8'>{children}</main>
         <Footer />
       </body>
     </html>

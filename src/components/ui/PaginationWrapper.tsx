@@ -15,7 +15,7 @@ export default function PaginationWrapper({ currentPage, totalPages, setCurrentP
         </PaginationItem>
         {Array.from({ length: totalPages }).map((_, idx) => (
           <PaginationItem key={idx}>
-            <PaginationLink isActive={currentPage === idx + 1} onClick={() => setCurrentPage(idx + 1)} href='#'>
+            <PaginationLink isActive={currentPage === idx + 1} onClick={() => setCurrentPage(idx + 1)}>
               {idx + 1}
             </PaginationLink>
           </PaginationItem>

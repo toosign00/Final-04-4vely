@@ -57,7 +57,7 @@ export default function Header() {
       {isOpen && (
         <div
           id='mobile-menu'
-          className='border-border-default/30 bg-surface absolute top-full right-0 left-0 overflow-hidden border-b shadow-sm transition-all duration-300 md:hidden'
+          className='z-50 border-border-default/30 bg-surface absolute top-full right-0 left-0 overflow-hidden border-b shadow-sm transition-all duration-300 md:hidden'
           style={{
             height: menuHeight,
             opacity: 1,

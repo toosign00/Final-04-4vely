@@ -29,7 +29,7 @@ export default function CartPage() {
       <div className="lg:flex lg:gap-6 sm:mx-8 mx-2">
         {/* 왼쪽: 장바구니 아이템 목록 */}
         <div className="flex-1 ">
-          <hr className="block lg:hidden my-4 border-neutral-300" />
+          <hr className="block lg:hidden my-4 border-gray-300" />
           {/* 선택 영역 */}
           <div className="flex justify-start items-center lg:text-2xl text-base border-b-2">
             <div className="flex items-center gap-2">
@@ -42,7 +42,7 @@ export default function CartPage() {
           {Array.from({ length: 5 }).map((_, idx) => (
         <div key={idx}>
           {/* 카드 */}
-          <div className="bg-neutral-50 lg:bg-surface py-7 mt-7 px-3 rounded-2xl md:border-neutral-300-1 flex justify-between items-stretch">
+          <div className="bg-white lg:bg-surface py-7 mt-7 px-3 rounded-2xl md:border-gray-300-1 flex justify-between items-stretch">
             {/* 왼쪽: 체크박스 + 이미지 + 텍스트 */}
             <div className="flex items-start gap-3 h-full">
               <Checkbox id={`item-${idx}`} defaultChecked className="mt-[2px]" />
@@ -63,7 +63,7 @@ export default function CartPage() {
               <div className="flex flex-col gap-5 lg:flex-row">
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Button size="sm" variant="primary" fullWidth className=" lg:w-[73px] text-neutral-50 lg:h-10 w-[87px] order-2 lg:order-1">
+                    <Button size="sm" variant="primary" fullWidth className=" lg:w-[73px] lg:h-10 w-[87px] order-2 lg:order-1">
                       옵션 변경
                     </Button>
                   </DialogTrigger>
@@ -101,7 +101,7 @@ export default function CartPage() {
               </div>
 
               {/* 수량 버튼 */}
-              <div className="flex items-center border rounded-4xl px-2 py-1 bg-neutral-50">
+              <div className="flex items-center border rounded-4xl px-2 py-1 bg-white">
                 <Button variant="ghost" size="icon" className="h-6 w-6 text-lg" aria-label="수량 감소">
                   -
                 </Button>
@@ -115,15 +115,15 @@ export default function CartPage() {
 
           
           {idx !== 4 && (
-            <div className="hidden lg:block w-full h-px bg-neutral-300 my-8" />
+            <div className="hidden lg:block w-full h-px bg-gray-300 my-8" />
           )}
         </div>
       ))}
 
         </div>
         {/*주문 내역 */}
-        <hr className="mt-12 mb-8 border-neutral-300 lg:hidden" />
-        <div className="w-full lg:w-1/3 h-119 shrink-0 mt-6 lg:mt-0 p-4 md:p-6 bg-surface lg:bg-neutral-100 ">
+        <hr className="mt-12 mb-8 border-gray-300 lg:hidden" />
+        <div className="w-full lg:w-1/3 h-119 shrink-0 mt-6 lg:mt-0 p-4 md:p-6 bg-surface lg:bg-white ">
           <h2 className="font-bold mb-12 text-2xl">주문 내역</h2>
           <div className="flex justify-between text-[16px] mb-6">
             <span>상품 금액</span>
@@ -133,7 +133,7 @@ export default function CartPage() {
             <span>배송비</span>
             <span>무료</span>
           </div>
-          <hr className="lg:mb-10 border-neutral-300 mb-5" />
+          <hr className="lg:mb-10 border-gray-300 mb-5" />
           <div className="flex justify-between font-semibold text-lg mb-10">
             <span>총 결제 금액</span>
             <span>₩ 100,000</span>

@@ -1,8 +1,8 @@
 // src/app/shop/page.tsx
 'use client';
 
-import CategoryFilterSidebar from '@/app/shop/components/CategoryFilter';
-import ProductCard from '@/app/shop/components/ProductCard';
+import CategoryFilterSidebar from '@/app/shop/_components/CategoryFilter';
+import ProductCard from '@/app/shop/_components/ProductCard';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/Pagination';

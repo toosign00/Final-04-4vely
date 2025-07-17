@@ -15,6 +15,10 @@
   --color-info: #3b82f6;
 
   /* Border 컬러 gray-300 사용 */
+
+  /* Font 컬러 (보조 색상) */
+  --color-accent: #4c956c;
+  --color-muted: #5f5f5f;
 }
 
 @layer utilities {

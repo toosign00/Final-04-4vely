@@ -10,11 +10,11 @@ function Input({ className, type, ...props }: React.ComponentProps<'input'>) {
       // 디자인 시스템에 맞춘 스타일 적용
       className={cn(
         // 폰트, 배경, 테두리, 컬러 등
-        'font-pretendard border-border-default placeholder:text-surface0 text-secondary border bg-white',
+        'font-pretendard placeholder:text-surface0 text-secondary border border-gray-300 bg-gray-50',
         // 크기 및 패딩
-        'flex h-10 w-full min-w-0 rounded-md px-4 py-2 text-base md:text-sm',
+        'flex h-11 w-full rounded-md px-4 py-2 text-sm md:text-base',
         // 포커스 스타일
-        'focus-visible:border-primary-500 focus-visible:ring-primary-100 focus-visible:ring-2 focus-visible:outline-none',
+        'focus-visible:border-secondary focus-visible:ring-secondary focus-visible:ring-1 focus-visible:outline-none',
         // 에러 상태
         'aria-invalid:border-error aria-invalid:ring-error/20',
         // 비활성화

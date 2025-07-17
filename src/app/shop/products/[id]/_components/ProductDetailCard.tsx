@@ -14,7 +14,7 @@ interface ProductDetailCardProps {
 /**
  * 추천 상품 카드 컴포넌트
  * - 상품 상세 페이지 하단 추천 상품 표시
- * - 반응형 디자인으
+ * - 반응형 디자인 지원
  */
 export default function ProductDetailCard({ product, onClick }: ProductDetailCardProps) {
   return (

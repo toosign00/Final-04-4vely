@@ -29,6 +29,7 @@ const prettierConfig = {
   htmlWhitespaceSensitivity: 'css',
   // 내장된 언어 코드 자동 포매팅
   embeddedLanguageFormatting: 'auto',
+  plugins: ['prettier-plugin-tailwindcss'],
 };
 
 export default prettierConfig;

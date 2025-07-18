@@ -27,22 +27,22 @@ export default function PostCard({ post }: PostCardProps) {
       <div className='grid grid-cols-1 items-center gap-4 md:grid-cols-[auto_1fr_auto] md:gap-6'>
         {/* 게시글 이미지 */}
         <div className='grid place-items-center'>
-          <div className='aspect-square w-[10.625rem]'>
-            <Image src={post.imageUrl} alt='post-image' width={170} height={170} className='h-full w-full rounded-xl border bg-gray-100 object-cover' sizes='(max-width: 640px) 110px, 170px' priority />
+          <div className='aspect-square w-[12.5rem]'>
+            <Image src={post.imageUrl} alt='post-image' width={200} height={200} className='h-full w-full rounded-xl border bg-gray-100 object-cover' sizes='(max-width: 640px) 110px, 170px' priority />
           </div>
         </div>
         {/* 게시글 정보 */}
         <div className='flex h-full flex-col justify-between gap-3'>
           {/* 게시글 제목 */}
           <div className='grid justify-items-start'>
-            <span className='t-desc text-gray-400'>제목</span>
+            <span className='t-desc text-secondary/70'>제목</span>
             <h3 className='text-secondary text-lg font-bold'>{post.title}</h3>
           </div>
 
           {/* 게시글 내용 */}
           <div className='grid justify-items-start'>
-            <span className='t-desc text-gray-400'>내용</span>
-            <p className='t-small font-medium text-gray-700'>{post.content}</p>
+            <span className='t-desc text-secondary/70'>내용</span>
+            <p className='t-small text-gray-secondary line-clamp-2 font-medium'>{post.content}</p>
           </div>
 
           {/* 게시글 메타 정보 */}

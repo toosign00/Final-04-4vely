@@ -19,7 +19,7 @@ export default function RootLayout({
     <html lang='ko' className={pretendard.variable}>
       <body className={`${pretendard.className} bg-surface`}>
         <Header />
-        <main className='p-8'>{children}</main>
+        <main>{children}</main>
         <Footer />
       </body>
     </html>

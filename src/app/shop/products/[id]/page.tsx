@@ -10,7 +10,7 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink, Paginati
 import { Product } from '@/types/product';
 import { Minus, Plus, ShoppingCart } from 'lucide-react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 /* TYPES & CONSTANTS */
@@ -49,8 +49,10 @@ const REVIEWS_PER_PAGE = 2;
  * - 추천 상품 표시
  * - 반응형 디자인 (모바일/태블릿/데스크톱)
  */
-export default function ProductDetailPage({ params: { id } }: { params: { id: string } }) {
+export default function ProductDetailPage() {
   const router = useRouter();
+  const params = useParams();
+  const id = params.id as string;
 
   // 상태 관리
   const [selectedColor, setSelectedColor] = useState('brown');
@@ -244,18 +246,18 @@ export default function ProductDetailPage({ params: { id } }: { params: { id: st
     <Dialog open={isCartModalOpen} onOpenChange={setIsCartModalOpen}>
       <DialogContent className='p-8 sm:max-w-lg lg:max-w-xl' showCloseButton={false}>
         <DialogHeader>
-          <DialogTitle className='flex items-center justify-center gap-2 t-h3'>
+          <DialogTitle className='t-h3 flex items-center justify-center gap-2'>
             <ShoppingCart size={24} />
             상품이 장바구니에 추가되었습니다.
           </DialogTitle>
-          <DialogDescription className='mt-4 text-center t-h4'>장바구니 페이지로 이동하시겠습니까?</DialogDescription>
+          <DialogDescription className='t-h4 mt-4 text-center'>장바구니 페이지로 이동하시겠습니까?</DialogDescription>
         </DialogHeader>
 
         <DialogFooter className='mt-6 flex gap-3'>
-          <Button variant='primary' onClick={handleGoToCart} className='flex-1 py-3 t-h3'>
+          <Button variant='primary' onClick={handleGoToCart} className='t-h3 flex-1 py-3'>
             예
           </Button>
-          <Button variant='default' onClick={handleStayOnPage} className='flex-1 py-3 t-h3'>
+          <Button variant='default' onClick={handleStayOnPage} className='t-h3 flex-1 py-3'>
             아니오
           </Button>
         </DialogFooter>

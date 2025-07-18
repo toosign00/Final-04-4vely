@@ -15,19 +15,25 @@ export default function MyPageLayout({ children }: { children: React.ReactNode }
   const currentTab = tabs.find((tab) => pathname.startsWith(tab.href));
   const title = currentTab ? currentTab.title : '';
 
+  // 다이어리 페이지인지 확인
+  const isDiaryPage = pathname.includes('/my-plants/') && pathname !== '/my-page/my-plants';
+
   return (
-    <section className='bg-surface flex min-h-screen flex-col'>
-      {/* 타이틀 영역 */}
-      <div className='flex w-full flex-col items-start pb-2'>
-        <div className='text-secondary t-small font-medium'>| My Page</div>
-        <h2 className='text-secondary t-h2 mt-2 font-light'>{title}</h2>
-      </div>
-      {/* 네비게이션 바 */}
-      <nav className='bg-surface w-full pt-4 pb-2'>
-        <div className='pb-4'>
+    <section className='bg-surface flex min-h-screen flex-col p-4 md:p-6 lg:p-8'>
+      {/* 타이틀 영역 - 다이어리 페이지에서는 숨김 */}
+      {!isDiaryPage && (
+        <div className='mx-auto flex w-full max-w-6xl flex-col items-start pb-2'>
+          <div className='text-secondary t-small font-medium'>| My Page</div>
+          <h2 className='text-secondary t-h2 mt-2 font-light'>{title}</h2>
+        </div>
+      )}
+
+      {/* 네비게이션 바 - 다이어리 페이지에서는 숨김 */}
+      {!isDiaryPage && (
+        <nav className='bg-surface w-full pt-4 pb-4'>
           {/* 전체 너비 사용 */}
-          <div className='w-full'>
-            <div className='mx-auto w-full max-w-6xl overflow-hidden rounded-2xl bg-white p-1 shadow-lg backdrop-blur-md'>
+          <div className='flex w-full items-center justify-center'>
+            <div className='-mx-8 w-screen overflow-hidden rounded-none bg-white shadow-lg backdrop-blur-md sm:mx-auto sm:max-w-6xl'>
               <ul className='flex w-full'>
                 {tabs.map((tab) => {
                   const isActive = pathname.startsWith(tab.href);
@@ -36,9 +42,7 @@ export default function MyPageLayout({ children }: { children: React.ReactNode }
                     <li key={tab.href} className='flex-1'>
                       <Link
                         href={tab.href}
-                        className={`focus-visible t-small relative block w-full rounded-xl px-4 py-2 text-center whitespace-nowrap transition-all duration-300 ease-out ${
-                          isActive ? 'bg-primary text-secondary' : 'text-secondary/80 hover:text-secondary'
-                        }`}
+                        className={`focus-visible t-small relative block w-full px-4 py-2 text-center whitespace-nowrap transition-all duration-300 ease-out ${isActive ? 'bg-primary text-secondary' : 'text-secondary/80 hover:text-secondary'}`}
                       >
                         {tab.name}
                       </Link>
@@ -48,8 +52,9 @@ export default function MyPageLayout({ children }: { children: React.ReactNode }
               </ul>
             </div>
           </div>
-        </div>
-      </nav>
+        </nav>
+      )}
+
       {/* 실제 페이지 컨텐츠 */}
       <div>{children}</div>
     </section>

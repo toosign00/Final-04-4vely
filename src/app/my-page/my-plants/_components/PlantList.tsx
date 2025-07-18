@@ -11,7 +11,7 @@ export default function PlantList({ plants, emptyCards, onRegisterClick }: Plant
   return (
     <>
       {plants.map((plant) => (
-        <PlantCard key={plant.id} plant={plant} onDelete={() => {}} onViewJournal={() => {}} />
+        <PlantCard key={plant.id} plant={plant} onDelete={() => {}} />
       ))}
       {Array.from({ length: Math.max(0, Math.min(4, emptyCards)) }).map((_, idx) => (
         <EmptyPlantCard key={`register-card-${idx}`} onClick={onRegisterClick} />

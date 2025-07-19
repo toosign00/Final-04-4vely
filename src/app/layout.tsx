@@ -3,6 +3,14 @@ import Header from '@/components/layout/Header';
 import '@/styles/globals.css';
 import localFont from 'next/font/local';
 
+export const metadata = {
+  title: 'Green Mate',
+  description: 'Green Mate',
+  icons: {
+    icon: '/favicon.svg',
+  },
+};
+
 const pretendard = localFont({
   src: '../../public/fonts/PretendardVariable.woff2',
   display: 'swap',

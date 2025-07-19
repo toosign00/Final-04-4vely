@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/Button';
+import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 import { FaFacebook, FaInstagram, FaXTwitter, FaYoutube } from 'react-icons/fa6';
@@ -43,14 +44,14 @@ export default function Footer() {
   ];
 
   return (
-    <footer className='bg-secondary relative overflow-hidden'>
+    <footer className='relative overflow-hidden bg-[#2f2a25] text-[#fafaf9]'>
       <div className='relative z-10 mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8 lg:py-6'>
         {/* 메인 콘텐츠 영역 */}
         <div className='flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between'>
           {/* 브랜드 섹션 */}
           <div className='flex flex-col gap-3 lg:max-w-xs'>
-            <h3 className='t-h3 text-white'>GREEN MATE</h3>
-            <p className='t-body text-white'>
+            <Image src='/icons/logo_white.svg' alt='Green Mate' width={201} height={53} className='h-auto w-[7.5rem] max-w-[7.5rem]' priority />
+            <p className='t-body'>
               브랜드 슬로건 들어가면 됩니다.
               <br />
               브랜드 슬로건 들어가면 됩니다.
@@ -65,7 +66,7 @@ export default function Footer() {
                     key={social.name}
                     href={social.href}
                     aria-label={social.name}
-                    className='hover:bg-primary focus-visible bg-secondary flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 text-white transition-all duration-300 hover:shadow-lg'
+                    className='hover:bg-primary focus-visible flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 bg-[#2f2a25] transition-all duration-300 hover:shadow-lg'
                   >
                     {social.icon}
                   </Link>
@@ -81,10 +82,10 @@ export default function Footer() {
             <div className='hidden items-center justify-center gap-2 md:flex lg:justify-end'>
               {footerLinks.map((link, index) => (
                 <React.Fragment key={link.name}>
-                  <Button variant='link' size='sm' asChild className='text-white hover:text-white'>
+                  <Button variant='link' size='sm' asChild className='text-[#fafaf9] hover:text-[#fafaf9]'>
                     <Link href={link.href}>{link.name}</Link>
                   </Button>
-                  {index < footerLinks.length - 1 && <span className='t-body flex items-center text-white'>|</span>}
+                  {index < footerLinks.length - 1 && <span className='t-body flex items-center'>|</span>}
                 </React.Fragment>
               ))}
             </div>
@@ -93,7 +94,7 @@ export default function Footer() {
             <div className='md:hidden'>
               <div className='grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4'>
                 {footerLinks.map((link) => (
-                  <Button key={link.name} variant='link' size='sm' asChild className='justify-start border-0 text-white hover:text-white'>
+                  <Button key={link.name} variant='link' size='sm' asChild className='justify-start border-0 text-[#fafaf9] hover:text-[#fafaf9]'>
                     <Link href={link.href}>{link.name}</Link>
                   </Button>
                 ))}

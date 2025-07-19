@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/Button';
 import { HEADER_CONTAINER, MOBILE_MENU_LINK, NAV_LINK, headerIcons, menuLinks } from '@/constants/header.constants';
 import { useHeaderMenu } from '@/hooks/useHeaderMenu';
 import { Menu, ShoppingCart, UserRound, X } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
@@ -16,14 +17,12 @@ export default function Header() {
   };
 
   return (
-    <header className='bg-surface text-secondary border-secondary/30 relative z-1 w-full border-b transition-all duration-300' role='banner'>
+    <header className='bg-surface text-secondary border-secondary/30 relative z-1 w-full border-b transition-all duration-300'>
       <div className={HEADER_CONTAINER}>
         {/* 로고 */}
-        <div className='t-h4'>
-          <Link href='/' aria-label='홈으로'>
-            GREEN MATE
-          </Link>
-        </div>
+        <Link href='/' aria-label='홈으로' className='flex items-center'>
+          <Image src='/icons/logo.svg' alt='Green Mate' width={201} height={53} className='h-auto w-[7.5rem] max-w-[7.5rem] -translate-y-1.5' priority />
+        </Link>
 
         {/* 네비게이션 */}
         <nav className='hidden gap-4 md:flex' aria-label='주요 메뉴'>
@@ -57,7 +56,7 @@ export default function Header() {
       {isOpen && (
         <div
           id='mobile-menu'
-          className='border-border-default/30 bg-surface absolute top-full right-0 left-0 overflow-hidden border-b shadow-sm transition-all duration-300 md:hidden'
+          className='border-border-default/30 bg-surface absolute top-full right-0 left-0 z-50 overflow-hidden border-b shadow-sm transition-all duration-300 md:hidden'
           style={{
             height: menuHeight,
             opacity: 1,

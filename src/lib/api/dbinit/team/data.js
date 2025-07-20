@@ -904,7 +904,7 @@ export const initData = async (clientId, nextSeq) => {
             values: ['흑색', '갈색', '흰색', '남색'],
           },
         ],
-        mainImages: [`/files/${clientId}/variegated_schefflera_black.webp`, `/files/${clientId}/variegated_schefflera_brown.webp`, `/files/${clientId}/variegated_schefflera_white`, `/files/${clientId}/variegated_schefflera_blue`], // 상품 메인 이미지
+        mainImages: [`/files/${clientId}/variegated_schefflera_black.webp`, `/files/${clientId}/variegated_schefflera_brown.webp`, `/files/${clientId}/variegated_schefflera_white.webp`, `/files/${clientId}/variegated_schefflera_blue.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
             <p>우산 모양의 잎을 가진 장난기 넘치는 관엽식물, 얼룩무늬 셰플레라는 집 안에서 키우기 딱 좋은 식물입니다. 크림색과 짙은 녹색이 어우러진 이 식물은 아담한 모양, 대담한 무늬, 그리고 온화한 성격 덕분에 처음 식물을 키우는 사람에게 선물하기에도 좋습니다. 이 식물은 약한 간접광에서 밝은 간접광까지 좋아하며, 물을 자주 주지 않아도 됩니다. 잎에 먼지를 자주 털어주면 깨끗하게 유지할 수 있습니다.</p>

@@ -31,7 +31,7 @@ export default function ProductCard({ product, onClick, isMobile = false }: Prod
             </div>
 
             {/* NEW 태그 */}
-            {product.isNew && <div className='bg-secondary t-body absolute top-0 left-0 z-10 rounded-ee-lg px-2 py-1 font-semibold text-white'>NEW</div>}
+            {product.isNew && <div className='bg-secondary t-body absolute top-0 left-0 rounded-ee-lg px-2 py-1 font-semibold text-white'>NEW</div>}
 
             {/* 북마크 버튼 */}
             <div className='absolute top-1 right-1'>
@@ -60,7 +60,7 @@ export default function ProductCard({ product, onClick, isMobile = false }: Prod
           </div>
 
           {/* NEW 태그 */}
-          {product.isNew && <div className='bg-secondary absolute top-0 left-0 z-10 rounded-ee-xl px-3 py-1.5 text-xs font-semibold text-white'>NEW</div>}
+          {product.isNew && <div className='bg-secondary absolute top-0 left-0 rounded-ee-xl px-3 py-1.5 text-xs font-semibold text-white'>NEW</div>}
 
           {/* 북마크 버튼 */}
           <div className='absolute top-3 right-3'>

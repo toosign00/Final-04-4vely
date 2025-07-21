@@ -1018,7 +1018,7 @@ export const initData = async (clientId, nextSeq) => {
             values: ['흑색', '갈색', '회색', '흰색', '남색'],
           },
         ],
-        mainImages: [`/files/${clientId}/guekrak_black.webp`, `/files/${clientId}/guekrak_brown.webp`, `/files/${clientId}/guekrak_white.webp`, `/files/${clientId}/guekrak_blue.webp`, `/files/${clientId}/guekrak_gray.webp`], // 상품 메인 이미지
+        mainImages: [`/files/${clientId}/geokrak_black.webp`, `/files/${clientId}/geokrak_brown.webp`, `/files/${clientId}/geokrak_white.webp`, `/files/${clientId}/geokrak_blue.webp`, `/files/${clientId}/geokrak_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
             <p>극락조는 실내 식물계의 여왕으로 여겨집니다. 이 크고 곧은 식물은 윤기 나는 바나나 모양의 잎이 퍼져 나가 공간에 풍부한 열대 분위기를 더합니다. 비교적 강건하며 직사광선부터 간접광까지 다양한 빛 조건에 적응하지만, 햇볕이 잘 드는 곳에서 잘 자랍니다. 극락조를 건강하게 유지하려면 물과 습도가 중요합니다. 흙이 촉촉하게 유지되도록 꾸준히 물을 주어야 하지만, 젖거나 질척거리지 않도록 주의해야 합니다. 물을 꼼꼼히 주는 것 외에도 습도를 높이기 위해 정기적으로 분무해 주는 것이 좋습니다.</p>

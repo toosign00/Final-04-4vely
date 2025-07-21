@@ -333,15 +333,15 @@ export default function ShopPage() {
   };
 
   return (
-    <div className='bg-surface min-h-screen p-8'>
+    <div className='bg-surface min-h-screen p-4'>
       {/* 모바일/태블릿 레이아웃 */}
-      <div className='px-3 py-3 sm:px-4 sm:py-4 md:px-6 lg:hidden'>
+      <div className='md:p-2 lg:hidden'>
         <div className='mx-auto flex w-full max-w-6xl flex-col items-start pb-2'>
           <div className='text-secondary t-small font-medium'>| My Page</div>
           <h2 className='text-secondary t-h2 mt-2 font-light'>Our Plants</h2>
         </div>
 
-        <div className='mb-3 flex items-center gap-2'>
+        <div className='mb-3 flex items-center gap-2 pt-4'>
           <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
             <SheetTrigger asChild>
               <Button variant='default' size='sm' className='flex h-8 items-center gap-1.5 px-2.5 py-1.5'>
@@ -404,10 +404,11 @@ export default function ShopPage() {
       </div>
 
       {/* 데스크톱 레이아웃 */}
-      <div className='hidden lg:flex'>
+      <div className='hidden p-4 lg:flex'>
         <div className='w-64'>
-          <div className='mb-6 pl-4'>
-            <h1 className='text-secondary t-h1'>Our Plants</h1>
+          <div className='mx-auto flex w-full max-w-6xl flex-col items-start px-4'>
+            <div className='text-secondary t-small font-medium'>| My Page</div>
+            <h2 className='text-secondary t-h2 mt-2 font-light'>Our Plants</h2>
           </div>
           <CategoryFilterSidebar filters={filters} onFilterChange={handleFilterChange} />
         </div>

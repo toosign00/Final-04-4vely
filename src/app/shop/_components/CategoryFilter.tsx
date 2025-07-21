@@ -114,7 +114,7 @@ export default function CategoryFilterSidebar({ filters, onFilterChange, isMobil
 
       {/* 필터 섹션 */}
       <div className='space-y-4'>
-        <h3 className='text-secondary t-h3'>Filter By</h3>
+        <h3 className='text-secondary t-h3 pt-2'>Filter By</h3>
         <Accordion type='multiple' defaultValue={[]} className='w-full pl-3'>
           {Object.entries(FILTER_OPTIONS).map(([key, options]) => (
             <AccordionItem key={key} value={key} className='border-b border-gray-300'>

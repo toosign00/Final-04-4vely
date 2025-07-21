@@ -337,7 +337,7 @@ export default function ShopPage() {
       {/* 모바일/태블릿 레이아웃 */}
       <div className='md:p-2 lg:hidden'>
         <div className='mx-auto flex w-full max-w-6xl flex-col items-start pb-2'>
-          <div className='text-secondary t-small font-medium'>| My Page</div>
+          <div className='text-secondary t-small font-medium'>| Products</div>
           <h2 className='text-secondary t-h2 mt-2 font-light'>Our Plants</h2>
         </div>
 
@@ -407,7 +407,7 @@ export default function ShopPage() {
       <div className='hidden p-4 lg:flex'>
         <div className='w-64'>
           <div className='mx-auto flex w-full max-w-6xl flex-col items-start px-4'>
-            <div className='text-secondary t-small font-medium'>| My Page</div>
+            <div className='text-secondary t-small font-medium'>| Products</div>
             <h2 className='text-secondary t-h2 mt-2 font-light'>Our Plants</h2>
           </div>
           <CategoryFilterSidebar filters={filters} onFilterChange={handleFilterChange} />

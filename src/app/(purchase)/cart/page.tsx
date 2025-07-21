@@ -8,11 +8,10 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup';
 
 import { Trash2 } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
 
 export default function CartPage() {
   return (
-    <div className='bg-surface mx-auto w-full max-w-[1500px] py-8 lg:px-6'>
+    <div className='bg-surface w-full py-8 lg:px-6'>
       {/* 헤더 영역 */}
       <div className='flex items-center lg:mb-24'>
         <Button variant='ghost' size='icon' className='mr-2 text-4xl lg:hidden' aria-label='뒤로 가기'>
@@ -138,11 +137,9 @@ export default function CartPage() {
             <span>총 결제 금액</span>
             <span>₩ 100,000</span>
           </div>
-          <Link href='/order'>
-            <Button fullWidth variant='primary' className='h-[50px] text-3xl'>
-              주문하기
-            </Button>
-          </Link>
+          <Button fullWidth variant='primary' className='h-[50px] text-3xl'>
+            주문하기
+          </Button>
         </div>
       </div>
     </div>

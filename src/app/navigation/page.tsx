@@ -138,6 +138,9 @@ export default function NavigationPage() {
               <Button variant='default' asChild fullWidth>
                 <Link href='/example/select'>드롭다운 셀렉트</Link>
               </Button>
+              <Button variant='default' asChild fullWidth>
+                <Link href='/example/input'>Input</Link>
+              </Button>
             </div>
           </div>
         </div>

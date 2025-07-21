@@ -13,7 +13,7 @@ function Card({ className, ...props }: CardProps) {
   return (
     <div
       data-slot='card'
-      className={cn('text-secondary flex w-full max-w-[22rem] min-w-[16rem] cursor-pointer flex-col gap-6 overflow-hidden rounded-2xl border-0 bg-white shadow-lg transition-all duration-300 hover:shadow-xl', className)}
+      className={cn('text-secondary flex w-full max-w-[22rem] min-w-[16rem] cursor-pointer flex-col gap-6 overflow-hidden rounded-2xl border-0 bg-white shadow-md transition-all duration-300 hover:shadow-lg', className)}
       {...props}
     />
   );
@@ -51,7 +51,7 @@ function CardImage({ className, alt = '', sizes = '(max-width: 640px) 100vw, (ma
 // 제목과 설명 텍스트 렌더링
 function CardTitle({ className, title = '', ...props }: CardTitleProps) {
   return (
-    <h4 data-slot='card-title' className={cn('t-h4 mb-2 line-clamp-2', className)} {...props}>
+    <h4 data-slot='card-title' className={cn('t-h4 my-2 line-clamp-2', className)} {...props}>
       {title}
     </h4>
   );

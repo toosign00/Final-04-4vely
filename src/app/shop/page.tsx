@@ -288,10 +288,10 @@ export default function ShopPage() {
   };
 
   return (
-    <div className='bg-surface min-h-screen'>
+    <div className='bg-surface min-h-screen p-8'>
       {/* 모바일/태블릿 레이아웃 */}
       <div className='px-3 py-3 sm:px-4 sm:py-4 md:px-6 lg:hidden'>
-        <h1 className='text-secondary mb-3 text-xl font-bold sm:text-2xl md:text-3xl'>OUR PLANTS</h1>
+        <h1 className='text-secondary mb-3 text-xl font-bold sm:text-2xl md:text-3xl'>Our Plants</h1>
 
         <div className='mb-3 flex items-center gap-2'>
           <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
@@ -333,7 +333,7 @@ export default function ShopPage() {
         </div>
 
         <div className='my-6'>
-          <div className='flex flex-wrap justify-center gap-12 sm:gap-12 md:gap-12'>
+          <div className='flex flex-wrap justify-center gap-6 sm:gap-8 md:gap-20'>
             {paginatedProducts.map((product) => (
               <ProductCard key={product.id} product={product} onClick={handleProductClick} isMobile={true} />
             ))}
@@ -356,7 +356,7 @@ export default function ShopPage() {
       </div>
 
       {/* 데스크톱 레이아웃 */}
-      <div className='hidden pt-8 lg:flex'>
+      <div className='hidden lg:flex'>
         <div className='w-64'>
           <div className='mb-6 pl-4'>
             <h1 className='text-secondary t-h1'>Our Plants</h1>
@@ -389,7 +389,7 @@ export default function ShopPage() {
           </div>
 
           <div className='mb-8 px-16'>
-            <div className='flex flex-wrap gap-8 pl-12'>
+            <div className='flex flex-wrap gap-30'>
               {paginatedProducts.map((product) => (
                 <ProductCard key={product.id} product={product} onClick={handleProductClick} />
               ))}

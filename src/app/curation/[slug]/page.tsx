@@ -1,11 +1,11 @@
 interface CurationDetailPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export default async function CurationDetailPage({ params }: CurationDetailPageProps) {
-  const { slug } = params;
+  const { slug } = await params;
 
   return (
     <main className='mx-auto max-w-3xl p-10'>

@@ -51,7 +51,7 @@ export default function ProductCard({ product, onClick, isMobile = false }: Prod
 
   // 데스크톱 레이아웃
   return (
-    <div className='my-6 cursor-pointer justify-items-center transition-all xl:w-[300px] 2xl:w-[540px]'>
+    <div className='my-6 cursor-pointer justify-items-center transition-all xl:w-[300px] 2xl:w-[400px]'>
       <Card className='mb-4 w-full overflow-hidden transition-shadow hover:shadow-md'>
         <div className='relative'>
           {/* 상품 이미지 */}

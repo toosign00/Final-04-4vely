@@ -27,7 +27,7 @@ export default function ProductDetailCard({ product, onClick }: ProductDetailCar
           </div>
 
           {/* NEW 태그 */}
-          {product.isNew && <div className='bg-secondary absolute top-0 left-0 z-10 rounded-ee-lg px-1.5 py-0.5 text-[10px] font-semibold text-white sm:px-2 sm:py-1 sm:text-xs'>NEW</div>}
+          {product.isNew && <div className='bg-secondary absolute top-0 left-0 rounded-ee-lg px-1.5 py-0.5 text-[10px] font-semibold text-white sm:px-2 sm:py-1 sm:text-xs'>NEW</div>}
 
           {/* 북마크 버튼 */}
           <div className='absolute top-1 right-1'>

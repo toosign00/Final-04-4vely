@@ -11,11 +11,12 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: 'bg-white text-secondary shadow-sm hover:bg-secondary hover:text-white border border-[0.5px] border-gray-300',
-        primary: 'bg-primary text-secondary shadow-sm hover:bg-[#aebb2e] active:bg-[#aebb2e]',
         secondary: 'bg-secondary text-white shadow-sm hover:bg-secondary/80 active:bg-secondary',
         ghost: 'text-secondary hover:text-secondary/70',
+        primary: 'bg-primary text-secondary shadow-sm hover:bg-[#AEBB2E] active:bg-primary',
         link: 'text-secondary underline-offset-4 hover:underline',
         destructive: 'bg-error text-white shadow-sm hover:bg-error/90 active:bg-error/80',
+        outline: 'border border-input bg-white hover:bg-primary hover:text-white',
       },
       size: {
         default: 'h-9 px-4 py-2 has-[>svg]:px-3',
@@ -39,7 +40,7 @@ const buttonVariants = cva(
   },
 );
 
-type BaseVariant = 'default' | 'primary' | 'secondary' | 'ghost' | 'link' | 'destructive';
+type BaseVariant = 'default' | 'primary' | 'secondary' | 'ghost' | 'link' | 'destructive' | 'outline';
 
 interface ButtonProps extends React.ComponentProps<'button'>, VariantProps<typeof buttonVariants> {
   variant?: BaseVariant;

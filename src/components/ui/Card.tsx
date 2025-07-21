@@ -51,7 +51,7 @@ function CardImage({ className, alt = '', sizes = '(max-width: 640px) 100vw, (ma
 // 제목과 설명 텍스트 렌더링
 function CardTitle({ className, title = '', ...props }: CardTitleProps) {
   return (
-    <h4 data-slot='card-title' className={cn('t-h4 mb-2 line-clamp-2', className)} {...props}>
+    <h4 data-slot='card-title' className={cn('t-h4 my-2 line-clamp-2', className)} {...props}>
       {title}
     </h4>
   );

@@ -29,6 +29,7 @@ export default function TestPage() {
           <Button variant='ghost'>고스트 버튼</Button>
           <Button variant='link'>링크 버튼</Button>
           <Button variant='destructive'>위험 버튼</Button>
+          <Button variant='outline'>아웃라인 버튼</Button>
         </div>
       </div>
 

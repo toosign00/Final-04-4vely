@@ -49,7 +49,7 @@ export default function ShopPage() {
       } else if (window.innerWidth < 1024) {
         setItemsPerPage(6);
       } else {
-        setItemsPerPage(9);
+        setItemsPerPage(12);
       }
     };
 
@@ -196,6 +196,51 @@ export default function ShopPage() {
         isBookmarked: false,
         recommend: false,
       },
+      {
+        id: '10',
+        name: '고무나무',
+        image: '/images/calathea_conkina_freddie.webp',
+        price: 32000,
+        category: '관엽식물',
+        size: 'large',
+        difficulty: 'easy',
+        light: 'medium',
+        space: 'indoor',
+        season: 'summer',
+        isNew: false,
+        isBookmarked: false,
+        recommend: false,
+      },
+      {
+        id: '11',
+        name: '고무나무',
+        image: '/images/calathea_conkina_freddie.webp',
+        price: 32000,
+        category: '관엽식물',
+        size: 'large',
+        difficulty: 'easy',
+        light: 'medium',
+        space: 'indoor',
+        season: 'summer',
+        isNew: false,
+        isBookmarked: false,
+        recommend: false,
+      },
+      {
+        id: '12',
+        name: '고무나무',
+        image: '/images/calathea_conkina_freddie.webp',
+        price: 32000,
+        category: '관엽식물',
+        size: 'large',
+        difficulty: 'easy',
+        light: 'medium',
+        space: 'indoor',
+        season: 'summer',
+        isNew: false,
+        isBookmarked: false,
+        recommend: false,
+      },
     ];
     setProducts(mockProducts);
     setFilteredProducts(mockProducts);
@@ -288,12 +333,15 @@ export default function ShopPage() {
   };
 
   return (
-    <div className='bg-surface min-h-screen p-8'>
+    <div className='bg-surface min-h-screen p-4'>
       {/* 모바일/태블릿 레이아웃 */}
-      <div className='px-3 py-3 sm:px-4 sm:py-4 md:px-6 lg:hidden'>
-        <h1 className='text-secondary mb-3 text-xl font-bold sm:text-2xl md:text-3xl'>Our Plants</h1>
+      <div className='md:p-2 lg:hidden'>
+        <div className='mx-auto flex w-full max-w-6xl flex-col items-start pb-2'>
+          <div className='text-secondary t-small font-medium'>| Products</div>
+          <h2 className='text-secondary t-h2 mt-2 font-light'>Our Plants</h2>
+        </div>
 
-        <div className='mb-3 flex items-center gap-2'>
+        <div className='mb-3 flex items-center gap-2 pt-4'>
           <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
             <SheetTrigger asChild>
               <Button variant='default' size='sm' className='flex h-8 items-center gap-1.5 px-2.5 py-1.5'>
@@ -356,10 +404,11 @@ export default function ShopPage() {
       </div>
 
       {/* 데스크톱 레이아웃 */}
-      <div className='hidden lg:flex'>
+      <div className='hidden p-4 lg:flex'>
         <div className='w-64'>
-          <div className='mb-6 pl-4'>
-            <h1 className='text-secondary t-h1'>Our Plants</h1>
+          <div className='mx-auto flex w-full max-w-6xl flex-col items-start px-4'>
+            <div className='text-secondary t-small font-medium'>| Products</div>
+            <h2 className='text-secondary t-h2 mt-2 font-light'>Our Plants</h2>
           </div>
           <CategoryFilterSidebar filters={filters} onFilterChange={handleFilterChange} />
         </div>

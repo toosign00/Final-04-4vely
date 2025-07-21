@@ -139,6 +139,7 @@ export const useImageUpload = (maxImages: number = 10) => {
     reorderImages,
     clearImages,
     clearError,
+    setError,
     setInitialImages,
   };
 };

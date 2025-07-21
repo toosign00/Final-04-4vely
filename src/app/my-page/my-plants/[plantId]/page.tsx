@@ -115,8 +115,8 @@ export default function PlantDiaryListPage() {
     <div className='bg-surface min-h-screen'>
       {/* 목록으로 돌아가기 버튼 */}
       <div className='mx-auto max-w-4xl py-4'>
-        <Button variant='ghost' onClick={handleBack}>
-          <ArrowLeft size={16} />
+        <Button variant='ghost' size='lg' className='text-base' style={{ paddingLeft: '0px' }} onClick={handleBack}>
+          <ArrowLeft className='size-5' />
           목록으로 돌아가기
         </Button>
       </div>

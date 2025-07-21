@@ -76,8 +76,8 @@ export default function MyPlants() {
   const emptyCards = ITEMS_PER_PAGE - displayItems.length;
 
   return (
-    <div>
-      <div className='mx-auto grid max-w-4xl auto-rows-fr grid-cols-1 gap-6 md:grid-cols-2'>
+    <>
+      <div className='mx-auto grid max-w-4xl auto-rows-fr grid-cols-1 gap-6 p-4 md:grid-cols-2 md:p-5 lg:p-6'>
         <PlantList plants={displayItems} emptyCards={emptyCards} onRegisterClick={() => setOpen(true)} />
       </div>
       {/* 페이지네이션 UI */}
@@ -85,6 +85,6 @@ export default function MyPlants() {
         <PaginationWrapper currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage} />
       </div>
       <PlantRegisterModal open={open} onClose={() => setOpen(false)} />
-    </div>
+    </>
   );
 }

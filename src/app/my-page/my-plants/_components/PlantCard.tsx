@@ -1,6 +1,8 @@
+'use client';
 import { Button } from '@/components/ui/Button';
 import { Trash2 } from 'lucide-react';
 import Image, { StaticImageData } from 'next/image';
+import { useRouter } from 'next/navigation';
 
 /**
  * 식물 데이터 타입
@@ -19,10 +21,15 @@ export interface Plant {
 interface PlantCardProps {
   plant: Plant;
   onDelete?: (id: number) => void;
-  onViewJournal?: (id: number) => void;
 }
 
-export default function PlantCard({ plant, onDelete, onViewJournal }: PlantCardProps) {
+export default function PlantCard({ plant, onDelete }: PlantCardProps) {
+  const router = useRouter();
+
+  const handleViewJournal = () => {
+    router.push(`/my-page/my-plants/${plant.id}`);
+  };
+
   return (
     <div className='group relative max-h-[26.6rem] overflow-hidden rounded-2xl border bg-white shadow-md transition-shadow duration-300 hover:shadow-lg'>
       {/* 이미지 섹션 */}
@@ -56,7 +63,7 @@ export default function PlantCard({ plant, onDelete, onViewJournal }: PlantCardP
         </div>
         {/* 액션 버튼들 */}
         <div className='flex gap-2'>
-          <Button variant='primary' size='sm' className='flex-1' onClick={() => onViewJournal?.(plant.id)}>
+          <Button variant='primary' size='sm' className='flex-1' onClick={handleViewJournal}>
             일지 보기
           </Button>
           <Button variant='destructive' size='sm' onClick={() => onDelete?.(plant.id)}>

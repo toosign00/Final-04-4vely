@@ -1,6 +1,9 @@
 import { Button } from '@/components/ui/Button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/Tooltip';
 import Image from 'next/image';
+import { useState } from 'react';
+import ReviewForm from './ReviewForm';
+import ReviewModal from './ReviewModal';
 
 interface OrderHistoryCardProps {
   order: {
@@ -62,6 +65,7 @@ export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
   };
 
   const currentStep = getProgressStep(order.deliveryStatus);
+  const [isReviewOpen, setReviewOpen] = useState(false);
 
   return (
     <TooltipProvider>
@@ -163,9 +167,12 @@ export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
               <Button variant='default' size='sm' fullWidth>
                 교환/환불
               </Button>
-              <Button variant='primary' size='sm' fullWidth>
+              <Button variant='primary' size='sm' fullWidth onClick={() => setReviewOpen(true)}>
                 리뷰 작성
               </Button>
+              <ReviewModal open={isReviewOpen} onOpenChange={setReviewOpen}>
+                <ReviewForm onSuccess={() => setReviewOpen(false)} />
+              </ReviewModal>
             </div>
           </div>
         </div>

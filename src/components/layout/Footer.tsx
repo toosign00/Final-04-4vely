@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/Button';
+import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 import { FaFacebook, FaInstagram, FaXTwitter, FaYoutube } from 'react-icons/fa6';
@@ -49,7 +50,7 @@ export default function Footer() {
         <div className='flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between'>
           {/* 브랜드 섹션 */}
           <div className='flex flex-col gap-3 lg:max-w-xs'>
-            <h3 className='t-h3'>GREEN MATE</h3>
+            <Image src='/icons/logo_white.svg' alt='Green Mate' width={201} height={53} className='h-auto w-[7.5rem] max-w-[7.5rem]' priority />
             <p className='t-body'>
               브랜드 슬로건 들어가면 됩니다.
               <br />

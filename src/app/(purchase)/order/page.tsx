@@ -81,7 +81,7 @@ export default function OrderPage() {
           {/* 토글 시 나머지 상품들 노출 */}
           {showItems &&
             products.slice(1).map((item) => (
-              <li key={item.id} className='flex items-center gap-8 opacity-80'>
+              <div key={item.id} className='flex items-center gap-8 opacity-80'>
                 <div className='relative h-30 w-40 shrink-0'>
                   <Image src={item.image} alt={item.name} fill className='rounded object-cover' />
                 </div>
@@ -90,7 +90,7 @@ export default function OrderPage() {
                   <p className='text-muted-foreground mb-1'>옵션: {item.option}</p>
                   <p>수량: {item.quantity}개</p>
                 </div>
-              </li>
+              </div>
             ))}
         </div>
       </section>
@@ -159,7 +159,7 @@ export default function OrderPage() {
                         </div>
                       </label>
                       <label className='flex items-start gap-3'>
-                        <input type='radio' name='address' className='mt-1' defaultChecked />
+                        <input type='radio' name='address' className='mt-1' />
                         <div className='flex-1'>
                           <p className='font-medium'>홍길동</p>
                           <p className='text-sm'>010-1234-5678</p>

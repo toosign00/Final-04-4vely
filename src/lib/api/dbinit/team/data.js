@@ -70,6 +70,9 @@ export const initData = async (clientId, nextSeq) => {
 
     // 원예 용품 // 대분류
     // '화분', '도구', '조명' // 소분류
+
+    // 태그
+    // 'NEW' (신상품), 'BEST' (베스트), 'BEGINNER' (초보추천), 'AIR_CLEAN' (공기정화), 'PET_SAFE' (반려동물안전), 'EASY_CARE' (관리쉬움)
     product: [
       {
         _id: await nextSeq('product'), // 상품 고유 ID
@@ -99,6 +102,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: true, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['NEW', 'BEGINNER', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -143,6 +147,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: true, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['NEW', 'AIR_CLEAN', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -187,6 +192,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'AIR_CLEAN', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -230,6 +236,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: true, // 베스트 상품 여부(boolean)
+          tags: ['BEST', 'BEGINNER', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -275,6 +282,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: true, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['NEW', 'BEGINNER', 'PET_SAFE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -323,6 +331,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: true, // 베스트 상품 여부(boolean)
+          tags: ['BEST', 'AIR_CLEAN', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -369,6 +378,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: true, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['NEW', 'BEGINNER', 'AIR_CLEAN'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -414,6 +424,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'PET_SAFE', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -462,6 +473,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: true, // 베스트 상품 여부(boolean)
+          tags: ['BEST', 'BEGINNER', 'PET_SAFE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -510,6 +522,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: true, // 베스트 상품 여부(boolean)
+          tags: ['BEST', 'BEGINNER', 'AIR_CLEAN'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -556,6 +569,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['AIR_CLEAN', 'BEGINNER', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -599,6 +613,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: true, // 베스트 상품 여부(boolean)
+          tags: ['BEST', 'PET_SAFE', 'AIR_CLEAN'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -644,6 +659,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: true, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['NEW', 'BEGINNER', 'AIR_CLEAN'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -690,6 +706,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: true, // 베스트 상품 여부(boolean)
+          tags: ['BEST', 'AIR_CLEAN', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -735,6 +752,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: true, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['NEW', 'AIR_CLEAN', 'BEGINNER'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -779,6 +797,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: true, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['NEW', 'BEGINNER', 'AIR_CLEAN'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -827,6 +846,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'PET_SAFE', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -870,6 +890,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: true, // 베스트 상품 여부(boolean)
+          tags: ['BEST', 'EASY_CARE', 'BEGINNER'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -915,6 +936,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: true, // 베스트 상품 여부(boolean)
+          tags: ['BEST', 'BEGINNER', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -962,6 +984,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'AIR_CLEAN', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -1006,6 +1029,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: true, // 베스트 상품 여부(boolean)
+          tags: ['BEST', 'AIR_CLEAN', 'BEGINNER'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -1053,6 +1077,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: true, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['NEW', 'BEGINNER', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -1099,6 +1124,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'EASY_CARE', 'AIR_CLEAN'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -1144,6 +1170,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: true, // 베스트 상품 여부(boolean)
+          tags: ['BEST', 'PET_SAFE', 'BEGINNER'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -1189,6 +1216,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: true, // 베스트 상품 여부(boolean)
+          tags: ['BEST', 'BEGINNER', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -1234,6 +1262,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'EASY_CARE', 'AIR_CLEAN'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -1281,6 +1310,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['AIR_CLEAN', 'PET_SAFE', 'BEGINNER'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -1325,6 +1355,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: true, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['NEW', 'AIR_CLEAN', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -1374,6 +1405,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: true, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['NEW', 'PET_SAFE', 'AIR_CLEAN'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -1419,6 +1451,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'PET_SAFE', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -1463,6 +1496,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: true, // 베스트 상품 여부(boolean)
+          tags: ['BEST', 'PET_SAFE', 'BEGINNER'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -1507,6 +1541,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: true, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['NEW', 'AIR_CLEAN', 'PET_SAFE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -1551,6 +1586,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'AIR_CLEAN', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -1596,6 +1632,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'EASY_CARE', 'PET_SAFE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -1637,6 +1674,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: true, // 베스트 상품 여부(boolean)
+          tags: ['BEST', 'AIR_CLEAN', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -1685,6 +1723,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: true, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['NEW', 'BEGINNER', 'AIR_CLEAN'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -1733,6 +1772,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['PET_SAFE', 'AIR_CLEAN', 'BEGINNER'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -1782,6 +1822,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: true, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['NEW', 'AIR_CLEAN', 'BEGINNER'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -1827,6 +1868,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'AIR_CLEAN', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -1875,6 +1917,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: true, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['NEW', 'BEGINNER', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -1920,6 +1963,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: true, // 베스트 상품 여부(boolean)
+          tags: ['BEST', 'BEGINNER', 'AIR_CLEAN'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -1964,6 +2008,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'AIR_CLEAN', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -2006,6 +2051,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: true, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['NEW', 'AIR_CLEAN', 'PET_SAFE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -2051,6 +2097,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'PET_SAFE', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -2097,6 +2144,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'EASY_CARE', 'AIR_CLEAN'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -2143,6 +2191,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'PET_SAFE', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -2188,6 +2237,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'PET_SAFE', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -2234,6 +2284,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'PET_SAFE', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -2280,6 +2331,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: true, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['NEW', 'BEGINNER', 'AIR_CLEAN'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -2325,6 +2377,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'EASY_CARE', 'PET_SAFE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -2372,6 +2425,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'AIR_CLEAN', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -2417,6 +2471,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'AIR_CLEAN', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -2463,6 +2518,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: true, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['NEW', 'BEGINNER', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -2506,6 +2562,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: true, // 베스트 상품 여부(boolean)
+          tags: ['BEST', 'PET_SAFE', 'BEGINNER'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -2550,6 +2607,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'AIR_CLEAN', 'PET_SAFE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -2593,6 +2651,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'PET_SAFE', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -2638,6 +2697,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'AIR_CLEAN', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -2682,6 +2742,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'PET_SAFE', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -2726,6 +2787,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'EASY_CARE', 'AIR_CLEAN'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -2773,6 +2835,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'EASY_CARE', 'PET_SAFE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -2819,6 +2882,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'PET_SAFE', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -2863,6 +2927,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'PET_SAFE', 'AIR_CLEAN'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -2907,6 +2972,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: true, // 베스트 상품 여부(boolean)
+          tags: ['BEST', 'BEGINNER', 'AIR_CLEAN'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -2953,6 +3019,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'AIR_CLEAN', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -2998,6 +3065,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: true, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['NEW', 'BEGINNER', 'AIR_CLEAN'],
           category: [
             // 상품 카테고리(array)
             '식물',
@@ -3042,6 +3110,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '원예 용품',
@@ -3078,6 +3147,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: true, // 베스트 상품 여부(boolean)
+          tags: ['BEST', 'BEGINNER', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '원예 용품',
@@ -3114,6 +3184,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: true, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['NEW', 'BEGINNER', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '원예 용품',
@@ -3143,6 +3214,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: true, // 베스트 상품 여부(boolean)
+          tags: ['BEST', 'BEGINNER', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '원예 용품',
@@ -3172,6 +3244,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '원예 용품',
@@ -3201,6 +3274,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '원예 용품',
@@ -3230,6 +3304,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'EASY_CARE', 'PET_SAFE'],
           category: [
             // 상품 카테고리(array)
             '원예 용품',
@@ -3259,6 +3334,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'EASY_CARE', 'PET_SAFE'],
           category: [
             // 상품 카테고리(array)
             '원예 용품',
@@ -3288,6 +3364,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: true, // 베스트 상품 여부(boolean)
+          tags: ['BEST', 'BEGINNER', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '원예 용품',
@@ -3317,6 +3394,7 @@ export const initData = async (clientId, nextSeq) => {
         extra: {
           isNew: false, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['BEGINNER', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '원예 용품',
@@ -3352,7 +3430,8 @@ export const initData = async (clientId, nextSeq) => {
         updatedAt: getTime(),
         extra: {
           isNew: false, // 신상품 여부(boolean)
-          isBest: false, // 베스트 상품 여부(boolean)
+          isBest: true, // 베스트 상품 여부(boolean)
+          tags: ['BEST', 'BEGINNER', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '원예 용품',
@@ -3387,8 +3466,9 @@ export const initData = async (clientId, nextSeq) => {
         createdAt: getTime(),
         updatedAt: getTime(),
         extra: {
-          isNew: false, // 신상품 여부(boolean)
+          isNew: true, // 신상품 여부(boolean)
           isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['NEW', 'BEGINNER', 'EASY_CARE'],
           category: [
             // 상품 카테고리(array)
             '원예 용품',

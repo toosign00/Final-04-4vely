@@ -20,8 +20,8 @@ export default function LoginPage() {
   };
 
   return (
-    <div className='mb-10 flex w-full flex-col items-center'>
-      <h1 className='t-h1'>
+    <div className='mb-15 flex w-full flex-col items-center p-4'>
+      <h1 className='t-h1 mt-5'>
         <span className='text-accent'>작은 초록,</span> 당신의 하루를 반짝이게.
       </h1>
       <p className='text-muted mb-10 flex items-center gap-2 md:text-lg'>

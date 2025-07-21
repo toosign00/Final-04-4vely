@@ -11,7 +11,7 @@ import Image from 'next/image';
 
 export default function CartPage() {
   return (
-    <div className='bg-surface w-full lg:px-6'>
+    <div className='bg-surface w-full py-8 lg:px-6'>
       {/* 헤더 영역 */}
       <div className='flex items-center lg:mb-24'>
         <Button variant='ghost' size='icon' className='mr-2 text-4xl lg:hidden' aria-label='뒤로 가기'>

@@ -54,7 +54,7 @@ export default function ProductsPage() {
   const displayItems = ordersData.slice(startIdx, startIdx + ITEMS_PER_PAGE);
 
   return (
-    <div className='grid gap-6 p-2 sm:p-0'>
+    <div className='grid gap-6 p-4 md:p-5 lg:p-6'>
       {/* 북마크 상품 카드 - 여러 개일 경우 map으로 반복 */}
       {displayItems.map((order) => (
         <ProductCard key={order.id} order={order} />

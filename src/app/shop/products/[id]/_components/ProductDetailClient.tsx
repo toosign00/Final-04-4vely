@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/Dialog';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/Pagination';
 import { getProductReviews } from '@/lib/api/market';
+// import { useCartStore } from '@/store/cartStore';
 import { Product, ProductDetail, Review, ReviewApiData } from '@/types/product';
 import { Minus, Plus, ShoppingCart } from 'lucide-react';
 import Image from 'next/image';
@@ -37,6 +38,19 @@ const COLOR_OPTIONS: ColorOption[] = [
   { value: 'white', label: '화이트', color: '#FFFFFF' },
 ];
 
+// 태그 텍스트 변환 함수
+function getBadgeText(tag: string) {
+  const tagMap: { [key: string]: string } = {
+    NEW: '신상품',
+    BEST: '베스트',
+    BEGINNER: '초보 추천',
+    AIR_CLEAN: '공기 정화',
+    PET_SAFE: '반려 동물 안전',
+    EASY_CARE: '관리 쉬움',
+  };
+  return tagMap[tag] || tag;
+}
+
 export default function ProductDetailClient({ product, recommendProducts, initialReviews, initialReviewsPagination, productId }: ProductDetailClientProps) {
   const router = useRouter();
 
@@ -54,7 +68,6 @@ export default function ProductDetailClient({ product, recommendProducts, initia
   // 리뷰 데이터 로딩 (페이지 변경 시)
   useEffect(() => {
     if (currentReviewPage === 1) {
-      // 첫 번째 페이지는 서버에서 받은 데이터 사용
       setReviews(initialReviews);
       setReviewsPagination(initialReviewsPagination);
       return;
@@ -104,7 +117,6 @@ export default function ProductDetailClient({ product, recommendProducts, initia
   };
 
   const handleAddToCart = () => {
-    console.log('장바구니 추가:', { productId: product.id, color: selectedColor, quantity });
     setIsCartModalOpen(true);
   };
 
@@ -118,8 +130,10 @@ export default function ProductDetailClient({ product, recommendProducts, initia
   };
 
   const handlePurchase = () => {
-    console.log('바로 구매:', { productId: product.id, color: selectedColor, quantity });
-    router.push('/order');
+    // 약간의 딜레이 후 주문 페이지로 이동 (장바구니 업데이트 완료 대기)
+    setTimeout(() => {
+      router.push('/order');
+    }, 100);
   };
 
   const handleProductClick = (id: string) => {
@@ -128,10 +142,12 @@ export default function ProductDetailClient({ product, recommendProducts, initia
 
   const handleEditReview = (reviewId: string) => {
     console.log('리뷰 수정:', reviewId);
+    // TODO: 리뷰 수정 모달로 이동
   };
 
   const handleDeleteReview = (reviewId: string) => {
     console.log('리뷰 삭제:', reviewId);
+    // TODO: 리뷰 삭제 확인 모달 및 API 호출
   };
 
   // 계산된 값들
@@ -223,7 +239,7 @@ export default function ProductDetailClient({ product, recommendProducts, initia
           <div className='mb-12 flex flex-wrap gap-2 sm:mb-8 sm:gap-3'>
             {product.tags?.map((tag) => (
               <Badge key={tag} variant='default' className='t-desc md:t-body border-1 border-gray-300 px-3 py-1 sm:px-4 sm:py-1.5'>
-                {tag}
+                {getBadgeText(tag)}
               </Badge>
             ))}
           </div>
@@ -239,7 +255,7 @@ export default function ProductDetailClient({ product, recommendProducts, initia
                 onClick={() => setSelectedColor(option.value)}
                 className={`h-8 w-8 rounded-full border-2 transition sm:h-9 sm:w-9 md:h-10 md:w-10 ${
                   selectedColor === option.value ? 'border-secondary scale-110 border-3' : 'border-gray-300'
-                } ${option.value === 'white' ? 'ring-1 ring-gray-300' : ''}`}
+                } ${option.value === 'white' ? 'ring-1 ring-gray-200' : ''}`}
                 style={{ backgroundColor: option.color }}
               />
             ))}
@@ -298,10 +314,9 @@ export default function ProductDetailClient({ product, recommendProducts, initia
                 {reviews.map((review) => (
                   <div key={review.id} className='mb-6 pb-6 sm:mb-8 sm:pb-8'>
                     <div className='mb-3 flex items-center gap-3 sm:gap-4'>
-                      <div className='bg-secondary t-h4 flex h-8 w-8 items-center justify-center rounded-full text-white sm:h-9 sm:w-9'>{review.userName.charAt(0)}</div>
+                      <div className='bg-secondary flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium text-white sm:h-9 sm:w-9'>{review.userName.charAt(0)}</div>
                       <p className='text-secondary t-h4 sm:t-h3 flex-1'>{review.userName}</p>
 
-                      {/* 날짜 및 액션 버튼 */}
                       <div className='flex items-center'>
                         <span className='text-secondary t-h4'>{review.date}</span>
 
@@ -321,7 +336,6 @@ export default function ProductDetailClient({ product, recommendProducts, initia
                   </div>
                 ))}
 
-                {/* 리뷰 페이지네이션 */}
                 {totalReviewPages > 1 && renderReviewPagination()}
               </>
             )}
@@ -367,7 +381,7 @@ export default function ProductDetailClient({ product, recommendProducts, initia
               {/* NEW 태그 */}
               {product.isNew && <div className='bg-secondary t-h3 absolute top-0 left-0 z-1 rounded-ss-2xl rounded-ee-2xl px-6 py-3 text-white'>NEW</div>}
 
-              {/* 북마크 버튼 */}
+              {/* 북마크 버튼 (Zustand 사용) */}
               <div className='absolute top-4 right-4'>
                 <BookmarkButton productId={product.id} initialBookmarked={product.isBookmarked} size={48} variant='default' />
               </div>
@@ -381,7 +395,7 @@ export default function ProductDetailClient({ product, recommendProducts, initia
               <div className='mb-8 flex flex-wrap gap-3 xl:mb-10'>
                 {product.tags?.map((tag) => (
                   <Badge key={tag} variant='default' className='border-1 border-gray-300 px-3 py-1.5 text-sm xl:px-4 xl:py-2 xl:text-base'>
-                    {tag}
+                    {getBadgeText(tag)}
                   </Badge>
                 ))}
               </div>
@@ -395,7 +409,7 @@ export default function ProductDetailClient({ product, recommendProducts, initia
                     type='button'
                     aria-label={option.label}
                     onClick={() => setSelectedColor(option.value)}
-                    className={`h-10 w-10 rounded-full border-2 transition xl:h-12 xl:w-12 ${selectedColor === option.value ? 'border-secondary scale-110 border-4' : 'border-gray-300'} ${option.value === 'white' ? 'ring-1 ring-gray-300' : ''}`}
+                    className={`h-10 w-10 rounded-full border-2 transition xl:h-12 xl:w-12 ${selectedColor === option.value ? 'border-secondary scale-110 border-4' : 'border-gray-300'} ${option.value === 'white' ? 'ring-1 ring-gray-200' : ''}`}
                     style={{ backgroundColor: option.color }}
                   />
                 ))}
@@ -442,11 +456,11 @@ export default function ProductDetailClient({ product, recommendProducts, initia
 
             {reviewsLoading ? (
               <div className='py-8 text-center'>
-                <div className='mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-b-2 border-gray-300' />
+                <div className='mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-b-2 border-gray-600' />
                 <p className='text-gray-600'>리뷰를 불러오는 중...</p>
               </div>
             ) : reviews.length === 0 ? (
-              <div className='t-h3 py-8 text-center'>
+              <div className='py-8 text-center'>
                 <p className='text-gray-600'>아직 리뷰가 없습니다.</p>
               </div>
             ) : (
@@ -487,7 +501,7 @@ export default function ProductDetailClient({ product, recommendProducts, initia
             <h2 className='text-secondary t-h1 mb-6 xl:mb-8'>Recommend</h2>
             {recommendProducts.length === 0 ? (
               <div className='py-8 text-center'>
-                <p className='t-h3 text-gray-600'>추천 상품이 없습니다.</p>
+                <p className='text-gray-600'>추천 상품이 없습니다.</p>
               </div>
             ) : (
               <div className='grid grid-cols-4 gap-6 xl:gap-8'>

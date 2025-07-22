@@ -1,8 +1,8 @@
-// src/app/shop/components/BookmarkButton.tsx
+// src/app/shop/_components/BookmarkButton.tsx
 'use client';
 
+import { useBookmarkStore } from '@/store/bookmarkStore';
 import { Bookmark } from 'lucide-react';
-import { useEffect, useState } from 'react';
 
 interface BookmarkButtonProps {
   productId: string;
@@ -13,26 +13,35 @@ interface BookmarkButtonProps {
   onToggle?: (productId: string, isBookmarked: boolean) => void;
 }
 
-/**
- * 북마크 버튼 컴포넌트
- * - 상품 즐겨찾기 토글 기능
- * - 시각적 상태 피드백
- * - 다양한 variant 지원
- */
-export default function BookmarkButton({ productId, initialBookmarked = false, size = 28, className = '', variant = 'default', onToggle }: BookmarkButtonProps) {
-  const [isBookmarked, setIsBookmarked] = useState(initialBookmarked);
+export default function BookmarkButton({
+  productId,
+  initialBookmarked: _initialBookmarked = false, // eslint-disable-line @typescript-eslint/no-unused-vars
+  size = 32,
+  className = '',
+  variant = 'default',
+  onToggle,
+}: BookmarkButtonProps) {
+  // Zustand 스토어에서 북마크 상태 및 함수들 가져오기
+  const { isBookmarked, toggleBookmark } = useBookmarkStore();
 
-  // 초기 북마크 상태 동기화
-  useEffect(() => {
-    setIsBookmarked(initialBookmarked);
-  }, [initialBookmarked]);
+  // 현재 상품의 북마크 상태 확인
+  const currentBookmarked = isBookmarked(productId);
 
   // 북마크 토글 핸들러
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const newBookmarked = !isBookmarked;
-    setIsBookmarked(newBookmarked);
+
+    // Zustand 스토어의 북마크 상태 토글
+    toggleBookmark(productId);
+
+    // 토글 후의 새로운 상태
+    const newBookmarked = !currentBookmarked;
+
+    // 외부 콜백 호출 (선택적)
     onToggle?.(productId, newBookmarked);
+
+    // TODO: 여기서 서버에 북마크 상태 업데이트 API 호출
+    // updateBookmarkOnServer(productId, newBookmarked);
   };
 
   // 기본 스타일 클래스
@@ -46,8 +55,8 @@ export default function BookmarkButton({ productId, initialBookmarked = false, s
   };
 
   return (
-    <div className={`${baseClasses} ${variantClasses[variant]} ${className}`} onClick={handleClick}>
-      <Bookmark size={size} className={`transition-colors ${isBookmarked ? 'fill-warning text-secondary' : 'hover:text-secondary text-gray-500'}`} />
+    <div className={`${baseClasses} ${variantClasses[variant]} ${className}`} onClick={handleClick} role='button' aria-label={currentBookmarked ? '북마크 제거' : '북마크 추가'}>
+      <Bookmark size={size} className={`transition-colors ${currentBookmarked ? 'fill-warning text-secondary' : 'hover:text-secondary text-gray-500'}`} />
     </div>
   );
 }

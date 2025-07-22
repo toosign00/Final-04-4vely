@@ -6,10 +6,11 @@ import { Input } from '@/components/ui/Input';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/Pagination';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/Sheet';
+import { useBookmarkStore } from '@/store/bookmarkStore';
 import { CategoryFilter, Product, SortOption } from '@/types/product';
 import { Filter, Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import CategoryFilterSidebar from './CategoryFilter';
 import ProductCard from './ProductCard';
 
@@ -20,8 +21,11 @@ interface ShopClientContentProps {
 export default function ShopClientContent({ initialProducts }: ShopClientContentProps) {
   const router = useRouter();
 
+  // Zustand 북마크 스토어
+  const { isBookmarked } = useBookmarkStore();
+
   // 상태 관리
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>(initialProducts);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('recommend');
   const [currentPage, setCurrentPage] = useState(1);
@@ -36,6 +40,14 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
   });
 
   const [itemsPerPage, setItemsPerPage] = useState(9);
+
+  // 북마크 상태가 반영된 상품 목록
+  const productsWithBookmarks = useMemo(() => {
+    return initialProducts.map((product) => ({
+      ...product,
+      isBookmarked: isBookmarked(product.id),
+    }));
+  }, [initialProducts, isBookmarked]);
 
   // 정렬 옵션 상수
   const SORT_OPTIONS: SortOption[] = [
@@ -77,9 +89,9 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
     router.push(`/shop/products/${id}`);
   };
 
-  // 상품 필터링 및 정렬 로직
+  // 상품 필터링 및 정렬 로직 (북마크 상태 포함)
   useEffect(() => {
-    let result = [...initialProducts];
+    let result = [...productsWithBookmarks]; // 북마크 상태가 업데이트된 상품 목록 사용
 
     // 검색어 필터링
     if (searchTerm) {
@@ -120,7 +132,7 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
 
     setFilteredProducts(result);
     setCurrentPage(1);
-  }, [initialProducts, searchTerm, filters, sortBy]);
+  }, [productsWithBookmarks, searchTerm, filters, sortBy]);
 
   // 페이지네이션 계산
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
@@ -224,7 +236,12 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
           ) : (
             <div className='flex flex-wrap justify-center gap-6 sm:gap-8 md:gap-20'>
               {paginatedProducts.map((product) => (
-                <ProductCard key={product.id} product={product} onClick={handleProductClick} isMobile={true} />
+                <ProductCard
+                  key={product.id}
+                  product={product} // 이미 북마크 상태가 반영된 상품 전달
+                  onClick={handleProductClick}
+                  isMobile={true}
+                />
               ))}
             </div>
           )}
@@ -292,7 +309,11 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
             ) : (
               <div className='flex flex-wrap gap-30'>
                 {paginatedProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} onClick={handleProductClick} />
+                  <ProductCard
+                    key={product.id}
+                    product={product} // 이미 북마크 상태가 반영된 상품 전달
+                    onClick={handleProductClick}
+                  />
                 ))}
               </div>
             )}

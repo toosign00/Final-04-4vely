@@ -1,54 +1,12 @@
 // src/lib/api/market.ts
+import { ApiResponse, ProductApiData, ReviewApiData } from '@/types/product';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_SERVER || 'https://fesp-api.koyeb.app/market';
 
-// API 응답 타입 정의
-interface ApiResponse<T> {
-  ok: number;
-  item?: T;
-  items?: T[];
-  pagination?: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-}
+/* ================================
+   HTTP 클라이언트 래퍼
+   ================================ */
 
-interface ProductApiData {
-  _id: number;
-  seller_id: number;
-  price: number;
-  quantity: number;
-  buyQuantity: number;
-  name: string;
-  content?: string;
-  createdAt: string;
-  updatedAt: string;
-  mainImages: string[];
-  extra?: {
-    isNew?: boolean;
-    isBest?: boolean;
-    category?: string[];
-    tags?: string[];
-  };
-}
-// 임시 리뷰
-interface ReviewApiData {
-  _id: number;
-  user_id: number;
-  product_id: number;
-  rating: number;
-  content: string;
-  createdAt: string;
-  updatedAt: string;
-  user?: {
-    name: string;
-    image?: string;
-  };
-}
-
-// HTTP 클라이언트 래퍼
 async function apiRequest<T>(endpoint: string, options?: RequestInit): Promise<ApiResponse<T>> {
   try {
     const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
@@ -71,6 +29,8 @@ async function apiRequest<T>(endpoint: string, options?: RequestInit): Promise<A
     throw error;
   }
 }
+
+/* 상품 관련 API 함수들 */
 
 // 상품 목록 조회
 export async function getProducts(params?: { page?: number; limit?: number; keyword?: string; sort?: string; custom?: Record<string, string | number | boolean> }): Promise<ApiResponse<ProductApiData[]>> {
@@ -99,13 +59,13 @@ export async function getProduct(productId: number): Promise<ProductApiData> {
   const response = await apiRequest<ProductApiData>(`/products/${productId}`);
 
   if (!response.item) {
-    throw new Error('Product not found');
+    throw new Error('상품을 찾지 못했습니다!');
   }
 
   return response.item;
 }
 
-// 상품 리뷰 조회 (임시)
+// 상품 리뷰 조회
 export async function getProductReviews(
   productId: number,
   params?: {
@@ -124,10 +84,12 @@ export async function getProductReviews(
   return apiRequest<ReviewApiData[]>(endpoint);
 }
 
-// 추천 상품 조회 (임시)
+// 추천 상품 조회 (베스트 상품)
 export async function getRecommendProducts(limit: number = 4): Promise<ApiResponse<ProductApiData[]>> {
   return apiRequest<ProductApiData[]>(`/products?custom.isBest=true&limit=${limit}`);
 }
+
+/* 유틸리티 함수들 */
 
 // 이미지 URL 헬퍼 함수
 export function getImageUrl(imagePath: string): string {

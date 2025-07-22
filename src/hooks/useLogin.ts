@@ -1,4 +1,4 @@
-import { AuthService } from '@/services/authService';
+import { AuthService } from '@/lib/api/authService';
 import { useAuth } from '@/store/authStore';
 import { LoginFormData } from '@/types/auth.types';
 import { useRouter } from 'next/navigation';

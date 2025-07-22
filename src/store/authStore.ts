@@ -1,4 +1,4 @@
-import { AuthService } from '@/services/authService';
+import { AuthService } from '@/lib/api/authService';
 import { UserInfo } from '@/types/auth.types';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -8,7 +8,8 @@ interface AuthState {
   // 상태 값들
   isAuthenticated: boolean;
   user: UserInfo | null;
-  token: string | null;
+  refreshToken: string | null;
+  accessToken: string | null;
   isLoading: boolean;
 
   // 액션 함수들
@@ -17,6 +18,7 @@ interface AuthState {
   setLoading: (loading: boolean) => void;
   checkAuthStatus: () => Promise<boolean>;
   updateUser: (userData: Partial<UserInfo>) => void;
+  initializeAuth: () => Promise<void>;
 }
 
 // 인증 상태 관리 스토어 생성
@@ -26,7 +28,8 @@ export const useAuthStore = create<AuthState>()(
       // 초기 상태
       isAuthenticated: false,
       user: null,
-      token: null,
+      refreshToken: null,
+      accessToken: null,
       isLoading: false,
 
       // 로그인 처리 함수
@@ -34,7 +37,8 @@ export const useAuthStore = create<AuthState>()(
         set({
           isAuthenticated: true,
           user: userData.user,
-          token: userData.token,
+          refreshToken: userData.user.token.refreshToken,
+          accessToken: userData.user.token.accessToken,
           isLoading: false,
         });
       },
@@ -44,7 +48,8 @@ export const useAuthStore = create<AuthState>()(
         set({
           isAuthenticated: false,
           user: null,
-          token: null,
+          refreshToken: null,
+          accessToken: null,
           isLoading: false,
         });
       },
@@ -56,15 +61,15 @@ export const useAuthStore = create<AuthState>()(
 
       // 인증 상태 확인 함수
       checkAuthStatus: async () => {
-        const { token } = get();
+        const { refreshToken } = get();
 
-        if (!token) {
+        if (!refreshToken) {
           return false;
         }
 
         try {
           // AuthService를 통한 토큰 검증
-          const user = await AuthService.verifyToken(token);
+          const user = await AuthService.verifyToken(refreshToken);
           set({
             isAuthenticated: true,
             user,
@@ -86,20 +91,54 @@ export const useAuthStore = create<AuthState>()(
           });
         }
       },
+
+      // 앱 초기화시 인증 상태 설정 함수
+      initializeAuth: async () => {
+        const { refreshToken } = get();
+
+        if (!refreshToken) {
+          set({
+            isAuthenticated: false,
+            user: null,
+            isLoading: false,
+          });
+          return;
+        }
+
+        set({ isLoading: true });
+
+        try {
+          // 토큰이 있으면 사용자 정보 가져오기
+          const user = await AuthService.verifyToken(refreshToken);
+          set({
+            isAuthenticated: true,
+            user,
+            isLoading: false,
+          });
+        } catch (error) {
+          console.error('[인증 초기화] 오류:', error);
+          set({
+            isAuthenticated: false,
+            user: null,
+            refreshToken: null,
+            accessToken: null,
+            isLoading: false,
+          });
+        }
+      },
     }),
     {
       name: 'auth-storage', // 로컬 스토리지 키 이름
       partialize: (state) => ({
-        // 지속 저장할 상태들 선택
         isAuthenticated: state.isAuthenticated,
-        user: state.user,
-        token: state.token,
+        refreshToken: state.refreshToken,
+        accessToken: state.accessToken,
       }),
     },
   ),
 );
 
-// 훅 형태로 사용할 수 있는 헬퍼 함수들
+// 헬퍼 함수들
 export const useAuth = () => {
   const authStore = useAuthStore();
 
@@ -115,5 +154,6 @@ export const useAuth = () => {
     setLoading: authStore.setLoading,
     checkAuthStatus: authStore.checkAuthStatus,
     updateUser: authStore.updateUser,
+    initializeAuth: authStore.initializeAuth,
   };
 };

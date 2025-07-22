@@ -4,25 +4,28 @@ import { Button } from '@/components/ui/Button';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
 import { Input } from '@/components/ui/Input';
-import { useLogin } from '@/hooks/useLogin';
 import { useLoginForm } from '@/hooks/useLoginForm';
-import { LoginFormData } from '@/types/auth.types';
 import { Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 
 export default function LoginForm() {
-  const { login, isLoading, error, clearError } = useLogin();
-  const { form, showPassword, emailValidation, passwordValidation, togglePasswordVisibility } = useLoginForm();
-
-  // 폼 제출 처리
-  const onSubmit = async (data: LoginFormData) => {
-    await login(data);
-  };
+  // useLoginForm hook
+  const {
+    form,
+    onSubmit, //폼 제출 핸들러
+    showPassword,
+    isLoading, // 로딩 상태
+    error, // 에러 상태
+    emailValidation,
+    passwordValidation,
+    togglePasswordVisibility,
+    clearErrors, // 에러 클리어 함수
+  } = useLoginForm();
 
   return (
     <div className='w-full max-w-xl rounded-lg border-[0.5px] border-[#4c956c] bg-white p-8'>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='flex w-full flex-col justify-center'>
+        <form onSubmit={onSubmit} className='flex w-full flex-col justify-center'>
           {/* API 에러 메시지 표시 */}
           {error && <div className='mb-4 rounded border border-red-200 bg-red-50 p-3 text-sm text-red-600'>{error}</div>}
 
@@ -45,7 +48,7 @@ export default function LoginForm() {
                     {...field}
                     onChange={(e) => {
                       field.onChange(e);
-                      if (error) clearError(); // API 에러 클리어
+                      clearErrors(); // 에러 클리어 함수 사용
                     }}
                   />
                 </FormControl>
@@ -74,7 +77,7 @@ export default function LoginForm() {
                       {...field}
                       onChange={(e) => {
                         field.onChange(e);
-                        if (error) clearError(); // API 에러 클리어
+                        clearErrors(); // 에러 클리어 함수 사용
                       }}
                     />
                     <button

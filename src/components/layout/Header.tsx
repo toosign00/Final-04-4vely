@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/Button';
 import { HEADER_CONTAINER, MOBILE_MENU_LINK, NAV_LINK, headerIcons, menuLinks } from '@/constants/header.constants';
 import { useHeaderMenu } from '@/hooks/useHeaderMenu';
-import { useAuth } from '@/store/authStore';
+import useUserStore from '@/store/authStore';
 import { Menu, ShoppingCart, UserRound, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -10,7 +10,12 @@ import React from 'react';
 
 export default function Header() {
   const { isOpen, setIsOpen, menuHeight, menuRef, buttonRef } = useHeaderMenu();
-  const { isAuthenticated, logout } = useAuth();
+  const { user, logout } = useUserStore();
+
+  // 로그아웃 함수
+  const handleLogout = async () => {
+    await logout(); // 서버 액션을 통한 로그아웃
+  };
 
   // 아이콘 문자열을 실제 컴포넌트로 변환
   const iconMap: Record<string, React.ReactNode> = {
@@ -41,8 +46,8 @@ export default function Header() {
         <div className='hidden items-center gap-3 md:flex'>
           {headerIcons.map((item) => {
             if (item.name === 'Login') {
-              return isAuthenticated ? (
-                <Button key='logout' type='button' variant='ghost' className='t-small text-secondary flex items-center justify-end' style={{ padding: '0px', minWidth: 50 }} onClick={logout}>
+              return user ? (
+                <Button key='logout' type='button' variant='ghost' className='t-small text-secondary flex items-center justify-end' style={{ padding: '0px', minWidth: 50 }} onClick={handleLogout}>
                   Logout
                   <span className='sr-only'>로그아웃</span>
                 </Button>
@@ -93,14 +98,14 @@ export default function Header() {
                 .filter((link) => link.showOn.includes('mobile'))
                 .map((link) => {
                   if (link.name === '로그인') {
-                    return isAuthenticated ? (
+                    return user ? (
                       <Button
                         key='logout-mobile'
                         type='button'
                         variant='link'
                         className={MOBILE_MENU_LINK}
                         onClick={() => {
-                          logout();
+                          handleLogout();
                           setIsOpen(false);
                         }}
                       >

@@ -1,4 +1,4 @@
-// src/app/shop/_components/ShopClientContent.tsx
+// src/app/shop/_components/ShopClientContent.tsx (client 컴포넌트)
 'use client';
 
 import { Button } from '@/components/ui/Button';

@@ -1,4 +1,4 @@
-// src/app/shop/products/[id]/_components/ProductDetailClient.tsx
+// src/app/shop/products/[id]/_components/ProductDetailClient.tsx (client 컴포넌트)
 'use client';
 
 import BookmarkButton from '@/app/shop/_components/BookmarkButton';

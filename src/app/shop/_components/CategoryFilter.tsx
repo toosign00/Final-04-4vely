@@ -22,33 +22,33 @@ export default function CategoryFilterSidebar({ filters, onFilterChange, isMobil
   // 필터 옵션 정의
   const FILTER_OPTIONS = {
     size: [
-      { value: 'small', label: '소형' },
-      { value: 'medium', label: '중형' },
-      { value: 'large', label: '대형' },
+      { value: '소형', label: '소형' },
+      { value: '중형', label: '중형' },
+      { value: '대형', label: '대형' },
     ],
     difficulty: [
-      { value: 'easy', label: '쉬움' },
-      { value: 'medium', label: '보통' },
-      { value: 'hard', label: '어려움' },
+      { value: '쉬움', label: '쉬움' },
+      { value: '보통', label: '보통' },
+      { value: '어려움', label: '어려움' },
     ],
     light: [
-      { value: 'low', label: '음지' },
-      { value: 'medium', label: '간접광' },
-      { value: 'high', label: '직사광' },
+      { value: '음지', label: '음지' },
+      { value: '간접광', label: '간접광' },
+      { value: '직사광', label: '직사광' },
     ],
     space: [
-      { value: 'indoor', label: '실내' },
-      { value: 'outdoor', label: '실외' },
-      { value: 'bedroom', label: '침실' },
-      { value: 'bathroom', label: '욕실' },
-      { value: 'kitchen', label: '주방' },
-      { value: 'office', label: '사무실' },
+      { value: '실외', label: '실외' },
+      { value: '거실', label: '거실' },
+      { value: '침실', label: '침실' },
+      { value: '욕실', label: '욕실' },
+      { value: '주방', label: '주방' },
+      { value: '사무실', label: '사무실' },
     ],
     season: [
-      { value: 'spring', label: '봄' },
-      { value: 'summer', label: '여름' },
-      { value: 'fall', label: '가을' },
-      { value: 'winter', label: '겨울' },
+      { value: '봄', label: '봄' },
+      { value: '여름', label: '여름' },
+      { value: '가을', label: '가을' },
+      { value: '겨울', label: '겨울' },
     ],
   };
 

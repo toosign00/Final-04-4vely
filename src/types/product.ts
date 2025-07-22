@@ -1,8 +1,6 @@
 // src/types/product.ts
 
-/* ================================
-   API 응답 타입 (백엔드에서 오는 데이터)
-   ================================ */
+/* API 응답 타입 (백엔드에서 오는 데이터) */
 
 // API 응답 공통 구조
 export interface ApiResponse<T> {
@@ -60,9 +58,7 @@ export interface ReviewApiData {
   };
 }
 
-/* ================================
-   UI에서 사용하는 타입 (변환된 데이터)
-   ================================ */
+/* UI에서 사용하는 타입 (변환된 데이터) */
 
 // UI에서 사용하는 상품 타입
 export interface Product {
@@ -109,9 +105,7 @@ export interface Review {
   content: string;
 }
 
-/* ================================
-   필터 및 정렬 타입
-   ================================ */
+/* 필터 및 정렬 타입 */
 
 // 카테고리 필터
 export interface CategoryFilter {
@@ -128,9 +122,7 @@ export interface SortOption {
   label: string;
 }
 
-/* ================================
-   장바구니 및 주문 타입
-   ================================ */
+/* 장바구니 및 주문 타입 */
 
 // 장바구니 아이템
 export interface CartItem {
@@ -161,9 +153,7 @@ export interface Order {
   paymentMethod: string;
 }
 
-/* ================================
-   기타 타입
-   ================================ */
+/* 기타 타입 */
 
 // 북마크
 export interface Bookmark {

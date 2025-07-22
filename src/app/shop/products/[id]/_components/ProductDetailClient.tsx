@@ -37,19 +37,6 @@ const COLOR_OPTIONS: ColorOption[] = [
   { value: 'white', label: '화이트', color: '#FFFFFF' },
 ];
 
-// 태그 텍스트 변환 함수
-function getBadgeText(tag: string) {
-  const tagMap: { [key: string]: string } = {
-    NEW: '신상품',
-    BEST: '베스트',
-    BEGINNER: '초보 추천',
-    AIR_CLEAN: '공기 정화',
-    PET_SAFE: '반려 동물 안전',
-    EASY_CARE: '관리 쉬움',
-  };
-  return tagMap[tag] || tag;
-}
-
 export default function ProductDetailClient({ product, recommendProducts, initialReviews, initialReviewsPagination, productId }: ProductDetailClientProps) {
   const router = useRouter();
 
@@ -238,7 +225,7 @@ export default function ProductDetailClient({ product, recommendProducts, initia
           <div className='mb-12 flex flex-wrap gap-2 sm:mb-8 sm:gap-3'>
             {product.tags?.map((tag) => (
               <Badge key={tag} variant='default' className='t-desc md:t-body border-1 border-gray-300 px-3 py-1 sm:px-4 sm:py-1.5'>
-                {getBadgeText(tag)}
+                {(tag)}
               </Badge>
             ))}
           </div>
@@ -394,7 +381,7 @@ export default function ProductDetailClient({ product, recommendProducts, initia
               <div className='mb-8 flex flex-wrap gap-3 xl:mb-10'>
                 {product.tags?.map((tag) => (
                   <Badge key={tag} variant='default' className='border-1 border-gray-300 px-3 py-1.5 text-sm xl:px-4 xl:py-2 xl:text-base'>
-                    {getBadgeText(tag)}
+                    {(tag)}
                   </Badge>
                 ))}
               </div>

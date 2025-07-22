@@ -13,6 +13,7 @@ interface BookmarkButtonProps {
   onToggle?: (productId: string, isBookmarked: boolean) => void;
 }
 
+// initialBookmarked : 추후에 북마크 기능이 모든 페이지에 연결될 때 완성할 예정
 export default function BookmarkButton({
   productId,
   initialBookmarked: _initialBookmarked = false, // eslint-disable-line @typescript-eslint/no-unused-vars

@@ -3,9 +3,7 @@ import { ApiResponse, ProductApiData, ReviewApiData } from '@/types/product';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_SERVER || 'https://fesp-api.koyeb.app/market';
 
-/* ================================
-   HTTP 클라이언트 래퍼
-   ================================ */
+/* HTTP 클라이언트 래퍼 */
 
 async function apiRequest<T>(endpoint: string, options?: RequestInit): Promise<ApiResponse<T>> {
   try {

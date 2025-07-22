@@ -46,13 +46,13 @@ async function fetchAllProducts(): Promise<Product[]> {
         image: getImageUrl(product.mainImages?.[0] || ''),
         price: product.price,
         category: categories[0] || '식물',
-        size: mapCategoryValue(categories, ['소형', '중형', '대형'], 'medium'),
-        difficulty: mapCategoryValue(categories, ['쉬움', '보통', '어려움'], 'easy'),
-        light: mapCategoryValue(categories, ['음지', '간접광', '직사광'], 'medium'),
-        space: mapCategoryValue(categories, ['거실', '침실', '욕실', '주방', '사무실', '실외'], 'indoor'),
-        season: mapCategoryValue(categories, ['봄', '여름', '가을', '겨울'], 'spring'),
+        size: mapCategoryValue(categories, ['소형', '중형', '대형'], 'error'),
+        difficulty: mapCategoryValue(categories, ['쉬움', '보통', '어려움'], 'error'),
+        light: mapCategoryValue(categories, ['음지', '간접광', '직사광'], 'error'),
+        space: mapCategoryValue(categories, ['거실', '침실', '욕실', '주방', '사무실', '실외'], 'error'),
+        season: mapCategoryValue(categories, ['봄', '여름', '가을', '겨울'], 'error'),
         isNew: product.extra?.isNew || false,
-        isBookmarked: false, // 추후 북마크 API로 확인
+        isBookmarked: false,
         recommend: product.extra?.isBest || false,
       };
     });

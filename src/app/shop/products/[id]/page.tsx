@@ -4,9 +4,8 @@ import { Product, ProductApiData, ProductDetail, Review, ReviewApiData } from '@
 import { notFound } from 'next/navigation';
 import ProductDetailClient from './_components/ProductDetailClient';
 
-// Next.js 15 타입 시스템에 맞게 수정
 interface ProductDetailPageProps {
-  params: Promise<{ id: string }>; // Promise로 래핑
+  params: Promise<{ id: string }>;
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
@@ -136,10 +135,10 @@ async function fetchProductData(id: string): Promise<{
   }
 }
 
-// 메타데이터 생성 (SEO 최적화) - params await 추가
+// 메타데이터 생성 (SEO 최적화)
 export async function generateMetadata({ params }: ProductDetailPageProps) {
   try {
-    const { id } = await params; // await 추가
+    const { id } = await params;
     const productData = await getProduct(parseInt(id));
     return {
       title: `${productData.name} | 4vely Plant Shop`,
@@ -158,10 +157,10 @@ export async function generateMetadata({ params }: ProductDetailPageProps) {
   }
 }
 
-// 메인 컴포넌트 - params await 추가
+// 메인 컴포넌트
 export default async function ProductDetailPage({ params }: ProductDetailPageProps) {
   try {
-    const { id } = await params; // await 추가
+    const { id } = await params;
 
     // 서버에서 모든 필요한 데이터 미리 로딩
     const { product, recommendProducts, initialReviews, reviewsPagination } = await fetchProductData(id);

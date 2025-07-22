@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/Button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/Dialog';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/Pagination';
 import { getProductReviews } from '@/lib/api/market';
-// import { useCartStore } from '@/store/cartStore';
 import { Product, ProductDetail, Review, ReviewApiData } from '@/types/product';
 import { Minus, Plus, ShoppingCart } from 'lucide-react';
 import Image from 'next/image';

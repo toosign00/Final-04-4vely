@@ -4,10 +4,10 @@ import { Product, ProductApiData, ProductDetail, Review, ReviewApiData } from '@
 import { notFound } from 'next/navigation';
 import ProductDetailClient from './_components/ProductDetailClient';
 
+// Next.js 15 타입 시스템에 맞게 수정
 interface ProductDetailPageProps {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>; // Promise로 래핑
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 // 카테고리 매핑 헬퍼 함수
@@ -136,10 +136,11 @@ async function fetchProductData(id: string): Promise<{
   }
 }
 
-// 메타데이터 생성 (SEO 최적화)
+// 메타데이터 생성 (SEO 최적화) - params await 추가
 export async function generateMetadata({ params }: ProductDetailPageProps) {
   try {
-    const productData = await getProduct(parseInt(params.id));
+    const { id } = await params; // await 추가
+    const productData = await getProduct(parseInt(id));
     return {
       title: `${productData.name} | 4vely Plant Shop`,
       description: productData.content ? productData.content.replace(/<[^>]*>/g, '').substring(0, 160) : `${productData.name} 상품 상세 정보`,
@@ -157,15 +158,18 @@ export async function generateMetadata({ params }: ProductDetailPageProps) {
   }
 }
 
+// 메인 컴포넌트 - params await 추가
 export default async function ProductDetailPage({ params }: ProductDetailPageProps) {
   try {
+    const { id } = await params; // await 추가
+
     // 서버에서 모든 필요한 데이터 미리 로딩
-    const { product, recommendProducts, initialReviews, reviewsPagination } = await fetchProductData(params.id);
+    const { product, recommendProducts, initialReviews, reviewsPagination } = await fetchProductData(id);
 
     return (
       <div className='bg-surface min-h-screen'>
         {/* 클라이언트 컴포넌트에 서버 데이터 전달 */}
-        <ProductDetailClient product={product} recommendProducts={recommendProducts} initialReviews={initialReviews} initialReviewsPagination={reviewsPagination} productId={params.id} />
+        <ProductDetailClient product={product} recommendProducts={recommendProducts} initialReviews={initialReviews} initialReviewsPagination={reviewsPagination} productId={id} />
       </div>
     );
   } catch (error) {

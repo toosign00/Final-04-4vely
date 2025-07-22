@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 
 const subTabs = [
   { name: '상품', href: '/my-page/bookmarks/products' },
-  { name: '북마크', href: '/my-page/bookmarks/posts' },
+  { name: '게시글', href: '/my-page/bookmarks/posts' },
 ];
 
 export default function BookmarksLayout({ children }: { children: React.ReactNode }) {

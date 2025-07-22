@@ -14,7 +14,7 @@ export default function EmptyDiaryState({ plantName, onWriteDiary }: EmptyDiaryS
       <h3 className='t-h3 text-secondary mb-2 font-bold'>아직 일지가 없습니다</h3>
       <p className='t-body text-muted mb-6'>{plantName}의 첫 번째 일지를 작성해보세요!</p>
       <Button variant='primary' onClick={onWriteDiary}>
-        <Plus size={16} />첫 일지 작성하기
+        <Plus className='size-4' />첫 일지 작성하기
       </Button>
     </div>
   );

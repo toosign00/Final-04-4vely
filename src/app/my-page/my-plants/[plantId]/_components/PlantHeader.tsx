@@ -18,14 +18,14 @@ export default function PlantHeader({ plant, onWriteDiary }: PlantHeaderProps) {
               <Image src={plant.imageUrl} alt={plant.name} fill className='object-cover' sizes='48px' priority />
             </div>
             <div>
-              <h1 className='t-h3 text-secondary font-bold'>{plant.name}</h1>
+              <h1 className='t-h4 text-secondary font-bold'>{plant.name}</h1>
               <p className='t-small text-muted'>
                 {plant.species} • {plant.location}
               </p>
             </div>
           </div>
           <Button variant='primary' onClick={onWriteDiary}>
-            <Plus size={16} />
+            <Plus className='size-4' />
             일지 작성
           </Button>
         </div>

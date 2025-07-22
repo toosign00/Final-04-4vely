@@ -2,7 +2,7 @@
 
 import { loginUser, logoutUser, refreshAccessToken } from '@/lib/functions/authFunctions';
 import { ApiRes } from '@/types/api.types';
-import type { LoginCredentials, LoginResult } from '@/types/user.types';
+import type { LoginCredentials, LoginResult } from '@/types/auth.types';
 import { cookies } from 'next/headers';
 
 /**

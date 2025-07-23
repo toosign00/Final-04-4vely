@@ -1,20 +1,18 @@
-'use server'; // 서버 전용이므로 작성해둠 -> client 컴포넌트에서 직접 import하지 말 것
+'use server';
 
-interface weatherInfo {
+export interface WeatherInfo {
   city: string; // 도시 이름
-  datetime: number; // 현재 시간
+  datetime: number; // 현재 시간 -> 계절 분기용으로 사용
   temp: number; // 현재 기온 (섭씨)
   humidity: number; // 현재 습도
   description: string; // 날씨 설명
   icon: string; // 날씨 아이콘
-  wind_speed: number; // 풍속
-  tip: string; // 식물 관리용 문구
+  windSpeed: number; // 풍속
 }
 
-export async function fetchWeather(lat: number, lon: number): Promise<weatherInfo | null> {
+export async function fetchWeather(lat: number, lon: number): Promise<WeatherInfo | null> {
   try {
     const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${process.env.WEATHER_API_KEY}&lang=kr&units=metric`, { cache: 'no-store' });
-
     if (!response.ok) {
       // API 호출 실패 시
       throw new Error(`날씨 API를 불러올 수 없습니다. ${response.status}`);
@@ -35,15 +33,14 @@ export async function fetchWeather(lat: number, lon: number): Promise<weatherInf
     // 풍속 존재 확인
     const windSpeed = data.wind && data.wind.speed ? data.wind.speed : 0;
 
-    const weather: weatherInfo = {
+    const weather: WeatherInfo = {
       city: data.name,
       datetime: data.dt,
       temp: data.main.temp,
       humidity: data.main.humidity,
-      description: description,
-      icon: icon,
-      wind_speed: windSpeed,
-      tip: '',
+      description,
+      icon,
+      windSpeed,
     };
 
     return weather;

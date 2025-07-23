@@ -1,58 +1,207 @@
+'use server';
+
 import { ApiRes } from '@/types/api.types';
 import { LoginCredentials, LoginResult } from '@/types/auth.types';
 import { User } from '@/types/user.types';
+import { cookies } from 'next/headers';
 
-// 환경변수 설정 및 검증
-class AuthConfig {
-  private static instance: AuthConfig;
-  private _apiBaseUrl: string;
-  private _clientId: string;
+const API_URL = process.env.API_URL || '';
+const CLIENT_ID = process.env.CLIENT_ID || '';
 
-  private constructor() {
-    // 실제 환경변수 이름에 맞춰서 수정
-    this._apiBaseUrl = this.validateEnvVar(process.env.NEXT_API_BASE_URL, 'NEXT_API_BASE_URL');
-    this._clientId = this.validateEnvVar(process.env.NEXT_API_CLIENT_ID, 'NEXT_API_CLIENT_ID');
-  }
+// ============================================================================
+// 서버 액션 (클라이언트에서 호출 가능)
+// ============================================================================
 
-  private validateEnvVar(value: string | undefined, name: string): string {
-    if (!value || value.trim() === '') {
-      throw new Error(`필수 환경변수가 설정되지 않았습니다: ${name}`);
+/**
+ * 로그인 서버 액션
+ * 폼 제출을 처리하고 사용자 인터랙션에 응답
+ * @param credentials - 로그인 자격 증명
+ * @returns 표준화된 API 응답 형태
+ */
+export async function loginAction(credentials: LoginCredentials): Promise<LoginResult> {
+  try {
+    // 내부 함수 호출
+    const result = await loginUser(credentials);
+
+    // 로그인 성공 시 서버에서 안전하게 쿠키 설정
+    if (result.ok === 1) {
+      const cookieStore = await cookies();
+
+      // 사용자 정보를 안전하게 쿠키에 저장 (httpOnly 옵션으로 XSS 방지)
+      cookieStore.set(
+        'user-auth',
+        JSON.stringify({
+          state: {
+            user: {
+              _id: result.item.user._id,
+              email: result.item.user.email,
+              name: result.item.user.name,
+              type: result.item.user.type,
+              createdAt: result.item.user.createdAt,
+              updatedAt: result.item.user.updatedAt,
+              token: {
+                accessToken: result.item.user.token?.accessToken,
+              },
+            },
+            isLoading: false,
+            lastTokenRefresh: Date.now(),
+          },
+        }),
+        {
+          httpOnly: false, // zustand에서 접근해야 하므로 false
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'strict',
+          maxAge: 60 * 60 * 24, // 1일
+          path: '/',
+        },
+      );
+
+      // 리프레시 토큰은 별도의 httpOnly 쿠키로 저장 (보안 강화)
+      if (result.item.user.token?.refreshToken) {
+        cookieStore.set('refresh-token', result.item.user.token.refreshToken, {
+          httpOnly: true, // 클라이언트에서 접근 불가 (보안 강화)
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'strict',
+          maxAge: 60 * 60 * 24 * 7, // 7일
+          path: '/',
+        });
+      }
     }
-    return value.trim();
-  }
 
-  public static getInstance(): AuthConfig {
-    if (!AuthConfig.instance) {
-      AuthConfig.instance = new AuthConfig();
-    }
-    return AuthConfig.instance;
-  }
-
-  public get apiBaseUrl(): string {
-    return this._apiBaseUrl;
-  }
-
-  public get clientId(): string {
-    return this._clientId;
+    return result;
+  } catch (error) {
+    console.error('[로그인 액션] 오류:', error);
+    return {
+      ok: 0,
+      message: '로그인 처리 중 오류가 발생했습니다.',
+    };
   }
 }
 
-// 환경변수 설정 인스턴스
-const authConfig = AuthConfig.getInstance();
+/**
+ * 토큰 갱신 서버 액션
+ * @param refreshToken - 리프레시 토큰 (선택사항, 없으면 쿠키에서 가져옴)
+ * @returns 표준화된 API 응답 형태
+ */
+export async function refreshTokenAction(refreshToken?: string): Promise<ApiRes<{ accessToken: string }>> {
+  try {
+    const cookieStore = await cookies();
 
-// 외부에서 사용할 수 있도록 export
-export const API_BASE_URL = authConfig.apiBaseUrl;
-export const CLIENT_ID = authConfig.clientId;
+    // refreshToken이 제공되지 않으면 httpOnly 쿠키에서 가져오기
+    const tokenToUse = refreshToken || cookieStore.get('refresh-token')?.value;
+
+    if (!tokenToUse) {
+      return {
+        ok: 0,
+        message: '리프레시 토큰이 없습니다.',
+      };
+    }
+
+    // 내부 함수 호출
+    const result = await refreshAccessToken(tokenToUse);
+
+    // 토큰 갱신 성공 시 사용자 쿠키 업데이트
+    if (result.ok === 1) {
+      const userAuthCookie = cookieStore.get('user-auth')?.value;
+      if (userAuthCookie) {
+        try {
+          const userData = JSON.parse(userAuthCookie);
+          if (userData.state?.user?.token) {
+            // 새로운 액세스 토큰으로 업데이트
+            userData.state.user.token.accessToken = result.item.accessToken;
+            userData.state.lastTokenRefresh = Date.now();
+
+            cookieStore.set('user-auth', JSON.stringify(userData), {
+              httpOnly: false,
+              secure: process.env.NODE_ENV === 'production',
+              sameSite: 'strict',
+              maxAge: 60 * 60 * 24,
+              path: '/',
+            });
+          }
+        } catch (parseError) {
+          console.error('[토큰 갱신 액션] 쿠키 파싱 오류:', parseError);
+        }
+      }
+    }
+
+    return result;
+  } catch (error) {
+    console.error('[토큰 갱신 액션] 오류:', error);
+    return {
+      ok: 0,
+      message: '토큰 갱신 처리 중 오류가 발생했습니다.',
+    };
+  }
+}
+
+/**
+ * 로그아웃 서버 액션
+ * @param token - 인증 토큰 (선택사항, 없으면 쿠키에서 가져옴)
+ * @returns 표준화된 API 응답 형태
+ */
+export async function logoutAction(token?: string): Promise<ApiRes<{ message: string }>> {
+  try {
+    const cookieStore = await cookies();
+
+    // token이 제공되지 않으면 쿠키에서 가져오기
+    let tokenToUse = token;
+    if (!tokenToUse) {
+      const userAuthCookie = cookieStore.get('user-auth')?.value;
+      if (userAuthCookie) {
+        try {
+          const userData = JSON.parse(userAuthCookie);
+          tokenToUse = userData.state?.user?.token?.accessToken;
+        } catch (parseError) {
+          console.error('[로그아웃 액션] 쿠키 파싱 오류:', parseError);
+        }
+      }
+    }
+
+    // 내부 함수 호출 (토큰이 없어도 로그아웃 처리)
+    let result;
+    if (tokenToUse) {
+      result = await logoutUser(tokenToUse);
+    } else {
+      result = {
+        ok: 1 as const,
+        item: { message: '로컬 로그아웃 처리되었습니다.' },
+      };
+    }
+
+    // 로그아웃 처리 후 모든 관련 쿠키 삭제
+    cookieStore.delete('user-auth');
+    cookieStore.delete('refresh-token');
+
+    return result;
+  } catch (error) {
+    console.error('[로그아웃 액션] 오류:', error);
+
+    // 에러가 발생해도 쿠키는 삭제
+    const cookieStore = await cookies();
+    cookieStore.delete('user-auth');
+    cookieStore.delete('refresh-token');
+
+    return {
+      ok: 0,
+      message: '로그아웃 처리 중 오류가 발생했습니다.',
+    };
+  }
+}
+
+// ============================================================================
+// 내부 함수들 (서버 액션에서만 사용)
+// ============================================================================
 
 /**
  * 로그인 API 호출 함수
  * @param credentials - 로그인 자격 증명
  * @returns 표준화된 API 응답 형태
  */
-export async function loginUser(credentials: LoginCredentials): Promise<LoginResult> {
+async function loginUser(credentials: LoginCredentials): Promise<LoginResult> {
   try {
-    // 외부 API에 로그인 요청 (1일 만료)
-    const res = await fetch(`${API_BASE_URL}/users/login?expiresIn=1d`, {
+    // 외부 API에 로그인 요청 (만료 시간 1일)
+    const res = await fetch(`${API_URL}/users/login?expiresIn=1d`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -84,7 +233,6 @@ export async function loginUser(credentials: LoginCredentials): Promise<LoginRes
 
     try {
       // 타입 안전성을 보장하는 변환
-      // const user = validateAndTransformUser(apiUser); // 이 부분은 삭제됨
       const token = user.token?.accessToken;
 
       if (!token) {
@@ -120,7 +268,7 @@ export async function loginUser(credentials: LoginCredentials): Promise<LoginRes
  * @param token - 인증 토큰
  * @returns 표준화된 API 응답 형태
  */
-export async function logoutUser(token: string): Promise<ApiRes<{ message: string }>> {
+async function logoutUser(token: string): Promise<ApiRes<{ message: string }>> {
   try {
     if (!token) {
       return {
@@ -130,7 +278,7 @@ export async function logoutUser(token: string): Promise<ApiRes<{ message: strin
     }
 
     // 외부 API에 로그아웃 요청
-    const res = await fetch(`${API_BASE_URL}/users/logout`, {
+    const res = await fetch(`${API_URL}/users/logout`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -168,7 +316,7 @@ export async function logoutUser(token: string): Promise<ApiRes<{ message: strin
  * @param refreshToken - 리프레시 토큰
  * @returns 표준화된 API 응답 형태
  */
-export async function refreshAccessToken(refreshToken: string): Promise<ApiRes<{ accessToken: string }>> {
+async function refreshAccessToken(refreshToken: string): Promise<ApiRes<{ accessToken: string }>> {
   try {
     if (!refreshToken) {
       return {
@@ -177,7 +325,7 @@ export async function refreshAccessToken(refreshToken: string): Promise<ApiRes<{
       };
     }
 
-    const res = await fetch(`${API_BASE_URL}/users/refresh`, {
+    const res = await fetch(`${API_URL}/users/refresh`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -215,49 +363,5 @@ export async function refreshAccessToken(refreshToken: string): Promise<ApiRes<{
       ok: 0,
       message: '토큰 갱신 중 서버 오류가 발생했습니다.',
     };
-  }
-}
-
-/**
- * JWT 토큰 만료 시간 확인
- * @param token - JWT 토큰
- * @returns 토큰이 만료되었는지 여부
- */
-export function isTokenExpired(token: string): boolean {
-  try {
-    // JWT 토큰의 payload 부분 디코딩 (base64)
-    const payload = token.split('.')[1];
-    if (!payload) return true;
-
-    const decodedPayload = JSON.parse(atob(payload));
-    const currentTime = Math.floor(Date.now() / 1000);
-
-    // exp 필드가 있고 현재 시간보다 이전이면 만료
-    return decodedPayload.exp && decodedPayload.exp < currentTime;
-  } catch (error) {
-    console.error('[토큰 검증] 토큰 파싱 오류:', error);
-    return true; // 파싱 에러가 발생하면 만료된 것으로 간주
-  }
-}
-
-/**
- * 토큰이 곧 만료될지 확인 (5분 전)
- * @param token - JWT 토큰
- * @returns 토큰이 곧 만료될지 여부
- */
-export function isTokenExpiringSoon(token: string): boolean {
-  try {
-    const payload = token.split('.')[1];
-    if (!payload) return true;
-
-    const decodedPayload = JSON.parse(atob(payload));
-    const currentTime = Math.floor(Date.now() / 1000);
-    const fiveMinutesFromNow = currentTime + 5 * 60; // 5분 후
-
-    // 5분 이내에 만료되면 true
-    return decodedPayload.exp && decodedPayload.exp < fiveMinutesFromNow;
-  } catch (error) {
-    console.error('[토큰 검증] 토큰 파싱 오류:', error);
-    return true;
   }
 }

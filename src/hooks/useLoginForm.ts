@@ -1,4 +1,4 @@
-import { loginAction } from '@/lib/actions/authActions';
+import { loginAction } from '@/lib/functions/authFunctions';
 import useUserStore, { startTokenRefreshInterval } from '@/store/authStore';
 import { ServerValidationError, ServerValidationErrors } from '@/types/api.types';
 import type { LoginCredentials, LoginFormData, LoginFormErrors, LoginState } from '@/types/auth.types';

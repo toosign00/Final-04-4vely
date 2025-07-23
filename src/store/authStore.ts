@@ -1,4 +1,4 @@
-import { logoutAction, refreshTokenAction } from '@/lib/actions/authActions';
+import { logoutAction, refreshTokenAction } from '@/lib/functions/authFunctions';
 import { isTokenExpired, isTokenExpiringSoon } from '@/lib/utils/auth.client';
 import { NetworkError, RefreshTokenResult } from '@/types/auth.types';
 import { User, UserState } from '@/types/user.types';
@@ -10,11 +10,11 @@ const cookieStorage: StateStorage = {
   getItem: (name: string): string | null => {
     if (typeof window === 'undefined') return null;
 
-    // 개선된 쿠키 파싱 로직: = 기호가 포함된 값 처리
+    // 쿠키 파싱
     const cookies = document.cookie.split(';').reduce((acc: Record<string, string>, cookie) => {
       const [key, ...valueParts] = cookie.split('=').map((c) => c.trim());
       if (key && valueParts.length > 0) {
-        const value = valueParts.join('='); // JWT 토큰처럼 = 패딩이 있는 경우 대응
+        const value = valueParts.join('=');
         acc[key] = decodeURIComponent(value);
       }
       return acc;
@@ -25,11 +25,15 @@ const cookieStorage: StateStorage = {
   setItem: (): void => {
     // zustand persist에서 쿠키 설정하지 않음 (서버 액션에서만 설정)
     // 클라이언트에서는 읽기 전용
-    console.warn(`[쿠키 스토리지] 클라이언트에서 쿠키 설정 시도 무시`);
+    if (process.env.NODE_ENV) {
+      console.debug(`[쿠키 스토리지] 클라이언트에서 쿠키 설정 시도 무시`);
+    }
   },
   removeItem: (name: string): void => {
     // zustand persist에서 쿠키 삭제하지 않음 (서버 액션에서만 삭제)
-    console.warn(`[쿠키 스토리지] 클라이언트에서 쿠키 삭제 시도 무시: ${name}`);
+    if (process.env.NODE_ENV) {
+      console.debug(`[쿠키 스토리지] 클라이언트에서 쿠키 삭제 시도 무시: ${name}`);
+    }
   },
 };
 
@@ -100,9 +104,13 @@ const useUserStore = create(
           // 서버 액션을 통해 로그아웃 처리 (token 없이 호출하면 쿠키에서 가져옴)
           await logoutAction();
 
-          console.log('[로그아웃] 성공');
+          if (process.env.NODE_ENV) {
+            console.debug('[로그아웃] 성공');
+          }
         } catch (error) {
-          console.error('[로그아웃] 오류:', error);
+          if (process.env.NODE_ENV) {
+            console.debug('[로그아웃] 오류:', error);
+          }
         } finally {
           // 로컬 상태도 초기화
           set({
@@ -118,7 +126,9 @@ const useUserStore = create(
       storage: createJSONStorage(() => cookieStorage), // 쿠키 읽기 전용
       // 서버에서 설정한 쿠키를 클라이언트에서 읽어와 상태 복원
       onRehydrateStorage: () => (state) => {
-        console.log('[쿠키 스토리지] 사용자 상태 복원:', state?.user?.email || '없음');
+        if (process.env.NODE_ENV) {
+          console.debug('[쿠키 스토리지] 사용자 상태 복원:', state?.user?.email || '없음');
+        }
       },
     },
   ),
@@ -138,14 +148,18 @@ const performTokenRefresh = async (): Promise<boolean> => {
 
   // 토큰 검증: 액세스 토큰이 아직 유효하면 갱신하지 않음
   if (user.token.accessToken && !isTokenExpired(user.token.accessToken) && !isTokenExpiringSoon(user.token.accessToken)) {
-    console.log('[토큰 갱신] 액세스 토큰이 아직 유효합니다.');
+    if (process.env.NODE_ENV) {
+      console.debug('[토큰 갱신] 액세스 토큰이 아직 유효합니다.');
+    }
     return true;
   }
 
   // 중복 갱신 방지 (1분 이내 갱신한 경우)
   const oneMinuteAgo = Date.now() - 60 * 1000;
   if (lastTokenRefresh && lastTokenRefresh > oneMinuteAgo) {
-    console.log('[토큰 갱신] 최근에 갱신했으므로 건너뜁니다.');
+    if (process.env.NODE_ENV) {
+      console.debug('[토큰 갱신] 최근에 갱신했으므로 건너뜁니다.');
+    }
     return true;
   }
 
@@ -171,7 +185,9 @@ const performTokenRefresh = async (): Promise<boolean> => {
         lastTokenRefresh: Date.now(),
       });
 
-      console.log('[토큰 갱신] 성공');
+      if (process.env.NODE_ENV) {
+        console.debug('[토큰 갱신] 성공');
+      }
       return true;
     } else {
       console.error('[토큰 갱신] 실패:', refreshResult.message);
@@ -186,14 +202,18 @@ const performTokenRefresh = async (): Promise<boolean> => {
       return false;
     }
   } catch (error) {
-    console.error('[토큰 갱신] 오류:', error);
+    if (process.env.NODE_ENV) {
+      console.debug('[토큰 갱신] 오류:', error);
+    }
 
     // 네트워크 오류 처리
     const networkError = error as NetworkError;
 
     if (networkError?.status === 401 || networkError?.status === 403) {
       // 인증 오류인 경우 로그아웃 처리
-      console.log('[토큰 갱신] 인증 오류로 인한 로그아웃 처리');
+      if (process.env.NODE_ENV) {
+        console.debug('[토큰 갱신] 인증 오류로 인한 로그아웃 처리');
+      }
       useUserStore.setState({
         user: null,
         isLoading: false,
@@ -201,7 +221,9 @@ const performTokenRefresh = async (): Promise<boolean> => {
       });
     } else {
       // 네트워크 오류인 경우 상태 유지, 로딩만 해제
-      console.log('[토큰 갱신] 네트워크 오류로 상태 유지');
+      if (process.env.NODE_ENV) {
+        console.debug('[토큰 갱신] 네트워크 오류로 상태 유지');
+      }
       useUserStore.setState({ isLoading: false });
     }
 
@@ -222,7 +244,9 @@ export const startTokenRefreshInterval = () => {
     tokenCheckInterval = null;
   }
 
-  console.log('[자동 토큰 갱신] 인터벌 시작');
+  if (process.env.NODE_ENV) {
+    console.debug('[자동 토큰 갱신] 인터벌 시작');
+  }
 
   // 5분마다 토큰 상태 확인
   tokenCheckInterval = setInterval(
@@ -232,9 +256,13 @@ export const startTokenRefreshInterval = () => {
       if (user?.token?.accessToken) {
         // 토큰이 만료되었거나 곧 만료될 예정이면 갱신
         if (isTokenExpired(user.token.accessToken) || isTokenExpiringSoon(user.token.accessToken)) {
-          console.log('[자동 토큰 갱신] 토큰 갱신 시작');
+          if (process.env.NODE_ENV) {
+            console.debug('[자동 토큰 갱신] 토큰 갱신 시작');
+          }
           refreshUserToken().catch((error) => {
-            console.error('[자동 토큰 갱신] 오류:', error);
+            if (process.env.NODE_ENV) {
+              console.debug('[자동 토큰 갱신] 오류:', error);
+            }
           });
         }
       }
@@ -245,7 +273,9 @@ export const startTokenRefreshInterval = () => {
 
 export const stopTokenRefreshInterval = () => {
   if (tokenCheckInterval) {
-    console.log('[자동 토큰 갱신] 인터벌 정지');
+    if (process.env.NODE_ENV) {
+      console.debug('[자동 토큰 갱신] 인터벌 정지');
+    }
     clearInterval(tokenCheckInterval);
     tokenCheckInterval = null;
   }

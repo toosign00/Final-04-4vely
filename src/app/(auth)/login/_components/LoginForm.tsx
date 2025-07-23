@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/Input';
 import { useLoginForm } from '@/hooks/useLoginForm';
 import { Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
+import SocialKakao from './SocialKakao';
 
 export default function LoginForm() {
   // useLoginForm hook
@@ -132,9 +133,7 @@ export default function LoginForm() {
           <Button asChild className='mb-4 bg-green-500 hover:bg-green-700' fullWidth variant='primary' size='lg'>
             <Link href='/'>네이버 로그인</Link>
           </Button>
-          <Button asChild className='mb-4 bg-yellow-300 hover:bg-amber-300' fullWidth variant='default' size='lg'>
-            <Link href='/'>카카오 로그인</Link>
-          </Button>
+          <SocialKakao />
         </form>
       </Form>
     </div>

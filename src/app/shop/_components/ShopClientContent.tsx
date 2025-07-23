@@ -9,10 +9,14 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { useBookmarkStore } from '@/store/bookmarkStore';
 import { CategoryFilter, Product, SortOption } from '@/types/product';
 import { Filter, Search } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import CategoryFilterSidebar from './CategoryFilter';
 import ProductCard from './ProductCard';
+
+// 상품 카테고리 타입 정의
+type ProductCategory = 'new' | 'plant' | 'supplies';
+type ProductWithCategories = Product & { originalCategories?: string[] };
 
 interface ShopClientContentProps {
   initialProducts: Product[];
@@ -20,25 +24,36 @@ interface ShopClientContentProps {
 
 export default function ShopClientContent({ initialProducts }: ShopClientContentProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   // Zustand 북마크 스토어
   const { isBookmarked } = useBookmarkStore();
 
+  // URL에서 초기 상태 복원
+  const getInitialCategory = (): ProductCategory => {
+    const category = searchParams.get('category') as ProductCategory;
+    return ['new', 'plant', 'supplies'].includes(category) ? category : 'plant';
+  };
+
+  const getInitialFilters = () => {
+    return {
+      size: searchParams.get('size')?.split(',').filter(Boolean) || [],
+      difficulty: searchParams.get('difficulty')?.split(',').filter(Boolean) || [],
+      light: searchParams.get('light')?.split(',').filter(Boolean) || [],
+      space: searchParams.get('space')?.split(',').filter(Boolean) || [],
+      season: searchParams.get('season')?.split(',').filter(Boolean) || [],
+      category: searchParams.get('suppliesCategory')?.split(',').filter(Boolean) || [],
+    };
+  };
+
   // 상태 관리
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('recommend');
-  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
+  const [sortBy, setSortBy] = useState(searchParams.get('sort') || 'recommend');
+  const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page') || '1'));
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-
-  const [filters, setFilters] = useState<CategoryFilter>({
-    size: [],
-    difficulty: [],
-    light: [],
-    space: [],
-    season: [],
-  });
-
+  const [selectedCategory, setSelectedCategory] = useState<ProductCategory>(getInitialCategory());
+  const [filters, setFilters] = useState<CategoryFilter & { category: string[] }>(getInitialFilters());
   const [itemsPerPage, setItemsPerPage] = useState(9);
 
   // 북마크 상태가 반영된 상품 목록
@@ -59,6 +74,54 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
     { value: 'price-high', label: '가격 높은 순' },
   ];
 
+  // 카테고리 옵션 상수
+  const CATEGORY_OPTIONS = [
+    { value: 'new' as ProductCategory, label: '신상품' },
+    { value: 'plant' as ProductCategory, label: '식물' },
+    { value: 'supplies' as ProductCategory, label: '원예 용품' },
+  ];
+
+  // URL 업데이트 함수
+  const updateURL = useCallback(() => {
+    const params = new URLSearchParams();
+
+    // 카테고리 (plant가 기본값이므로 다를 때만 추가)
+    if (selectedCategory !== 'plant') {
+      params.set('category', selectedCategory);
+    }
+
+    // 검색어
+    if (searchTerm.trim()) {
+      params.set('search', searchTerm.trim());
+    }
+
+    // 정렬 (recommend가 기본값이므로 다를 때만 추가)
+    if (sortBy !== 'recommend') {
+      params.set('sort', sortBy);
+    }
+
+    // 페이지 (1이 기본값이므로 다를 때만 추가)
+    if (currentPage > 1) {
+      params.set('page', currentPage.toString());
+    }
+
+    // 필터들 (값이 있을 때만 추가)
+    Object.entries(filters).forEach(([key, values]) => {
+      if (values.length > 0) {
+        if (key === 'category') {
+          // 원예용품 필터는 suppliesCategory로 저장
+          params.set('suppliesCategory', values.join(','));
+        } else {
+          params.set(key, values.join(','));
+        }
+      }
+    });
+
+    // URL 업데이트 (replace 사용으로 히스토리 스택 오염 방지)
+    const newURL = params.toString() ? `/shop?${params.toString()}` : '/shop';
+    router.replace(newURL, { scroll: false });
+  }, [selectedCategory, searchTerm, sortBy, currentPage, filters, router]);
+
   // 반응형 페이지당 아이템 수 설정
   useEffect(() => {
     const updateItemsPerPage = () => {
@@ -76,22 +139,105 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
     return () => window.removeEventListener('resize', updateItemsPerPage);
   }, []);
 
+  // 상태 변경 시 URL 업데이트
+  useEffect(() => {
+    updateURL();
+  }, [updateURL]);
+
   // 필터 상태 업데이트 핸들러
-  const handleFilterChange = (category: keyof CategoryFilter, value: string) => {
+  const handleFilterChange = (category: keyof (CategoryFilter & { category: string[] }), value: string) => {
     setFilters((prev) => ({
       ...prev,
       [category]: prev[category].includes(value) ? prev[category].filter((item) => item !== value) : [...prev[category], value],
     }));
+    setCurrentPage(1); // 필터 변경 시 첫 페이지로
   };
 
-  // 상품 클릭 핸들러
+  // 카테고리 변경 핸들러
+  const handleCategoryChange = (category: ProductCategory) => {
+    setSelectedCategory(category);
+    setCurrentPage(1); // 카테고리 변경시 첫 페이지로 이동
+
+    // 카테고리 변경 시 해당 카테고리와 관련없는 필터 초기화
+    if (category === 'new') {
+      setFilters({
+        size: [],
+        difficulty: [],
+        light: [],
+        space: [],
+        season: [],
+        category: [],
+      });
+    } else if (category === 'plant') {
+      // 식물 카테고리로 변경 시 원예용품 필터만 초기화
+      setFilters((prev) => ({
+        ...prev,
+        category: [],
+      }));
+    } else if (category === 'supplies') {
+      // 원예용품 카테고리로 변경 시 식물 필터만 초기화
+      setFilters((prev) => ({
+        size: [],
+        difficulty: [],
+        light: [],
+        space: [],
+        season: [],
+        category: prev.category || [],
+      }));
+    }
+  };
+
+  // 상품 클릭 핸들러 (현재 URL 상태 유지)
   const handleProductClick = (id: string) => {
-    router.push(`/shop/products/${id}`);
+    // 현재 URL 쿼리 파라미터 포함해서 상품 상세로 이동
+    const currentQuery = new URLSearchParams();
+
+    if (selectedCategory !== 'plant') {
+      currentQuery.set('category', selectedCategory);
+    }
+    if (searchTerm.trim()) {
+      currentQuery.set('search', searchTerm.trim());
+    }
+    if (sortBy !== 'recommend') {
+      currentQuery.set('sort', sortBy);
+    }
+    if (currentPage > 1) {
+      currentQuery.set('page', currentPage.toString());
+    }
+
+    Object.entries(filters).forEach(([key, values]) => {
+      if (values.length > 0) {
+        if (key === 'category') {
+          currentQuery.set('suppliesCategory', values.join(','));
+        } else {
+          currentQuery.set(key, values.join(','));
+        }
+      }
+    });
+
+    const queryString = currentQuery.toString();
+    const backUrl = queryString ? `/shop?${queryString}` : '/shop';
+
+    // 상품 상세 페이지로 이동하면서 뒤로가기 URL 정보 전달
+    router.push(`/shop/products/${id}?back=${encodeURIComponent(backUrl)}`);
   };
 
-  // 상품 필터링 및 정렬 로직 (북마크 상태 포함)
+  // 상품 필터링 및 정렬 로직
   useEffect(() => {
-    let result = [...productsWithBookmarks]; // 북마크 상태가 업데이트된 상품 목록 사용
+    let result = [...productsWithBookmarks];
+
+    // 카테고리 필터링
+    switch (selectedCategory) {
+      case 'new':
+        result = result.filter((product) => product.isNew);
+        break;
+      case 'plant':
+        result = result.filter((product) => product.category === '식물');
+        break;
+      case 'supplies':
+        result = result.filter((product) => product.category === '원예 용품');
+        break;
+    }
 
     // 검색어 필터링
     if (searchTerm) {
@@ -99,10 +245,26 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
       result = result.filter((product) => product.name.toLowerCase().includes(searchLower) || product.category.toLowerCase().includes(searchLower));
     }
 
-    // 카테고리 필터링
+    // 세부 카테고리 필터링
     Object.entries(filters).forEach(([key, values]) => {
       if (values.length > 0) {
-        result = result.filter((product) => values.includes(product[key as keyof Product] as string));
+        // 원예용품 카테고리에서 category 필터링
+        if (selectedCategory === 'supplies' && key === 'category') {
+          result = result.filter((product) => {
+            const productWithCategories = product as ProductWithCategories;
+            const originalCategories = productWithCategories.originalCategories || [];
+            return values.some((value: string) => originalCategories.includes(value));
+          });
+        }
+        // 식물 카테고리에서만 식물 관련 필터 적용
+        else if (selectedCategory === 'plant' && ['size', 'difficulty', 'light', 'space', 'season'].includes(key)) {
+          result = result.filter((product) => {
+            const productWithCategories = product as ProductWithCategories;
+            const originalCategories = productWithCategories.originalCategories || [];
+            // 선택된 필터 값 중 하나라도 상품의 원본 카테고리에 포함되면 true
+            return values.some((value: string) => originalCategories.includes(value));
+          });
+        }
       }
     });
 
@@ -131,8 +293,13 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
     }
 
     setFilteredProducts(result);
-    setCurrentPage(1);
-  }, [productsWithBookmarks, searchTerm, filters, sortBy]);
+
+    // 페이지 수 변경으로 인한 현재 페이지 조정
+    const newTotalPages = Math.ceil(result.length / itemsPerPage);
+    if (currentPage > newTotalPages && newTotalPages > 0) {
+      setCurrentPage(1);
+    }
+  }, [productsWithBookmarks, searchTerm, filters, sortBy, selectedCategory, itemsPerPage, currentPage]);
 
   // 페이지네이션 계산
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
@@ -166,13 +333,22 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
   // 필터 초기화 핸들러
   const handleResetFilters = () => {
     setSearchTerm('');
+    setSelectedCategory('plant');
     setFilters({
       size: [],
       difficulty: [],
       light: [],
       space: [],
       season: [],
+      category: [],
     });
+    setCurrentPage(1);
+  };
+
+  // 현재 선택된 카테고리 라벨 가져오기
+  const getCurrentCategoryLabel = () => {
+    const category = CATEGORY_OPTIONS.find((option) => option.value === selectedCategory);
+    return category ? category.label : '식물';
   };
 
   return (
@@ -184,6 +360,7 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
           <h2 className='text-secondary t-h2 mt-2 font-light'>Our Plants</h2>
         </div>
 
+        {/* 모바일 필터 버튼 */}
         <div className='mb-3 flex items-center gap-2 pt-4'>
           <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
             <SheetTrigger asChild>
@@ -197,7 +374,7 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
                 <SheetTitle className='t-h1 mb-4 text-left'>필터</SheetTitle>
               </SheetHeader>
               <div className='flex-1 overflow-y-auto'>
-                <CategoryFilterSidebar filters={filters} onFilterChange={handleFilterChange} isMobile={true} />
+                <CategoryFilterSidebar filters={filters} onFilterChange={handleFilterChange} isMobile={true} selectedCategory={selectedCategory} onCategoryChange={handleCategoryChange} />
               </div>
             </SheetContent>
           </Sheet>
@@ -236,12 +413,7 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
           ) : (
             <div className='flex flex-wrap justify-center gap-6 sm:gap-8 md:gap-20'>
               {paginatedProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product} // 이미 북마크 상태가 반영된 상품 전달
-                  onClick={handleProductClick}
-                  isMobile={true}
-                />
+                <ProductCard key={product.id} product={product} onClick={handleProductClick} isMobile={true} />
               ))}
             </div>
           )}
@@ -269,12 +441,15 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
             <div className='text-secondary t-small font-medium'>| Products</div>
             <h2 className='text-secondary t-h2 mt-2 font-light'>Our Plants</h2>
           </div>
-          <CategoryFilterSidebar filters={filters} onFilterChange={handleFilterChange} />
+          <CategoryFilterSidebar filters={filters} onFilterChange={handleFilterChange} selectedCategory={selectedCategory} onCategoryChange={handleCategoryChange} />
         </div>
 
         <div className='flex-1'>
           <div className='mb-8 flex items-center justify-between px-16'>
-            <span className='text-surface0 t-h4'>{filteredProducts.length} products</span>
+            <div className='flex items-center gap-4'>
+              <span className='text-surface0 t-h4'>{getCurrentCategoryLabel()}</span>
+              <span className='text-surface0 t-body'>({filteredProducts.length} products)</span>
+            </div>
             <div className='flex items-center space-x-4'>
               <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger className='w-[180px]'>
@@ -309,11 +484,7 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
             ) : (
               <div className='flex flex-wrap gap-30'>
                 {paginatedProducts.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product} // 이미 북마크 상태가 반영된 상품 전달
-                    onClick={handleProductClick}
-                  />
+                  <ProductCard key={product.id} product={product} onClick={handleProductClick} />
                 ))}
               </div>
             )}

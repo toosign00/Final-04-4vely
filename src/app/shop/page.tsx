@@ -1,6 +1,6 @@
 // src/app/shop/page.tsx (서버 컴포넌트)
-import { getProducts, getImageUrl } from '@/lib/api/market';
-import { ProductApiData, Product } from '@/types/product';
+import { getImageUrl, getProducts } from '@/lib/api/market';
+import { Product, ProductApiData } from '@/types/product';
 import ShopClientContent from './_components/ShopClientContent';
 
 // 카테고리 매핑 헬퍼 함수
@@ -54,6 +54,7 @@ async function fetchAllProducts(): Promise<Product[]> {
         isNew: product.extra?.isNew || false,
         isBookmarked: false,
         recommend: product.extra?.isBest || false,
+        originalCategories: categories,
       };
     });
 

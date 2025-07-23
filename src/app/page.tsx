@@ -1,9 +1,9 @@
 import hero from '@/assets/images/hero.webp';
-import rain from '@/assets/images/rain.webp';
 import CommunityPop from '@/components/_home/CommunityPop';
 import { CurationCarousel } from '@/components/_home/CurationCarousel';
 import NewProductSection from '@/components/_home/NewProductSection';
 import ReviewCarousel from '@/components/_home/ReviewCarousel';
+import WeatherWidget from '@/components/_home/WeatherWidget';
 import { Button } from '@/components/ui/Button';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -189,24 +189,8 @@ export default function Home() {
       </section> */}
 
       {/* 날씨 정보 - API 연결 필요 */}
-      <section className='relative mb-4 flex min-h-[9rem] flex-col justify-between overflow-hidden border px-5 pt-5 pb-2 md:h-[11.125rem] lg:h-[13rem]' aria-label='현재 날씨 정보'>
-        {/* 배경 이미지 - 임시 */}
-        <div className='absolute inset-0 z-[-1]'>
-          <Image src={rain} alt='비 오는 배경' fill className='object-cover opacity-80' priority />
-        </div>
-        <div className='absolute inset-0 z-[-1] bg-black/30' />
-        {/* 콘텐츠 영역 */}
-        <div className='flex items-start justify-between'>
-          <div className='my-4 max-w-[70%] leading-relaxed font-semibold text-white'>
-            <p>오늘은 습도가 높은 날이에요.</p>
-            <p>곰팡이가 생기지 않도록 습도 관리에 신경 써 주세요.</p>
-          </div>
-          <div className='text-secondary bg-red-300 text-base font-semibold md:text-lg lg:text-3xl'>
-            <p>기온: 27°C</p>
-            <p>습도: 78%</p>
-          </div>
-        </div>
-
+      <section className='relative mb-4 flex min-h-[9rem] flex-col justify-between border px-5 pt-5 pb-2 md:h-[11.125rem] lg:h-[13rem]' aria-label='현재 날씨 정보'>
+        <WeatherWidget />
         {/* 하단 버튼 */}
         <div className='self-end'>
           <Button asChild variant='secondary' size='sm' className='md:h-9 md:px-4 md:py-2 md:text-base lg:h-10 lg:px-6 lg:text-xl'>

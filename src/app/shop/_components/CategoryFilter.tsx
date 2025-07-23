@@ -58,7 +58,7 @@ export default function CategoryFilterSidebar({ filters, onFilterChange, isMobil
     ],
   };
 
-  // 원예용품 필터 옵션 정의 (임시로 category 사용)
+  // 원예용품 필터 옵션 정의
   const SUPPLIES_FILTER_OPTIONS = {
     category: [
       { value: '화분', label: '화분' },

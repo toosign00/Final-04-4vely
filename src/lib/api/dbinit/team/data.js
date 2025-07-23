@@ -3449,7 +3449,7 @@ export const initData = async (clientId, nextSeq) => {
       {
         _id: await nextSeq('product'), // 상품 고유 ID
         seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-        name: 'Sowvital 하우스 플랜트 도구 세트', // 상품명
+        name: 'Sowvital 도구 세트', // 상품명
         price: 18000, // 상품 가격
         shippingFees: 3000, // 배송비
         show: true, // 상품 표시 여부

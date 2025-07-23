@@ -105,11 +105,10 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
       params.set('page', currentPage.toString());
     }
 
-    // 필터들 (값이 있을 때만 추가)
+    // 필터들
     Object.entries(filters).forEach(([key, values]) => {
       if (values.length > 0) {
         if (key === 'category') {
-          // 원예용품 필터는 suppliesCategory로 저장
           params.set('suppliesCategory', values.join(','));
         } else {
           params.set(key, values.join(','));
@@ -117,7 +116,7 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
       }
     });
 
-    // URL 업데이트 (replace 사용으로 히스토리 스택 오염 방지)
+    // URL 업데이트 (히스토리 오염 방지)
     const newURL = params.toString() ? `/shop?${params.toString()}` : '/shop';
     router.replace(newURL, { scroll: false });
   }, [selectedCategory, searchTerm, sortBy, currentPage, filters, router]);

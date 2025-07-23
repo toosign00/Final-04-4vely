@@ -2,11 +2,12 @@
 
 /* API 응답 타입 (백엔드에서 오는 데이터) */
 
-// API 응답 공통 구조
-export interface ApiResponse<T> {
-  ok: number;
-  item?: T;
-  items?: T[];
+// API 응답 공통 구조 (강사님 스타일)
+export interface ApiRes<T> {
+  ok: number; // 1: 성공, 0: 실패
+  message?: string; // 에러 메시지 (실패 시 필수)
+  item?: T; // 단일 아이템
+  items?: T[]; // 배열 아이템
   pagination?: {
     page: number;
     limit: number;
@@ -14,6 +15,12 @@ export interface ApiResponse<T> {
     totalPages: number;
   };
 }
+
+// API Promise 타입
+export type ApiResPromise<T> = Promise<ApiRes<T>>;
+
+// 기존 호환성을 위한 별칭
+export type ApiResponse<T> = ApiRes<T>;
 
 // 상품 API 데이터 (백엔드에서 오는 원본 구조)
 export interface ProductApiData {
@@ -60,23 +67,38 @@ export interface ReviewApiData {
 
 /* UI에서 사용하는 타입 (변환된 데이터) */
 
+// 기본 상품 카테고리 타입
+export type ProductMainCategory = 'plant' | 'supplies';
+
 // UI에서 사용하는 상품 타입
 export interface Product {
   id: string;
   name: string;
   image: string;
   price: number;
-  category: string;
-  // 카테고리에서 추출된 속성들
-  size: '소형' | '중형' | '대형' | string;
-  difficulty: '쉬움' | '보통' | '어려움' | string;
-  light: '음지' | '간접광' | '직사광' | string;
-  space: '실외' | '거실' | '침실' | '욕실' | '주방' | '사무실' | string;
-  season: '봄' | '여름' | '가을' | '겨울' | string;
-  // UI 전용 속성들
+  mainCategory: ProductMainCategory; // 주 카테고리 (식물/원예용품)
+
+  // 공통 속성
   isNew: boolean;
   isBookmarked: boolean;
   recommend: boolean;
+
+  // 원본 카테고리 배열 (필터링용)
+  originalCategories: string[];
+
+  // 식물 전용 속성 (식물일 때만 유효)
+  plantAttributes?: {
+    size: '소형' | '중형' | '대형';
+    difficulty: '쉬움' | '보통' | '어려움';
+    light: '음지' | '간접광' | '직사광';
+    space: '실외' | '거실' | '침실' | '욕실' | '주방' | '사무실';
+    season: '봄' | '여름' | '가을' | '겨울';
+  };
+
+  // 원예용품 전용 속성 (원예용품일 때만 유효)
+  suppliesAttributes?: {
+    category: '화분' | '도구' | '조명';
+  };
 }
 
 // 상품 상세 정보 (Product 확장)
@@ -105,15 +127,32 @@ export interface Review {
   content: string;
 }
 
-/* 필터 및 정렬 타입 */
+/* 필터 타입 */
 
-// 카테고리 필터
-export interface CategoryFilter {
+// 식물 필터
+export interface PlantFilter {
   size: string[];
   difficulty: string[];
   light: string[];
   space: string[];
   season: string[];
+}
+
+// 원예용품 필터
+export interface SuppliesFilter {
+  category: string[];
+}
+
+// 통합 필터 (카테고리별로 조건부 사용)
+export interface CategoryFilter {
+  // 식물 필터
+  size: string[];
+  difficulty: string[];
+  light: string[];
+  space: string[];
+  season: string[];
+  // 원예용품 필터
+  category: string[];
 }
 
 // 정렬 옵션

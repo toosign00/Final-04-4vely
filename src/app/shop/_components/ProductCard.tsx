@@ -1,4 +1,4 @@
-// src/app/shop/components/ProductCard.tsx
+// src/app/shop/_components/ProductCard.tsx
 'use client';
 
 import { Card } from '@/components/ui/Card';
@@ -17,6 +17,7 @@ interface ProductCardProps {
  * - 반응형 디자인 (모바일/데스크톱)
  * - 상품 이미지, 제목, 가격 표시
  * - NEW 태그 및 북마크 기능
+ * - 새로운 타입 시스템 적용
  */
 export default function ProductCard({ product, onClick, isMobile = false }: ProductCardProps) {
   // 모바일 레이아웃
@@ -60,7 +61,7 @@ export default function ProductCard({ product, onClick, isMobile = false }: Prod
           </div>
 
           {/* NEW 태그 */}
-          {product.isNew && <div className='bg-secondary absolute top-0 left-0 rounded-ee-xl px-3 py-1.5 text-xs font-semibold text-white'>NEW</div>}
+          {product.isNew && <div className='bg-secondary absolute top-0 left-0 z-1 rounded-ss-2xl rounded-ee-xl px-3 py-1.5 text-xs font-semibold text-white'>NEW</div>}
 
           {/* 북마크 버튼 */}
           <div className='absolute top-3 right-3'>

@@ -5,8 +5,8 @@ import BookmarkButton from '@/app/shop/_components/BookmarkButton';
 import { Button } from '@/components/ui/Button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/Dialog';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/Pagination';
-import { getProductReviews } from '@/lib/api/market';
-import { Product, ProductDetail, Review, ReviewApiData } from '@/types/product';
+import { getProductReviewsTransformed } from '@/lib/functions/market';
+import { Product, ProductDetail, Review } from '@/types/product';
 import { Minus, Plus, ShoppingCart } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -62,26 +62,14 @@ export default function ProductDetailClient({ product, recommendProducts, initia
     const fetchReviews = async () => {
       try {
         setReviewsLoading(true);
-        const reviewsResponse = await getProductReviews(parseInt(productId), {
+
+        const { reviews: transformedReviews, pagination } = await getProductReviewsTransformed(parseInt(productId), {
           page: currentReviewPage,
           limit: 2,
         });
 
-        const reviewsData = (reviewsResponse.item || reviewsResponse.items || []) as ReviewApiData[];
-        const transformedReviews: Review[] = reviewsData.map((review: ReviewApiData) => ({
-          id: review._id.toString(),
-          userName: review.user?.name || `사용자${review.user_id}`,
-          userAvatar: review.user?.image || '/images/default-avatar.jpg',
-          date: new Date(review.createdAt).toLocaleDateString('ko-KR'),
-          rating: review.rating || 5,
-          content: review.content || '리뷰 내용이 없습니다.',
-        }));
-
         setReviews(transformedReviews);
-        setReviewsPagination({
-          total: reviewsResponse.pagination?.total || transformedReviews.length,
-          totalPages: reviewsResponse.pagination?.totalPages || Math.ceil(transformedReviews.length / 2),
-        });
+        setReviewsPagination(pagination);
       } catch (err) {
         console.warn('리뷰 로딩 실패:', err);
         setReviews([]);
@@ -139,6 +127,16 @@ export default function ProductDetailClient({ product, recommendProducts, initia
   // 계산된 값들
   const totalPrice = product.price * quantity;
   const totalReviewPages = reviewsPagination.totalPages;
+
+  // 카테고리 표시 이름 가져오기
+  const getCategoryDisplayName = () => {
+    if (product.mainCategory === 'plant') {
+      return '식물';
+    } else if (product.mainCategory === 'supplies') {
+      return '원예 용품';
+    }
+    return '';
+  };
 
   // 리뷰 페이지네이션 렌더링
   const renderReviewPagination = () => (
@@ -218,34 +216,41 @@ export default function ProductDetailClient({ product, recommendProducts, initia
 
         {/* 상품 정보 섹션 */}
         <div className='mx-4 mt-6 w-auto sm:mx-6 sm:mt-8 md:mx-8'>
-          {/* 상품명 */}
-          <h1 className='text-secondary t-h1 mb-4'>{product.name}</h1>
+          {/* 카테고리 및 상품명 */}
+          <div className='mb-4'>
+            <p className='mb-2 text-sm text-gray-500'>{getCategoryDisplayName()}</p>
+            <h1 className='text-secondary t-h1 mb-4'>{product.name}</h1>
+          </div>
 
           {/* 태그 목록 */}
           <div className='mb-12 flex flex-wrap gap-2 sm:mb-8 sm:gap-3'>
             {product.tags?.map((tag) => (
               <Badge key={tag} variant='default' className='t-desc md:t-body border-1 border-gray-300 px-3 py-1 sm:px-4 sm:py-1.5'>
-                {(tag)}
+                {tag}
               </Badge>
             ))}
           </div>
 
-          {/* 화분 색상 선택 */}
-          <h3 className='text-secondary t-h3 mb-3 sm:mb-4'>화분 색상</h3>
-          <div className='mb-12 flex gap-3 sm:gap-4'>
-            {COLOR_OPTIONS.map((option) => (
-              <button
-                key={option.value}
-                type='button'
-                aria-label={option.label}
-                onClick={() => setSelectedColor(option.value)}
-                className={`h-8 w-8 rounded-full border-2 transition sm:h-9 sm:w-9 md:h-10 md:w-10 ${
-                  selectedColor === option.value ? 'border-secondary scale-110 border-3' : 'border-gray-300'
-                } ${option.value === 'white' ? 'ring-1 ring-gray-200' : ''}`}
-                style={{ backgroundColor: option.color }}
-              />
-            ))}
-          </div>
+          {/* 화분 색상 선택 (원예용품이나 화분이 있는 식물만) */}
+          {(product.mainCategory === 'supplies' || product.mainCategory === 'plant') && (
+            <>
+              <h3 className='text-secondary t-h3 mb-3 sm:mb-4'>화분 색상</h3>
+              <div className='mb-12 flex gap-3 sm:gap-4'>
+                {COLOR_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    type='button'
+                    aria-label={option.label}
+                    onClick={() => setSelectedColor(option.value)}
+                    className={`h-8 w-8 rounded-full border-2 transition sm:h-9 sm:w-9 md:h-10 md:w-10 ${
+                      selectedColor === option.value ? 'border-secondary scale-110 border-3' : 'border-gray-300'
+                    } ${option.value === 'white' ? 'ring-1 ring-gray-200' : ''}`}
+                    style={{ backgroundColor: option.color }}
+                  />
+                ))}
+              </div>
+            </>
+          )}
 
           {/* 수량 선택 및 가격 */}
           <div className='mb-8 flex items-center justify-between sm:mb-10'>
@@ -367,7 +372,7 @@ export default function ProductDetailClient({ product, recommendProducts, initia
               {/* NEW 태그 */}
               {product.isNew && <div className='bg-secondary t-h3 absolute top-0 left-0 z-1 rounded-ss-2xl rounded-ee-2xl px-6 py-3 text-white'>NEW</div>}
 
-              {/* 북마크 버튼 (Zustand 사용) */}
+              {/* 북마크 버튼 */}
               <div className='absolute top-4 right-4'>
                 <BookmarkButton productId={product.id} initialBookmarked={product.isBookmarked} size={48} variant='default' />
               </div>
@@ -375,31 +380,38 @@ export default function ProductDetailClient({ product, recommendProducts, initia
 
             {/* 상품 정보 */}
             <div className='w-full min-w-[280px] flex-1'>
+              {/* 카테고리 */}
+              <p className='mb-2 text-lg text-gray-500'>{getCategoryDisplayName()}</p>
+
               <h1 className='text-secondary mb-6 text-3xl font-bold xl:text-4xl 2xl:text-5xl'>{product.name}</h1>
 
               {/* 태그 */}
               <div className='mb-8 flex flex-wrap gap-3 xl:mb-10'>
                 {product.tags?.map((tag) => (
                   <Badge key={tag} variant='default' className='border-1 border-gray-300 px-3 py-1.5 text-sm xl:px-4 xl:py-2 xl:text-base'>
-                    {(tag)}
+                    {tag}
                   </Badge>
                 ))}
               </div>
 
-              {/* 화분 색상 */}
-              <h3 className='text-secondary t-h2 mb-3 xl:mb-4 xl:text-xl'>화분 색상</h3>
-              <div className='mb-8 flex gap-3 xl:mb-10 xl:gap-4'>
-                {COLOR_OPTIONS.map((option) => (
-                  <button
-                    key={option.value}
-                    type='button'
-                    aria-label={option.label}
-                    onClick={() => setSelectedColor(option.value)}
-                    className={`h-10 w-10 rounded-full border-2 transition xl:h-12 xl:w-12 ${selectedColor === option.value ? 'border-secondary scale-110 border-4' : 'border-gray-300'} ${option.value === 'white' ? 'ring-1 ring-gray-200' : ''}`}
-                    style={{ backgroundColor: option.color }}
-                  />
-                ))}
-              </div>
+              {/* 화분 색상 (원예용품이나 화분이 있는 식물만) */}
+              {(product.mainCategory === 'supplies' || product.mainCategory === 'plant') && (
+                <>
+                  <h3 className='text-secondary t-h2 mb-3 xl:mb-4 xl:text-xl'>화분 색상</h3>
+                  <div className='mb-8 flex gap-3 xl:mb-10 xl:gap-4'>
+                    {COLOR_OPTIONS.map((option) => (
+                      <button
+                        key={option.value}
+                        type='button'
+                        aria-label={option.label}
+                        onClick={() => setSelectedColor(option.value)}
+                        className={`h-10 w-10 rounded-full border-2 transition xl:h-12 xl:w-12 ${selectedColor === option.value ? 'border-secondary scale-110 border-4' : 'border-gray-300'} ${option.value === 'white' ? 'ring-1 ring-gray-200' : ''}`}
+                        style={{ backgroundColor: option.color }}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
 
               {/* 수량 선택 */}
               <div className='mb-10 flex items-center justify-between xl:mb-12'>

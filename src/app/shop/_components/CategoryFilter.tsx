@@ -1,4 +1,4 @@
-// src/app/shop/components/CategoryFilter.tsx
+// src/app/shop/_components/CategoryFilter.tsx
 'use client';
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/Accordion';
@@ -6,15 +6,15 @@ import { Button } from '@/components/ui/Button';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { CategoryFilter } from '@/types/product';
 
-// 상품 카테고리 타입 정의 (ShopClientContent와 동일)
+// 상품 카테고리 타입 정의
 type ProductCategory = 'new' | 'plant' | 'supplies';
 
 interface CategoryFilterProps {
-  filters: CategoryFilter & { category: string[] };
-  onFilterChange: (category: keyof (CategoryFilter & { category: string[] }), value: string) => void;
+  filters: CategoryFilter;
+  onFilterChange: (category: keyof CategoryFilter, value: string) => void;
   isMobile?: boolean;
-  selectedCategory?: ProductCategory; // 현재 선택된 카테고리
-  onCategoryChange?: (category: ProductCategory) => void; // 카테고리 변경 함수
+  selectedCategory?: ProductCategory;
+  onCategoryChange?: (category: ProductCategory) => void;
 }
 
 /**
@@ -148,8 +148,8 @@ export default function CategoryFilterSidebar({ filters, onFilterChange, isMobil
                       <div key={option.value} className='flex items-center space-x-2'>
                         <Checkbox
                           id={`mobile-${key}-${option.value}`}
-                          checked={filters[key as keyof (CategoryFilter & { category: string[] })]?.includes(option.value) || false}
-                          onCheckedChange={() => onFilterChange(key as keyof (CategoryFilter & { category: string[] }), option.value)}
+                          checked={filters[key as keyof CategoryFilter]?.includes(option.value) || false}
+                          onCheckedChange={() => onFilterChange(key as keyof CategoryFilter, option.value)}
                           className='data-[state=checked]:border-primary data-[state=checked]:bg-primary border-gray-300'
                         />
                         <label htmlFor={`mobile-${key}-${option.value}`} className='text-secondary t-body cursor-pointer'>
@@ -196,8 +196,8 @@ export default function CategoryFilterSidebar({ filters, onFilterChange, isMobil
                       <div key={option.value} className='flex items-center space-x-2'>
                         <Checkbox
                           id={`${key}-${option.value}`}
-                          checked={filters[key as keyof (CategoryFilter & { category: string[] })]?.includes(option.value) || false}
-                          onCheckedChange={() => onFilterChange(key as keyof (CategoryFilter & { category: string[] }), option.value)}
+                          checked={filters[key as keyof CategoryFilter]?.includes(option.value) || false}
+                          onCheckedChange={() => onFilterChange(key as keyof CategoryFilter, option.value)}
                           className='data-[state=checked]:border-primary data-[state=checked]:bg-primary border-gray-300'
                         />
                         <label htmlFor={`${key}-${option.value}`} className='text-secondary t-desc cursor-pointer'>

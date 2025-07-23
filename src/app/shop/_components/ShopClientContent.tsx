@@ -16,7 +16,6 @@ import ProductCard from './ProductCard';
 
 // 상품 카테고리 타입 정의
 type ProductCategory = 'new' | 'plant' | 'supplies';
-type ProductWithCategories = Product & { originalCategories?: string[] };
 
 interface ShopClientContentProps {
   initialProducts: Product[];
@@ -35,7 +34,7 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
     return ['new', 'plant', 'supplies'].includes(category) ? category : 'plant';
   };
 
-  const getInitialFilters = () => {
+  const getInitialFilters = (): CategoryFilter => {
     return {
       size: searchParams.get('size')?.split(',').filter(Boolean) || [],
       difficulty: searchParams.get('difficulty')?.split(',').filter(Boolean) || [],
@@ -53,7 +52,7 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
   const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page') || '1'));
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<ProductCategory>(getInitialCategory());
-  const [filters, setFilters] = useState<CategoryFilter & { category: string[] }>(getInitialFilters());
+  const [filters, setFilters] = useState<CategoryFilter>(getInitialFilters());
   const [itemsPerPage, setItemsPerPage] = useState(9);
 
   // 북마크 상태가 반영된 상품 목록
@@ -72,13 +71,6 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
     { value: 'old', label: '오래된순' },
     { value: 'price-low', label: '가격 낮은 순' },
     { value: 'price-high', label: '가격 높은 순' },
-  ];
-
-  // 카테고리 옵션 상수
-  const CATEGORY_OPTIONS = [
-    { value: 'new' as ProductCategory, label: '신상품' },
-    { value: 'plant' as ProductCategory, label: '식물' },
-    { value: 'supplies' as ProductCategory, label: '원예 용품' },
   ];
 
   // URL 업데이트 함수
@@ -144,7 +136,7 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
   }, [updateURL]);
 
   // 필터 상태 업데이트 핸들러
-  const handleFilterChange = (category: keyof (CategoryFilter & { category: string[] }), value: string) => {
+  const handleFilterChange = (category: keyof CategoryFilter, value: string) => {
     setFilters((prev) => ({
       ...prev,
       [category]: prev[category].includes(value) ? prev[category].filter((item) => item !== value) : [...prev[category], value],
@@ -159,6 +151,7 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
 
     // 카테고리 변경 시 해당 카테고리와 관련없는 필터 초기화
     if (category === 'new') {
+      // 신상품: 모든 필터 초기화
       setFilters({
         size: [],
         difficulty: [],
@@ -168,13 +161,13 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
         category: [],
       });
     } else if (category === 'plant') {
-      // 식물 카테고리로 변경 시 원예용품 필터만 초기화
+      // 식물: 원예용품 필터만 초기화
       setFilters((prev) => ({
         ...prev,
         category: [],
       }));
     } else if (category === 'supplies') {
-      // 원예용품 카테고리로 변경 시 식물 필터만 초기화
+      // 원예용품: 식물 필터만 초기화
       setFilters((prev) => ({
         size: [],
         difficulty: [],
@@ -225,49 +218,45 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
   useEffect(() => {
     let result = [...productsWithBookmarks];
 
-    // 카테고리 필터링
+    // 1단계: 메인 카테고리로 필터링
     switch (selectedCategory) {
       case 'new':
         result = result.filter((product) => product.isNew);
         break;
       case 'plant':
-        result = result.filter((product) => product.category === '식물');
+        result = result.filter((product) => product.mainCategory === 'plant');
         break;
       case 'supplies':
-        result = result.filter((product) => product.category === '원예 용품');
+        result = result.filter((product) => product.mainCategory === 'supplies');
         break;
     }
 
-    // 검색어 필터링
+    // 2단계: 검색어 필터링
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
-      result = result.filter((product) => product.name.toLowerCase().includes(searchLower) || product.category.toLowerCase().includes(searchLower));
+      result = result.filter((product) => product.name.toLowerCase().includes(searchLower) || product.originalCategories.some((cat) => cat.toLowerCase().includes(searchLower)));
     }
 
-    // 세부 카테고리 필터링
-    Object.entries(filters).forEach(([key, values]) => {
-      if (values.length > 0) {
-        // 원예용품 카테고리에서 category 필터링
-        if (selectedCategory === 'supplies' && key === 'category') {
+    // 3단계: 세부 카테고리 필터링
+    Object.entries(filters).forEach(([filterKey, filterValues]) => {
+      if (filterValues.length > 0) {
+        // 식물 카테고리에서 식물 관련 필터 적용
+        if (selectedCategory === 'plant' && ['size', 'difficulty', 'light', 'space', 'season'].includes(filterKey)) {
           result = result.filter((product) => {
-            const productWithCategories = product as ProductWithCategories;
-            const originalCategories = productWithCategories.originalCategories || [];
-            return values.some((value: string) => originalCategories.includes(value));
+            // 선택된 필터 값 중 하나라도 상품의 원본 카테고리에 포함되면 true
+            return filterValues.some((value: string) => product.originalCategories.includes(value));
           });
         }
-        // 식물 카테고리에서만 식물 관련 필터 적용
-        else if (selectedCategory === 'plant' && ['size', 'difficulty', 'light', 'space', 'season'].includes(key)) {
+        // 원예용품 카테고리에서 category 필터 적용
+        else if (selectedCategory === 'supplies' && filterKey === 'category') {
           result = result.filter((product) => {
-            const productWithCategories = product as ProductWithCategories;
-            const originalCategories = productWithCategories.originalCategories || [];
-            // 선택된 필터 값 중 하나라도 상품의 원본 카테고리에 포함되면 true
-            return values.some((value: string) => originalCategories.includes(value));
+            return filterValues.some((value: string) => product.originalCategories.includes(value));
           });
         }
       }
     });
 
-    // 정렬 적용
+    // 4단계: 정렬 적용
     switch (sortBy) {
       case 'recommend':
         result.sort((a, b) => (b.recommend ? 1 : 0) - (a.recommend ? 1 : 0));
@@ -345,10 +334,7 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
   };
 
   // 현재 선택된 카테고리 라벨 가져오기
-  const getCurrentCategoryLabel = () => {
-    const category = CATEGORY_OPTIONS.find((option) => option.value === selectedCategory);
-    return category ? category.label : '식물';
-  };
+
 
   return (
     <>
@@ -446,8 +432,7 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
         <div className='flex-1'>
           <div className='mb-8 flex items-center justify-between px-16'>
             <div className='flex items-center gap-4'>
-              <span className='text-surface0 t-h4'>{getCurrentCategoryLabel()}</span>
-              <span className='text-surface0 t-body'>({filteredProducts.length} products)</span>
+              <span className='text-surface0 t-body'>{filteredProducts.length} products</span>
             </div>
             <div className='flex items-center space-x-4'>
               <Select value={sortBy} onValueChange={setSortBy}>

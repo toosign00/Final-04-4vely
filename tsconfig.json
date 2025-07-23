@@ -28,7 +28,8 @@
       "@/styles/*": ["./src/styles/*"],
       "@/constants/*": ["./src/constants/*"],
       "@/assets/*": ["./src/assets/*"],
-      "@/store/*": ["./src/store/*"]
+      "@/store/*": ["./src/store/*"],
+      "@/services/*": ["./src/services/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/example/avatar"],

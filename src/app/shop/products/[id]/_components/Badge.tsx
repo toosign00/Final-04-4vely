@@ -1,6 +1,4 @@
-// src/app/shop/products/[id]/_components/Badge.tsx
-'use client';
-
+// src/app/shop/products/[id]/_components/Badge.tsx (서버 컴포넌트)
 import React from 'react';
 
 interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -9,10 +7,11 @@ interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 /**
- * 뱃지 컴포넌트
+ * 뱃지 컴포넌트 (서버 컴포넌트)
  * - 상품 태그 표시용
- * - 다양한 variant 스타일 지원 / 하지만 안 쓰일 가능성 높음..?
+ * - 다양한 variant 스타일 지원
  * - 디자인 시스템 색상 사용
+ * - 상호작용 없는 순수 UI 컴포넌트
  */
 export function Badge({ variant = 'default', className = '', children, ...props }: BadgeProps) {
   const baseStyles = 'inline-flex items-center rounded-full text-xs font-medium px-3 py-1';

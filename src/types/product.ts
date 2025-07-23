@@ -76,17 +76,17 @@ export interface Product {
   name: string;
   image: string;
   price: number;
-  mainCategory: ProductMainCategory; // 주 카테고리 (식물/원예용품)
+  mainCategory: ProductMainCategory;
 
   // 공통 속성
   isNew: boolean;
   isBookmarked: boolean;
   recommend: boolean;
 
-  // 원본 카테고리 배열 (필터링용)
+  // 원본 카테고리 배열 (필터)
   originalCategories: string[];
 
-  // 식물 전용 속성 (식물일 때만 유효)
+  // 식물 전용 속성
   plantAttributes?: {
     size: '소형' | '중형' | '대형';
     difficulty: '쉬움' | '보통' | '어려움';
@@ -95,7 +95,7 @@ export interface Product {
     season: '봄' | '여름' | '가을' | '겨울';
   };
 
-  // 원예용품 전용 속성 (원예용품일 때만 유효)
+  // 원예용품 전용 속성
   suppliesAttributes?: {
     category: '화분' | '도구' | '조명';
   };
@@ -143,7 +143,7 @@ export interface SuppliesFilter {
   category: string[];
 }
 
-// 통합 필터 (카테고리별로 조건부 사용)
+// 통합 필터 (카테고리 별로 조건부 사용)
 export interface CategoryFilter {
   // 식물 필터
   size: string[];
@@ -161,7 +161,7 @@ export interface SortOption {
   label: string;
 }
 
-/* 장바구니 및 주문 타입 */
+/* 장바구니 및 주문 타입 (추후에 안 쓰면 삭제) */
 
 // 장바구니 아이템
 export interface CartItem {
@@ -191,8 +191,6 @@ export interface Order {
   };
   paymentMethod: string;
 }
-
-/* 기타 타입 */
 
 // 북마크
 export interface Bookmark {

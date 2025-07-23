@@ -1,8 +1,8 @@
 // src/lib/functions/market.ts
 import { ApiResPromise, Product, ProductApiData, ProductDetail, ProductMainCategory, Review, ReviewApiData } from '@/types/product';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_SERVER || 'https://fesp-api.koyeb.app/market';
-const CLIENT_ID = process.env.NEXT_PUBLIC_CLIENT_ID || 'febc13-final04-emjf';
+const API_BASE_URL = process.env.API_SERVER || 'https://fesp-api.koyeb.app/market';
+const CLIENT_ID = process.env.CLIENT_ID || 'febc13-final04-emjf';
 
 /* 카테고리 분류 및 매핑 헬퍼 함수들 */
 
@@ -28,7 +28,7 @@ function determineMainCategory(categories: string[]): ProductMainCategory {
   if (categories?.some((cat) => suppliesCategories.includes(cat))) {
     return 'supplies';
   }
-  return 'plant'; // 기본값
+  return 'plant';
 }
 
 /**
@@ -71,7 +71,7 @@ function transformProductApiToProduct(productApi: ProductApiData): Product {
     isNew: productApi.extra?.isNew || false,
     isBookmarked: false, // 초기값, 나중에 북마크 스토어에서 업데이트
     recommend: productApi.extra?.isBest || false,
-    originalCategories: categories, // 필터링용 원본 카테고리 저장
+    originalCategories: categories,
   };
 
   // 카테고리별 속성 추가
@@ -212,7 +212,7 @@ export async function getProductReviews(productId: number, params?: { page?: num
 }
 
 /**
- * 추천 상품(베스트 상품) 목록을 가져옵니다.
+ * 추천 상품 목록을 가져옵니다.
  */
 export async function getRecommendProducts(limit: number = 4): ApiResPromise<ProductApiData[]> {
   try {
@@ -232,8 +232,6 @@ export async function getRecommendProducts(limit: number = 4): ApiResPromise<Pro
     };
   }
 }
-
-/* 고급 서버 함수들 (페이지에서 사용) */
 
 /**
  * 모든 상품을 변환된 형태로 조회합니다.
@@ -289,7 +287,7 @@ export async function getProductDetailWithRelatedData(id: string): Promise<{
 
     const transformedProduct = transformProductApiToProductDetail(productResponse.item);
 
-    // 추천 상품 로직 - 새로운 스마트 추천 시스템
+    // 추천 상품 로직
     const recommendedProducts = await generateSmartRecommendations(transformedProduct, id);
 
     const transformedRecommendProducts = recommendedProducts;
@@ -368,7 +366,7 @@ export async function getProductReviewsTransformed(
   }
 }
 
-/* 스마트 추천 시스템 함수들 */
+// 추천 상품 로직
 
 /**
  * 배열에서 랜덤하게 지정된 개수만큼 선택
@@ -392,7 +390,7 @@ function findPlantsByMatchingTags(currentProduct: ProductDetail, allPlants: Prod
     return plantTags.length > 0; // 하나라도 태그가 일치하면 포함
   });
 
-  // 태그 일치도에 따라 정렬 (더 많은 태그가 일치할수록 우선순위)
+  // 태그 일치도에 따라 정렬 (더 많은 태그가 일치할 수록 우선 순위)
   matchingPlants.sort((a, b) => {
     const aMatchCount = a.originalCategories.filter((cat) => currentTags.includes(cat)).length;
     const bMatchCount = b.originalCategories.filter((cat) => currentTags.includes(cat)).length;
@@ -411,7 +409,7 @@ function findPlantsByMatchingTags(currentProduct: ProductDetail, allPlants: Prod
 }
 
 /**
- * 스마트 추천 상품 생성 함수
+ * 추천 상품 생성 함수
  */
 async function generateSmartRecommendations(currentProduct: ProductDetail, currentProductId: string): Promise<Product[]> {
   try {

@@ -28,13 +28,13 @@ export const useBookmarkStore = create<BookmarkStore>()(
 
       // 특정 상품이 북마크되어 있는지 확인
       isBookmarked: (productId: string) => {
-        return get().bookmarks.has(productId); // Set.has()로 O(1) 시간복잡도
+        return get().bookmarks.has(productId);
       },
 
       // 북마크 토글 (있으면 제거, 없으면 추가)
       toggleBookmark: (productId: string) => {
         set((state) => {
-          const newBookmarks = new Set(state.bookmarks); // 새로운 Set 생성 (불변성)
+          const newBookmarks = new Set(state.bookmarks); // 새로운 Set 생성
           if (newBookmarks.has(productId)) {
             newBookmarks.delete(productId);
           } else {
@@ -62,7 +62,7 @@ export const useBookmarkStore = create<BookmarkStore>()(
         });
       },
 
-      // 모든 북마크 제거
+      // 모든 북마크 제거 (안 쓰게 되면 제거)
       clearBookmarks: () => {
         set({ bookmarks: new Set<string>() });
       },

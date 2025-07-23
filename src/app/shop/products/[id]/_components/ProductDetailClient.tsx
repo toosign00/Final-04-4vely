@@ -10,7 +10,7 @@ import { Product, ProductDetail, Review } from '@/types/product';
 import { Minus, Plus, ShoppingCart } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Badge } from './Badge';
 import ProductDetailCard from './ProductDetailCard';
 
@@ -28,20 +28,46 @@ interface ProductDetailClientProps {
   productId: string;
 }
 
-// 화분 색상 옵션 상수
-const COLOR_OPTIONS: ColorOption[] = [
-  { value: 'brown', label: '브라운', color: '#8B4513' },
-  { value: 'blue', label: '블루', color: '#4169E1' },
-  { value: 'black', label: '블랙', color: '#000000' },
-  { value: 'gray', label: '그레이', color: '#808080' },
-  { value: 'white', label: '화이트', color: '#FFFFFF' },
-];
+// 한국어 색상명을 영어로 매핑하는 함수
+const getColorMapping = (koreanColor: string): { englishName: string; hexColor: string } => {
+  const colorMap: Record<string, { englishName: string; hexColor: string }> = {
+    흑색: { englishName: 'black', hexColor: '#000000' },
+    갈색: { englishName: 'brown', hexColor: '#8B4513' },
+    회색: { englishName: 'gray', hexColor: '#808080' },
+    흰색: { englishName: 'white', hexColor: '#FFFFFF' },
+    남색: { englishName: 'blue', hexColor: '#4169E1' },
+  };
+
+  return colorMap[koreanColor] || { englishName: koreanColor.toLowerCase(), hexColor: '#808080' };
+};
 
 export default function ProductDetailClient({ product, recommendProducts, initialReviews, initialReviewsPagination, productId }: ProductDetailClientProps) {
   const router = useRouter();
 
-  // 상태 관리
-  const [selectedColor, setSelectedColor] = useState('brown');
+  // 상품의 화분 색상 옵션 추출
+  const potColorOption = useMemo(() => {
+    return product.options?.find((option) => option.name === '화분 색상');
+  }, [product.options]);
+
+  // 색상 옵션이 있는지 확인
+  const hasColorOptions = Boolean(potColorOption?.values && potColorOption.values.length > 0);
+
+  // 동적 색상 옵션 생성
+  const colorOptions: ColorOption[] = useMemo(() => {
+    if (!hasColorOptions) return [];
+
+    return potColorOption!.values.map((koreanColor) => {
+      const { englishName, hexColor } = getColorMapping(koreanColor);
+      return {
+        value: englishName,
+        label: koreanColor,
+        color: hexColor,
+      };
+    });
+  }, [potColorOption, hasColorOptions]);
+
+  // 선택된 색상 상태 (첫 번째 색상을 기본값으로)
+  const [selectedColorIndex, setSelectedColorIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [currentReviewPage, setCurrentReviewPage] = useState(1);
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
@@ -50,6 +76,17 @@ export default function ProductDetailClient({ product, recommendProducts, initia
   const [reviews, setReviews] = useState<Review[]>(initialReviews);
   const [reviewsPagination, setReviewsPagination] = useState(initialReviewsPagination);
   const [reviewsLoading, setReviewsLoading] = useState(false);
+
+  // 현재 선택된 색상에 해당하는 이미지 URL 계산
+  const currentImageUrl = useMemo(() => {
+    if (!hasColorOptions || !product.mainImages || product.mainImages.length === 0) {
+      return product.image; // 기본 이미지 사용
+    }
+
+    // 선택된 색상 인덱스에 해당하는 이미지가 있으면 사용, 없으면 첫 번째 이미지 사용
+    const imageIndex = Math.min(selectedColorIndex, product.mainImages.length - 1);
+    return product.mainImages[imageIndex] || product.image;
+  }, [hasColorOptions, product.mainImages, product.image, selectedColorIndex]);
 
   // 리뷰 데이터 로딩 (페이지 변경 시)
   useEffect(() => {
@@ -90,7 +127,25 @@ export default function ProductDetailClient({ product, recommendProducts, initia
     }
   };
 
+  const handleColorChange = (colorIndex: number) => {
+    setSelectedColorIndex(colorIndex);
+  };
+
   const handleAddToCart = () => {
+    // TODO: 선택된 색상 정보도 함께 장바구니에 추가
+    const selectedColorInfo = hasColorOptions
+      ? {
+          colorIndex: selectedColorIndex,
+          colorName: colorOptions[selectedColorIndex]?.label,
+        }
+      : null;
+
+    console.log('장바구니에 추가:', {
+      productId: product.id,
+      quantity,
+      selectedColor: selectedColorInfo,
+    });
+
     setIsCartModalOpen(true);
   };
 
@@ -104,7 +159,20 @@ export default function ProductDetailClient({ product, recommendProducts, initia
   };
 
   const handlePurchase = () => {
-    // 약간의 딜레이 후 주문 페이지로 이동 (장바구니 업데이트 완료 대기)
+    // TODO: 선택된 색상 정보도 함께 주문에 포함
+    const selectedColorInfo = hasColorOptions
+      ? {
+          colorIndex: selectedColorIndex,
+          colorName: colorOptions[selectedColorIndex]?.label,
+        }
+      : null;
+
+    console.log('구매하기:', {
+      productId: product.id,
+      quantity,
+      selectedColor: selectedColorInfo,
+    });
+
     setTimeout(() => {
       router.push('/order');
     }, 100);
@@ -124,19 +192,9 @@ export default function ProductDetailClient({ product, recommendProducts, initia
     // TODO: 리뷰 삭제 확인 모달 및 API 호출
   };
 
-  // 계산된 값들
+  // 계산된 값
   const totalPrice = product.price * quantity;
   const totalReviewPages = reviewsPagination.totalPages;
-
-  // 카테고리 표시 이름 가져오기
-  const getCategoryDisplayName = () => {
-    if (product.mainCategory === 'plant') {
-      return '식물';
-    } else if (product.mainCategory === 'supplies') {
-      return '원예 용품';
-    }
-    return '';
-  };
 
   // 리뷰 페이지네이션 렌더링
   const renderReviewPagination = () => (
@@ -190,8 +248,8 @@ export default function ProductDetailClient({ product, recommendProducts, initia
         {/* 상품 이미지 섹션 */}
         <div className='relative mx-4 mt-4 aspect-square w-auto rounded-2xl bg-white sm:mx-6 sm:mt-6 md:mx-8 md:mt-8'>
           <Image
-            src={product.image}
-            alt={product.name}
+            src={currentImageUrl}
+            alt={`${product.name}${hasColorOptions ? ` - ${colorOptions[selectedColorIndex]?.label}` : ''}`}
             fill
             className='rounded-2xl object-cover'
             priority
@@ -216,9 +274,8 @@ export default function ProductDetailClient({ product, recommendProducts, initia
 
         {/* 상품 정보 섹션 */}
         <div className='mx-4 mt-6 w-auto sm:mx-6 sm:mt-8 md:mx-8'>
-          {/* 카테고리 및 상품명 */}
+          {/* 상품명 */}
           <div className='mb-4'>
-            <p className='mb-2 text-sm text-gray-500'>{getCategoryDisplayName()}</p>
             <h1 className='text-secondary t-h1 mb-4'>{product.name}</h1>
           </div>
 
@@ -231,19 +288,19 @@ export default function ProductDetailClient({ product, recommendProducts, initia
             ))}
           </div>
 
-          {/* 화분 색상 선택 (원예용품이나 화분이 있는 식물만) */}
-          {(product.mainCategory === 'supplies' || product.mainCategory === 'plant') && (
+          {/* 화분 색상 선택 (옵션이 있는 경우에만 표시) */}
+          {hasColorOptions && colorOptions.length > 0 && (
             <>
               <h3 className='text-secondary t-h3 mb-3 sm:mb-4'>화분 색상</h3>
               <div className='mb-12 flex gap-3 sm:gap-4'>
-                {COLOR_OPTIONS.map((option) => (
+                {colorOptions.map((option, index) => (
                   <button
                     key={option.value}
                     type='button'
                     aria-label={option.label}
-                    onClick={() => setSelectedColor(option.value)}
+                    onClick={() => handleColorChange(index)}
                     className={`h-8 w-8 rounded-full border-2 transition sm:h-9 sm:w-9 md:h-10 md:w-10 ${
-                      selectedColor === option.value ? 'border-secondary scale-110 border-3' : 'border-gray-300'
+                      selectedColorIndex === index ? 'border-secondary scale-110 border-3' : 'border-gray-300'
                     } ${option.value === 'white' ? 'ring-1 ring-gray-200' : ''}`}
                     style={{ backgroundColor: option.color }}
                   />
@@ -358,8 +415,8 @@ export default function ProductDetailClient({ product, recommendProducts, initia
             {/* 상품 이미지 */}
             <div className='relative aspect-square w-full max-w-[800px] min-w-[280px] flex-1'>
               <Image
-                src={product.image}
-                alt={product.name}
+                src={currentImageUrl}
+                alt={`${product.name}${hasColorOptions ? ` - ${colorOptions[selectedColorIndex]?.label}` : ''}`}
                 fill
                 className='rounded-2xl object-cover'
                 priority
@@ -380,9 +437,6 @@ export default function ProductDetailClient({ product, recommendProducts, initia
 
             {/* 상품 정보 */}
             <div className='w-full min-w-[280px] flex-1'>
-              {/* 카테고리 */}
-              <p className='mb-2 text-lg text-gray-500'>{getCategoryDisplayName()}</p>
-
               <h1 className='text-secondary mb-6 text-3xl font-bold xl:text-4xl 2xl:text-5xl'>{product.name}</h1>
 
               {/* 태그 */}
@@ -394,18 +448,18 @@ export default function ProductDetailClient({ product, recommendProducts, initia
                 ))}
               </div>
 
-              {/* 화분 색상 (원예용품이나 화분이 있는 식물만) */}
-              {(product.mainCategory === 'supplies' || product.mainCategory === 'plant') && (
+              {/* 화분 색상 (옵션이 있는 경우에만 표시) */}
+              {hasColorOptions && colorOptions.length > 0 && (
                 <>
                   <h3 className='text-secondary t-h2 mb-3 xl:mb-4 xl:text-xl'>화분 색상</h3>
                   <div className='mb-8 flex gap-3 xl:mb-10 xl:gap-4'>
-                    {COLOR_OPTIONS.map((option) => (
+                    {colorOptions.map((option, index) => (
                       <button
                         key={option.value}
                         type='button'
                         aria-label={option.label}
-                        onClick={() => setSelectedColor(option.value)}
-                        className={`h-10 w-10 rounded-full border-2 transition xl:h-12 xl:w-12 ${selectedColor === option.value ? 'border-secondary scale-110 border-4' : 'border-gray-300'} ${option.value === 'white' ? 'ring-1 ring-gray-200' : ''}`}
+                        onClick={() => handleColorChange(index)}
+                        className={`h-10 w-10 rounded-full border-2 transition xl:h-12 xl:w-12 ${selectedColorIndex === index ? 'border-secondary scale-110 border-4' : 'border-gray-300'} ${option.value === 'white' ? 'ring-1 ring-gray-200' : ''}`}
                         style={{ backgroundColor: option.color }}
                       />
                     ))}

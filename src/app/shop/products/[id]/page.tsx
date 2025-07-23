@@ -47,10 +47,10 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
   try {
     const { id } = await params;
 
-    // 서버에서 모든 필요한 데이터 미리 로딩 - 리팩토링된 함수 사용
+    // 서버에서 모든 필요한 데이터 미리 로딩
     const { product, recommendProducts, initialReviews, reviewsPagination } = await getProductDetailWithRelatedData(id);
 
-    // 상품이 없으면 404 페이지로
+    // 상품이 없으면 404
     if (!product) {
       notFound();
     }

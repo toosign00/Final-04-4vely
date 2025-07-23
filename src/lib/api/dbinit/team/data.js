@@ -338,7 +338,7 @@ export const initData = async (clientId, nextSeq) => {
         shippingFees: 3000, // 배송비
         show: true, // 상품 표시 여부
         active: true, // 상품 활성화 여부
-        quantity: 20, // 상품 재고
+        quantity: 50, // 상품 재고
         buyQuantity: 20, // 판매된 수량
         options: [
           // 옵션 : 화분 색상
@@ -676,7 +676,7 @@ export const initData = async (clientId, nextSeq) => {
         shippingFees: 3000, // 배송비
         show: true, // 상품 표시 여부
         active: true, // 상품 활성화 여부
-        quantity: 20, // 상품 재고
+        quantity: 80, // 상품 재고
         buyQuantity: 32, // 판매된 수량
         options: [
           // 옵션 : 화분 색상
@@ -772,7 +772,7 @@ export const initData = async (clientId, nextSeq) => {
         shippingFees: 3000, // 배송비
         show: true, // 상품 표시 여부
         active: true, // 상품 활성화 여부
-        quantity: 30, // 상품 재고
+        quantity: 40, // 상품 재고
         buyQuantity: 25, // 판매된 수량
         options: [
           // 옵션 : 화분 색상
@@ -818,7 +818,7 @@ export const initData = async (clientId, nextSeq) => {
         shippingFees: 3000, // 배송비
         show: true, // 상품 표시 여부
         active: true, // 상품 활성화 여부
-        quantity: 20, // 상품 재고
+        quantity: 30, // 상품 재고
         buyQuantity: 14, // 판매된 수량
         options: [
           // 옵션 : 화분 색상
@@ -962,7 +962,7 @@ export const initData = async (clientId, nextSeq) => {
         shippingFees: 3000, // 배송비
         show: true, // 상품 표시 여부
         active: true, // 상품 활성화 여부
-        quantity: 30, // 상품 재고
+        quantity: 50, // 상품 재고
         buyQuantity: 35, // 판매된 수량
         options: [
           // 옵션 : 화분 색상
@@ -1253,7 +1253,7 @@ export const initData = async (clientId, nextSeq) => {
         shippingFees: 3000, // 배송비
         show: true, // 상품 표시 여부
         active: true, // 상품 활성화 여부
-        quantity: 20, // 상품 재고
+        quantity: 60, // 상품 재고
         buyQuantity: 37, // 판매된 수량
         options: [
           // 옵션 : 화분 색상
@@ -1399,7 +1399,7 @@ export const initData = async (clientId, nextSeq) => {
         shippingFees: 3000, // 배송비
         show: true, // 상품 표시 여부
         active: true, // 상품 활성화 여부
-        quantity: 30, // 상품 재고
+        quantity: 40, // 상품 재고
         buyQuantity: 25, // 판매된 수량
         options: [
           // 옵션 : 화분 색상
@@ -1545,7 +1545,7 @@ export const initData = async (clientId, nextSeq) => {
         shippingFees: 3000, // 배송비
         show: true, // 상품 표시 여부
         active: true, // 상품 활성화 여부
-        quantity: 20, // 상품 재고
+        quantity: 60, // 상품 재고
         buyQuantity: 34, // 판매된 수량
         options: [
           // 옵션 : 화분 색상
@@ -2167,7 +2167,7 @@ export const initData = async (clientId, nextSeq) => {
         shippingFees: 3000, // 배송비
         show: true, // 상품 표시 여부
         active: true, // 상품 활성화 여부
-        quantity: 30, // 상품 재고
+        quantity: 50, // 상품 재고
         buyQuantity: 31, // 판매된 수량
         options: [
           // 옵션 : 화분 색상
@@ -3066,7 +3066,7 @@ export const initData = async (clientId, nextSeq) => {
         shippingFees: 3000, // 배송비
         show: true, // 상품 표시 여부
         active: true, // 상품 활성화 여부
-        quantity: 20, // 상품 재고
+        quantity: 80, // 상품 재고
         buyQuantity: 61, // 판매된 수량
         options: [
           // 옵션 : 화분 색상
@@ -3390,7 +3390,7 @@ export const initData = async (clientId, nextSeq) => {
         shippingFees: 3000, // 배송비
         show: true, // 상품 표시 여부
         active: true, // 상품 활성화 여부
-        quantity: 30, // 상품 재고
+        quantity: 40, // 상품 재고
         buyQuantity: 28, // 판매된 수량
         mainImages: [`/files/${clientId}/cutting_tool.webp`], // 상품 메인 이미지
         content: `

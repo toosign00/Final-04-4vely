@@ -105,13 +105,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 50, // 상품 재고
         buyQuantity: 12, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/hoya_heart_black.webp`, `/files/${clientId}/hoya_heart_brown.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -139,6 +132,7 @@ export const initData = async (clientId, nextSeq) => {
             '봄',
             '가을',
           ],
+          potColors: ['흑색', '갈색'],
           sort: 1, // 상품 정렬 순서(number)
         },
       },
@@ -152,13 +146,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 60, // 상품 재고
         buyQuantity: 15, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '회색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/Spathiphyllum_black.webp`, `/files/${clientId}/Spathiphyllum_brown.webp`, `/files/${clientId}/Spathiphyllum_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -185,6 +172,7 @@ export const initData = async (clientId, nextSeq) => {
             '봄',
             '가을',
           ],
+          potColors: ['흑색', '갈색', '회색'],
           sort: 2, // 상품 정렬 순서(number)
         },
       },
@@ -198,13 +186,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 30, // 상품 재고
         buyQuantity: 10, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/monstera_adansonii_black.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -230,6 +211,7 @@ export const initData = async (clientId, nextSeq) => {
             '봄',
             '여름',
           ],
+          potColors: ['흑색'],
           sort: 3, // 상품 정렬 순서(number)
         },
       },
@@ -243,14 +225,7 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 35, // 상품 재고
         buyQuantity: 11, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['갈색', '회색'],
-          },
-        ],
-        mainImages: [`/files/${clientId}/ocjamhwa_gray.webp`, `/files/${clientId}/ocjamhwa_brown.webp`], // 상품 메인 이미지
+        mainImages: [`/files/${clientId}/ocjamhwa_brown.webp`, `/files/${clientId}/ocjamhwa_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
             <p>옥잠화는 가장 사랑받는 다육식물 중 하나입니다. 관리가 쉽고 오래가는 이 식물은 대대로 물려줄 수 있어 가족의 가보가 될 수 있습니다.</p>
@@ -277,6 +252,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['갈색', '회색'],
           sort: 4, // 상품 정렬 순서(number)
         },
       },
@@ -290,13 +266,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 50, // 상품 재고
         buyQuantity: 13, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '회색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/nabiran_black.webp`, `/files/${clientId}/nabiran_brown.webp`, `/files/${clientId}/nabiran_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -327,6 +296,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['흑색', '갈색', '회색'],
           sort: 5, // 상품 정렬 순서(number)
         },
       },
@@ -340,13 +310,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 50, // 상품 재고
         buyQuantity: 20, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '회색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/parlor_palm_black.webp`, `/files/${clientId}/parlor_palm_brown.webp`, `/files/${clientId}/parlor_palm_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -376,6 +339,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['흑색', '갈색', '회색'],
           sort: 6, // 상품 정렬 순서(number)
         },
       },
@@ -389,14 +353,7 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 40, // 상품 재고
         buyQuantity: 19, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '흰색', '남색'],
-          },
-        ],
-        mainImages: [`/files/${clientId}/dracaena_black.webp`, `/files/${clientId}/dracaena_brown.webp`, `/files/${clientId}/dracaena_blue.webp`, `/files/${clientId}/dracaena_white.webp`], // 상품 메인 이미지
+        mainImages: [`/files/${clientId}/dracaena_black.webp`, `/files/${clientId}/dracaena_brown.webp`, `/files/${clientId}/dracaena_white.webp`, `/files/${clientId}/dracaena_blue.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
             <p>드라세나 골든 하트는 실내에서 키우기 가장 쉬운 식물 중 하나입니다. 밝은 줄무늬 잎은 거의 모든 실내 환경에 잘 적응하며 잘 자랍니다.</p>
@@ -425,6 +382,7 @@ export const initData = async (clientId, nextSeq) => {
             '봄',
             '여름',
           ],
+          potColors: ['흑색', '갈색', '흰색', '남색'],
           sort: 7, // 상품 정렬 순서(number)
         },
       },
@@ -438,14 +396,7 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 30, // 상품 재고
         buyQuantity: 25, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '회색', '흰색'],
-          },
-        ],
-        mainImages: [`/files/${clientId}/bromeliad_black.webp`, `/files/${clientId}/bromeliad_brown.webp`, `/files/${clientId}/bromeliad_gray.webp`, `/files/${clientId}/bromeliad_white.webp`], // 상품 메인 이미지
+        mainImages: [`/files/${clientId}/bromeliad_black.webp`, `/files/${clientId}/bromeliad_brown.webp`, `/files/${clientId}/bromeliad_white.webp`, `/files/${clientId}/bromeliad_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
             <p>화려하고 관리가 쉬운 브로멜리아드는 집안에 따스함을 더하는 매력적인 실내 식물입니다.</p>
@@ -475,6 +426,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['흑색', '갈색', '흰색', '회색'],
           sort: 8, // 상품 정렬 순서(number)
         },
       },
@@ -488,13 +440,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 20, // 상품 재고
         buyQuantity: 11, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '회색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/philodendron_birkin_black.webp`, `/files/${clientId}/philodendron_birkin_brown.webp`, `/files/${clientId}/philodendron_birkin_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -525,6 +470,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['흑색', '갈색', '회색'],
           sort: 9, // 상품 정렬 순서(number)
         },
       },
@@ -538,13 +484,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 40, // 상품 재고
         buyQuantity: 35, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '흰색', '회색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/philodendron_moonlight_black.webp`, `/files/${clientId}/philodendron_moonlight_white.webp`, `/files/${clientId}/philodendron_moonlight_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -573,6 +512,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['흑색', '흰색', '회색'],
           sort: 10, // 상품 정렬 순서(number)
         },
       },
@@ -586,13 +526,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 40, // 상품 재고
         buyQuantity: 18, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '회색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/alocasia_polly_black.webp`, `/files/${clientId}/alocasia_polly_brown.webp`, `/files/${clientId}/alocasia_polly_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -618,6 +551,7 @@ export const initData = async (clientId, nextSeq) => {
             '봄',
             '여름',
           ],
+          potColors: ['흑색', '갈색', '회색'],
           sort: 11, // 상품 정렬 순서(number)
         },
       },
@@ -631,14 +565,7 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 55, // 상품 재고
         buyQuantity: 16, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['남색', '갈색', '회색'],
-          },
-        ],
-        mainImages: [`/files/${clientId}/calathea_freddie_blue.webp`, `/files/${clientId}/calathea_freddie_brown.webp`, `/files/${clientId}/calathea_freddie_gray.webp`], // 상품 메인 이미지
+        mainImages: [`/files/${clientId}/calathea_freddie_brown.webp`, `/files/${clientId}/calathea_freddie_gray.webp`, `/files/${clientId}/calathea_freddie_blue.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
             <p>칼라테아 프레디는 칼라테아의 작은 품종으로, 잎이 식물 중앙에서 로제트 모양으로 자랍니다. 섬세하고 물결치는 깃털 모양의 잎은 연녹색에 짙은 녹색 줄무늬가 있습니다.</p>
@@ -665,6 +592,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['갈색', '회색', '남색'],
           sort: 12, // 상품 정렬 순서(number)
         },
       },
@@ -678,13 +606,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 80, // 상품 재고
         buyQuantity: 32, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/golden_pothos_black.webp`, `/files/${clientId}/golden_pothos_brown.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -713,6 +634,7 @@ export const initData = async (clientId, nextSeq) => {
             '여름',
             '가을',
           ],
+          potColors: ['흑색', '갈색'],
           sort: 13, // 상품 정렬 순서(number)
         },
       },
@@ -726,13 +648,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 50, // 상품 재고
         buyQuantity: 28, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '흰색', '남색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/burgundy_rubber_tree_black.webp`, `/files/${clientId}/burgundy_rubber_tree_brown.webp`, `/files/${clientId}/burgundy_rubber_tree_white.webp`, `/files/${clientId}/burgundy_rubber_tree_blue.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -761,6 +676,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['흑색', '갈색', '흰색', '남색'],
           sort: 14, // 상품 정렬 순서(number)
         },
       },
@@ -774,13 +690,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 40, // 상품 재고
         buyQuantity: 25, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '회색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/ficus_tineke_black.webp`, `/files/${clientId}/ficus_tineke_brown.webp`, `/files/${clientId}/ficus_tineke_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -807,6 +716,7 @@ export const initData = async (clientId, nextSeq) => {
             '여름',
             '가을',
           ],
+          potColors: ['흑색', '갈색', '회색'],
           sort: 15, // 상품 정렬 순서(number)
         },
       },
@@ -820,13 +730,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 30, // 상품 재고
         buyQuantity: 14, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '흰색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/philodendron_congo_rojo_black.webp`, `/files/${clientId}/philodendron_congo_rojo_white.webp`, `/files/${clientId}/philodendron_congo_rojo_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -858,6 +761,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['흑색', '흰색', '회색'],
           sort: 16, // 상품 정렬 순서(number)
         },
       },
@@ -871,13 +775,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 30, // 상품 재고
         buyQuantity: 17, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '회색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/kangaroo_fern_black.webp`, `/files/${clientId}/kangaroo_fern_brown.webp`, `/files/${clientId}/kangaroo_fern_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -904,6 +801,7 @@ export const initData = async (clientId, nextSeq) => {
             '봄',
             '여름',
           ],
+          potColors: ['흑색', '갈색', '회색'],
           sort: 17, // 상품 정렬 순서(number)
         },
       },
@@ -917,13 +815,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 50, // 상품 재고
         buyQuantity: 25, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/ponytail_palm_black.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -951,6 +842,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['흑색'],
           sort: 18, // 상품 정렬 순서(number)
         },
       },
@@ -964,13 +856,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 50, // 상품 재고
         buyQuantity: 35, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '흰색', '남색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/variegated_schefflera_black.webp`, `/files/${clientId}/variegated_schefflera_brown.webp`, `/files/${clientId}/variegated_schefflera_white.webp`, `/files/${clientId}/variegated_schefflera_blue.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -1001,6 +886,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['흑색', '갈색', '흰색', '남색'],
           sort: 19, // 상품 정렬 순서(number)
         },
       },
@@ -1014,13 +900,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 20, // 상품 재고
         buyQuantity: 14, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/baltic_blue_pothos_black.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -1047,6 +926,7 @@ export const initData = async (clientId, nextSeq) => {
             '여름',
             '가을',
           ],
+          potColors: ['흑색'],
           sort: 20, // 상품 정렬 순서(number)
         },
       },
@@ -1060,14 +940,7 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 40, // 상품 재고
         buyQuantity: 32, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '회색', '흰색', '남색'],
-          },
-        ],
-        mainImages: [`/files/${clientId}/geokrak_black.webp`, `/files/${clientId}/geokrak_brown.webp`, `/files/${clientId}/geokrak_white.webp`, `/files/${clientId}/geokrak_blue.webp`, `/files/${clientId}/geokrak_gray.webp`], // 상품 메인 이미지
+        mainImages: [`/files/${clientId}/geokrak_black.webp`, `/files/${clientId}/geokrak_brown.webp`, `/files/${clientId}/geokrak_white.webp`, `/files/${clientId}/geokrak_gray.webp`, `/files/${clientId}/geokrak_blue.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
             <p>극락조는 실내 식물계의 여왕으로 여겨집니다. 이 크고 곧은 식물은 윤기 나는 바나나 모양의 잎이 퍼져 나가 공간에 풍부한 열대 분위기를 더합니다.</p>
@@ -1098,6 +971,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['흑색', '갈색', '흰색', '회색', '남색'],
           sort: 21, // 상품 정렬 순서(number)
         },
       },
@@ -1111,14 +985,7 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 50, // 상품 재고
         buyQuantity: 27, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '흰색', '회색'],
-          },
-        ],
-        mainImages: [`/files/${clientId}/philodendron_sun_red_black.webp`, `/files/${clientId}/philodendron_sun_red_gray.webp`, `/files/${clientId}/philodendron_sun_red_white.webp`], // 상품 메인 이미지
+        mainImages: [`/files/${clientId}/philodendron_sun_red_black.webp`, `/files/${clientId}/philodendron_sun_red_white.webp`, `/files/${clientId}/philodendron_sun_red_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
             <p>필로덴드론 선 레드는 생동감 넘치고 윤기 나는 잎이 붉은색과 주황색으로 변하며, 짙은 녹색으로 자라는 아름다운 관엽식물입니다.</p>
@@ -1147,6 +1014,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['흑색', '흰색', '회색'],
           sort: 22, // 상품 정렬 순서(number)
         },
       },
@@ -1160,13 +1028,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 30, // 상품 재고
         buyQuantity: 16, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '회색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/olive_tree_black.webp`, `/files/${clientId}/olive_tree_brown.webp`, `/files/${clientId}/olive_tree_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -1194,6 +1055,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['흑색', '갈색', '회색'],
           sort: 23, // 상품 정렬 순서(number)
         },
       },
@@ -1207,13 +1069,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 40, // 상품 재고
         buyQuantity: 33, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '흰색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/white_orchid_black.webp`, `/files/${clientId}/white_orchid_brown.webp`, `/files/${clientId}/white_orchid_white.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -1242,6 +1097,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['흑색', '갈색', '흰색'],
           sort: 24, // 상품 정렬 순서(number)
         },
       },
@@ -1255,13 +1111,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 60, // 상품 재고
         buyQuantity: 37, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '회색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/money_tree_black.webp`, `/files/${clientId}/money_tree_brown.webp`, `/files/${clientId}/money_tree_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -1291,6 +1140,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['흑색', '갈색', '회색'],
           sort: 25, // 상품 정렬 순서(number)
         },
       },
@@ -1304,13 +1154,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 40, // 상품 재고
         buyQuantity: 18, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['갈색', '회색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/silver_pothos_brown.webp`, `/files/${clientId}/silver_pothos_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -1341,6 +1184,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['갈색', '회색'],
           sort: 26, // 상품 정렬 순서(number)
         },
       },
@@ -1354,13 +1198,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 20, // 상품 재고
         buyQuantity: 15, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '흰색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/eureka_lemon_tree_black.webp`, `/files/${clientId}/eureka_lemon_tree_white.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -1388,6 +1225,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['흑색', '흰색'],
           sort: 27, // 상품 정렬 순서(number)
         },
       },
@@ -1401,13 +1239,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 40, // 상품 재고
         buyQuantity: 25, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '회색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/sansevieria_moonshine_black.webp`, `/files/${clientId}/sansevieria_moonshine_brown.webp`, `/files/${clientId}/sansevieria_moonshine_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -1440,6 +1271,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['흑색', '갈색', '회색'],
           sort: 28, // 상품 정렬 순서(number)
         },
       },
@@ -1453,13 +1285,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 40, // 상품 재고
         buyQuantity: 20, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '회색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/african_violet_black.webp`, `/files/${clientId}/african_violet_brown.webp`, `/files/${clientId}/african_violet_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -1488,6 +1313,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['흑색', '갈색', '회색'],
           sort: 29, // 상품 정렬 순서(number)
         },
       },
@@ -1501,13 +1327,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 50, // 상품 재고
         buyQuantity: 25, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '회색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/bromeliad_guzmania_black.webp`, `/files/${clientId}/bromeliad_guzmania_brown.webp`, `/files/${clientId}/bromeliad_guzmania_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -1534,6 +1353,7 @@ export const initData = async (clientId, nextSeq) => {
             '봄',
             '여름',
           ],
+          potColors: ['흑색', '갈색', '회색'],
           sort: 30, // 상품 정렬 순서(number)
         },
       },
@@ -1547,14 +1367,7 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 60, // 상품 재고
         buyQuantity: 34, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '회색', '흰색', '남색'],
-          },
-        ],
-        mainImages: [`/files/${clientId}/cat_palm_black.webp`, `/files/${clientId}/cat_palm_brown.webp`, `/files/${clientId}/cat_palm_gray.webp`, `/files/${clientId}/cat_palm_white.webp`, `/files/${clientId}/cat_palm_blue.webp`], // 상품 메인 이미지
+        mainImages: [`/files/${clientId}/cat_palm_black.webp`, `/files/${clientId}/cat_palm_brown.webp`, `/files/${clientId}/cat_palm_white.webp`, `/files/${clientId}/cat_palm_gray.webp`, `/files/${clientId}/cat_palm_blue.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
             <p>고양이 야자수의 푹신한 잎과 짧은 줄기는 마치 오아시스에 온 듯한 느낌을 선사합니다.</p>
@@ -1580,6 +1393,7 @@ export const initData = async (clientId, nextSeq) => {
             '여름',
             '가을',
           ],
+          potColors: ['흑색', '갈색', '흰색', '회색', '남색'],
           sort: 31, // 상품 정렬 순서(number)
         },
       },
@@ -1593,13 +1407,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 30, // 상품 재고
         buyQuantity: 11, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '흰색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/variegated_pink_lemon_tree_black.webp`, `/files/${clientId}/variegated_pink_lemon_tree_white.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -1627,6 +1434,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['흑색', '흰색'],
           sort: 32, // 상품 정렬 순서(number)
         },
       },
@@ -1640,13 +1448,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 40, // 상품 재고
         buyQuantity: 23, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '회색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/coffee_plant_black.webp`, `/files/${clientId}/coffee_plant_brown.webp`, `/files/${clientId}/coffee_plant_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -1674,6 +1475,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['흑색', '갈색', '회색'],
           sort: 33, // 상품 정렬 순서(number)
         },
       },
@@ -1687,13 +1489,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 60, // 상품 재고
         buyQuantity: 25, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흰색', '회색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/hibiscus_white.webp`, `/files/${clientId}/hibiscus_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -1718,6 +1513,7 @@ export const initData = async (clientId, nextSeq) => {
             '거실',
             '여름',
           ],
+          potColors: ['흰색', '회색'],
           sort: 34, // 상품 정렬 순서(number)
         },
       },
@@ -1731,13 +1527,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 60, // 상품 재고
         buyQuantity: 35, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/sansevieria_black.webp`, `/files/${clientId}/sansevieria_brown.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -1769,6 +1558,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['흑색', '갈색'],
           sort: 35, // 상품 정렬 순서(number)
         },
       },
@@ -1782,13 +1572,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 25, // 상품 재고
         buyQuantity: 18, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '회색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/aglaonema_siam_black.webp`, `/files/${clientId}/aglaonema_siam_brown.webp`, `/files/${clientId}/aglaonema_siam_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -1819,6 +1602,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['흑색', '갈색', '회색'],
           sort: 36, // 상품 정렬 순서(number)
         },
       },
@@ -1832,13 +1616,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 50, // 상품 재고
         buyQuantity: 22, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '회색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/calathea_pinstripe_black.webp`, `/files/${clientId}/calathea_pinstripe_brown.webp`, `/files/${clientId}/calathea_pinstripe_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -1865,6 +1642,7 @@ export const initData = async (clientId, nextSeq) => {
             '봄',
             '여름',
           ],
+          potColors: ['흑색', '갈색', '회색'],
           sort: 37, // 상품 정렬 순서(number)
         },
       },
@@ -1878,18 +1656,11 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 40, // 상품 재고
         buyQuantity: 19, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '회색', '흰색', '남색'],
-          },
-        ],
         mainImages: [
           `/files/${clientId}/dracaena_marginata_black.webp`,
           `/files/${clientId}/dracaena_marginata_brown.webp`,
-          `/files/${clientId}/dracaena_marginata_gray.webp`,
           `/files/${clientId}/dracaena_marginata_white.webp`,
+          `/files/${clientId}/dracaena_marginata_gray.webp`,
           `/files/${clientId}/dracaena_marginata_blue.webp`,
         ], // 상품 메인 이미지
         content: `
@@ -1918,6 +1689,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['흑색', '갈색', '흰색', '회색', '남색'],
           sort: 38, // 상품 정렬 순서(number)
         },
       },
@@ -1931,14 +1703,7 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 40, // 상품 재고
         buyQuantity: 32, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '회색', '흰색', '남색'],
-          },
-        ],
-        mainImages: [`/files/${clientId}/geumjeunsu_black.webp`, `/files/${clientId}/geumjeunsu_brown.webp`, `/files/${clientId}/geumjeunsu_gray.webp`, `/files/${clientId}/geumjeunsu_white.webp`, `/files/${clientId}/geumjeunsu_blue.webp`], // 상품 메인 이미지
+        mainImages: [`/files/${clientId}/geumjeunsu_black.webp`, `/files/${clientId}/geumjeunsu_brown.webp`, `/files/${clientId}/geumjeunsu_white.webp`, `/files/${clientId}/geumjeunsu_gray.webp`, `/files/${clientId}/geumjeunsu_blue.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
             <p>이 실내 식물은 회복력이 강해 건망증이 있는 식물 주인에게 안성맞춤입니다. 관리가 간편한 금전수는 물 없이도 몇 주 동안 생존할 수 있으며 직사광선을 제외한 모든 빛에서 잘 자랍니다.</p>
@@ -1969,6 +1734,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['흑색', '갈색', '흰색', '회색', '남색'],
           sort: 39, // 상품 정렬 순서(number)
         },
       },
@@ -1982,14 +1748,7 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 60, // 상품 재고
         buyQuantity: 27, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '회색', '흰색'],
-          },
-        ],
-        mainImages: [`/files/${clientId}/red_anthurium_black.webp`, `/files/${clientId}/red_anthurium_brown.webp`, `/files/${clientId}/red_anthurium_gray.webp`, `/files/${clientId}/red_anthurium_white.webp`], // 상품 메인 이미지
+        mainImages: [`/files/${clientId}/red_anthurium_black.webp`, `/files/${clientId}/red_anthurium_brown.webp`, `/files/${clientId}/red_anthurium_white.webp`, `/files/${clientId}/red_anthurium_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
             <p>크고 굵은 하트 모양의 꽃을 피우는 레드 안스리움은 환대, 행운, 그리고 끈끈한 관계를 상징하며, 어떤 집에든 행복과 풍요로움을 가져다줍니다.</p>
@@ -2017,6 +1776,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['흑색', '갈색', '흰색', '회색'],
           sort: 40, // 상품 정렬 순서(number)
         },
       },
@@ -2030,13 +1790,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 50, // 상품 재고
         buyQuantity: 25, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '회색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/insam_black.webp`, `/files/${clientId}/insam_brown.webp`, `/files/${clientId}/insam_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -2064,6 +1817,7 @@ export const initData = async (clientId, nextSeq) => {
             '여름',
             '가을',
           ],
+          potColors: ['흑색', '갈색', '회색'],
           sort: 41, // 상품 정렬 순서(number)
         },
       },
@@ -2077,13 +1831,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 60, // 상품 재고
         buyQuantity: 21, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '흰색', '남색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/monstera_deliciosa_black.webp`, `/files/${clientId}/monstera_deliciosa_brown.webp`, `/files/${clientId}/monstera_deliciosa_white.webp`, `/files/${clientId}/monstera_deliciosa_blue.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -2108,6 +1855,7 @@ export const initData = async (clientId, nextSeq) => {
             '봄',
             '여름',
           ],
+          potColors: ['흑색', '갈색', '흰색', '남색'],
           sort: 42, // 상품 정렬 순서(number)
         },
       },
@@ -2121,13 +1869,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 30, // 상품 재고
         buyQuantity: 18, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '흰색', '남색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/variegated_croton_black.webp`, `/files/${clientId}/variegated_croton_brown.webp`, `/files/${clientId}/variegated_croton_white.webp`, `/files/${clientId}/variegated_croton_blue.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -2156,6 +1897,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['흑색', '갈색', '흰색', '남색'],
           sort: 43, // 상품 정렬 순서(number)
         },
       },
@@ -2169,13 +1911,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 50, // 상품 재고
         buyQuantity: 31, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '회색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/mini_money_tree_black.webp`, `/files/${clientId}/mini_money_tree_brown.webp`, `/files/${clientId}/mini_money_tree_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -2204,6 +1939,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['흑색', '갈색', '회색'],
           sort: 44, // 상품 정렬 순서(number)
         },
       },
@@ -2217,13 +1953,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 60, // 상품 재고
         buyQuantity: 15, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['갈색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/flamingo_flower.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -2253,6 +1982,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['갈색'],
           sort: 45, // 상품 정렬 순서(number)
         },
       },
@@ -2266,13 +1996,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 40, // 상품 재고
         buyQuantity: 25, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['갈색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/watermelon_peperomia.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -2300,6 +2023,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['갈색'],
           sort: 46, // 상품 정렬 순서(number)
         },
       },
@@ -2313,13 +2037,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 50, // 상품 재고
         buyQuantity: 16, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['갈색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/maranta_leuconeura.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -2348,6 +2065,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['갈색'],
           sort: 47, // 상품 정렬 순서(number)
         },
       },
@@ -2361,13 +2079,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 30, // 상품 재고
         buyQuantity: 13, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['갈색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/calathea_lancifolia.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -2396,6 +2107,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['갈색'],
           sort: 48, // 상품 정렬 순서(number)
         },
       },
@@ -2409,13 +2121,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 50, // 상품 재고
         buyQuantity: 22, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['갈색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/monstera_thai_constellation.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -2443,6 +2148,7 @@ export const initData = async (clientId, nextSeq) => {
             '여름',
             '가을',
           ],
+          potColors: ['갈색'],
           sort: 49, // 상품 정렬 순서(number)
         },
       },
@@ -2456,13 +2162,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 60, // 상품 재고
         buyQuantity: 15, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['갈색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/crashula_obata.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -2492,6 +2191,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['갈색'],
           sort: 50, // 상품 정렬 순서(number)
         },
       },
@@ -2505,13 +2205,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 50, // 상품 재고
         buyQuantity: 17, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['갈색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/princess_philodendron_pink.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -2539,6 +2232,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['갈색'],
           sort: 51, // 상품 정렬 순서(number)
         },
       },
@@ -2552,13 +2246,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 60, // 상품 재고
         buyQuantity: 35, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/philodendron_genie(mini monstera).webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -2588,6 +2275,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['흑색'],
           sort: 52, // 상품 정렬 순서(number)
         },
       },
@@ -2601,13 +2289,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 60, // 상품 재고
         buyQuantity: 31, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/nokyong.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -2633,6 +2314,7 @@ export const initData = async (clientId, nextSeq) => {
             '여름',
             '가을',
           ],
+          potColors: ['흑색'],
           sort: 53, // 상품 정렬 순서(number)
         },
       },
@@ -2646,13 +2328,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 30, // 상품 재고
         buyQuantity: 16, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['회색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/pink_palenopsis_orchid.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -2679,6 +2354,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['회색'],
           sort: 54, // 상품 정렬 순서(number)
         },
       },
@@ -2692,13 +2368,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 40, // 상품 재고
         buyQuantity: 12, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/nephropis_scotch.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -2724,6 +2393,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['흑색'],
           sort: 55, // 상품 정렬 순서(number)
         },
       },
@@ -2737,13 +2407,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 60, // 상품 재고
         buyQuantity: 21, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['회색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/purple_palenopsis_orchid.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -2771,6 +2434,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['회색'],
           sort: 56, // 상품 정렬 순서(number)
         },
       },
@@ -2784,13 +2448,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 30, // 상품 재고
         buyQuantity: 22, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/philodendron_vine_lemon-lime.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -2817,6 +2474,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['흑색'],
           sort: 57, // 상품 정렬 순서(number)
         },
       },
@@ -2830,13 +2488,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 60, // 상품 재고
         buyQuantity: 11, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['갈색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/Lemon-Button.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -2864,6 +2515,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['갈색'],
           sort: 58, // 상품 정렬 순서(number)
         },
       },
@@ -2877,13 +2529,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 60, // 상품 재고
         buyQuantity: 31, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['갈색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/hippoesthes_philostakia.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -2914,6 +2559,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['갈색'],
           sort: 59, // 상품 정렬 순서(number)
         },
       },
@@ -2927,13 +2573,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 30, // 상품 재고
         buyQuantity: 16, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['갈색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/Yublan.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -2962,6 +2601,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['갈색'],
           sort: 60, // 상품 정렬 순서(number)
         },
       },
@@ -2975,13 +2615,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 50, // 상품 재고
         buyQuantity: 32, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['회색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/acadia_palenopsis_orchid.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -3008,6 +2641,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['회색'],
           sort: 61, // 상품 정렬 순서(number)
         },
       },
@@ -3021,13 +2655,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 40, // 상품 재고
         buyQuantity: 27, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/gogzak_tree.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -3055,6 +2682,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['흑색'],
           sort: 62, // 상품 정렬 순서(number)
         },
       },
@@ -3068,13 +2696,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 80, // 상품 재고
         buyQuantity: 61, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/marvel_queen_photos.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -3104,6 +2725,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['흑색'],
           sort: 63, // 상품 정렬 순서(number)
         },
       },
@@ -3117,13 +2739,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 30, // 상품 재고
         buyQuantity: 22, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/english_ivy.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -3151,6 +2766,7 @@ export const initData = async (clientId, nextSeq) => {
             '여름',
             '가을',
           ],
+          potColors: ['흑색'],
           sort: 64, // 상품 정렬 순서(number)
         },
       },
@@ -3164,13 +2780,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 40, // 상품 재고
         buyQuantity: 29, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흰색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/philodendron_fire.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -3198,6 +2807,7 @@ export const initData = async (clientId, nextSeq) => {
             '가을',
             '겨울',
           ],
+          potColors: ['흰색'],
           sort: 65, // 상품 정렬 순서(number)
         },
       },
@@ -3211,13 +2821,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 50, // 상품 재고
         buyQuantity: 28, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '흰색', '남색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/eco_pot_10_black.webp`, `/files/${clientId}/eco_pot_10_brown.webp`, `/files/${clientId}/eco_pot_10_white.webp`, `/files/${clientId}/eco_pot_10_blue.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -3237,6 +2840,7 @@ export const initData = async (clientId, nextSeq) => {
             '원예 용품',
             '화분',
           ],
+          potColors: ['흑색', '갈색', '흰색', '남색'],
           sort: 66, // 상품 정렬 순서(number)
         },
       },
@@ -3250,13 +2854,6 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 50, // 상품 재고
         buyQuantity: 38, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '회색'],
-          },
-        ],
         mainImages: [`/files/${clientId}/eco_pot_6_black.webp`, `/files/${clientId}/eco_pot_6_brown.webp`, `/files/${clientId}/eco_pot_6_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
@@ -3276,6 +2873,7 @@ export const initData = async (clientId, nextSeq) => {
             '원예 용품',
             '화분',
           ],
+          potColors: ['흑색', '갈색', '회색'],
           sort: 67, // 상품 정렬 순서(number)
         },
       },
@@ -3289,14 +2887,7 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 50, // 상품 재고
         buyQuantity: 18, // 판매된 수량
-        options: [
-          // 옵션 : 화분 색상
-          {
-            name: '화분 색상',
-            values: ['흑색', '갈색', '회색', '흰색', '남색'],
-          },
-        ],
-        mainImages: [`/files/${clientId}/eco_pot_12_black.webp`, `/files/${clientId}/eco_pot_12_brown.webp`, `/files/${clientId}/eco_pot_12_gray.webp`, `/files/${clientId}/eco_pot_12_blue.webp`, `/files/${clientId}/eco_pot_12_white.webp`], // 상품 메인 이미지
+        mainImages: [`/files/${clientId}/eco_pot_12_black.webp`, `/files/${clientId}/eco_pot_12_brown.webp`, `/files/${clientId}/eco_pot_12_white.webp`, `/files/${clientId}/eco_pot_12_gray.webp`, `/files/${clientId}/eco_pot_12_blue.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
             <p>미니멀한 디자인의 12인치 원형 에코팟 화분은 시선을 빼앗지 않으면서도 식물과 잘 어울립니다.</p>
@@ -3315,6 +2906,7 @@ export const initData = async (clientId, nextSeq) => {
             '원예 용품',
             '화분',
           ],
+          potColors: ['흑색', '갈색', '흰색', '회색', '남색'],
           sort: 68, // 상품 정렬 순서(number)
         },
       },
@@ -3544,21 +3136,14 @@ export const initData = async (clientId, nextSeq) => {
       {
         _id: await nextSeq('product'), // 상품 고유 ID
         seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-        name: '소형 간접 조명', // 상품명
+        name: '소형 간접 조명 (화이트)', // 상품명
         price: 10000, // 상품 가격
         shippingFees: 3000, // 배송비
         show: true, // 상품 표시 여부
         active: true, // 상품 활성화 여부
         quantity: 60, // 상품 재고
         buyQuantity: 48, // 판매된 수량
-        options: [
-          // 옵션 : 조명 색상
-          {
-            name: '조명 색상',
-            values: ['흑색', '흰색'],
-          },
-        ],
-        mainImages: [`/files/${clientId}/little_light_white.webp`, `/files/${clientId}/little_light_black.webp`], // 상품 메인 이미지
+        mainImages: [`/files/${clientId}/little_light_white.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
             <p>식물이 잘 자라는 데 필요한 빛이 부족한가요? 이 세련된 소형 성장 조명으로 실내 식물에 최적의 조명 환경을 만들어 보세요.</p>
@@ -3582,21 +3167,45 @@ export const initData = async (clientId, nextSeq) => {
       {
         _id: await nextSeq('product'), // 상품 고유 ID
         seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-        name: '중형 간접 조명', // 상품명
+        name: '소형 간접 조명 (블랙)', // 상품명
+        price: 10000, // 상품 가격
+        shippingFees: 3000, // 배송비
+        show: true, // 상품 표시 여부
+        active: true, // 상품 활성화 여부
+        quantity: 60, // 상품 재고
+        buyQuantity: 48, // 판매된 수량
+        mainImages: [`/files/${clientId}/little_light_black.webp`], // 상품 메인 이미지
+        content: `
+          <div class="product-detail">
+            <p>식물이 잘 자라는 데 필요한 빛이 부족한가요? 이 세련된 소형 성장 조명으로 실내 식물에 최적의 조명 환경을 만들어 보세요.</p>
+            <p>20W의 이 성장 조명은 중소형 식물이나 크고 어두운 식물과도 잘 어울립니다.</p>
+          </div>
+        `,
+        createdAt: getTime(),
+        updatedAt: getTime(),
+        extra: {
+          isNew: false, // 신상품 여부(boolean)
+          isBest: true, // 베스트 상품 여부(boolean)
+          tags: ['베스트', '초보자', '관리 쉬움'],
+          category: [
+            // 상품 카테고리(array)
+            '원예 용품',
+            '조명',
+          ],
+          sort: 77, // 상품 정렬 순서(number)
+        },
+      },
+      {
+        _id: await nextSeq('product'), // 상품 고유 ID
+        seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
+        name: '중형 간접 조명 (화이트)', // 상품명
         price: 13000, // 상품 가격
         shippingFees: 3000, // 배송비
         show: true, // 상품 표시 여부
         active: true, // 상품 활성화 여부
         quantity: 50, // 상품 재고
         buyQuantity: 25, // 판매된 수량
-        options: [
-          // 옵션 : 조명 색상
-          {
-            name: '조명 색상',
-            values: ['흑색', '흰색'],
-          },
-        ],
-        mainImages: [`/files/${clientId}/middle_light_white.webp`, `/files/${clientId}/middle_light_black.webp`], // 상품 메인 이미지
+        mainImages: [`/files/${clientId}/middle_light_white.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
             <p>대형 식물이 잘 자라는 데 필요한 빛이 부족한가요? 소형 조명 가지고는 부족하다고요? 그렇다면 새로 나온 이 세련된 대형 성장 조명으로 실내 식물에 최적의 조명 환경을 만들어 보세요!</p>
@@ -3614,7 +3223,38 @@ export const initData = async (clientId, nextSeq) => {
             '원예 용품',
             '조명',
           ],
-          sort: 77, // 상품 정렬 순서(number)
+          sort: 78, // 상품 정렬 순서(number)
+        },
+      },
+      {
+        _id: await nextSeq('product'), // 상품 고유 ID
+        seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
+        name: '중형 간접 조명 (블랙)', // 상품명
+        price: 13000, // 상품 가격
+        shippingFees: 3000, // 배송비
+        show: true, // 상품 표시 여부
+        active: true, // 상품 활성화 여부
+        quantity: 50, // 상품 재고
+        buyQuantity: 25, // 판매된 수량
+        mainImages: [`/files/${clientId}/middle_light_black.webp`], // 상품 메인 이미지
+        content: `
+          <div class="product-detail">
+            <p>대형 식물이 잘 자라는 데 필요한 빛이 부족한가요? 소형 조명 가지고는 부족하다고요? 그렇다면 새로 나온 이 세련된 대형 성장 조명으로 실내 식물에 최적의 조명 환경을 만들어 보세요!</p>
+            <p>40W의 이 성장 조명은 대형부터 XXL까지의 식물이나 여러 개의 작은 식물과도 잘 어울립니다.</p>
+          </div>
+        `,
+        createdAt: getTime(),
+        updatedAt: getTime(),
+        extra: {
+          isNew: true, // 신상품 여부(boolean)
+          isBest: false, // 베스트 상품 여부(boolean)
+          tags: ['신상품', '초보자', '관리 쉬움'],
+          category: [
+            // 상품 카테고리(array)
+            '원예 용품',
+            '조명',
+          ],
+          sort: 79, // 상품 정렬 순서(number)
         },
       },
     ],

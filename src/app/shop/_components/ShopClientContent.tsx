@@ -1,4 +1,4 @@
-// src/app/shop/_components/ShopClientContent.tsx (client 컴포넌트)
+// src/app/shop/_components/ShopClientContent.tsx (Grid 레이아웃 적용)
 'use client';
 
 import { Button } from '@/components/ui/Button';
@@ -119,7 +119,11 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
       if (window.innerWidth < 640) {
         setItemsPerPage(6);
       } else if (window.innerWidth < 1024) {
-        setItemsPerPage(6);
+        setItemsPerPage(8);
+      } else if (window.innerWidth < 1280) {
+        setItemsPerPage(9);
+      } else if (window.innerWidth < 1536) {
+        setItemsPerPage(12);
       } else {
         setItemsPerPage(12);
       }
@@ -333,9 +337,6 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
     setCurrentPage(1);
   };
 
-  // 현재 선택된 카테고리 라벨 가져오기
-
-
   return (
     <>
       {/* 모바일/태블릿 레이아웃 */}
@@ -364,7 +365,7 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
             </SheetContent>
           </Sheet>
 
-          <span className='text-surface0 mr-1 ml-auto text-[11px] sm:text-xs'>{filteredProducts.length} products</span>
+          <span className='text-secondary mr-1 ml-auto text-[10px] sm:text-sm md:text-base'>{filteredProducts.length} products</span>
 
           <Select value={sortBy} onValueChange={setSortBy}>
             <SelectTrigger className='h-8 w-[95px] text-xs sm:h-9 sm:w-[115px] sm:text-sm md:w-[135px]'>
@@ -396,7 +397,8 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
               </div>
             </div>
           ) : (
-            <div className='flex flex-wrap justify-center gap-6 sm:gap-8 md:gap-20'>
+            // Grid 레이아웃으로 변경: 모바일 2열, 태블릿 3열
+            <div className='grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-2 md:gap-8'>
               {paginatedProducts.map((product) => (
                 <ProductCard key={product.id} product={product} onClick={handleProductClick} isMobile={true} />
               ))}
@@ -432,11 +434,11 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
         <div className='flex-1'>
           <div className='mb-8 flex items-center justify-between px-16'>
             <div className='flex items-center gap-4'>
-              <span className='text-surface0 t-body'>{filteredProducts.length} products</span>
+              <span className='text-secondary text-lg'>{filteredProducts.length} products</span>
             </div>
             <div className='flex items-center space-x-4'>
               <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className='w-[180px]'>
+                <SelectTrigger className='lg:w-[140px] 2xl:w-[180px]'>
                   <SelectValue placeholder='정렬 기준' />
                 </SelectTrigger>
                 <SelectContent className='[&_[data-radix-select-item-indicator]]:hidden'>
@@ -449,8 +451,8 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
               </Select>
 
               <div className='relative max-w-md'>
-                <Search className='text-surface0 absolute top-1/2 left-3 -translate-y-1/2 transform' size={20} />
-                <Input placeholder='상품을 검색하세요...' value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className='w-80 pl-10' />
+                <Search className='text-secondary absolute top-1/2 left-3 -translate-y-1/2 transform' size={20} />
+                <Input placeholder='상품을 검색하세요...' value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className='w-60 pl-10 2xl:w-80' />
               </div>
             </div>
           </div>
@@ -466,7 +468,7 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
                 </div>
               </div>
             ) : (
-              <div className='flex flex-wrap gap-30'>
+              <div className='grid grid-cols-3 gap-6 xl:grid-cols-3 xl:gap-8 2xl:grid-cols-4 2xl:gap-10'>
                 {paginatedProducts.map((product) => (
                   <ProductCard key={product.id} product={product} onClick={handleProductClick} />
                 ))}

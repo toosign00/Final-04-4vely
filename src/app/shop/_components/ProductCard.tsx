@@ -23,12 +23,12 @@ export default function ProductCard({ product, onClick, isMobile = false }: Prod
   // 모바일 레이아웃
   if (isMobile) {
     return (
-      <div className='my-6 cursor-pointer gap-x-4 transition-all sm:gap-x-6'>
-        <Card className='mb-2 w-full min-w-[130px] overflow-hidden transition-shadow hover:shadow-md sm:min-w-[200px] md:min-w-[280px]'>
-          <div className='relative'>
+      <div className='my-6 cursor-pointer justify-items-center gap-x-4 transition-all sm:gap-x-6'>
+        <Card className='mb-2 w-full max-w-[130px] min-w-[130px] overflow-hidden transition-shadow hover:shadow-md sm:max-w-[200px] md:max-w-[280px]'>
+          <div className='relative w-[130px] sm:w-[200px] md:w-[280px]'>
             {/* 상품 이미지 */}
             <div className='bg-surface relative aspect-square w-full overflow-hidden' onClick={() => onClick(product.id)}>
-              <Image src={product.image || '/placeholder-plant.jpg'} alt={product.name} fill className='object-cover' sizes='(max-width: 640px) 48vw, (max-width: 1024px) 30vw, 200px' priority={false} />
+              <Image src={product.image || '/placeholder-plant.jpg'} alt={product.name} fill className='object-cover' priority={false} />
             </div>
 
             {/* NEW 태그 */}
@@ -43,8 +43,8 @@ export default function ProductCard({ product, onClick, isMobile = false }: Prod
 
         {/* 상품 정보 */}
         <div className='space-y-0.5 text-center' onClick={() => onClick(product.id)}>
-          <h3 className='text-secondary t-desc truncate font-bold'>{product.name}</h3>
-          <p className='text-secondary t-desc'>₩ {product.price.toLocaleString()}</p>
+          <h3 className='text-secondary truncate text-xs font-semibold sm:text-xl md:text-2xl'>{product.name}</h3>
+          <p className='text-secondary text-xs sm:text-lg'>₩ {product.price.toLocaleString()}</p>
         </div>
       </div>
     );
@@ -52,12 +52,12 @@ export default function ProductCard({ product, onClick, isMobile = false }: Prod
 
   // 데스크톱 레이아웃
   return (
-    <div className='my-6 cursor-pointer justify-items-center transition-all xl:w-[300px] 2xl:w-[400px]'>
-      <Card className='mb-4 w-full overflow-hidden transition-shadow hover:shadow-md'>
-        <div className='relative'>
+    <div className='my-6 cursor-pointer justify-items-center transition-all'>
+      <Card className='mb-4 w-full overflow-hidden transition-shadow hover:shadow-md lg:max-w-[150px] lg:min-w-[150px] xl:max-w-[250px] 2xl:max-w-[250px]'>
+        <div className='relative lg:w-[150px] xl:w-[250px] 2xl:w-[250px]'>
           {/* 상품 이미지 */}
           <div className='bg-surface relative aspect-square w-full overflow-hidden' onClick={() => onClick(product.id)}>
-            <Image src={product.image || '/placeholder-plant.jpg'} alt={product.name} fill className='object-cover' sizes='280px' priority={false} />
+            <Image src={product.image || '/placeholder-plant.jpg'} alt={product.name} fill className='object-cover' priority={false} />
           </div>
 
           {/* NEW 태그 */}
@@ -72,8 +72,8 @@ export default function ProductCard({ product, onClick, isMobile = false }: Prod
 
       {/* 상품 정보 */}
       <div className='space-y-1 text-center' onClick={() => onClick(product.id)}>
-        <h3 className='text-secondary t-h3 truncate text-base'>{product.name}</h3>
-        <p className='text-secondary t-body font-bold'>₩ {product.price.toLocaleString()}</p>
+        <h3 className='text-secondary truncate font-semibold lg:text-sm xl:text-xl 2xl:text-2xl'>{product.name}</h3>
+        <p className='text-secondary lg:text-xs xl:text-lg 2xl:text-xl'>₩ {product.price.toLocaleString()}</p>
       </div>
     </div>
   );

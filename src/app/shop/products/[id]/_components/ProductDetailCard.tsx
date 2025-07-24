@@ -39,8 +39,8 @@ export default function ProductDetailCard({ product, onClick }: ProductDetailCar
 
       {/* 상품 정보 */}
       <div className='space-y-1 text-center' onClick={() => onClick(product.id)}>
-        <h3 className='text-secondary t-h3 truncate sm:text-sm lg:text-base'>{product.name}</h3>
-        <p className='text-secondary t-body'>₩ {product.price.toLocaleString()}</p>
+        <h3 className='text-secondary truncate text-xs font-semibold sm:text-xl md:text-2xl lg:text-sm xl:text-xl 2xl:text-2xl'>{product.name}</h3>
+        <p className='text-secondary text-xs sm:text-lg lg:text-xs xl:text-lg 2xl:text-xl'>₩ {product.price.toLocaleString()}</p>
       </div>
     </div>
   );

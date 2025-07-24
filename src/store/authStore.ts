@@ -97,14 +97,8 @@ const useUserStore = create(
         try {
           // 서버 액션을 통해 로그아웃 처리 (token 없이 호출하면 쿠키에서 가져옴)
           await logoutAction();
-
-          if (process.env.NODE_ENV) {
-            console.debug('[로그아웃] 성공');
-          }
         } catch (error) {
-          if (process.env.NODE_ENV) {
-            console.debug('[로그아웃] 오류:', error);
-          }
+          console.error('[로그아웃] 오류:', error);
         } finally {
           // 로컬 상태도 초기화
           set({

@@ -127,17 +127,9 @@ export const useLoginForm = () => {
           });
           setLoading(false);
 
-          // "로그인 기억하기" 처리
-          if (formData.rememberLogin) {
-            // 추가 처리 로직 (예: 더 긴 토큰 만료 시간 설정)
-            console.log('[로그인] 로그인 정보를 기억합니다.');
-          }
-
           // 성공 시 리디렉션
           const redirectUrl = new URLSearchParams(window.location.search).get('redirect');
           router.push(redirectUrl || '/');
-
-          console.log('[로그인 폼] 로그인 성공:', user.email);
 
           return true;
         } else {

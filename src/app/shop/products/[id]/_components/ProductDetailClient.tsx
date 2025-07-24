@@ -5,7 +5,7 @@ import BookmarkButton from '@/app/shop/_components/BookmarkButton';
 import { Button } from '@/components/ui/Button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/Dialog';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/Pagination';
-import { getProductReviewsTransformed } from '@/lib/functions/market';
+import { getProductReviewsTransformed } from '@/lib/functions/productFunctions';
 import { Product, ProductDetail, Review } from '@/types/product';
 import { Minus, Plus, ShoppingCart } from 'lucide-react';
 import Image from 'next/image';

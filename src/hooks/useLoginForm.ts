@@ -103,6 +103,7 @@ export const useLoginForm = () => {
         const credentials: LoginCredentials = {
           email: formData.email.trim(),
           password: formData.password,
+          rememberLogin: formData.rememberLogin,
         };
 
         // 로그인 액션 호출
@@ -133,8 +134,8 @@ export const useLoginForm = () => {
           }
 
           // 성공 시 리디렉션
-          const returnUrl = new URLSearchParams(window.location.search).get('returnUrl');
-          router.push(returnUrl || '/');
+          const redirectUrl = new URLSearchParams(window.location.search).get('redirect');
+          router.push(redirectUrl || '/');
 
           console.log('[로그인 폼] 로그인 성공:', user.email);
 

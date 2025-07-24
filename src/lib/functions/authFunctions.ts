@@ -27,6 +27,14 @@ export async function loginAction(credentials: LoginCredentials): Promise<LoginR
     if (result.ok === 1) {
       const cookieStore = await cookies();
 
+      // rememberLogin 값에 따라 만료시간 분기
+      const userAuthMaxAge = credentials.rememberLogin ? 60 * 60 * 24 * 7 : 60 * 60 * 24; // 7일 or 1일
+      const refreshTokenMaxAge = credentials.rememberLogin ? 60 * 60 * 24 * 14 : 60 * 60 * 24 * 7; // 14일 or 7일
+
+      // 만료시간을 일(day) 단위로 콘솔에 출력
+      console.log('[쿠키 만료시간] user-auth:', userAuthMaxAge / (60 * 60 * 24), '일');
+      console.log('[쿠키 만료시간] refresh-token:', refreshTokenMaxAge / (60 * 60 * 24), '일');
+
       // 사용자 정보를 안전하게 쿠키에 저장 (httpOnly 옵션으로 XSS 방지)
       cookieStore.set(
         'user-auth',
@@ -51,7 +59,7 @@ export async function loginAction(credentials: LoginCredentials): Promise<LoginR
           httpOnly: false, // zustand에서 접근해야 하므로 false
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'strict',
-          maxAge: 60 * 60 * 24, // 1일
+          maxAge: userAuthMaxAge, // 7일 or 1일
           path: '/',
         },
       );
@@ -62,7 +70,7 @@ export async function loginAction(credentials: LoginCredentials): Promise<LoginR
           httpOnly: true, // 클라이언트에서 접근 불가 (보안 강화)
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'strict',
-          maxAge: 60 * 60 * 24 * 7, // 7일
+          maxAge: refreshTokenMaxAge, // 14일 or 7일
           path: '/',
         });
       }

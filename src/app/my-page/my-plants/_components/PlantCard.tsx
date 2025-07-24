@@ -21,9 +21,10 @@ export interface Plant {
 interface PlantCardProps {
   plant: Plant;
   onDelete?: (id: number) => void;
+  isDeleting?: boolean;
 }
 
-export default function PlantCard({ plant, onDelete }: PlantCardProps) {
+export default function PlantCard({ plant, onDelete, isDeleting = false }: PlantCardProps) {
   const router = useRouter();
 
   const handleViewJournal = () => {
@@ -63,12 +64,12 @@ export default function PlantCard({ plant, onDelete }: PlantCardProps) {
         </div>
         {/* 액션 버튼들 */}
         <div className='flex gap-2'>
-          <Button variant='primary' size='sm' className='flex-1' onClick={handleViewJournal}>
+          <Button variant='primary' size='sm' className='flex-1' onClick={handleViewJournal} disabled={isDeleting}>
             일지 보기
           </Button>
-          <Button variant='destructive' size='sm' onClick={() => onDelete?.(plant.id)}>
+          <Button variant='destructive' size='sm' onClick={() => onDelete?.(plant.id)} disabled={isDeleting}>
             <Trash2 className='h-4 w-4' />
-            삭제
+            {isDeleting ? '삭제 중...' : '삭제'}
           </Button>
         </div>
       </div>

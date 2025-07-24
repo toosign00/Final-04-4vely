@@ -27,6 +27,14 @@ export async function loginAction(credentials: LoginCredentials): Promise<LoginR
     if (result.ok === 1) {
       const cookieStore = await cookies();
 
+      // rememberLogin 값에 따라 만료시간 분기
+      const userAuthMaxAge = credentials.rememberLogin ? 60 * 60 * 24 * 7 : 60 * 60 * 24; // 7일 or 1일
+      const refreshTokenMaxAge = credentials.rememberLogin ? 60 * 60 * 24 * 14 : 60 * 60 * 24 * 7; // 14일 or 7일
+
+      // 만료시간을 일(day) 단위로 콘솔에 출력
+      console.log('[쿠키 만료시간] user-auth:', userAuthMaxAge / (60 * 60 * 24), '일');
+      console.log('[쿠키 만료시간] refresh-token:', refreshTokenMaxAge / (60 * 60 * 24), '일');
+
       // 사용자 정보를 안전하게 쿠키에 저장 (httpOnly 옵션으로 XSS 방지)
       cookieStore.set(
         'user-auth',
@@ -51,7 +59,7 @@ export async function loginAction(credentials: LoginCredentials): Promise<LoginR
           httpOnly: false, // zustand에서 접근해야 하므로 false
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'strict',
-          maxAge: 60 * 60 * 24, // 1일
+          maxAge: userAuthMaxAge, // 7일 or 1일
           path: '/',
         },
       );
@@ -62,7 +70,7 @@ export async function loginAction(credentials: LoginCredentials): Promise<LoginR
           httpOnly: true, // 클라이언트에서 접근 불가 (보안 강화)
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'strict',
-          maxAge: 60 * 60 * 24 * 7, // 7일
+          maxAge: refreshTokenMaxAge, // 14일 or 7일
           path: '/',
         });
       }
@@ -140,40 +148,18 @@ export async function refreshTokenAction(refreshToken?: string): Promise<ApiRes<
  * @param token - 인증 토큰 (선택사항, 없으면 쿠키에서 가져옴)
  * @returns 표준화된 API 응답 형태
  */
-export async function logoutAction(token?: string): Promise<ApiRes<{ message: string }>> {
+export async function logoutAction(): Promise<ApiRes<{ message: string }>> {
   try {
     const cookieStore = await cookies();
 
-    // token이 제공되지 않으면 쿠키에서 가져오기
-    let tokenToUse = token;
-    if (!tokenToUse) {
-      const userAuthCookie = cookieStore.get('user-auth')?.value;
-      if (userAuthCookie) {
-        try {
-          const userData = JSON.parse(userAuthCookie);
-          tokenToUse = userData.state?.user?.token?.accessToken;
-        } catch (parseError) {
-          console.error('[로그아웃 액션] 쿠키 파싱 오류:', parseError);
-        }
-      }
-    }
-
-    // 내부 함수 호출 (토큰이 없어도 로그아웃 처리)
-    let result;
-    if (tokenToUse) {
-      result = await logoutUser(tokenToUse);
-    } else {
-      result = {
-        ok: 1 as const,
-        item: { message: '로컬 로그아웃 처리되었습니다.' },
-      };
-    }
-
-    // 로그아웃 처리 후 모든 관련 쿠키 삭제
+    // 로그아웃 처리: 쿠키만 삭제
     cookieStore.delete('user-auth');
     cookieStore.delete('refresh-token');
 
-    return result;
+    return {
+      ok: 1,
+      item: { message: '로그아웃 처리되었습니다.' },
+    };
   } catch (error) {
     console.error('[로그아웃 액션] 오류:', error);
 
@@ -259,54 +245,6 @@ async function loginUser(credentials: LoginCredentials): Promise<LoginResult> {
     return {
       ok: 0,
       message: '네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
-    };
-  }
-}
-
-/**
- * 로그아웃 API 호출 함수
- * @param token - 인증 토큰
- * @returns 표준화된 API 응답 형태
- */
-async function logoutUser(token: string): Promise<ApiRes<{ message: string }>> {
-  try {
-    if (!token) {
-      return {
-        ok: 0,
-        message: '토큰이 제공되지 않았습니다.',
-      };
-    }
-
-    // 외부 API에 로그아웃 요청
-    const res = await fetch(`${API_URL}/users/logout`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        'Client-Id': CLIENT_ID || '',
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    // API 응답 처리
-    if (!res.ok) {
-      const errorData = await res.json();
-      console.error('[로그아웃 함수] API 오류:', errorData);
-      return {
-        ok: 0,
-        message: errorData.message || '로그아웃에 실패했습니다.',
-      };
-    }
-
-    console.log('[로그아웃 함수] 성공');
-    return {
-      ok: 1,
-      item: { message: '성공적으로 로그아웃되었습니다.' },
-    };
-  } catch (error) {
-    console.error('[로그아웃 함수] 오류:', error);
-    return {
-      ok: 0,
-      message: '서버 오류가 발생했습니다.',
     };
   }
 }

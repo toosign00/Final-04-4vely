@@ -335,7 +335,6 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
 
   // 현재 선택된 카테고리 라벨 가져오기
 
-
   return (
     <>
       {/* 모바일/태블릿 레이아웃 */}

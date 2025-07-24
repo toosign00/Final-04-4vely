@@ -13,11 +13,6 @@ export function useLoginToast() {
       setTimeout(() => {
         toast.warning('로그인이 필요한 서비스입니다.', {
           description: '로그인 후 이용해주세요.',
-          duration: 2500,
-          style: {
-            backgroundColor: 'white',
-            color: 'var(--color-secondary)',
-          },
         });
       }, 500);
     }

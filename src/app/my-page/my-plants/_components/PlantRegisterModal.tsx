@@ -4,15 +4,17 @@ import { Button } from '@/components/ui/Button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/Dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
 import { Input } from '@/components/ui/Input';
+import { createPlant } from '@/lib/api/actions/plantActions';
 import { Plus } from 'lucide-react';
 import Image from 'next/image';
 import { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useImageUpload } from '../_hooks/useImageUpload';
+import { toast } from 'sonner';
 
 interface PlantRegisterModalProps {
   open: boolean;
   onClose: () => void;
+  onSuccess?: () => void; // 등록 성공 시 콜백
 }
 
 interface FormData {
@@ -23,8 +25,11 @@ interface FormData {
   memo: string;
 }
 
-export default function PlantRegisterModal({ open, onClose }: PlantRegisterModalProps) {
+export default function PlantRegisterModal({ open, onClose, onSuccess }: PlantRegisterModalProps) {
   const [loading, setLoading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [imageError, setImageError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<FormData>({
@@ -37,15 +42,26 @@ export default function PlantRegisterModal({ open, onClose }: PlantRegisterModal
     },
   });
 
-  const { images, uploading, error: imageError, handleFileUpload, clearImages, clearError: clearImageError, setError: setImageError } = useImageUpload(1);
-
   // 이미지 업로드 핸들러
-  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    clearImageError();
-    await handleFileUpload(file);
+    // 파일 크기 검증 (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setImageError('파일 크기는 5MB 이하여야 합니다.');
+      return;
+    }
+
+    // 파일 타입 검증
+    if (!file.type.startsWith('image/')) {
+      setImageError('이미지 파일만 업로드 가능합니다.');
+      return;
+    }
+
+    setSelectedFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
+    setImageError(null);
   };
 
   // 이미지 영역 클릭 핸들러
@@ -53,35 +69,58 @@ export default function PlantRegisterModal({ open, onClose }: PlantRegisterModal
     fileInputRef.current?.click();
   };
 
+  // 이미지 제거 핸들러
+  const handleImageRemove = () => {
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    setImageError(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   // 폼 제출 핸들러
   const onSubmit = async (data: FormData) => {
     // 이미지 필수 검증
-    if (images.length === 0) {
+    if (!selectedFile) {
       setImageError('식물 사진을 업로드해주세요.');
       return;
     }
 
     setLoading(true);
 
-    // 실제 등록 로직 없이 UI 시뮬레이션만
-    setTimeout(() => {
-      console.log('폼 데이터:', {
-        ...data,
-        imageUrl: images[0],
-      });
+    try {
+      // FormData 생성
+      const formData = new FormData();
+      formData.append('name', data.name);
+      formData.append('species', data.species);
+      formData.append('location', data.location);
+      formData.append('memo', data.memo);
+      formData.append('attach', selectedFile);
 
-      // 폼 초기화
-      resetForm();
-      onClose();
+      // API 호출
+      const result = await createPlant(formData);
+
+      if (result.ok) {
+        toast.success('식물이 성공적으로 등록되었습니다!');
+        resetForm();
+        onClose();
+        onSuccess?.(); // 부모 컴포넌트에 성공 알림
+      } else {
+        toast.error(result.message || '식물 등록에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('식물 등록 오류:', error);
+      toast.error('식물 등록 중 오류가 발생했습니다.');
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   // 폼 초기화
   const resetForm = () => {
     form.reset();
-    clearImages();
-    clearImageError();
+    handleImageRemove();
   };
 
   // 모달 닫기 핸들러
@@ -111,14 +150,14 @@ export default function PlantRegisterModal({ open, onClose }: PlantRegisterModal
                       <div className='flex w-55 flex-col'>
                         <label className='t-small mb-2 font-medium'>식물 사진 *</label>
                         <div onClick={handleImageAreaClick} className='relative cursor-pointer transition-all hover:opacity-80'>
-                          {images.length > 0 ? (
+                          {previewUrl ? (
                             <div className='relative'>
-                              <Image src={images[0] as string} alt='식물 미리보기' width={160} height={160} className='h-40 w-40 rounded-2xl border-2 border-gray-200 object-cover shadow-lg' />
+                              <Image src={previewUrl} alt='식물 미리보기' width={160} height={160} className='h-40 w-40 rounded-2xl border-2 border-gray-200 object-cover shadow-lg' />
                               <button
                                 type='button'
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  clearImages();
+                                  handleImageRemove();
                                 }}
                                 className='absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-sm text-white shadow-lg transition-colors hover:bg-red-600'
                               >
@@ -134,7 +173,7 @@ export default function PlantRegisterModal({ open, onClose }: PlantRegisterModal
                         </div>
                       </div>
                     </div>
-                    <input ref={fileInputRef} type='file' accept='image/*' onChange={handleImageChange} disabled={uploading || loading} className='hidden' />
+                    <input ref={fileInputRef} type='file' accept='image/*' onChange={handleImageChange} disabled={loading} className='hidden' />
                     <div className='flex justify-center'>
                       <div className='w-55'>
                         {imageError && <p className='text-error min-h-[1rem] px-2 text-xs leading-4'>{imageError}</p>}
@@ -158,12 +197,16 @@ export default function PlantRegisterModal({ open, onClose }: PlantRegisterModal
                         value: 1,
                         message: '식물 별명을 입력해주세요.',
                       },
+                      maxLength: {
+                        value: 20,
+                        message: '식물 별명은 20자 이하로 입력해주세요.',
+                      },
                     }}
                     render={({ field }) => (
                       <FormItem className='min-h-20'>
                         <FormLabel className='t-small font-medium'>식물 별명 *</FormLabel>
                         <FormControl>
-                          <Input placeholder='예: 초록이' disabled={loading} className='h-11' {...field} />
+                          <Input placeholder='예: 초록이' disabled={loading} className='h-11' maxLength={20} {...field} />
                         </FormControl>
                         <FormMessage className='text-error mt-1 min-h-[1rem] text-xs leading-4' />
                       </FormItem>
@@ -179,12 +222,16 @@ export default function PlantRegisterModal({ open, onClose }: PlantRegisterModal
                         value: 1,
                         message: '식물명을 입력해주세요.',
                       },
+                      maxLength: {
+                        value: 30,
+                        message: '식물명은 30자 이하로 입력해주세요.',
+                      },
                     }}
                     render={({ field }) => (
                       <FormItem className='min-h-20'>
                         <FormLabel className='t-small font-medium'>식물명 *</FormLabel>
                         <FormControl>
-                          <Input placeholder='예: 몬스테라' disabled={loading} className='h-11' {...field} />
+                          <Input placeholder='예: 몬스테라' disabled={loading} className='h-11' maxLength={30} {...field} />
                         </FormControl>
                         <FormMessage className='text-error mt-1 min-h-[1rem] text-xs leading-4' />
                       </FormItem>
@@ -203,12 +250,16 @@ export default function PlantRegisterModal({ open, onClose }: PlantRegisterModal
                         value: 1,
                         message: '식물 위치를 입력해주세요.',
                       },
+                      maxLength: {
+                        value: 20,
+                        message: '식물 위치는 20자 이하로 입력해주세요.',
+                      },
                     }}
                     render={({ field }) => (
                       <FormItem className='min-h-20'>
                         <FormLabel className='t-small font-medium'>식물 위치 *</FormLabel>
                         <FormControl>
-                          <Input placeholder='예: 거실' disabled={loading} className='h-11' {...field} />
+                          <Input placeholder='예: 거실' disabled={loading} className='h-11' maxLength={20} {...field} />
                         </FormControl>
                         <FormMessage className='text-error mt-1 min-h-[1rem] text-xs leading-4' />
                       </FormItem>
@@ -246,12 +297,16 @@ export default function PlantRegisterModal({ open, onClose }: PlantRegisterModal
                     value: 1,
                     message: '메모를 입력해주세요.',
                   },
+                  maxLength: {
+                    value: 200,
+                    message: '메모는 200자 이하로 입력해주세요.',
+                  },
                 }}
                 render={({ field }) => (
                   <FormItem className='min-h-20'>
                     <FormLabel className='t-small font-medium'>메모 *</FormLabel>
                     <FormControl>
-                      <Input placeholder='식물에 대한 간단한 메모를 작성해주세요' disabled={loading} className='h-11' {...field} />
+                      <Input placeholder='식물에 대한 간단한 메모를 작성해주세요' disabled={loading} className='h-11' maxLength={200} {...field} />
                     </FormControl>
                     <FormMessage className='text-error mt-1 min-h-[1rem] text-xs leading-4' />
                   </FormItem>
@@ -264,7 +319,7 @@ export default function PlantRegisterModal({ open, onClose }: PlantRegisterModal
               <Button type='button' variant='outline' onClick={handleClose} disabled={loading}>
                 취소
               </Button>
-              <Button type='submit' variant='primary' disabled={loading || uploading}>
+              <Button type='submit' variant='primary' disabled={loading}>
                 {loading ? '등록 중...' : '등록하기'}
               </Button>
             </DialogFooter>

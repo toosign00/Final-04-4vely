@@ -29,7 +29,18 @@ export default function RootLayout({
       <body className={`${pretendard.className} bg-surface`}>
         <Header />
         <main>
-          <Toaster />
+          <Toaster
+            position='top-center'
+            richColors={true}
+            theme='light'
+            closeButton={true}
+            toastOptions={{
+              duration: 2500,
+              style: {
+                fontFamily: 'var(--font-pretendard)',
+              },
+            }}
+          />
           {children}
         </main>
         <Footer />

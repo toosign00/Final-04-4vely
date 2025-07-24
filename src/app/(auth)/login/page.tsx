@@ -1,10 +1,12 @@
 import loginPlantIcon from '@/assets/images/login_plant_character.webp';
 import Image from 'next/image';
 import LoginForm from './_components/LoginForm';
+import LoginToast from './_components/LoginToast';
 
 export default function LoginPage() {
   return (
     <div className='mb-15 flex w-full flex-col items-center p-4 md:p-6 lg:p-8'>
+      <LoginToast />
       <h1 className='t-h1 mt-5'>
         <span className='text-accent'>작은 초록,</span> 당신의 하루를 반짝이게.
       </h1>

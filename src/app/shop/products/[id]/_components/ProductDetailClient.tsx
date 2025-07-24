@@ -1,4 +1,4 @@
-// src/app/shop/products/[id]/_components/ProductDetailClient.tsx (client 컴포넌트)
+// src/app/shop/products/[id]/_components/ProductDetailClient.tsx (최종 버전)
 'use client';
 
 import BookmarkButton from '@/app/shop/_components/BookmarkButton';
@@ -44,19 +44,35 @@ const getColorMapping = (koreanColor: string): { englishName: string; hexColor: 
 export default function ProductDetailClient({ product, recommendProducts, initialReviews, initialReviewsPagination, productId }: ProductDetailClientProps) {
   const router = useRouter();
 
-  // 상품의 화분 색상 옵션 추출
-  const potColorOption = useMemo(() => {
-    return product.options?.find((option) => option.name === '화분 색상');
-  }, [product.options]);
+  // 디버깅 로그
+  console.log('=== ProductDetailClient 컴포넌트 디버깅 ===');
+  console.log('전달받은 product:', product);
+  console.log('product.extra:', product.extra);
+  console.log('product.extra.potColors:', product.extra?.potColors);
+  console.log('product.mainImages:', product.mainImages);
+
+  // 상품의 화분 색상 정보 추출
+  const colorValues = useMemo(() => {
+    const potColors = product.extra?.potColors;
+    console.log('추출된 potColors:', potColors);
+
+    if (potColors && Array.isArray(potColors) && potColors.length > 0) {
+      return potColors;
+    }
+
+    return null;
+  }, [product.extra?.potColors]);
 
   // 색상 옵션이 있는지 확인
-  const hasColorOptions = Boolean(potColorOption?.values && potColorOption.values.length > 0);
+  const hasColorOptions = Boolean(colorValues && colorValues.length > 0);
+  console.log('hasColorOptions:', hasColorOptions);
+  console.log('colorValues:', colorValues);
 
   // 동적 색상 옵션 생성
   const colorOptions: ColorOption[] = useMemo(() => {
-    if (!hasColorOptions) return [];
+    if (!hasColorOptions || !colorValues) return [];
 
-    return potColorOption!.values.map((koreanColor) => {
+    return colorValues.map((koreanColor) => {
       const { englishName, hexColor } = getColorMapping(koreanColor);
       return {
         value: englishName,
@@ -64,7 +80,9 @@ export default function ProductDetailClient({ product, recommendProducts, initia
         color: hexColor,
       };
     });
-  }, [potColorOption, hasColorOptions]);
+  }, [colorValues, hasColorOptions]);
+
+  console.log('생성된 colorOptions:', colorOptions);
 
   // 선택된 색상 상태 (첫 번째 색상을 기본값으로)
   const [selectedColorIndex, setSelectedColorIndex] = useState(0);
@@ -85,8 +103,19 @@ export default function ProductDetailClient({ product, recommendProducts, initia
 
     // 선택된 색상 인덱스에 해당하는 이미지가 있으면 사용, 없으면 첫 번째 이미지 사용
     const imageIndex = Math.min(selectedColorIndex, product.mainImages.length - 1);
-    return product.mainImages[imageIndex] || product.image;
+    const selectedImagePath = product.mainImages[imageIndex];
+
+    // 이미지 URL 생성
+    if (!selectedImagePath) return product.image;
+    if (selectedImagePath.startsWith('http')) return selectedImagePath;
+
+    const API_BASE_URL = process.env.NEXT_PUBLIC_API_SERVER || 'https://fesp-api.koyeb.app/market';
+    return `${API_BASE_URL}${selectedImagePath}`;
   }, [hasColorOptions, product.mainImages, product.image, selectedColorIndex]);
+
+  console.log('currentImageUrl:', currentImageUrl);
+  console.log('selectedColorIndex:', selectedColorIndex);
+  console.log('=== 디버깅 끝 ===');
 
   // 리뷰 데이터 로딩 (페이지 변경 시)
   useEffect(() => {
@@ -132,7 +161,7 @@ export default function ProductDetailClient({ product, recommendProducts, initia
   };
 
   const handleAddToCart = () => {
-    // TODO: 선택된 색상 정보도 함께 장바구니에 추가
+    // 선택된 색상 정보도 함께 장바구니에 추가
     const selectedColorInfo = hasColorOptions
       ? {
           colorIndex: selectedColorIndex,
@@ -159,7 +188,7 @@ export default function ProductDetailClient({ product, recommendProducts, initia
   };
 
   const handlePurchase = () => {
-    // TODO: 선택된 색상 정보도 함께 주문에 포함
+    // 선택된 색상 정보도 함께 주문에 포함
     const selectedColorInfo = hasColorOptions
       ? {
           colorIndex: selectedColorIndex,
@@ -195,6 +224,16 @@ export default function ProductDetailClient({ product, recommendProducts, initia
   // 계산된 값
   const totalPrice = product.price * quantity;
   const totalReviewPages = reviewsPagination.totalPages;
+
+  // 카테고리 표시 이름 가져오기
+  const getCategoryDisplayName = () => {
+    if (product.mainCategory === 'plant') {
+      return '식물';
+    } else if (product.mainCategory === 'supplies') {
+      return '원예 용품';
+    }
+    return '';
+  };
 
   // 리뷰 페이지네이션 렌더링
   const renderReviewPagination = () => (
@@ -274,8 +313,9 @@ export default function ProductDetailClient({ product, recommendProducts, initia
 
         {/* 상품 정보 섹션 */}
         <div className='mx-4 mt-6 w-auto sm:mx-6 sm:mt-8 md:mx-8'>
-          {/* 상품명 */}
+          {/* 카테고리 및 상품명 */}
           <div className='mb-4'>
+            <p className='mb-2 text-sm text-gray-500'>{getCategoryDisplayName()}</p>
             <h1 className='text-secondary t-h1 mb-4'>{product.name}</h1>
           </div>
 
@@ -437,6 +477,9 @@ export default function ProductDetailClient({ product, recommendProducts, initia
 
             {/* 상품 정보 */}
             <div className='w-full min-w-[280px] flex-1'>
+              {/* 카테고리 */}
+              <p className='mb-2 text-lg text-gray-500'>{getCategoryDisplayName()}</p>
+
               <h1 className='text-secondary mb-6 text-3xl font-bold xl:text-4xl 2xl:text-5xl'>{product.name}</h1>
 
               {/* 태그 */}

@@ -1,13 +1,13 @@
 // src/types/product.ts
 
-/* API 응답 타입 (백엔드에서 오는 데이터) */
+// type alias
+export type ApiResPromise<T> = Promise<ApiRes<T>>;
 
-// API 응답 공통 구조 (강사님 스타일)
 export interface ApiRes<T> {
-  ok: number; // 1: 성공, 0: 실패
-  message?: string; // 에러 메시지 (실패 시 필수)
-  item?: T; // 단일 아이템
-  items?: T[]; // 배열 아이템
+  ok: number;
+  message?: string;
+  item?: T;
+  items?: T[];
   pagination?: {
     page: number;
     limit: number;
@@ -16,41 +16,87 @@ export interface ApiRes<T> {
   };
 }
 
-// API Promise 타입
-export type ApiResPromise<T> = Promise<ApiRes<T>>;
+// 상품 옵션 인터페이스
+export interface ProductOption {
+  name: string;
+  values: string[];
+}
 
-// 기존 호환성을 위한 별칭
-export type ApiResponse<T> = ApiRes<T>;
+// extra 필드 타입 정의
+export interface ProductExtra {
+  isNew?: boolean;
+  isBest?: boolean;
+  tags?: string[];
+  category?: string[];
+  potColors?: string[];
+  sort?: number;
+}
 
-// 상품 API 데이터 (백엔드에서 오는 원본 구조)
+// API에서 받아오는 원본 상품 데이터 타입
 export interface ProductApiData {
   _id: number;
   seller_id: number;
+  name: string;
   price: number;
-  shippingFees?: number;
-  show?: boolean;
-  active?: boolean;
+  shippingFees: number;
+  show: boolean;
+  active: boolean;
   quantity: number;
   buyQuantity: number;
-  name: string;
+  options?: ProductOption[];
+  mainImages?: string[];
   content?: string;
   createdAt: string;
   updatedAt: string;
-  mainImages: string[];
-  options?: Array<{
-    name: string;
-    values: string[];
-  }>;
-  extra?: {
-    isNew?: boolean;
-    isBest?: boolean;
-    category?: string[];
-    tags?: string[];
-    sort?: number;
-  };
+  extra?: ProductExtra;
 }
 
-// 리뷰 API 데이터
+// 메인 카테고리 타입
+export type ProductMainCategory = 'plant' | 'supplies';
+
+// 식물 속성 타입
+export interface PlantAttributes {
+  size: '소형' | '중형' | '대형';
+  difficulty: '쉬움' | '보통' | '어려움';
+  light: '음지' | '간접광' | '직사광';
+  space: '실외' | '거실' | '침실' | '욕실' | '주방' | '사무실';
+  season: '봄' | '여름' | '가을' | '겨울';
+}
+
+// 원예용품 속성 타입
+export interface SuppliesAttributes {
+  category: '화분' | '도구' | '조명';
+}
+
+// UI에서 사용하는 기본 상품 타입
+export interface Product {
+  id: string;
+  name: string;
+  image: string;
+  price: number;
+  mainCategory: ProductMainCategory;
+  isNew: boolean;
+  isBookmarked: boolean;
+  recommend: boolean;
+  originalCategories: string[]; // 필터링 용
+  plantAttributes?: PlantAttributes;
+  suppliesAttributes?: SuppliesAttributes;
+}
+
+// 상품 상세 페이지용 확장 타입
+export interface ProductDetail extends Product {
+  content: string;
+  tags: string[];
+  quantity: number;
+  buyQuantity: number;
+  seller_id: number;
+  createdAt: string;
+  updatedAt: string;
+  mainImages?: string[];
+  extra?: ProductExtra;
+}
+
+// API에서 받아오는 리뷰 데이터 타입
 export interface ReviewApiData {
   _id: number;
   user_id: number;
@@ -60,64 +106,13 @@ export interface ReviewApiData {
   createdAt: string;
   updatedAt: string;
   user?: {
+    _id: number;
     name: string;
     image?: string;
   };
 }
 
-/* UI에서 사용하는 타입 (변환된 데이터) */
-
-// 기본 상품 카테고리 타입
-export type ProductMainCategory = 'plant' | 'supplies';
-
-// UI에서 사용하는 상품 타입
-export interface Product {
-  id: string;
-  name: string;
-  image: string;
-  price: number;
-  mainCategory: ProductMainCategory;
-
-  // 공통 속성
-  isNew: boolean;
-  isBookmarked: boolean;
-  recommend: boolean;
-
-  // 원본 카테고리 배열 (필터)
-  originalCategories: string[];
-
-  // 식물 전용 속성
-  plantAttributes?: {
-    size: '소형' | '중형' | '대형';
-    difficulty: '쉬움' | '보통' | '어려움';
-    light: '음지' | '간접광' | '직사광';
-    space: '실외' | '거실' | '침실' | '욕실' | '주방' | '사무실';
-    season: '봄' | '여름' | '가을' | '겨울';
-  };
-
-  // 원예용품 전용 속성
-  suppliesAttributes?: {
-    category: '화분' | '도구' | '조명';
-  };
-}
-
-// 상품 상세 정보 (Product 확장)
-export interface ProductDetail extends Product {
-  content?: string;
-  tags?: string[];
-  quantity?: number;
-  buyQuantity?: number;
-  seller_id?: number;
-  createdAt?: string;
-  updatedAt?: string;
-  mainImages?: string[];
-  options?: Array<{
-    name: string;
-    values: string[];
-  }>;
-}
-
-// 리뷰 타입 (UI용)
+// UI에서 사용하는 리뷰 타입
 export interface Review {
   id: string;
   userName: string;
@@ -127,87 +122,17 @@ export interface Review {
   content: string;
 }
 
-/* 필터 타입 */
-
-// 식물 필터
-export interface PlantFilter {
-  size: string[];
-  difficulty: string[];
-  light: string[];
-  space: string[];
-  season: string[];
-}
-
-// 원예용품 필터
-export interface SuppliesFilter {
-  category: string[];
-}
-
-// 통합 필터 (카테고리 별로 조건부 사용)
+// 필터링 관련 타입들
 export interface CategoryFilter {
-  // 식물 필터
   size: string[];
   difficulty: string[];
   light: string[];
   space: string[];
   season: string[];
-  // 원예용품 필터
   category: string[];
 }
 
-// 정렬 옵션
 export interface SortOption {
   value: string;
   label: string;
-}
-
-/* 장바구니 및 주문 타입 (추후에 안 쓰면 삭제) */
-
-// 장바구니 아이템
-export interface CartItem {
-  id: string;
-  productId: string;
-  productName: string;
-  productImage: string;
-  price: number;
-  quantity: number;
-  color?: string;
-  selectedOptions?: Record<string, string | number | boolean>;
-}
-
-// 주문 정보
-export interface Order {
-  id: string;
-  items: CartItem[];
-  totalAmount: number;
-  orderDate: string;
-  status: 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
-  shippingAddress: {
-    name: string;
-    phone: string;
-    address: string;
-    detailAddress: string;
-    zipCode: string;
-  };
-  paymentMethod: string;
-}
-
-// 북마크
-export interface Bookmark {
-  id: string;
-  productId: string;
-  userId: string;
-  createdAt: string;
-}
-
-// 사용자
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  phone?: string;
-  image?: string;
-  role: 'user' | 'seller' | 'admin';
-  createdAt: string;
-  updatedAt: string;
 }

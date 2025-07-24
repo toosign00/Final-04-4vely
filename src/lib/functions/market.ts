@@ -28,7 +28,7 @@ function determineMainCategory(categories: string[]): ProductMainCategory {
   if (categories?.some((cat) => suppliesCategories.includes(cat))) {
     return 'supplies';
   }
-  return 'plant';
+  return 'plant'; // 기본값
 }
 
 /**
@@ -71,7 +71,7 @@ function transformProductApiToProduct(productApi: ProductApiData): Product {
     isNew: productApi.extra?.isNew || false,
     isBookmarked: false, // 초기값, 나중에 북마크 스토어에서 업데이트
     recommend: productApi.extra?.isBest || false,
-    originalCategories: categories,
+    originalCategories: categories, // 필터링 용
   };
 
   // 카테고리별 속성 추가
@@ -88,9 +88,15 @@ function transformProductApiToProduct(productApi: ProductApiData): Product {
  * API 상품 데이터를 UI용 ProductDetail 타입으로 변환
  */
 function transformProductApiToProductDetail(productApi: ProductApiData): ProductDetail {
+  console.log('=== transformProductApiToProductDetail 디버깅 ===');
+  console.log('원본 API 데이터:', productApi);
+  console.log('extra 데이터:', productApi.extra);
+  console.log('extra.potColors:', productApi.extra?.potColors);
+  console.log('mainImages 데이터:', productApi.mainImages);
+
   const baseProduct = transformProductApiToProduct(productApi);
 
-  return {
+  const productDetail: ProductDetail = {
     ...baseProduct,
     content: productApi.content || '',
     tags: productApi.extra?.tags || [],
@@ -100,8 +106,15 @@ function transformProductApiToProductDetail(productApi: ProductApiData): Product
     createdAt: productApi.createdAt,
     updatedAt: productApi.updatedAt,
     mainImages: productApi.mainImages,
-    options: productApi.options,
+    extra: productApi.extra,
   };
+
+  console.log('변환된 ProductDetail:', productDetail);
+  console.log('변환된 extra:', productDetail.extra);
+  console.log('변환된 potColors:', productDetail.extra?.potColors);
+  console.log('=== 디버깅 끝 ===');
+
+  return productDetail;
 }
 
 /**
@@ -164,6 +177,9 @@ export async function getProducts(params?: { page?: number; limit?: number; keyw
  */
 export async function getProduct(productId: number): ApiResPromise<ProductApiData> {
   try {
+    console.log('=== getProduct API 호출 ===');
+    console.log('productId:', productId);
+
     const res = await fetch(`${API_BASE_URL}/products/${productId}`, {
       headers: {
         'Content-Type': 'application/json',
@@ -171,7 +187,11 @@ export async function getProduct(productId: number): ApiResPromise<ProductApiDat
       },
     });
 
-    return res.json();
+    const result = await res.json();
+    console.log('API 응답:', result);
+    console.log('=== getProduct API 끝 ===');
+
+    return result;
   } catch (error) {
     console.error('상품 상세 조회 실패:', error);
     return {
@@ -278,6 +298,9 @@ export async function getProductDetailWithRelatedData(id: string): Promise<{
   reviewsPagination: { total: number; totalPages: number };
 }> {
   try {
+    console.log('=== getProductDetailWithRelatedData 시작 ===');
+    console.log('상품 ID:', id);
+
     // 현재 상품 정보 가져오기
     const productResponse = await getProduct(parseInt(id));
 
@@ -285,7 +308,11 @@ export async function getProductDetailWithRelatedData(id: string): Promise<{
       throw new Error('상품을 찾을 수 없습니다.');
     }
 
+    console.log('상품 응답 데이터:', productResponse.item);
+
     const transformedProduct = transformProductApiToProductDetail(productResponse.item);
+
+    console.log('변환된 상품 데이터:', transformedProduct);
 
     // 추천 상품 로직
     const recommendedProducts = await generateSmartRecommendations(transformedProduct, id);
@@ -307,6 +334,8 @@ export async function getProductDetailWithRelatedData(id: string): Promise<{
         totalPages: reviewsResponse.pagination?.totalPages || Math.ceil(initialReviews.length / 2),
       };
     }
+
+    console.log('=== getProductDetailWithRelatedData 끝 ===');
 
     return {
       product: transformedProduct,
@@ -366,7 +395,7 @@ export async function getProductReviewsTransformed(
   }
 }
 
-// 추천 상품 로직
+/* 추천 상품 로직 */
 
 /**
  * 배열에서 랜덤하게 지정된 개수만큼 선택
@@ -390,7 +419,7 @@ function findPlantsByMatchingTags(currentProduct: ProductDetail, allPlants: Prod
     return plantTags.length > 0; // 하나라도 태그가 일치하면 포함
   });
 
-  // 태그 일치도에 따라 정렬 (더 많은 태그가 일치할 수록 우선 순위)
+  // 태그 일치도에 따라 정렬 (더 많은 태그가 일치할수록 우선순위)
   matchingPlants.sort((a, b) => {
     const aMatchCount = a.originalCategories.filter((cat) => currentTags.includes(cat)).length;
     const bMatchCount = b.originalCategories.filter((cat) => currentTags.includes(cat)).length;
@@ -463,7 +492,7 @@ async function generateSmartRecommendations(currentProduct: ProductDetail, curre
       const randomSupplies = getRandomItems(supplies, 2);
       const randomPlants = getRandomItems(plants, 2);
 
-      // 모바일에서 올바른 순서를 위해 인터리빙: [원예용품1, 식물1, 원예용품2, 식물2]
+      // 모바일: [원예용품1, 식물1, 원예용품2, 식물2]
       recommendedProducts = [
         randomSupplies[0], // 1번째: 원예용품1
         randomPlants[0], // 2번째: 식물1 (모바일에서 2번째 자리)
@@ -481,13 +510,13 @@ async function generateSmartRecommendations(currentProduct: ProductDetail, curre
 
     return recommendedProducts.slice(0, 4); // 최대 4개까지만
   } catch (error) {
-    console.error('스마트 추천 생성 실패:', error);
+    console.error('추천 생성 실패:', error);
     return [];
   }
 }
 
 /**
- * 이미지 URL을 생성합니다.
+ * 이미지 URL 생성
  */
 export function getImageUrl(imagePath: string): string {
   if (!imagePath) return '/images/placeholder-plant.jpg';

@@ -10,6 +10,7 @@ import { User } from '@/types/user.types';
 export interface LoginCredentials {
   email: string;
   password: string;
+  rememberLogin?: boolean;
 }
 
 /** 로그인 폼 데이터 */

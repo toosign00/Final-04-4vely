@@ -2,6 +2,7 @@ import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
 import '@/styles/globals.css';
 import localFont from 'next/font/local';
+import { Toaster } from 'sonner';
 
 export const metadata = {
   title: 'Green Mate',
@@ -27,7 +28,10 @@ export default function RootLayout({
     <html lang='ko' className={pretendard.variable}>
       <body className={`${pretendard.className} bg-surface`}>
         <Header />
-        <main>{children}</main>
+        <main>
+          <Toaster />
+          {children}
+        </main>
         <Footer />
       </body>
     </html>

@@ -2,10 +2,10 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
-import { updateUserProfile } from '@/lib/api/actions/userActions';
+import { updateUserProfile } from '@/lib/actions/userActions';
 import type { UserDetail } from '@/lib/functions/userFunctions';
 import { AlertCircle, Calendar, Camera, Mail, MapPin, Phone, User } from 'lucide-react';
-import { useState, useTransition } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 
@@ -40,6 +40,18 @@ export default function ProfileClient({ user }: ProfileClientProps) {
     },
     mode: 'onBlur',
   });
+
+  // user가 바뀔 때마다 reset을 호출하여 폼 초기값을 맞춰줌
+  useEffect(() => {
+    if (user) {
+      reset({
+        name: user.name || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        address: user.address || '',
+      });
+    }
+  }, [user, reset]);
 
   // 파일 미리보기
   const watchName = watch('name');

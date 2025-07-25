@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/Button';
 import { Trash2 } from 'lucide-react';
 import Image, { StaticImageData } from 'next/image';
 import { useRouter } from 'next/navigation';
+import { Diary } from '../_types/diary.types';
 
 /**
  * 식물 데이터 타입
@@ -20,23 +21,28 @@ export interface Plant {
 // 식물 카드 컴포넌트 속성 타입
 interface PlantCardProps {
   plant: Plant;
+  latestDiary?: Diary; // 최신 일지 정보 (선택)
   onDelete?: (id: number) => void;
   isDeleting?: boolean;
 }
 
-export default function PlantCard({ plant, onDelete, isDeleting = false }: PlantCardProps) {
+export default function PlantCard({ plant, latestDiary, onDelete, isDeleting = false }: PlantCardProps) {
   const router = useRouter();
 
   const handleViewJournal = () => {
     router.push(`/my-page/my-plants/${plant.id}`);
   };
 
+  // 최신 일지 정보가 있으면 해당 정보로 대체
+  const displayMemo = latestDiary ? latestDiary.content : plant.memo;
+  const displayImage = latestDiary && latestDiary.images && latestDiary.images.length > 0 ? latestDiary.images[0] : plant.imageUrl;
+
   return (
-    <div className='group relative max-h-[26.6rem] overflow-hidden rounded-2xl border bg-white shadow-md transition-shadow duration-300 hover:shadow-lg'>
+    <div className='group relative max-h-[28.1rem] overflow-hidden rounded-2xl border bg-white shadow-md transition-shadow duration-300 hover:shadow-lg'>
       {/* 이미지 섹션 */}
       <div className='relative overflow-hidden'>
         <Image
-          src={plant.imageUrl}
+          src={displayImage}
           alt={`${plant.name} 사진`}
           className='h-48 w-full object-cover transition-transform duration-300 group-hover:scale-105 sm:h-56'
           sizes='(max-width: 768px) 100vw, 50vw'
@@ -58,9 +64,10 @@ export default function PlantCard({ plant, onDelete, isDeleting = false }: Plant
             <p className='text-xs text-gray-400'>{plant.date}</p>
           </div>
         </div>
-        {/* 메모 섹션 */}
+        {/* 메모/일지 영역 */}
         <div className='rounded-lg border border-gray-300 bg-gray-50 p-3'>
-          <p className='text-sm leading-relaxed text-gray-700'>{plant.memo}</p>
+          <h4 className='text-secondary mb-1 min-h-[1.5rem] truncate text-sm font-semibold'>{latestDiary?.title}</h4>
+          <p className='text-sm leading-relaxed text-gray-700'>{displayMemo}</p>
         </div>
         {/* 액션 버튼들 */}
         <div className='flex gap-2'>

@@ -6,7 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useDiaryData } from '../_hooks/useDiaryData';
 import { usePlantData } from '../_hooks/usePlantData';
-import { Diary } from '../_types/diary.types';
+import { CreateDiaryInput, UpdateDiaryInput } from '../_types/diary.types';
 import DiaryList from './_components/DiaryList';
 import DiaryModal from './_components/DiaryModal';
 import EmptyDiaryState from './_components/EmptyDiaryState';
@@ -41,18 +41,18 @@ export default function PlantDiaryListPage() {
   };
 
   // 일지 생성 처리
-  const handleCreateDiary = async (newDiary: Diary) => {
+  const handleCreateDiary = async (newDiary: CreateDiaryInput | UpdateDiaryInput) => {
     try {
-      await createDiary({
-        plantId,
-        title: newDiary.title,
-        content: newDiary.content,
-        images: newDiary.images,
-        date: newDiary.date,
-      });
+      if ('id' in newDiary) {
+        // 수정 모드
+        await updateDiary(newDiary);
+      } else {
+        // 생성 모드
+        await createDiary(newDiary);
+      }
       setIsWriteModalOpen(false);
     } catch (error) {
-      console.error('일지 생성 실패:', error);
+      console.error('일지 저장 실패:', error);
     }
   };
 
@@ -68,7 +68,7 @@ export default function PlantDiaryListPage() {
   };
 
   // 일지 수정 처리
-  const handleUpdateDiary = async (updatedDiary: Diary) => {
+  const handleUpdateDiary = async (updatedDiary: UpdateDiaryInput) => {
     try {
       await updateDiary(updatedDiary);
     } catch (error) {
@@ -81,8 +81,9 @@ export default function PlantDiaryListPage() {
     return (
       <div className='bg-surface min-h-screen'>
         <div className='flex min-h-[25rem] items-center justify-center'>
-          <div className='text-center'>
-            <p className='t-body text-muted'>로딩 중...</p>
+          <div className='flex flex-col items-center text-center'>
+            <div className='border-primary mb-4 h-8 w-8 animate-spin rounded-full border-4 border-t-transparent' />
+            <p className='t-body text-secondary/70'>식물 정보를 불러오는 중</p>
           </div>
         </div>
       </div>
@@ -95,7 +96,7 @@ export default function PlantDiaryListPage() {
       <div className='bg-surface min-h-screen'>
         <div className='flex min-h-[25rem] items-center justify-center'>
           <div className='text-center'>
-            <p className='t-body text-muted mb-4'>{plantError || diaryError}</p>
+            <p className='t-body text-error mb-4'>{plantError || diaryError}</p>
             <Button onClick={handleBack} variant='primary'>
               <ArrowLeft className='mr-2 h-4 w-4' />
               목록으로 돌아가기

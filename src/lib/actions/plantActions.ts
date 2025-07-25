@@ -1,6 +1,6 @@
 'use server';
 
-import { uploadFile } from '@/lib/api/actions/fileActions';
+import { uploadFile } from '@/lib/actions/fileActions';
 import { ApiRes } from '@/types/api.types';
 import { Post } from '@/types/post.types';
 import { cookies } from 'next/headers';
@@ -44,17 +44,28 @@ async function getAuthInfo() {
  * @returns ApiRes<Plant[]>
  */
 export async function getMyPlants(): Promise<ApiRes<Plant[]>> {
-  const auth = await getAuthInfo();
-  if (!auth) {
+  const cookieStore = await cookies();
+  const userAuthCookie = cookieStore.get('user-auth')?.value;
+
+  if (!userAuthCookie) {
     return {
       ok: 0,
       message: '로그인이 필요합니다.',
     };
   }
-  const { accessToken, userId } = auth;
+
+  const userData = JSON.parse(userAuthCookie);
+  const accessToken = userData.state?.user?.token?.accessToken;
+
+  if (!accessToken) {
+    return {
+      ok: 0,
+      message: '인증 토큰이 없습니다.',
+    };
+  }
 
   try {
-    const res = await fetch(`${API_URL}/posts?type=plant&author=${userId}`, {
+    const res = await fetch(`${API_URL}/posts/users?type=plant`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

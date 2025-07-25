@@ -1,6 +1,6 @@
 'use server';
 
-import { uploadFile } from '@/lib/api/actions/fileActions';
+import { uploadFile } from '@/lib/actions/fileActions';
 import { ApiRes } from '@/types/api.types';
 import { User } from '@/types/user.types';
 import { cookies } from 'next/headers';

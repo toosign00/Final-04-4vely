@@ -189,7 +189,7 @@ export default function Home() {
       </section> */}
 
       {/* 날씨 정보 - API 연결 필요 */}
-      <section className='relative mb-4 flex min-h-[9rem] flex-col justify-between border px-5 pt-5 pb-2 md:h-[11.125rem] lg:h-[13rem]' aria-label='현재 날씨 정보'>
+      <section className='relative mb-4 flex min-h-[9rem] flex-col bg-amber-300 px-5 pt-5 pb-2' aria-label='현재 날씨 정보'>
         <WeatherWidget />
         {/* 하단 버튼 */}
         <div className='self-end'>

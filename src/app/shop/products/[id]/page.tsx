@@ -1,20 +1,18 @@
 // src/app/shop/products/[id]/page.tsx (서버 컴포넌트)
-import { getImageUrl, getProduct, getProductDetailWithRelatedData } from '@/lib/functions/productFunctions';
+import { getImageUrl, getProductById } from '@/lib/functions/productFunctions';
 import { notFound } from 'next/navigation';
 import ProductDetailClient from './_components/ProductDetailClient';
 
 interface ProductDetailPageProps {
   params: Promise<{ id: string }>;
-  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 // 메타데이터 생성 (SEO 최적화)
 export async function generateMetadata({ params }: ProductDetailPageProps) {
   try {
     const { id } = await params;
-    const productResponse = await getProduct(parseInt(id));
+    const productResponse = await getProductById(parseInt(id));
 
-    // API 응답 구조에 맞게 처리
     if (!productResponse.ok || !productResponse.item) {
       return {
         title: '상품 상세 | 4vely Plant Shop',
@@ -42,23 +40,19 @@ export async function generateMetadata({ params }: ProductDetailPageProps) {
   }
 }
 
-// 메인 컴포넌트
 export default async function ProductDetailPage({ params }: ProductDetailPageProps) {
   try {
     const { id } = await params;
-
-    // 서버에서 모든 필요한 데이터 미리 로딩
-    const { product, recommendProducts, initialReviews, reviewsPagination } = await getProductDetailWithRelatedData(id);
+    const productResponse = await getProductById(parseInt(id));
 
     // 상품이 없으면 404
-    if (!product) {
+    if (!productResponse.ok || !productResponse.item) {
       notFound();
     }
 
     return (
       <div className='bg-surface min-h-screen'>
-        {/* 클라이언트 컴포넌트에 서버 데이터 전달 */}
-        <ProductDetailClient product={product} recommendProducts={recommendProducts} initialReviews={initialReviews} initialReviewsPagination={reviewsPagination} productId={id} />
+        <ProductDetailClient productData={productResponse.item} productId={id} />
       </div>
     );
   } catch (error) {

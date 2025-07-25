@@ -17,7 +17,6 @@ interface ProductCardProps {
  * - 반응형 디자인 (모바일/데스크톱)
  * - 상품 이미지, 제목, 가격 표시
  * - NEW 태그 및 북마크 기능
- * - 새로운 타입 시스템 적용
  */
 export default function ProductCard({ product, onClick, isMobile = false }: ProductCardProps) {
   // 모바일 레이아웃

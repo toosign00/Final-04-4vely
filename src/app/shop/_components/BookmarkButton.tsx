@@ -5,12 +5,12 @@ import { useBookmarkStore } from '@/store/bookmarkStore';
 import { Bookmark } from 'lucide-react';
 
 interface BookmarkButtonProps {
-  productId: string;
+  productId: number;
   initialBookmarked?: boolean;
   size?: number;
   className?: string;
   variant?: 'default' | 'floating' | 'inline';
-  onToggle?: (productId: string, isBookmarked: boolean) => void;
+  onToggle?: (productId: number, isBookmarked: boolean) => void;
 }
 
 // initialBookmarked : 추후에 북마크 기능이 모든 페이지에 연결될 때 완성할 예정

@@ -1,5 +1,6 @@
 // src/app/shop/products/[id]/page.tsx (서버 컴포넌트)
-import { getImageUrl, getProductById } from '@/lib/functions/productFunctions';
+import { getProductById } from '@/lib/functions/productFunctions';
+import { getImageUrl } from '@/types/product';
 import { notFound } from 'next/navigation';
 import ProductDetailClient from './_components/ProductDetailClient';
 

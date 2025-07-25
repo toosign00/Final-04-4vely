@@ -19,7 +19,7 @@ export interface ApiRes<T> {
 export type ApiResPromise<T> = Promise<ApiRes<T>>;
 
 // ============================================================================
-// 상품 관련 원본 API 타입 (서버에서 받아오는 그대로)
+// 상품 관련 타입 (API 원본 + UI 확장)
 // ============================================================================
 export interface ProductExtra {
   isNew?: boolean;
@@ -30,7 +30,7 @@ export interface ProductExtra {
   sort?: number;
 }
 
-export interface ProductApiData {
+export interface Product {
   _id: number;
   seller_id: number;
   name: string;
@@ -45,26 +45,9 @@ export interface ProductApiData {
   createdAt: string;
   updatedAt: string;
   extra?: ProductExtra;
-}
 
-// ============================================================================
-// UI에서 사용할 변환된 타입 (최소한만)
-// ============================================================================
-export interface Product {
-  id: string;
-  name: string;
-  image: string;
-  price: number;
-  isNew: boolean;
-  categories: string[]; // 필터링용
-}
-
-export interface ProductDetail extends Product {
-  content: string;
-  tags: string[];
-  quantity: number;
-  mainImages?: string[];
-  extra?: ProductExtra;
+  // UI용 추가 필드
+  isBookmarked?: boolean;
 }
 
 // ============================================================================
@@ -94,4 +77,67 @@ export interface BookmarkApiData {
   memo?: string;
   createdAt: string;
   updatedAt: string;
+}
+
+// ============================================================================
+// 유틸리티 함수들
+// ============================================================================
+
+/**
+ * 이미지 URL 생성
+ */
+export function getImageUrl(imagePath?: string): string {
+  if (!imagePath) return '/images/placeholder-plant.jpg';
+  if (imagePath.startsWith('http')) return imagePath;
+  const API_URL = process.env.API_SERVER || 'https://fesp-api.koyeb.app/market';
+  return `${API_URL}${imagePath}`;
+}
+
+/**
+ * 상품의 메인 이미지 URL 가져오기
+ */
+export function getProductImageUrl(product: Product): string {
+  return getImageUrl(product.mainImages?.[0]);
+}
+
+/**
+ * 상품 ID 가져오기
+ */
+export function getProductId(product: Product): number {
+  return product._id;
+}
+
+/**
+ * 상품이 신상품인지 확인
+ */
+export function isNewProduct(product: Product): boolean {
+  return product.extra?.isNew || false;
+}
+
+/**
+ * 상품이 베스트 상품인지 확인
+ */
+export function isBestProduct(product: Product): boolean {
+  return product.extra?.isBest || false;
+}
+
+/**
+ * 상품 카테고리 목록 가져오기
+ */
+export function getProductCategories(product: Product): string[] {
+  return product.extra?.category || [];
+}
+
+/**
+ * 상품 태그 목록 가져오기
+ */
+export function getProductTags(product: Product): string[] {
+  return product.extra?.tags || [];
+}
+
+/**
+ * 상품 화분 색상 목록 가져오기
+ */
+export function getProductPotColors(product: Product): string[] {
+  return product.extra?.potColors || [];
 }

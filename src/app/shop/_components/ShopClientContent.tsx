@@ -7,7 +7,7 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink, Paginati
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/Sheet';
 import { useBookmarkStore } from '@/store/bookmarkStore';
-import { CategoryFilter, Product, SortOption } from '@/types/product';
+import { CategoryFilter, Product, SortOption, getProductCategories, getProductId, isNewProduct } from '@/types/product';
 import { Filter, Search } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -59,7 +59,7 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
   const productsWithBookmarks = useMemo(() => {
     return initialProducts.map((product) => ({
       ...product,
-      isBookmarked: isBookmarked(product.id),
+      isBookmarked: isBookmarked(getProductId(product)),
     }));
   }, [initialProducts, isBookmarked]);
 
@@ -170,7 +170,7 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
   };
 
   // 상품 클릭 핸들러
-  const handleProductClick = (id: string) => {
+  const handleProductClick = (id: number) => {
     const currentQuery = new URLSearchParams();
 
     if (selectedCategory !== 'plant') {
@@ -209,29 +209,39 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
     // 1단계: 메인 카테고리로 필터링
     switch (selectedCategory) {
       case 'new':
-        result = result.filter((product) => product.isNew);
+        result = result.filter((product) => isNewProduct(product));
         break;
       case 'plant':
         // 식물 카테고리 (원예 용품이 아닌 모든 것)
-        result = result.filter((product) => !product.categories.includes('원예 용품') && !product.categories.includes('화분') && !product.categories.includes('도구') && !product.categories.includes('조명'));
+        result = result.filter((product) => {
+          const categories = getProductCategories(product);
+          return !categories.includes('원예 용품') && !categories.includes('화분') && !categories.includes('도구') && !categories.includes('조명');
+        });
         break;
       case 'supplies':
         // 원예용품 카테고리
-        result = result.filter((product) => product.categories.includes('원예 용품') || product.categories.includes('화분') || product.categories.includes('도구') || product.categories.includes('조명'));
+        result = result.filter((product) => {
+          const categories = getProductCategories(product);
+          return categories.includes('원예 용품') || categories.includes('화분') || categories.includes('도구') || categories.includes('조명');
+        });
         break;
     }
 
     // 2단계: 검색어 필터링
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
-      result = result.filter((product) => product.name.toLowerCase().includes(searchLower) || product.categories.some((cat) => cat.toLowerCase().includes(searchLower)));
+      result = result.filter((product) => {
+        const categories = getProductCategories(product);
+        return product.name.toLowerCase().includes(searchLower) || categories.some((cat) => cat.toLowerCase().includes(searchLower));
+      });
     }
 
     // 3단계: 세부 카테고리 필터링
     Object.entries(filters).forEach(([filterKey, filterValues]) => {
       if (filterValues.length > 0) {
         result = result.filter((product) => {
-          return filterValues.some((value: string) => product.categories.includes(value));
+          const categories = getProductCategories(product);
+          return filterValues.some((value: string) => categories.includes(value));
         });
       }
     });
@@ -245,10 +255,10 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
         result.sort((a, b) => b.price - a.price);
         break;
       case 'new':
-        result.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
+        result.sort((a, b) => (isNewProduct(b) ? 1 : 0) - (isNewProduct(a) ? 1 : 0));
         break;
       case 'old':
-        result.sort((a, b) => (a.isNew ? 1 : 0) - (b.isNew ? 1 : 0));
+        result.sort((a, b) => (isNewProduct(a) ? 1 : 0) - (isNewProduct(b) ? 1 : 0));
         break;
       case 'name':
         result.sort((a, b) => a.name.localeCompare(b.name));
@@ -371,7 +381,7 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
           ) : (
             <div className='grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-2 md:gap-8'>
               {paginatedProducts.map((product) => (
-                <ProductCard key={product.id} product={product} onClick={handleProductClick} isMobile={true} />
+                <ProductCard key={getProductId(product)} product={product} onClick={handleProductClick} isMobile={true} />
               ))}
             </div>
           )}
@@ -441,7 +451,7 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
             ) : (
               <div className='grid grid-cols-3 gap-6 xl:grid-cols-3 xl:gap-8 2xl:grid-cols-4 2xl:gap-10'>
                 {paginatedProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} onClick={handleProductClick} />
+                  <ProductCard key={getProductId(product)} product={product} onClick={handleProductClick} />
                 ))}
               </div>
             )}

@@ -3,8 +3,8 @@
 
 import BookmarkButton from '@/app/shop/_components/BookmarkButton';
 import { Button } from '@/components/ui/Button';
-import { getBestProducts, getImageUrl, transformToProduct } from '@/lib/functions/productFunctions';
-import { Product, ProductApiData } from '@/types/product';
+import { getBestProducts } from '@/lib/functions/productFunctions';
+import { Product, getImageUrl, getProductCategories, getProductId, getProductPotColors, getProductTags, isNewProduct } from '@/types/product';
 import { Minus, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -19,7 +19,7 @@ interface ColorOption {
 }
 
 interface ProductDetailClientProps {
-  productData: ProductApiData;
+  productData: Product;
   productId: string;
 }
 
@@ -40,16 +40,19 @@ export default function ProductDetailClient({ productData, productId }: ProductD
   const router = useRouter();
 
   // 상품 기본 정보
-  const product = useMemo(() => transformToProduct(productData), [productData]);
+  const product = productData;
+  const productTags = getProductTags(product);
+  const productCategories = getProductCategories(product);
+  const isNew = isNewProduct(product);
 
   // 상품의 화분 색상 정보 추출
   const colorValues = useMemo(() => {
-    const potColors = productData.extra?.potColors;
+    const potColors = getProductPotColors(product);
     if (potColors && Array.isArray(potColors) && potColors.length > 0) {
       return potColors;
     }
     return null;
-  }, [productData.extra?.potColors]);
+  }, [product]);
 
   // 색상 옵션이 있는지 확인
   const hasColorOptions = Boolean(colorValues && colorValues.length > 0);
@@ -75,14 +78,14 @@ export default function ProductDetailClient({ productData, productId }: ProductD
 
   // 현재 선택된 색상에 해당하는 이미지 URL 계산
   const currentImageUrl = useMemo(() => {
-    if (!hasColorOptions || !productData.mainImages || productData.mainImages.length === 0) {
-      return getImageUrl(productData.mainImages?.[0] || '');
+    if (!hasColorOptions || !product.mainImages || product.mainImages.length === 0) {
+      return getImageUrl(product.mainImages?.[0] || '');
     }
 
-    const imageIndex = Math.min(selectedColorIndex, productData.mainImages.length - 1);
-    const selectedImagePath = productData.mainImages[imageIndex];
+    const imageIndex = Math.min(selectedColorIndex, product.mainImages.length - 1);
+    const selectedImagePath = product.mainImages[imageIndex];
     return getImageUrl(selectedImagePath || '');
-  }, [hasColorOptions, productData.mainImages, selectedColorIndex]);
+  }, [hasColorOptions, product.mainImages, selectedColorIndex]);
 
   // 추천 상품 로딩
   useEffect(() => {
@@ -90,11 +93,8 @@ export default function ProductDetailClient({ productData, productId }: ProductD
       try {
         const response = await getBestProducts(4);
         if (response.ok) {
-          const products = (response.item || response.items || []) as ProductApiData[];
-          const transformedProducts = products
-            .filter((p) => p._id.toString() !== productId)
-            .slice(0, 4)
-            .map(transformToProduct);
+          const products = (response.item || response.items || []) as Product[];
+          const transformedProducts = products.filter((p) => p._id.toString() !== productId).slice(0, 4);
           setRecommendProducts(transformedProducts);
         }
       } catch (error) {
@@ -120,7 +120,7 @@ export default function ProductDetailClient({ productData, productId }: ProductD
   const handleAddToCart = () => {
     // TODO: 장바구니 기능 구현시 추가
     console.log('장바구니에 추가:', {
-      productId: product.id,
+      productId: getProductId(product),
       quantity,
       selectedColor: hasColorOptions ? colorOptions[selectedColorIndex] : null,
     });
@@ -130,14 +130,14 @@ export default function ProductDetailClient({ productData, productId }: ProductD
   const handlePurchase = () => {
     // TODO: 구매 기능 구현시 추가
     console.log('구매하기:', {
-      productId: product.id,
+      productId: getProductId(product),
       quantity,
       selectedColor: hasColorOptions ? colorOptions[selectedColorIndex] : null,
     });
     alert('구매 기능은 아직 구현되지 않았습니다.');
   };
 
-  const handleProductClick = (id: string) => {
+  const handleProductClick = (id: number) => {
     router.push(`/shop/products/${id}`);
   };
 
@@ -146,10 +146,9 @@ export default function ProductDetailClient({ productData, productId }: ProductD
 
   // 카테고리 표시 이름 가져오기
   const getCategoryDisplayName = () => {
-    const categories = product.categories;
-    if (categories.includes('식물') || (!categories.includes('원예 용품') && !categories.includes('화분') && !categories.includes('도구') && !categories.includes('조명'))) {
+    if (productCategories.includes('식물') || (!productCategories.includes('원예 용품') && !productCategories.includes('화분') && !productCategories.includes('도구') && !productCategories.includes('조명'))) {
       return '식물';
-    } else if (categories.includes('원예 용품') || categories.includes('화분') || categories.includes('도구') || categories.includes('조명')) {
+    } else if (productCategories.includes('원예 용품') || productCategories.includes('화분') || productCategories.includes('도구') || productCategories.includes('조명')) {
       return '원예 용품';
     }
     return '';
@@ -174,7 +173,7 @@ export default function ProductDetailClient({ productData, productId }: ProductD
           />
 
           {/* NEW 태그 */}
-          {product.isNew && (
+          {isNew && (
             <div className='absolute top-0 left-0 z-1'>
               <div className='bg-secondary t-h4 rounded-ss-2xl rounded-ee-2xl px-3 py-2 text-white sm:px-4 sm:py-2 md:px-5 md:py-3'>NEW</div>
             </div>
@@ -182,7 +181,7 @@ export default function ProductDetailClient({ productData, productId }: ProductD
 
           {/* 북마크 버튼 */}
           <div className='absolute top-3 right-3 sm:top-4 sm:right-4'>
-            <BookmarkButton productId={product.id} initialBookmarked={product.isBookmarked} size={32} variant='default' className='sm:scale-110 md:scale-125' />
+            <BookmarkButton productId={getProductId(product)} initialBookmarked={product.isBookmarked} size={32} variant='default' className='sm:scale-110 md:scale-125' />
           </div>
         </div>
 
@@ -196,7 +195,7 @@ export default function ProductDetailClient({ productData, productId }: ProductD
 
           {/* 태그 목록 */}
           <div className='mb-12 flex flex-wrap gap-2 sm:mb-8 sm:gap-3'>
-            {productData.extra?.tags?.map((tag) => (
+            {productTags.map((tag) => (
               <Badge key={tag} variant='default' className='t-desc md:t-body border-1 border-gray-300 px-3 py-1 sm:px-4 sm:py-1.5'>
                 {tag}
               </Badge>
@@ -256,7 +255,7 @@ export default function ProductDetailClient({ productData, productId }: ProductD
           {/* 상품 설명 */}
           <section className='mb-8 border-y border-gray-300 py-8 sm:mb-10 sm:py-10 md:mb-12 md:py-12'>
             <h2 className='text-secondary t-h2 sm:t-h1 mb-4 sm:mb-5'>Description</h2>
-            <div className='text-secondary t-body sm:t-h4 space-y-3 sm:space-y-4'>{productData.content ? <div dangerouslySetInnerHTML={{ __html: productData.content }} /> : <p>상품 설명이 없습니다.</p>}</div>
+            <div className='text-secondary t-body sm:t-h4 space-y-3 sm:space-y-4'>{product.content ? <div dangerouslySetInnerHTML={{ __html: product.content }} /> : <p>상품 설명이 없습니다.</p>}</div>
           </section>
 
           {/* 추천 상품 */}
@@ -269,7 +268,7 @@ export default function ProductDetailClient({ productData, productId }: ProductD
             ) : (
               <div className='grid grid-cols-2 gap-3 sm:gap-4 md:gap-6'>
                 {recommendProducts.slice(0, 2).map((product) => (
-                  <ProductDetailCard key={product.id} product={product} onClick={handleProductClick} />
+                  <ProductDetailCard key={getProductId(product)} product={product} onClick={handleProductClick} />
                 ))}
               </div>
             )}
@@ -297,11 +296,11 @@ export default function ProductDetailClient({ productData, productId }: ProductD
               />
 
               {/* NEW 태그 */}
-              {product.isNew && <div className='bg-secondary t-h3 absolute top-0 left-0 z-1 rounded-ss-2xl rounded-ee-2xl px-6 py-3 text-white'>NEW</div>}
+              {isNew && <div className='bg-secondary t-h3 absolute top-0 left-0 z-1 rounded-ss-2xl rounded-ee-2xl px-6 py-3 text-white'>NEW</div>}
 
               {/* 북마크 버튼 */}
               <div className='absolute top-4 right-4'>
-                <BookmarkButton productId={product.id} initialBookmarked={product.isBookmarked} size={48} variant='default' />
+                <BookmarkButton productId={getProductId(product)} initialBookmarked={product.isBookmarked} size={48} variant='default' />
               </div>
             </div>
 
@@ -314,7 +313,7 @@ export default function ProductDetailClient({ productData, productId }: ProductD
 
               {/* 태그 */}
               <div className='mb-8 flex flex-wrap gap-3 xl:mb-10'>
-                {productData.extra?.tags?.map((tag) => (
+                {productTags.map((tag) => (
                   <Badge key={tag} variant='default' className='border-1 border-gray-300 px-3 py-1.5 text-sm xl:px-4 xl:py-2 xl:text-base'>
                     {tag}
                   </Badge>
@@ -372,7 +371,7 @@ export default function ProductDetailClient({ productData, productId }: ProductD
           {/* 상품 설명 */}
           <section className='mb-10 border-y border-gray-300 py-8 xl:py-10'>
             <h2 className='text-secondary t-h1 mb-6 xl:mb-8 xl:text-3xl'>Description</h2>
-            <div className='text-secondary t-h3 space-y-4 xl:space-y-6'>{productData.content ? <div dangerouslySetInnerHTML={{ __html: productData.content }} /> : <p>상품 설명이 없습니다.</p>}</div>
+            <div className='text-secondary t-h3 space-y-4 xl:space-y-6'>{product.content ? <div dangerouslySetInnerHTML={{ __html: product.content }} /> : <p>상품 설명이 없습니다.</p>}</div>
           </section>
 
           {/* 추천 상품 */}
@@ -385,7 +384,7 @@ export default function ProductDetailClient({ productData, productId }: ProductD
             ) : (
               <div className='grid grid-cols-4 gap-6 xl:gap-8'>
                 {recommendProducts.map((product) => (
-                  <ProductDetailCard key={product.id} product={product} onClick={handleProductClick} />
+                  <ProductDetailCard key={getProductId(product)} product={product} onClick={handleProductClick} />
                 ))}
               </div>
             )}

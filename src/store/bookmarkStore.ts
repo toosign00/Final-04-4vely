@@ -4,14 +4,14 @@ import { persist } from 'zustand/middleware';
 
 // 북마크 스토어 인터페이스 정의
 interface BookmarkStore {
-  bookmarks: Set<string>; // 북마크된 상품 ID들을 Set으로 관리 (중복 방지, 빠른 검색)
-  isBookmarked: (productId: string) => boolean;
-  toggleBookmark: (productId: string) => void;
-  addBookmark: (productId: string) => void;
-  removeBookmark: (productId: string) => void;
+  bookmarks: Set<number>; // 북마크된 상품 ID들을 Set으로 관리 (중복 방지, 빠른 검색)
+  isBookmarked: (productId: number) => boolean;
+  toggleBookmark: (productId: number) => void;
+  addBookmark: (productId: number) => void;
+  removeBookmark: (productId: number) => void;
   clearBookmarks: () => void;
   getBookmarkCount: () => number;
-  getBookmarkedIds: () => string[];
+  getBookmarkedIds: () => number[];
 }
 
 /**
@@ -19,20 +19,21 @@ interface BookmarkStore {
  * - Zustand로 상태 관리
  * - persist 미들웨어로 localStorage에 자동 저장
  * - Set 자료구조로 빠른 검색과 중복 방지
+ * - 상품 ID를 number 타입으로 사용
  */
 export const useBookmarkStore = create<BookmarkStore>()(
   persist(
     (set, get) => ({
       // 초기 상태: 빈 Set
-      bookmarks: new Set<string>(),
+      bookmarks: new Set<number>(),
 
       // 특정 상품이 북마크되어 있는지 확인
-      isBookmarked: (productId: string) => {
+      isBookmarked: (productId: number) => {
         return get().bookmarks.has(productId);
       },
 
       // 북마크 토글 (있으면 제거, 없으면 추가)
-      toggleBookmark: (productId: string) => {
+      toggleBookmark: (productId: number) => {
         set((state) => {
           const newBookmarks = new Set(state.bookmarks); // 새로운 Set 생성
           if (newBookmarks.has(productId)) {
@@ -45,7 +46,7 @@ export const useBookmarkStore = create<BookmarkStore>()(
       },
 
       // 북마크 추가
-      addBookmark: (productId: string) => {
+      addBookmark: (productId: number) => {
         set((state) => {
           const newBookmarks = new Set(state.bookmarks);
           newBookmarks.add(productId); // Set이므로 중복 자동 방지
@@ -54,7 +55,7 @@ export const useBookmarkStore = create<BookmarkStore>()(
       },
 
       // 북마크 제거
-      removeBookmark: (productId: string) => {
+      removeBookmark: (productId: number) => {
         set((state) => {
           const newBookmarks = new Set(state.bookmarks);
           newBookmarks.delete(productId);
@@ -64,7 +65,7 @@ export const useBookmarkStore = create<BookmarkStore>()(
 
       // 모든 북마크 제거 (안 쓰게 되면 제거)
       clearBookmarks: () => {
-        set({ bookmarks: new Set<string>() });
+        set({ bookmarks: new Set<number>() });
       },
 
       // 북마크 개수 반환
@@ -122,10 +123,10 @@ export const useBookmarkStore = create<BookmarkStore>()(
  * const { isBookmarked, toggleBookmark, getBookmarkCount } = useBookmarkStore();
  *
  * // 북마크 여부 확인
- * const bookmarked = isBookmarked('product-123');
+ * const bookmarked = isBookmarked(123);
  *
  * // 북마크 토글
- * toggleBookmark('product-123');
+ * toggleBookmark(123);
  *
  * // 총 북마크 수
  * const count = getBookmarkCount();

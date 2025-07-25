@@ -7,6 +7,7 @@ import { Menu, ShoppingCart, UserRound, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
+import { toast } from 'sonner';
 
 export default function Header() {
   const { isOpen, setIsOpen, menuHeight, menuRef, buttonRef } = useHeaderMenu();
@@ -14,7 +15,15 @@ export default function Header() {
 
   // 로그아웃 함수
   const handleLogout = async () => {
-    await logout(); // 서버 액션을 통한 로그아웃
+    await logout();
+    toast.success('로그아웃 되었습니다.', {
+      description: '다음에 또 만나요!',
+      duration: 2500,
+      style: {
+        backgroundColor: 'white',
+        color: 'var(--color-secondary)',
+      },
+    });
   };
 
   // 아이콘 문자열을 실제 컴포넌트로 변환

@@ -1,24 +1,6 @@
 // src/types/product.types.ts
 
 // ============================================================================
-// API 응답 공통 타입
-// ============================================================================
-export interface ApiRes<T> {
-  ok: number;
-  message?: string;
-  item?: T;
-  items?: T[];
-  pagination?: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-}
-
-export type ApiResPromise<T> = Promise<ApiRes<T>>;
-
-// ============================================================================
 // 상품 관련 타입 (API 원본 + UI 확장)
 // ============================================================================
 export interface ProductExtra {
@@ -46,9 +28,13 @@ export interface Product {
   updatedAt: string;
   extra?: ProductExtra;
 
-  // UI용 추가 필드
+  // 북마크 관련 (로그인된 사용자에게만 제공)
   isBookmarked?: boolean;
+  myBookmarkId?: number; // 북마크된 경우에만 존재하는 북마크 ID
 }
+
+// 기존 타입들은 그대로 유지
+export type { ApiRes, ApiResPromise } from './api.types';
 
 // ============================================================================
 // 필터링 관련 타입
@@ -65,18 +51,6 @@ export interface CategoryFilter {
 export interface SortOption {
   value: string;
   label: string;
-}
-
-// ============================================================================
-// 북마크 관련 타입
-// ============================================================================
-export interface BookmarkApiData {
-  _id: number;
-  user_id: number;
-  product_id: number;
-  memo?: string;
-  createdAt: string;
-  updatedAt: string;
 }
 
 // ============================================================================
@@ -119,6 +93,13 @@ export function isNewProduct(product: Product): boolean {
  */
 export function isBestProduct(product: Product): boolean {
   return product.extra?.isBest || false;
+}
+
+/**
+ * 상품이 북마크되어 있는지 확인 (로그인된 사용자만)
+ */
+export function isBookmarked(product: Product): boolean {
+  return !!product.myBookmarkId;
 }
 
 /**

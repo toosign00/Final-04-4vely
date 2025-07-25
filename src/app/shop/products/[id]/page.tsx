@@ -1,5 +1,5 @@
 // src/app/shop/products/[id]/page.tsx (서버 컴포넌트)
-import { getProductById } from '@/lib/functions/productFunctions';
+import { getServerProductById } from '@/lib/functions/productServerFunctions';
 import { getImageUrl } from '@/types/product';
 import { notFound } from 'next/navigation';
 import ProductDetailClient from './_components/ProductDetailClient';
@@ -12,7 +12,7 @@ interface ProductDetailPageProps {
 export async function generateMetadata({ params }: ProductDetailPageProps) {
   try {
     const { id } = await params;
-    const productResponse = await getProductById(parseInt(id));
+    const productResponse = await getServerProductById(parseInt(id));
 
     if (!productResponse.ok || !productResponse.item) {
       return {
@@ -44,10 +44,20 @@ export async function generateMetadata({ params }: ProductDetailPageProps) {
 export default async function ProductDetailPage({ params }: ProductDetailPageProps) {
   try {
     const { id } = await params;
-    const productResponse = await getProductById(parseInt(id));
+    console.log(`[상품 상세 페이지] 상품 ID: ${id} 로딩 시작`);
+
+    // 서버 함수 사용으로 변경 (북마크 정보 포함)
+    const productResponse = await getServerProductById(parseInt(id));
+
+    console.log(`[상품 상세 페이지] API 응답:`, {
+      ok: productResponse.ok,
+      hasItem: !!productResponse.item,
+      myBookmarkId: productResponse.item?.myBookmarkId,
+    });
 
     // 상품이 없으면 404
     if (!productResponse.ok || !productResponse.item) {
+      console.log(`[상품 상세 페이지] 상품을 찾을 수 없음: ${id}`);
       notFound();
     }
 

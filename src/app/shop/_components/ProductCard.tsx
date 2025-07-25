@@ -17,11 +17,28 @@ interface ProductCardProps {
  * - 반응형 디자인 (모바일/데스크톱)
  * - 상품 이미지, 제목, 가격 표시
  * - NEW 태그 및 북마크 기능
+ * - myBookmarkId prop 전달로 북마크 상태 정확히 표시
  */
 export default function ProductCard({ product, onClick, isMobile = false }: ProductCardProps) {
   const productId = getProductId(product);
   const imageUrl = getProductImageUrl(product);
   const isNew = isNewProduct(product);
+
+  // 북마크 상태 정보 (서버에서 전달받은 정보)
+  const myBookmarkId = product.myBookmarkId;
+  const isCurrentlyBookmarked = !!myBookmarkId;
+
+  console.log(`[ProductCard] 상품 ${productId} 렌더링:`, {
+    상품명: product.name,
+    myBookmarkId,
+    isCurrentlyBookmarked,
+    전체상품데이터: {
+      _id: product._id,
+      name: product.name,
+      myBookmarkId: product.myBookmarkId,
+      isBookmarked: product.isBookmarked,
+    },
+  });
 
   // 모바일 레이아웃
   if (isMobile) {
@@ -37,9 +54,9 @@ export default function ProductCard({ product, onClick, isMobile = false }: Prod
             {/* NEW 태그 */}
             {isNew && <div className='bg-secondary t-body absolute top-0 left-0 rounded-ee-lg px-2 py-1 font-semibold text-white'>NEW</div>}
 
-            {/* 북마크 버튼 */}
+            {/* 북마크 버튼 - myBookmarkId prop 추가 */}
             <div className='absolute top-1 right-1'>
-              <BookmarkButton productId={productId} initialBookmarked={product.isBookmarked} size={32} variant='default' />
+              <BookmarkButton productId={productId} myBookmarkId={myBookmarkId} size={32} variant='default' />
             </div>
           </div>
         </Card>
@@ -66,9 +83,9 @@ export default function ProductCard({ product, onClick, isMobile = false }: Prod
           {/* NEW 태그 */}
           {isNew && <div className='bg-secondary absolute top-0 left-0 z-1 rounded-ss-2xl rounded-ee-xl px-3 py-1.5 text-xs font-semibold text-white'>NEW</div>}
 
-          {/* 북마크 버튼 */}
+          {/* 북마크 버튼 - myBookmarkId prop 추가 */}
           <div className='absolute top-3 right-3'>
-            <BookmarkButton productId={productId} initialBookmarked={product.isBookmarked} size={32} variant='default' />
+            <BookmarkButton productId={productId} myBookmarkId={myBookmarkId} size={32} variant='default' />
           </div>
         </div>
       </Card>

@@ -10,6 +10,7 @@ interface ProductCardProps {
   product: Product;
   onClick: (id: number) => void;
   isMobile?: boolean;
+  onBookmarkChange?: (productId: number, isBookmarked: boolean, bookmarkId?: number) => void; // 북마크 변경 콜백 추가
 }
 
 /**
@@ -19,7 +20,7 @@ interface ProductCardProps {
  * - NEW 태그 및 북마크 기능
  * - myBookmarkId prop 전달로 북마크 상태 정확히 표시
  */
-export default function ProductCard({ product, onClick, isMobile = false }: ProductCardProps) {
+export default function ProductCard({ product, onClick, isMobile = false, onBookmarkChange }: ProductCardProps) {
   const productId = getProductId(product);
   const imageUrl = getProductImageUrl(product);
   const isNew = isNewProduct(product);
@@ -56,7 +57,7 @@ export default function ProductCard({ product, onClick, isMobile = false }: Prod
 
             {/* 북마크 버튼 - myBookmarkId prop 추가 */}
             <div className='absolute top-1 right-1'>
-              <BookmarkButton productId={productId} myBookmarkId={myBookmarkId} size={32} variant='default' />
+              <BookmarkButton productId={productId} myBookmarkId={myBookmarkId} size={32} variant='default' onBookmarkChange={onBookmarkChange} />
             </div>
           </div>
         </Card>
@@ -85,7 +86,7 @@ export default function ProductCard({ product, onClick, isMobile = false }: Prod
 
           {/* 북마크 버튼 - myBookmarkId prop 추가 */}
           <div className='absolute top-3 right-3'>
-            <BookmarkButton productId={productId} myBookmarkId={myBookmarkId} size={32} variant='default' />
+            <BookmarkButton productId={productId} myBookmarkId={myBookmarkId} size={32} variant='default' onBookmarkChange={onBookmarkChange} />
           </div>
         </div>
       </Card>

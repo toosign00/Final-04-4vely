@@ -1,22 +1,64 @@
-// 데이터 검증 실패 메세지
-// https://fesp-api.koyeb.app/market/apidocs/#/%EA%B2%8C%EC%8B%9C%ED%8C%90/post_posts_ 의 입력값 검증 오류 항목 참고
-export interface ServerValidationError {
-  type: string;
-  value: string;
-  msg: string;
-  location: string;
+// src/types/api.types.ts
+
+/**
+ * ===========================
+ * API 공통 응답 타입
+ * ===========================
+ */
+
+/** 기본 API 응답 구조 */
+export interface ApiRes<T = any, E = any> {
+  ok: number; // 1: 성공, 0: 실패
+  message?: string; // 응답 메시지
+  item?: T; // 단일 데이터 (성공 시)
+  items?: T[]; // 배열 데이터 (성공 시)
+  errors?: E; // 에러 정보 (실패 시)
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 }
 
-// Record<K, T>: K(key)로 이루어진 객체의 각 속성의 타입을 T로 지정하는 유틸리티 타입
-// Partial<T>: T의 모든 속성을 옵셔널로 지정하는 유틸리티 타입
-// E: 검증에 사용될 속성값을 가지고 있는 타입
-// 예) 검증에 사용될 속성값을 가지고 있는 타입이 { title: string, content: string } 이면,
-// keyof E의 타입은 "title" | "content"
-export type ServerValidationErrors<E> = Partial<Record<keyof E, ServerValidationError>>;
+/** API 응답 Promise 타입 */
+export type ApiResPromise<T = any, E = any> = Promise<ApiRes<T, E>>;
 
-// API 서버의 응답
-// E = never: E가 생략되면 errors 속성도 없음
-export type ApiRes<T, E = never> = { ok: 1; item: T } | { ok: 0; message: string; errors?: ServerValidationErrors<E> };
+/**
+ * ===========================
+ * 페이지네이션 관련 타입
+ * ===========================
+ */
 
-// 서버 함수에서 반환할 타입(Promise를 반환해야 함)
-export type ApiResPromise<T> = Promise<ApiRes<T>>;
+/** 페이지네이션 정보 */
+export interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+/** 페이지네이션이 포함된 목록 응답 */
+export interface PaginatedResponse<T> {
+  ok: number;
+  items: T[];
+  pagination: Pagination;
+}
+
+/**
+ * ===========================
+ * 에러 관련 타입
+ * ===========================
+ */
+
+/** 필드별 에러 */
+export interface FieldErrors {
+  [fieldName: string]: string;
+}
+
+/** 일반적인 에러 응답 */
+export interface ErrorResponse {
+  ok: 0;
+  message: string;
+  errors?: FieldErrors;
+}

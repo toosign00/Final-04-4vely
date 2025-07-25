@@ -4,7 +4,6 @@
 import { toggleProductBookmarkAction } from '@/lib/actions/bookmarkActions';
 import useUserStore from '@/store/authStore';
 import { Bookmark } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useState, useTransition, useEffect } from 'react';
 import { toast } from 'sonner';
 
@@ -14,6 +13,7 @@ interface BookmarkButtonProps {
   size?: number;
   className?: string;
   variant?: 'default' | 'floating' | 'inline';
+  onBookmarkChange?: (productId: number, isBookmarked: boolean, bookmarkId?: number) => void; // 콜백 추가
 }
 
 /**
@@ -21,11 +21,11 @@ interface BookmarkButtonProps {
  * - 로그인된 사용자만 북마크 가능
  * - 서버 액션을 통한 북마크 토글
  * - 로컬 상태로 즉시 UI 업데이트
+ * - 상위 컴포넌트에 상태 변경 알림
  */
-export default function BookmarkButton({ productId, myBookmarkId, size = 32, className = '', variant = 'default' }: BookmarkButtonProps) {
+export default function BookmarkButton({ productId, myBookmarkId, size = 32, className = '', variant = 'default', onBookmarkChange }: BookmarkButtonProps) {
   const [isPending, startTransition] = useTransition();
   const [isProcessing, setIsProcessing] = useState(false);
-  const router = useRouter();
 
   // 로그인 상태 확인 (authStore 사용)
   const { user } = useUserStore();
@@ -92,6 +92,8 @@ export default function BookmarkButton({ productId, myBookmarkId, size = 32, cla
 
     // 낙관적 업데이트 (즉시 UI 변경)
     const previousBookmarkId = localBookmarkId;
+    const willBeBookmarked = !isCurrentlyBookmarked;
+
     if (isCurrentlyBookmarked) {
       setLocalBookmarkId(undefined); // 북마크 제거 예상
     } else {
@@ -110,27 +112,23 @@ export default function BookmarkButton({ productId, myBookmarkId, size = 32, cla
           console.log('[BookmarkButton] 액션 타입:', action);
 
           if (action === 'added') {
-            setLocalBookmarkId(result.item?.bookmarkId || -1);
+            const newBookmarkId = result.item?.bookmarkId || -1;
+            setLocalBookmarkId(newBookmarkId);
+
+            // 상위 컴포넌트에 변경 알림
+            onBookmarkChange?.(productId, true, newBookmarkId);
+
             toast.success('북마크에 추가되었습니다.', {
               description: '마이페이지에서 확인하실 수 있습니다.',
             });
           } else if (action === 'removed') {
             setLocalBookmarkId(undefined);
+
+            // 상위 컴포넌트에 변경 알림
+            onBookmarkChange?.(productId, false);
+
             toast.success('북마크에서 제거되었습니다.');
           }
-
-          // 백그라운드에서 페이지 새로고침 (서버 상태와 동기화)
-          console.log('[BookmarkButton] 강제 새로고침 시작');
-          // 즉시 router.refresh() 시도
-          router.refresh();
-
-          // 그래도 안되면 조금 기다린 후 페이지 완전 새로고침
-          setTimeout(() => {
-            console.log('[BookmarkButton] 페이지 완전 새로고침');
-            if (typeof window !== 'undefined') {
-              window.location.reload();
-            }
-          }, 1000);
         } else {
           // 실패한 경우 이전 상태로 롤백
           console.error('[BookmarkButton] 실패 - 상태 롤백:', result.message);

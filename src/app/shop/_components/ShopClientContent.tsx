@@ -6,11 +6,10 @@ import { Input } from '@/components/ui/Input';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/Pagination';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/Sheet';
-import { useBookmarkStore } from '@/store/bookmarkStore';
 import { CategoryFilter, Product, SortOption, getProductCategories, getProductId, isNewProduct } from '@/types/product';
 import { Filter, Search } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import CategoryFilterSidebar from './CategoryFilter';
 import ProductCard from './ProductCard';
 
@@ -24,9 +23,6 @@ interface ShopClientContentProps {
 export default function ShopClientContent({ initialProducts }: ShopClientContentProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-
-  // Zustand 북마크 스토어
-  const { isBookmarked } = useBookmarkStore();
 
   // URL에서 초기 상태 복원
   const getInitialCategory = (): ProductCategory => {
@@ -55,13 +51,31 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
   const [filters, setFilters] = useState<CategoryFilter>(getInitialFilters());
   const [itemsPerPage, setItemsPerPage] = useState(9);
 
-  // 북마크 상태가 반영된 상품 목록
-  const productsWithBookmarks = useMemo(() => {
-    return initialProducts.map((product) => ({
-      ...product,
-      isBookmarked: isBookmarked(getProductId(product)),
-    }));
-  }, [initialProducts, isBookmarked]);
+  // 상품 목록을 useState로 관리하여 북마크 상태 변경을 실시간 반영
+  const [productsWithBookmarks, setProductsWithBookmarks] = useState<Product[]>(initialProducts);
+
+  // 초기 상품 데이터가 변경되면 로컬 상태도 업데이트
+  useEffect(() => {
+    setProductsWithBookmarks(initialProducts);
+  }, [initialProducts]);
+
+  // 북마크 상태 변경 핸들러
+  const handleBookmarkChange = useCallback((productId: number, isBookmarked: boolean, bookmarkId?: number) => {
+    console.log('[ShopClientContent] 북마크 상태 변경:', { productId, isBookmarked, bookmarkId });
+
+    setProductsWithBookmarks((prevProducts) =>
+      prevProducts.map((product) => {
+        if (product._id === productId) {
+          return {
+            ...product,
+            myBookmarkId: isBookmarked ? bookmarkId : undefined,
+            isBookmarked,
+          };
+        }
+        return product;
+      }),
+    );
+  }, []);
 
   // 정렬 옵션 상수
   const SORT_OPTIONS: SortOption[] = [
@@ -381,7 +395,7 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
           ) : (
             <div className='grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-2 md:gap-8'>
               {paginatedProducts.map((product) => (
-                <ProductCard key={getProductId(product)} product={product} onClick={handleProductClick} isMobile={true} />
+                <ProductCard key={getProductId(product)} product={product} onClick={handleProductClick} isMobile={true} onBookmarkChange={handleBookmarkChange} />
               ))}
             </div>
           )}
@@ -451,7 +465,7 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
             ) : (
               <div className='grid grid-cols-3 gap-6 xl:grid-cols-3 xl:gap-8 2xl:grid-cols-4 2xl:gap-10'>
                 {paginatedProducts.map((product) => (
-                  <ProductCard key={getProductId(product)} product={product} onClick={handleProductClick} />
+                  <ProductCard key={getProductId(product)} product={product} onClick={handleProductClick} onBookmarkChange={handleBookmarkChange} />
                 ))}
               </div>
             )}

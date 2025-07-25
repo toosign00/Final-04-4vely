@@ -4,11 +4,13 @@
 import BookmarkButton from '@/app/shop/_components/BookmarkButton';
 import { Button } from '@/components/ui/Button';
 import { getBestProducts } from '@/lib/functions/productFunctions';
+import { useCartStore } from '@/store/cartStore';
 import { Product, getImageUrl, getProductCategories, getProductId, getProductPotColors, getProductTags, isNewProduct } from '@/types/product';
 import { Minus, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 import { Badge } from './Badge';
 import ProductDetailCard from './ProductDetailCard';
 
@@ -41,6 +43,9 @@ export default function ProductDetailClient({ productData, productId }: ProductD
 
   // ⚠️ 모든 Hook을 먼저 호출 (조건부 return 이전에)
 
+  // Zustand 스토어 사용
+  const { addItem } = useCartStore();
+
   // 상태 관리 (항상 호출)
   const [selectedColorIndex, setSelectedColorIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -49,17 +54,32 @@ export default function ProductDetailClient({ productData, productId }: ProductD
   // 상품 기본 정보 (안전하게 추출) - Hook을 먼저 호출
   const productTags = useMemo(() => {
     if (!productData) return [];
-    return getProductTags(productData) || [];
+    try {
+      return getProductTags(productData) || [];
+    } catch (error) {
+      console.error('[ProductDetailClient] 태그 추출 오류:', error);
+      return [];
+    }
   }, [productData]);
 
   const productCategories = useMemo(() => {
     if (!productData) return [];
-    return getProductCategories(productData) || [];
+    try {
+      return getProductCategories(productData) || [];
+    } catch (error) {
+      console.error('[ProductDetailClient] 카테고리 추출 오류:', error);
+      return [];
+    }
   }, [productData]);
 
   const isNew = useMemo(() => {
     if (!productData) return false;
-    return isNewProduct(productData);
+    try {
+      return isNewProduct(productData);
+    } catch (error) {
+      console.error('[ProductDetailClient] 신상품 확인 오류:', error);
+      return false;
+    }
   }, [productData]);
 
   // 상품의 화분 색상 정보 추출 (안전하게)
@@ -208,14 +228,35 @@ export default function ProductDetailClient({ productData, productId }: ProductD
     setSelectedColorIndex(colorIndex);
   };
 
+  // Zustand 스토어를 사용한 장바구니 추가 기능
   const handleAddToCart = () => {
-    // TODO: 장바구니 기능 구현시 추가
-    console.log('장바구니에 추가:', {
-      productId: getProductId(productData),
-      quantity,
-      selectedColor: hasColorOptions ? colorOptions[selectedColorIndex] : null,
-    });
-    alert('장바구니 기능은 아직 구현되지 않았습니다.');
+    try {
+      const cartItem = {
+        productId: getProductId(productData).toString(),
+        productName: productData.name,
+        productImage: currentImageUrl,
+        price: productData.price,
+        quantity,
+        selectedColor: hasColorOptions
+          ? {
+              colorIndex: selectedColorIndex,
+              colorName: colorOptions[selectedColorIndex]?.label || '',
+            }
+          : undefined,
+      };
+
+      addItem(cartItem);
+
+      toast.success('장바구니에 추가되었습니다!', {
+        description: `${productData.name} ${quantity}개가 장바구니에 추가되었습니다.`,
+        duration: 3000,
+      });
+
+      console.log('장바구니에 추가 완료:', cartItem);
+    } catch (error) {
+      console.error('장바구니 추가 실패:', error);
+      toast.error('장바구니 추가에 실패했습니다.');
+    }
   };
 
   const handlePurchase = () => {
@@ -225,7 +266,7 @@ export default function ProductDetailClient({ productData, productId }: ProductD
       quantity,
       selectedColor: hasColorOptions ? colorOptions[selectedColorIndex] : null,
     });
-    alert('구매 기능은 아직 구현되지 않았습니다.');
+    toast.info('구매 기능은 곧 출시예정입니다!');
   };
 
   const handleProductClick = (id: number) => {
@@ -293,49 +334,49 @@ export default function ProductDetailClient({ productData, productId }: ProductD
                     type='button'
                     aria-label={option.label}
                     onClick={() => handleColorChange(index)}
-                    className={`h-8 w-8 rounded-full border-2 transition sm:h-9 sm:w-9 md:h-10 md:w-10 ${selectedColorIndex === index ? 'border-secondary scale-110 border-3' : 'border-gray-300'} ${option.value === 'white' ? 'bg-white' : ''}`}
-                    style={{ backgroundColor: option.value !== 'white' ? option.color : undefined }}
+                    className={`h-8 w-8 rounded-full border-2 transition sm:h-9 sm:w-9 md:h-10 md:w-10 ${
+                      selectedColorIndex === index ? 'border-secondary scale-110 border-3' : 'border-gray-300'
+                    } ${option.value === 'white' ? 'ring-1 ring-gray-200' : ''}`}
+                    style={{ backgroundColor: option.color }}
                   />
                 ))}
               </div>
             </>
           )}
 
-          {/* 가격 및 수량 선택 */}
-          <div className='mb-8 space-y-4 sm:mb-10'>
-            <div className='flex items-center justify-between'>
-              <span className='text-secondary t-h2 sm:t-h1'>₩ {totalPrice.toLocaleString()}</span>
-              <div className='flex items-center space-x-3'>
-                <button
-                  type='button'
-                  onClick={() => handleQuantityChange(-1)}
-                  disabled={quantity <= 1}
-                  className='flex h-10 w-10 items-center justify-center rounded-full border-1 border-gray-300 bg-white transition hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400 sm:h-12 sm:w-12'
-                >
-                  <Minus size={16} />
-                </button>
-                <span className='text-secondary t-h3 min-w-[3rem] text-center'>{quantity}</span>
-                <button type='button' onClick={() => handleQuantityChange(1)} className='flex h-10 w-10 items-center justify-center rounded-full border-1 border-gray-300 bg-white transition hover:bg-gray-50 sm:h-12 sm:w-12'>
-                  <Plus size={16} />
-                </button>
-              </div>
+          {/* 수량 선택 및 가격 */}
+          <div className='mb-8 flex items-center justify-between sm:mb-10'>
+            {/* 수량 선택 */}
+            <div className='flex items-center gap-3 rounded-4xl border-1 border-gray-300 bg-white p-2 sm:gap-4'>
+              <Button variant='ghost' size='icon' disabled={quantity <= 1} onClick={() => handleQuantityChange(-1)} className='h-6 w-6 hover:bg-transparent active:bg-transparent sm:h-8 sm:w-8'>
+                <Minus size={18} className='sm:size-5' />
+              </Button>
+
+              <span className='text-secondary t-h4 min-w-[50px] text-center sm:min-w-[60px] sm:text-base'>{quantity}</span>
+
+              <Button variant='ghost' size='icon' onClick={() => handleQuantityChange(1)} className='h-6 w-6 hover:bg-transparent active:bg-transparent sm:h-8 sm:w-8'>
+                <Plus size={18} className='sm:size-5' />
+              </Button>
             </div>
+
+            {/* 총 가격 */}
+            <p className='text-secondary text-lg font-semibold sm:text-xl'>₩ {totalPrice.toLocaleString()}</p>
           </div>
 
-          {/* 구매 버튼들 */}
-          <div className='mb-12 space-y-3 sm:mb-8'>
-            <Button onClick={handleAddToCart} variant='outline' className='bg-secondary hover:bg-secondary/90 w-full border-none py-6 text-lg font-semibold text-white sm:py-8 sm:text-xl'>
+          {/* 액션 버튼 */}
+          <div className='mb-10 flex gap-3 sm:mb-12 sm:gap-4'>
+            <Button onClick={handleAddToCart} variant='default' className='t-h4 sm:t-h3 h-10 flex-1 sm:h-12'>
               장바구니
             </Button>
-            <Button onClick={handlePurchase} className='bg-primary hover:bg-primary/90 w-full py-6 text-lg font-semibold sm:py-8 sm:text-xl'>
+            <Button onClick={handlePurchase} variant='primary' className='t-h4 sm:t-h3 h-10 flex-1 sm:h-12'>
               구매하기
             </Button>
           </div>
 
           {/* 상품 설명 */}
-          <section className='border-t-1 border-gray-300 pt-8 pb-8 sm:pb-10 md:pb-12'>
+          <section className='mb-8 border-y border-gray-300 py-8 sm:mb-10 sm:py-10 md:mb-12 md:py-12'>
             <h2 className='text-secondary t-h2 sm:t-h1 mb-4 sm:mb-5'>Description</h2>
-            <div className='text-secondary prose max-w-none'>{productData.content ? <div dangerouslySetInnerHTML={{ __html: productData.content }} /> : <p>상품 설명이 없습니다.</p>}</div>
+            <div className='text-secondary t-body sm:t-h4 space-y-3 sm:space-y-4'>{productData.content ? <div dangerouslySetInnerHTML={{ __html: productData.content }} /> : <p>상품 설명이 없습니다.</p>}</div>
           </section>
 
           {/* 추천 상품 */}
@@ -411,41 +452,37 @@ export default function ProductDetailClient({ productData, productId }: ProductD
                         type='button'
                         aria-label={option.label}
                         onClick={() => handleColorChange(index)}
-                        className={`h-10 w-10 rounded-full border-2 transition xl:h-12 xl:w-12 ${selectedColorIndex === index ? 'border-secondary scale-110 border-4' : 'border-gray-300'} ${option.value === 'white' ? 'bg-white' : ''}`}
-                        style={{ backgroundColor: option.value !== 'white' ? option.color : undefined }}
+                        className={`h-10 w-10 rounded-full border-2 transition xl:h-12 xl:w-12 ${selectedColorIndex === index ? 'border-secondary scale-110 border-4' : 'border-gray-300'} ${option.value === 'white' ? 'ring-1 ring-gray-200' : ''}`}
+                        style={{ backgroundColor: option.color }}
                       />
                     ))}
                   </div>
                 </>
               )}
 
-              {/* 가격 및 수량 */}
-              <div className='mb-10 space-y-6 xl:mb-12 xl:space-y-8'>
-                <div className='flex items-center justify-between'>
-                  <span className='text-secondary text-4xl font-bold xl:text-5xl'>₩ {totalPrice.toLocaleString()}</span>
-                  <div className='flex items-center space-x-4'>
-                    <button
-                      type='button'
-                      onClick={() => handleQuantityChange(-1)}
-                      disabled={quantity <= 1}
-                      className='flex h-12 w-12 items-center justify-center rounded-full border-1 border-gray-300 bg-white transition hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400 xl:h-14 xl:w-14'
-                    >
-                      <Minus size={20} />
-                    </button>
-                    <span className='text-secondary min-w-[4rem] text-center text-2xl font-semibold xl:text-3xl'>{quantity}</span>
-                    <button type='button' onClick={() => handleQuantityChange(1)} className='flex h-12 w-12 items-center justify-center rounded-full border-1 border-gray-300 bg-white transition hover:bg-gray-50 xl:h-14 xl:w-14'>
-                      <Plus size={20} />
-                    </button>
-                  </div>
+              {/* 수량 선택 */}
+              <div className='mb-10 flex items-center justify-between xl:mb-12'>
+                <div className='flex items-center gap-3 rounded-4xl border-1 border-gray-300 bg-white p-2 xl:gap-4'>
+                  <Button variant='ghost' size='icon' disabled={quantity <= 1} onClick={() => handleQuantityChange(-1)} className='hover:bg-transparent active:bg-transparent xl:h-10 xl:w-10'>
+                    <Minus size={18} className='xl:size-5' />
+                  </Button>
+
+                  <span className='text-secondary min-w-[50px] text-center text-lg font-medium xl:min-w-[60px] xl:text-xl'>{quantity}</span>
+
+                  <Button variant='ghost' size='icon' onClick={() => handleQuantityChange(1)} className='hover:bg-transparent active:bg-transparent xl:h-10 xl:w-10'>
+                    <Plus size={18} className='xl:size-5' />
+                  </Button>
                 </div>
+
+                <p className='text-secondary t-h2'>₩ {totalPrice.toLocaleString()}</p>
               </div>
 
-              {/* 구매 버튼들 */}
-              <div className='space-y-4 xl:space-y-6'>
-                <Button onClick={handleAddToCart} variant='outline' className='bg-secondary hover:bg-secondary/90 w-full border-none py-6 text-xl font-semibold text-white xl:py-8 xl:text-2xl'>
+              {/* 액션 버튼 */}
+              <div className='flex gap-4 xl:gap-6'>
+                <Button onClick={handleAddToCart} variant='default' size='lg' className='t-h3 flex-1 p-8'>
                   장바구니
                 </Button>
-                <Button onClick={handlePurchase} className='bg-primary hover:bg-primary/90 w-full py-6 text-xl font-semibold xl:py-8 xl:text-2xl'>
+                <Button onClick={handlePurchase} variant='primary' size='lg' className='t-h3 flex-1 p-8'>
                   구매하기
                 </Button>
               </div>
@@ -453,20 +490,20 @@ export default function ProductDetailClient({ productData, productId }: ProductD
           </div>
 
           {/* 상품 설명 */}
-          <section className='mb-24 border-t-1 border-gray-300 pt-12'>
-            <h2 className='text-secondary mb-8 text-3xl font-bold xl:text-4xl'>Description</h2>
-            <div className='text-secondary prose max-w-none text-lg xl:text-xl'>{productData.content ? <div dangerouslySetInnerHTML={{ __html: productData.content }} /> : <p>상품 설명이 없습니다.</p>}</div>
+          <section className='mb-10 border-y border-gray-300 py-8 xl:py-10'>
+            <h2 className='text-secondary t-h1 mb-6 xl:mb-8 xl:text-3xl'>Description</h2>
+            <div className='text-secondary t-h3 space-y-4 xl:space-y-6'>{productData.content ? <div dangerouslySetInnerHTML={{ __html: productData.content }} /> : <p>상품 설명이 없습니다.</p>}</div>
           </section>
 
           {/* 추천 상품 */}
-          <section className='border-t-1 border-gray-300 pt-12'>
-            <h2 className='text-secondary mb-8 text-3xl font-bold xl:text-4xl'>Recommend</h2>
+          <section className='border-t-1 border-gray-300 pt-8'>
+            <h2 className='text-secondary t-h1 mb-6 xl:mb-8'>Recommend</h2>
             {recommendProducts.length === 0 ? (
-              <div className='py-12 text-center'>
-                <p className='text-xl text-gray-600'>추천 상품이 없습니다.</p>
+              <div className='py-8 text-center'>
+                <p className='text-gray-600'>추천 상품이 없습니다.</p>
               </div>
             ) : (
-              <div className='grid grid-cols-4 gap-8'>
+              <div className='grid grid-cols-4 gap-6 xl:gap-8'>
                 {recommendProducts.map((product) => (
                   <ProductDetailCard key={getProductId(product)} product={product} onClick={handleProductClick} />
                 ))}

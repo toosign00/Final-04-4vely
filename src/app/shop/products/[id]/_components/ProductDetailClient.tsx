@@ -296,9 +296,9 @@ export default function ProductDetailClient({ productData, productId }: ProductD
 
       // 5. 성공 알림
       toast.success('장바구니에 추가되었습니다!', {
-        description: `${productData.name} ${quantity}개${hasColorOptions ? ` (${colorOptions[selectedColorIndex]?.label})` : ''}가 장바구니에 추가되었습니다.`,
+        description: `${productData.name} ${quantity}개${hasColorOptions ? ` (${colorOptions[selectedColorIndex]?.label})` : ''}`,
         action: {
-          label: '장바구니 보기',
+          label: undefined,
           onClick: () => {
             window.location.href = '/cart';
           },

@@ -1,4 +1,5 @@
 import { DiaryReply } from '@/lib/actions/diaryActions';
+import { formatDateString } from '../_utils/plantUtils';
 
 /**
  * 일지 데이터 타입 (API 응답 기반)
@@ -29,7 +30,7 @@ export function mapDiaryReplyToDiary(reply: DiaryReply, plantId: number): Diary 
     title: reply.extra?.title || '제목 없음',
     content: reply.content,
     images: reply.extra?.images || [],
-    date: reply.extra?.date || reply.createdAt,
+    date: formatDateString(reply.extra?.date || reply.createdAt),
     createdAt: reply.createdAt,
     updatedAt: reply.updatedAt,
     user: reply.user,

@@ -2,13 +2,19 @@
 
 import { Button } from '@/components/ui/Button';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/Dialog';
+import { DialogDescription } from '@radix-ui/react-dialog';
 import { Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
 import { CreateDiaryInput, DiaryCardProps, UpdateDiaryInput } from '../../_types/diary.types';
+import { formatDateString } from '../../_utils/plantUtils';
 import DiaryModal from './DiaryModal';
 
-export default function DiaryCard({ diary, onDelete, onEdit, onUpdate }: DiaryCardProps) {
+interface DiaryCardWithPriorityProps extends DiaryCardProps {
+  isPriority?: boolean;
+}
+
+export default function DiaryCard({ diary, onDelete, onEdit, onUpdate, isPriority = false }: DiaryCardWithPriorityProps) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
@@ -48,7 +54,7 @@ export default function DiaryCard({ diary, onDelete, onEdit, onUpdate }: DiaryCa
         <div className='mb-4 flex items-start justify-between gap-3'>
           <div className='min-w-0 flex-1'>
             <h3 className='t-h4 text-secondary mb-1 line-clamp-2 font-bold break-words'>{diary.title}</h3>
-            <p className='t-small text-muted line-clamp-1'>{diary.date}</p>
+            <p className='t-small text-muted line-clamp-1'>{formatDateString(diary.date)}</p>
           </div>
           <div className='flex flex-shrink-0 gap-2'>
             <Button variant='default' size='sm' onClick={handleEdit}>
@@ -75,7 +81,7 @@ export default function DiaryCard({ diary, onDelete, onEdit, onUpdate }: DiaryCa
                         fill
                         className='cursor-pointer object-cover transition-transform hover:scale-105'
                         sizes='(max-width: 768px) 50vw, 25vw'
-                        priority={index === 0}
+                        priority={isPriority && index === 0}
                         onClick={() => setSelectedImage(image)}
                         onError={(e) => {
                           console.error('이미지 로드 실패:', image);
@@ -101,6 +107,7 @@ export default function DiaryCard({ diary, onDelete, onEdit, onUpdate }: DiaryCa
 
       {/* 개선된 이미지 확대 모달 */}
       <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
+        <DialogDescription className='sr-only'>이미지 확대 보기</DialogDescription>
         <DialogContent className='flex h-auto max-h-[98vh] w-auto max-w-[98vw] items-center justify-center border-none bg-transparent p-0 shadow-none' showCloseButton={true}>
           {/* 접근성을 위한 숨겨진 제목 */}
           <DialogTitle className='sr-only'>이미지 확대 보기</DialogTitle>

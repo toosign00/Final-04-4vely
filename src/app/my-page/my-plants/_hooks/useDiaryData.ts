@@ -9,9 +9,9 @@ import { calculatePagination } from '../_utils/diaryUtils';
 /**
  * 일지 데이터 관련 커스텀 훅
  */
-export const useDiaryData = (plantId: number) => {
-  const [diaries, setDiaries] = useState<Diary[]>([]);
-  const [loading, setLoading] = useState(true);
+export const useDiaryData = (plantId: number, initialDiaries: Diary[] = []) => {
+  const [diaries, setDiaries] = useState<Diary[]>(initialDiaries);
+  const [loading, setLoading] = useState(initialDiaries.length === 0); // 초기값이 있으면 로딩하지 않음
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [actionLoading, setActionLoading] = useState(false);

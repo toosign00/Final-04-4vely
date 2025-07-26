@@ -1,8 +1,8 @@
 'use client';
 
+import React, { useState } from 'react';
 import PaginationWrapper from '@/components/ui/PaginationWrapper';
 import { deletePlant } from '@/lib/actions/plantActions';
-import { useState } from 'react';
 import { toast } from 'sonner';
 import { Diary } from '../_types/diary.types';
 import { Plant } from './PlantCard';
@@ -30,7 +30,6 @@ export default function MyPlantsClient({ initialPlants, initialError, initialLat
 
   // 삭제 핸들러
   const handleDelete = async (plantId: number) => {
-    if (!window.confirm('정말로 이 식물을 삭제하시겠습니까?')) return;
     setDeletingId(plantId);
     const res = await deletePlant(plantId);
     if (res.ok) {

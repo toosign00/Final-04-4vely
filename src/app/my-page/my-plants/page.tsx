@@ -1,7 +1,8 @@
 import { getDiariesByPlantId } from '@/lib/actions/diaryActions';
 import { getMyPlants, Plant } from '@/lib/actions/plantActions';
-import MyPlantsClient from './_components/MyPlantsClient';
+import MyPlantsClientWrapper from './_components/MyPlantsClientWrapper';
 import { Diary, mapDiaryReplyToDiary } from './_types/diary.types';
+import { mapPlantPostsToPlants } from './_utils/plantUtils';
 
 export default async function MyPlantsPage() {
   let plants: Plant[] = [];
@@ -11,7 +12,8 @@ export default async function MyPlantsPage() {
   try {
     const result = await getMyPlants();
     if (result.ok) {
-      plants = result.item;
+      // PlantPost[] 배열을 Plant[] 배열로 변환
+      plants = mapPlantPostsToPlants(result.item);
       // 각 식물별 최신 일지 서버에서 패칭
       const diaryPromises = plants.map(async (plant) => {
         const diaryRes = await getDiariesByPlantId(plant.id);
@@ -31,5 +33,5 @@ export default async function MyPlantsPage() {
     error = '식물 목록을 불러오는 중 오류가 발생했습니다.';
   }
 
-  return <MyPlantsClient initialPlants={plants.slice(0, 20)} initialError={error} initialLatestDiaries={latestDiaries} />;
+  return <MyPlantsClientWrapper initialPlants={plants.slice(0, 20)} initialError={error} initialLatestDiaries={latestDiaries} />;
 }

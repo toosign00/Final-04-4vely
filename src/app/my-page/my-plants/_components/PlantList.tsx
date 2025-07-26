@@ -14,7 +14,18 @@ export default function PlantList({ displayItems, latestDiaries, onRegisterClick
   return (
     <>
       {displayItems.map((item, idx) =>
-        item ? <PlantCard key={item.id} plant={item} latestDiary={latestDiaries[item.id]} onDelete={onDelete} isDeleting={deletingId === item.id} /> : <EmptyPlantCard key={`empty-${idx}`} onClick={onRegisterClick} />,
+        item ? (
+          <PlantCard
+            key={item.id}
+            plant={item}
+            latestDiary={latestDiaries[item.id]}
+            onDelete={onDelete}
+            isDeleting={deletingId === item.id}
+            isPriority={idx < 2} // 첫 번째와 두 번째 카드만 priority로 설정
+          />
+        ) : (
+          <EmptyPlantCard key={`empty-${idx}`} onClick={onRegisterClick} />
+        ),
       )}
     </>
   );

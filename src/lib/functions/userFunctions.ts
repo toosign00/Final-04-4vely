@@ -38,7 +38,12 @@ async function getAuthInfo() {
  */
 export async function getUserDetail(): Promise<ApiRes<UserDetail>> {
   const auth = await getAuthInfo();
-  if (!auth) throw new Error('로그인이 필요합니다.');
+  if (!auth) {
+    return {
+      ok: 0,
+      message: '로그인이 필요합니다.',
+    };
+  }
   const { userId } = auth;
 
   try {

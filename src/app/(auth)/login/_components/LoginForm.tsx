@@ -81,15 +81,17 @@ export default function LoginForm() {
                         clearErrors(); // 에러 클리어 함수 사용
                       }}
                     />
-                    <button
+                    <Button
                       type='button'
+                      variant='ghost'
+                      size='icon'
+                      className='absolute top-1/2 right-3 h-auto w-auto -translate-y-1/2 p-0 text-gray-400 hover:text-gray-600'
                       onClick={togglePasswordVisibility}
-                      className='text-muted absolute top-1/2 right-3 flex -translate-y-1/2 cursor-pointer items-center justify-center'
                       aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보기'}
                       disabled={isLoading}
                     >
                       {showPassword ? <Eye size={16} /> : <EyeOff size={16} />}
-                    </button>
+                    </Button>
                   </div>
                 </FormControl>
                 <FormMessage className='min-h-[1.5em] pb-1'>{'\u00A0'}</FormMessage>

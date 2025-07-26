@@ -11,13 +11,13 @@ export const initData = async (clientId, nextSeq) => {
       {
         _id: await nextSeq('user'),
         email: 'admin@market.com',
-        password: '$2a$10$Xlj.lkOmtXCch8UhtCuZAuFl1vTgTvmNQwYVfMSMr5GvgV6gmJV46',
+        password: '$2a$10$GuEyVTkqijXx58GmQC.fW.WEShfxE/bk9hH3oiiEzLiYzdEHmjPva',
         name: '테스트 관리자',
         phone: '01011112222',
         address: '테스트시 테스트구 관리자동 123',
         type: 'admin',
         loginType: 'email',
-        image: `files/${clientId}/user_admin.png`,
+        image: `files/${clientId}/user_admin.webp`,
         createdAt: getTime(),
         updatedAt: getTime(),
         extra: {
@@ -27,13 +27,13 @@ export const initData = async (clientId, nextSeq) => {
       {
         _id: await nextSeq('user'),
         email: 'test@test.com',
-        password: '$2a$10$I/Mi2LNNyS7/Jf6buPzJK.01XUWXd3QefUGl2uodoH9TA4YhOhIhW',
+        password: '$2a$10$Adma5vG8KIGixsl9TWdOCejFVmjp2/KLwk960jPe5jRv4Tz9hp01u',
         name: '테스트 유저 1',
         phone: '01012345678',
         address: '테스트시 테스트구 테스트동 123',
         type: 'user',
         loginType: 'email',
-        image: `files/${clientId}/user-test1.png`,
+        image: `files/${clientId}/user_test01.webp`,
         createdAt: getTime(),
         updatedAt: getTime(),
         extra: {
@@ -43,13 +43,13 @@ export const initData = async (clientId, nextSeq) => {
       {
         _id: await nextSeq('user'),
         email: 'test2@test.com',
-        password: '$2a$10$I/Mi2LNNyS7/Jf6buPzJK.01XUWXd3QefUGl2uodoH9TA4YhOhIhW',
+        password: '$2a$10$Adma5vG8KIGixsl9TWdOCejFVmjp2/KLwk960jPe5jRv4Tz9hp01u',
         name: '테스트 유저 2',
         phone: '01012345678',
         address: '테스트시 테스트구 테스트동 456',
         type: 'user',
         loginType: 'email',
-        image: `files/${clientId}/user-test2.png`,
+        image: `files/${clientId}/user_test02.webp`,
         createdAt: getTime(),
         updatedAt: getTime(),
         extra: {

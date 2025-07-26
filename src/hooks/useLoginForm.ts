@@ -198,7 +198,11 @@ export const useLoginForm = () => {
     required: '비밀번호를 입력해주세요.',
     minLength: {
       value: 4,
-      message: '비밀번호는 최소 4글자 이상 입력해주세요.',
+      message: '비밀번호는 최소 4자 이상이어야 합니다.',
+    },
+    pattern: {
+      value: /^(?=.*[a-zA-Z])(?=.*\d)/,
+      message: '비밀번호는 영문과 숫자를 모두 포함해야 합니다.',
     },
     onChange: clearErrors, // 입력 시 에러 초기화
   };

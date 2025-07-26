@@ -7,7 +7,7 @@ interface EmptyPlantCardProps {
 export default function EmptyPlantCard({ onClick }: EmptyPlantCardProps) {
   return (
     <div
-      className='group relative flex h-[26.6rem] max-h-[26.6rem] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border bg-white shadow-md transition-shadow duration-300 hover:shadow-lg'
+      className='group relative flex h-[28.1rem] max-h-[28.1rem] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border bg-white shadow-md transition-shadow duration-300 hover:shadow-lg'
       onClick={onClick}
       tabIndex={0}
       role='button'

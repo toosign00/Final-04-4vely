@@ -3,8 +3,9 @@
 
 import { toggleProductBookmarkAction } from '@/lib/actions/bookmarkActions';
 import useUserStore from '@/store/authStore';
+import { useBookmarkStore } from '@/store/bookmarkStore';
 import { Bookmark } from 'lucide-react';
-import { useState, useTransition, useEffect } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import { toast } from 'sonner';
 
 interface BookmarkButtonProps {
@@ -12,69 +13,57 @@ interface BookmarkButtonProps {
   myBookmarkId?: number; // 북마크된 경우에만 존재
   size?: number;
   className?: string;
-  variant?: 'default' | 'floating' | 'inline';
-  onBookmarkChange?: (productId: number, isBookmarked: boolean, bookmarkId?: number) => void; // 콜백 추가
 }
 
 /**
- * 북마크 버튼 컴포넌트
+ * 북마크 버튼 컴포넌트 (Zustand 전역 상태 사용)
  * - 로그인된 사용자만 북마크 가능
  * - 서버 액션을 통한 북마크 토글
- * - 로컬 상태로 즉시 UI 업데이트
- * - 상위 컴포넌트에 상태 변경 알림
+ * - Zustand 스토어로 상태 관리 (페이지 이동 후에도 유지)
+ * - 낙관적 업데이트로 즉시 UI 반영
+ * - ShopClientContent 수정 없이 독립적으로 작동
  */
-export default function BookmarkButton({ productId, myBookmarkId, size = 32, className = '', variant = 'default', onBookmarkChange }: BookmarkButtonProps) {
+export default function BookmarkButton({ productId, myBookmarkId, size = 32, className = '' }: BookmarkButtonProps) {
   const [isPending, startTransition] = useTransition();
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // 로그인 상태 확인 (authStore 사용)
+  // 로그인 상태 확인
   const { user } = useUserStore();
   const isLoggedIn = !!user;
 
-  // 로컬 북마크 상태 (즉시 UI 업데이트용)
-  const [localBookmarkId, setLocalBookmarkId] = useState<number | undefined>(myBookmarkId);
+  // Zustand 북마크 스토어 사용
+  const { isBookmarked, getBookmarkId, setBookmark } = useBookmarkStore();
 
-  // props가 변경되면 로컬 상태도 업데이트 (더 강력한 동기화)
+  // 초기 렌더링 시 서버 상태를 Zustand에 동기화
   useEffect(() => {
-    console.log(`[BookmarkButton] Props 변경 감지 - 상품 ${productId}:`, {
-      이전상태: localBookmarkId,
-      새로운상태: myBookmarkId,
-      변경필요: localBookmarkId !== myBookmarkId,
+    console.log(`[BookmarkButton] 상품 ${productId} 초기화:`, {
+      myBookmarkId,
+      isLoggedIn,
+      현재스토어값: getBookmarkId(productId),
     });
 
-    // 서버에서 받은 상태가 로컬 상태와 다르면 업데이트
-    if (localBookmarkId !== myBookmarkId) {
-      console.log(`[BookmarkButton] 로컬 상태 업데이트: ${localBookmarkId} → ${myBookmarkId}`);
-      setLocalBookmarkId(myBookmarkId);
+    // 서버에서 실제 북마크 ID를 받았을 때만 스토어에 저장
+    if (myBookmarkId !== undefined) {
+      const storedBookmarkId = getBookmarkId(productId);
+
+      // 스토어에 없거나 다른 값일 때 업데이트
+      if (storedBookmarkId !== myBookmarkId) {
+        console.log(`[BookmarkButton] 스토어 업데이트: 상품 ${productId}: ${storedBookmarkId} → ${myBookmarkId}`);
+        setBookmark(productId, myBookmarkId);
+      }
     }
-  }, [myBookmarkId, localBookmarkId, productId]);
+  }, [productId, myBookmarkId, getBookmarkId, setBookmark, isLoggedIn]);
 
-  // 현재 북마크 상태 (로컬 상태 기준)
-  const isCurrentlyBookmarked = !!localBookmarkId;
-
-  // 디버깅을 위한 콘솔 로그
-  console.log('BookmarkButton:', {
-    productId,
-    myBookmarkId, // 서버에서 받은 원본
-    localBookmarkId, // 로컬 상태
-    isLoggedIn: !!user,
-    isCurrentlyBookmarked,
-  });
+  // 현재 북마크 상태 (Zustand 스토어 기준)
+  const isCurrentlyBookmarked = isBookmarked(productId);
+  const currentBookmarkId = getBookmarkId(productId);
 
   // 북마크 토글 핸들러
   const handleClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
 
-    console.log('[BookmarkButton] 클릭됨:', {
-      productId,
-      localBookmarkId,
-      isLoggedIn,
-      isCurrentlyBookmarked,
-    });
-
     // 로그인되지 않은 경우
     if (!isLoggedIn) {
-      console.log('[BookmarkButton] 로그인 필요');
       toast.error('로그인이 필요한 기능입니다.', {
         description: '로그인 후 북마크를 사용하실 수 있습니다.',
       });
@@ -83,70 +72,54 @@ export default function BookmarkButton({ productId, myBookmarkId, size = 32, cla
 
     // 이미 처리 중인 경우 중복 요청 방지
     if (isProcessing || isPending) {
-      console.log('[BookmarkButton] 이미 처리 중');
       return;
     }
 
-    console.log('[BookmarkButton] 북마크 토글 시작');
     setIsProcessing(true);
 
-    // 낙관적 업데이트 (즉시 UI 변경)
-    const previousBookmarkId = localBookmarkId;
-    const willBeBookmarked = !isCurrentlyBookmarked;
+    // 낙관적 업데이트 (Zustand 스토어 즉시 업데이트)
+    const previousBookmarkId = currentBookmarkId;
 
     if (isCurrentlyBookmarked) {
-      setLocalBookmarkId(undefined); // 북마크 제거 예상
+      setBookmark(productId, undefined); // 북마크 제거 예상
     } else {
-      setLocalBookmarkId(-1); // 임시 ID로 북마크 추가 예상 (-1은 임시값)
+      setBookmark(productId, -1); // 임시 ID로 북마크 추가 예상
     }
 
     // 서버 액션 호출
     startTransition(async () => {
       try {
         const result = await toggleProductBookmarkAction(productId);
-        console.log('[BookmarkButton] 서버 액션 결과:', result);
 
         if (result.ok) {
-          // 성공한 경우 실제 결과로 상태 업데이트
           const action = result.item?.action;
-          console.log('[BookmarkButton] 액션 타입:', action);
 
           if (action === 'added') {
             const newBookmarkId = result.item?.bookmarkId || -1;
-            setLocalBookmarkId(newBookmarkId);
-
-            // 상위 컴포넌트에 변경 알림
-            onBookmarkChange?.(productId, true, newBookmarkId);
+            setBookmark(productId, newBookmarkId);
 
             toast.success('북마크에 추가되었습니다.', {
               description: '마이페이지에서 확인하실 수 있습니다.',
             });
           } else if (action === 'removed') {
-            setLocalBookmarkId(undefined);
-
-            // 상위 컴포넌트에 변경 알림
-            onBookmarkChange?.(productId, false);
-
+            setBookmark(productId, undefined);
             toast.success('북마크에서 제거되었습니다.');
           }
         } else {
           // 실패한 경우 이전 상태로 롤백
-          console.error('[BookmarkButton] 실패 - 상태 롤백:', result.message);
-          setLocalBookmarkId(previousBookmarkId);
+          setBookmark(productId, previousBookmarkId);
           toast.error(result.message || '북마크 처리에 실패했습니다.');
         }
       } catch (error) {
         // 에러 발생 시 이전 상태로 롤백
-        console.error('[BookmarkButton] 에러 - 상태 롤백:', error);
-        setLocalBookmarkId(previousBookmarkId);
+        setBookmark(productId, previousBookmarkId);
         toast.error('북마크 처리 중 오류가 발생했습니다.');
-      } finally {
-        setIsProcessing(false);
+        console.error('[BookmarkButton] 에러:', error);
       }
     });
   };
 
-  // 공통 스타일 - 배경 제거, 아이콘만 사용
+  // 버튼 스타일
   const baseButtonClass = `
     relative flex items-center justify-center transition-all duration-200
     ${isCurrentlyBookmarked ? 'text-amber-500 hover:text-amber-600' : 'text-gray-400 hover:text-gray-600'}
@@ -154,19 +127,11 @@ export default function BookmarkButton({ productId, myBookmarkId, size = 32, cla
     ${className}
   `;
 
-  // 버튼 크기
   const buttonSize = `w-[${size}px] h-[${size}px]`;
-  const iconSize = Math.round(size * 0.8); // 아이콘 크기 조금 더 크게
-
-  // 변형별 추가 스타일 (그림자 제거)
-  const variantStyles = {
-    default: '',
-    floating: '',
-    inline: '',
-  };
+  const iconSize = Math.round(size * 0.8);
 
   return (
-    <button type='button' className={`${baseButtonClass} ${buttonSize} ${variantStyles[variant]}`} onClick={handleClick} disabled={isProcessing || isPending} aria-label={isCurrentlyBookmarked ? '북마크 제거' : '북마크 추가'}>
+    <button type='button' className={`${baseButtonClass} ${buttonSize}`} onClick={handleClick} disabled={isProcessing || isPending} aria-label={isCurrentlyBookmarked ? '북마크 제거' : '북마크 추가'}>
       <Bookmark size={iconSize} fill={isCurrentlyBookmarked ? 'currentColor' : 'none'} className='transition-all duration-200' />
 
       {/* 로딩 인디케이터 */}

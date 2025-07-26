@@ -15,6 +15,7 @@ interface ProductDetailCardProps {
  * 추천 상품 카드 컴포넌트
  * - 상품 상세 페이지 하단 추천 상품 표시
  * - 반응형 디자인 지원
+ * - 북마크 기능 포함
  */
 export default function ProductDetailCard({ product, onClick }: ProductDetailCardProps) {
   const productId = getProductId(product);
@@ -33,9 +34,9 @@ export default function ProductDetailCard({ product, onClick }: ProductDetailCar
           {/* NEW 태그 */}
           {isNew && <div className='bg-secondary absolute top-0 left-0 rounded-ee-lg px-1.5 py-0.5 text-[10px] font-semibold text-white sm:px-2 sm:py-1 sm:text-xs'>NEW</div>}
 
-          {/* 북마크 버튼 */}
+          {/* 🔥 북마크 버튼 - myBookmarkId prop 추가 */}
           <div className='absolute top-1 right-1'>
-            <BookmarkButton productId={productId} size={32} variant='default' />
+            <BookmarkButton productId={productId} myBookmarkId={product.myBookmarkId} size={32} />
           </div>
         </div>
       </Card>

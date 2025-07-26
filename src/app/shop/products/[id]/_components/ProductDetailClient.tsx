@@ -177,7 +177,7 @@ export default function ProductDetailClient({ productData, productId }: ProductD
         console.log('[ProductDetailClient] 추천 상품 로딩 시작');
         const response = await getBestProducts(4);
         if (response.ok) {
-          const products = (response.item || response.items || []) as Product[];
+          const products = (response.item || []) as Product[];
           const transformedProducts = products.filter((p) => p._id.toString() !== productId).slice(0, 4);
           setRecommendProducts(transformedProducts);
           console.log('[ProductDetailClient] 추천 상품 로딩 완료:', transformedProducts.length);
@@ -302,7 +302,7 @@ export default function ProductDetailClient({ productData, productId }: ProductD
 
           {/* 북마크 버튼 - myBookmarkId prop 추가 */}
           <div className='absolute top-3 right-3 sm:top-4 sm:right-4'>
-            <BookmarkButton productId={getProductId(productData)} myBookmarkId={productData.myBookmarkId} size={32} variant='default' className='sm:scale-110 md:scale-125' />
+            <BookmarkButton productId={getProductId(productData)} myBookmarkId={productData.myBookmarkId} size={32} className='sm:scale-110 md:scale-125' />
           </div>
         </div>
 
@@ -421,7 +421,7 @@ export default function ProductDetailClient({ productData, productId }: ProductD
 
               {/* 북마크 버튼 - myBookmarkId prop 추가 */}
               <div className='absolute top-4 right-4'>
-                <BookmarkButton productId={getProductId(productData)} myBookmarkId={productData.myBookmarkId} size={48} variant='default' />
+                <BookmarkButton productId={getProductId(productData)} myBookmarkId={productData.myBookmarkId} size={48} />
               </div>
             </div>
 

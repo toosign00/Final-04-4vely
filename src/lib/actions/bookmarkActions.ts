@@ -62,7 +62,6 @@ export async function toggleProductBookmarkAction(productId: number): Promise<Ap
         return {
           ok: 1,
           item: { action: 'removed' },
-          message: '북마크가 제거되었습니다.',
         };
       } else {
         console.log('[북마크 토글] 삭제 실패:', deleteResult);
@@ -86,7 +85,6 @@ export async function toggleProductBookmarkAction(productId: number): Promise<Ap
         return {
           ok: 1,
           item: { action: 'added', bookmarkId: addResult.item?._id },
-          message: '북마크에 추가되었습니다.',
         };
       } else {
         console.log('[북마크 토글] 추가 실패:', addResult);
@@ -215,7 +213,7 @@ async function addBookmark(productId: number, accessToken: string): Promise<ApiR
 /**
  * 북마크 삭제 - 수정된 타입 반환
  */
-async function removeBookmark(bookmarkId: number, accessToken: string): Promise<ApiRes<any>> {
+async function removeBookmark(bookmarkId: number, accessToken: string): Promise<ApiRes<{ message: string }>> {
   try {
     console.log(`[북마크 삭제] 삭제할 북마크 ID: ${bookmarkId} (타입: ${typeof bookmarkId})`);
 

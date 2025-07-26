@@ -150,7 +150,7 @@ export async function searchAllProducts(): Promise<Product[]> {
       return [];
     }
 
-    return (response.item || response.items || []) as Product[];
+    return (response.item || response.item || []) as Product[];
   } catch (error) {
     console.error('상품 로딩 실패:', error);
     return [];
@@ -178,7 +178,7 @@ export async function getProductDetailWithRecommendations(id: string): Promise<{
     let recommendProducts: Product[] = [];
 
     if (recommendResponse.ok) {
-      const recommendData = (recommendResponse.item || recommendResponse.items || []) as Product[];
+      const recommendData = (recommendResponse.item || []) as Product[];
       recommendProducts = recommendData.filter((p) => p._id.toString() !== id).slice(0, 4);
     }
 

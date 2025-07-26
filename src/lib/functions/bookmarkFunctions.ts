@@ -102,7 +102,6 @@ export async function getBookmarks(type: 'product' | 'user' | 'post'): ApiResPro
     return {
       ok: 1,
       item: data.item || [],
-      pagination: data.pagination,
     };
   } catch (error) {
     console.error('북마크 목록 조회 실패:', error);

@@ -2,132 +2,107 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-// 북마크 스토어 인터페이스 정의
-interface BookmarkStore {
-  bookmarks: Set<number>; // 북마크된 상품 ID들을 Set으로 관리 (중복 방지, 빠른 검색)
+// 북마크 상태 타입 정의
+interface BookmarkState {
+  // 상품별 북마크 상태 (key: productId, value: bookmarkId)
+  productBookmarks: Record<number, number | undefined>;
+
+  // 북마크 상태 조회
   isBookmarked: (productId: number) => boolean;
-  toggleBookmark: (productId: number) => void;
-  addBookmark: (productId: number) => void;
-  removeBookmark: (productId: number) => void;
+  getBookmarkId: (productId: number) => number | undefined;
+
+  // 북마크 상태 업데이트
+  setBookmark: (productId: number, bookmarkId: number | undefined) => void;
+
+  // 북마크 토글 (낙관적 업데이트용)
+  toggleBookmark: (productId: number, currentBookmarkId?: number) => void;
+
+  // 전체 북마크 초기화
   clearBookmarks: () => void;
-  getBookmarkCount: () => number;
-  getBookmarkedIds: () => number[];
 }
 
 /**
  * 북마크 전역 상태 관리 스토어
- * - Zustand로 상태 관리
- * - persist 미들웨어로 localStorage에 자동 저장
- * - Set 자료구조로 빠른 검색과 중복 방지
- * - 상품 ID를 number 타입으로 사용
+ * - 페이지 이동 후에도 북마크 상태 유지
+ * - 여러 컴포넌트에서 북마크 상태 공유
+ * - 각 BookmarkButton이 자체적으로 상태 관리
  */
-export const useBookmarkStore = create<BookmarkStore>()(
+export const useBookmarkStore = create<BookmarkState>()(
   persist(
     (set, get) => ({
-      // 초기 상태: 빈 Set
-      bookmarks: new Set<number>(),
+      // 초기 상태
+      productBookmarks: {},
 
-      // 특정 상품이 북마크되어 있는지 확인
+      // 북마크 여부 확인
       isBookmarked: (productId: number) => {
-        return get().bookmarks.has(productId);
+        return !!get().productBookmarks[productId];
       },
 
-      // 북마크 토글 (있으면 제거, 없으면 추가)
-      toggleBookmark: (productId: number) => {
+      // 북마크 ID 조회
+      getBookmarkId: (productId: number) => {
+        return get().productBookmarks[productId];
+      },
+
+      // 개별 북마크 상태 설정
+      setBookmark: (productId: number, bookmarkId: number | undefined) => {
+        set((state) => ({
+          productBookmarks: {
+            ...state.productBookmarks,
+            [productId]: bookmarkId,
+          },
+        }));
+      },
+
+      // 북마크 토글 (낙관적 업데이트용)
+      toggleBookmark: (productId: number, currentBookmarkId?: number) => {
         set((state) => {
-          const newBookmarks = new Set(state.bookmarks); // 새로운 Set 생성
-          if (newBookmarks.has(productId)) {
-            newBookmarks.delete(productId);
-          } else {
-            newBookmarks.add(productId);
-          }
-          return { bookmarks: newBookmarks };
+          const isCurrentlyBookmarked = !!state.productBookmarks[productId];
+
+          return {
+            productBookmarks: {
+              ...state.productBookmarks,
+              [productId]: isCurrentlyBookmarked ? undefined : currentBookmarkId || -1, // -1은 임시 ID
+            },
+          };
         });
       },
 
-      // 북마크 추가
-      addBookmark: (productId: number) => {
-        set((state) => {
-          const newBookmarks = new Set(state.bookmarks);
-          newBookmarks.add(productId); // Set이므로 중복 자동 방지
-          return { bookmarks: newBookmarks };
-        });
-      },
-
-      // 북마크 제거
-      removeBookmark: (productId: number) => {
-        set((state) => {
-          const newBookmarks = new Set(state.bookmarks);
-          newBookmarks.delete(productId);
-          return { bookmarks: newBookmarks };
-        });
-      },
-
-      // 모든 북마크 제거 (안 쓰게 되면 제거)
+      // 전체 북마크 초기화 (로그아웃 시 사용)
       clearBookmarks: () => {
-        set({ bookmarks: new Set<number>() });
-      },
-
-      // 북마크 개수 반환
-      getBookmarkCount: () => {
-        return get().bookmarks.size; // Set.size 속성 사용
-      },
-
-      // 북마크된 ID 배열로 반환 (컴포넌트에서 map 등 사용 시)
-      getBookmarkedIds: () => {
-        return Array.from(get().bookmarks); // Set을 배열로 변환
+        set({ productBookmarks: {} });
       },
     }),
     {
       name: 'bookmark-storage', // localStorage 키 이름
-
-      // Set을 localStorage에 저장하기 위한 커스텀 storage 설정
-      storage: {
-        // localStorage에서 데이터 읽기
-        getItem: (name) => {
-          const str = localStorage.getItem(name);
-          if (!str) return null;
-
-          const { state } = JSON.parse(str);
-          return {
-            state: {
-              ...state,
-              // 배열로 저장된 데이터를 다시 Set으로 변환
-              bookmarks: new Set(state.bookmarks || []),
-            },
-          };
-        },
-
-        // localStorage에 데이터 저장
-        setItem: (name, value) => {
-          const str = JSON.stringify({
-            state: {
-              ...value.state,
-              // Set을 배열로 변환하여 JSON 직렬화 가능하게 만듦
-              bookmarks: Array.from(value.state.bookmarks || []),
-            },
-          });
-          localStorage.setItem(name, str);
-        },
-
-        // localStorage에서 데이터 제거
-        removeItem: (name) => localStorage.removeItem(name),
-      },
     },
   ),
 );
 
-/**
- * 사용 예시:
- *
- * const { isBookmarked, toggleBookmark, getBookmarkCount } = useBookmarkStore();
- *
- * // 북마크 여부 확인
- * const bookmarked = isBookmarked(123);
- *
- * // 북마크 토글
- * toggleBookmark(123);
- *
- * // 총 북마크 수
- * const count = getBookmarkCount();
- */
+// 로그아웃 이벤트 리스너 설정
+if (typeof window !== 'undefined') {
+  // storage 이벤트 감지 (다른 탭에서의 로그아웃 포함)
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'user-auth' && !e.newValue) {
+      // user-auth 쿠키가 삭제되면 북마크도 초기화
+      useBookmarkStore.getState().clearBookmarks();
+    }
+  });
+
+  // 현재 탭에서의 쿠키 변화 감지
+  const checkAuthCookie = () => {
+    const cookies = document.cookie.split(';').reduce((acc: Record<string, string>, cookie) => {
+      const [key, value] = cookie.split('=').map((c) => c.trim());
+      if (key && value) {
+        acc[key] = decodeURIComponent(value);
+      }
+      return acc;
+    }, {});
+
+    if (!cookies['user-auth']) {
+      useBookmarkStore.getState().clearBookmarks();
+    }
+  };
+
+  // 주기적으로 인증 쿠키 확인 (현재 탭에서의 로그아웃 감지)
+  setInterval(checkAuthCookie, 1000);
+}

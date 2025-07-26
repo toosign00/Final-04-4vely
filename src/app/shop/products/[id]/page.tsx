@@ -49,15 +49,8 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
     // 서버 함수 사용으로 변경 (북마크 정보 포함)
     const productResponse = await getServerProductById(parseInt(id));
 
-    console.log(`[상품 상세 페이지] API 응답:`, {
-      ok: productResponse.ok,
-      hasItem: !!productResponse.item,
-      myBookmarkId: productResponse.item?.myBookmarkId,
-    });
-
-    // 상품이 없으면 404
-    if (!productResponse.ok || !productResponse.item) {
-      console.log(`[상품 상세 페이지] 상품을 찾을 수 없음: ${id}`);
+    if (productResponse.ok === 0) {
+      console.log(`[상품 상세 페이지] 오류: ${productResponse.message}`);
       notFound();
     }
 

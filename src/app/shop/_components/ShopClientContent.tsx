@@ -6,15 +6,12 @@ import { Input } from '@/components/ui/Input';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/Pagination';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/Sheet';
-import { CategoryFilter, Product, SortOption, getProductCategories, getProductId, isNewProduct } from '@/types/product';
+import { CategoryFilter, Product, ProductCategory, SortOption, getProductCategories, getProductId, isNewProduct } from '@/types/product';
 import { Filter, Search } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import CategoryFilterSidebar from './CategoryFilter';
 import ProductCard from './ProductCard';
-
-// 상품 카테고리 타입 정의
-type ProductCategory = 'new' | 'plant' | 'supplies';
 
 interface ShopClientContentProps {
   initialProducts: Product[];
@@ -51,31 +48,26 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
   const [filters, setFilters] = useState<CategoryFilter>(getInitialFilters());
   const [itemsPerPage, setItemsPerPage] = useState(9);
 
-  // 상품 목록을 useState로 관리하여 북마크 상태 변경을 실시간 반영
-  const [productsWithBookmarks, setProductsWithBookmarks] = useState<Product[]>(initialProducts);
+  // 🔥 북마크 상태 관리 제거 - initialProducts 직접 사용
+  // const [productsWithBookmarks, setProductsWithBookmarks] = useState<Product[]>(initialProducts);
+  // useEffect(() => { setProductsWithBookmarks(initialProducts); }, [initialProducts]);
 
-  // 초기 상품 데이터가 변경되면 로컬 상태도 업데이트
-  useEffect(() => {
-    setProductsWithBookmarks(initialProducts);
-  }, [initialProducts]);
-
-  // 북마크 상태 변경 핸들러
-  const handleBookmarkChange = useCallback((productId: number, isBookmarked: boolean, bookmarkId?: number) => {
-    console.log('[ShopClientContent] 북마크 상태 변경:', { productId, isBookmarked, bookmarkId });
-
-    setProductsWithBookmarks((prevProducts) =>
-      prevProducts.map((product) => {
-        if (product._id === productId) {
-          return {
-            ...product,
-            myBookmarkId: isBookmarked ? bookmarkId : undefined,
-            isBookmarked,
-          };
-        }
-        return product;
-      }),
-    );
-  }, []);
+  // 🔥 북마크 상태 변경 핸들러 제거
+  // const handleBookmarkChange = useCallback((productId: number, isBookmarked: boolean, bookmarkId?: number) => {
+  //   console.log('[ShopClientContent] 북마크 상태 변경:', { productId, isBookmarked, bookmarkId });
+  //   setProductsWithBookmarks((prevProducts) =>
+  //     prevProducts.map((product) => {
+  //       if (product._id === productId) {
+  //         return {
+  //           ...product,
+  //           myBookmarkId: isBookmarked ? bookmarkId : undefined,
+  //           isBookmarked,
+  //         };
+  //       }
+  //       return product;
+  //     }),
+  //   );
+  // }, []);
 
   // 정렬 옵션 상수
   const SORT_OPTIONS: SortOption[] = [
@@ -218,7 +210,7 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
 
   // 상품 필터링 및 정렬 로직
   useEffect(() => {
-    let result = [...productsWithBookmarks];
+    let result = [...initialProducts]; // 🔥 productsWithBookmarks 대신 initialProducts 사용
 
     // 1단계: 메인 카테고리로 필터링
     switch (selectedCategory) {
@@ -251,14 +243,14 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
     }
 
     // 3단계: 세부 카테고리 필터링
-    Object.entries(filters).forEach(([filterKey, filterValues]) => {
-      if (filterValues.length > 0) {
-        result = result.filter((product) => {
-          const categories = getProductCategories(product);
-          return filterValues.some((value: string) => categories.includes(value));
-        });
-      }
-    });
+   Object.values(filters).forEach((filterValues) => {
+     if (filterValues.length > 0) {
+       result = result.filter((product) => {
+         const categories = getProductCategories(product);
+         return filterValues.some((value: string) => categories.includes(value));
+       });
+     }
+   });
 
     // 4단계: 정렬 적용
     switch (sortBy) {
@@ -287,7 +279,7 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
     if (currentPage > newTotalPages && newTotalPages > 0) {
       setCurrentPage(1);
     }
-  }, [productsWithBookmarks, searchTerm, filters, sortBy, selectedCategory, itemsPerPage, currentPage]);
+  }, [initialProducts, searchTerm, filters, sortBy, selectedCategory, itemsPerPage, currentPage]); // 🔥 productsWithBookmarks 제거
 
   // 페이지네이션 계산
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
@@ -395,7 +387,8 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
           ) : (
             <div className='grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-2 md:gap-8'>
               {paginatedProducts.map((product) => (
-                <ProductCard key={getProductId(product)} product={product} onClick={handleProductClick} isMobile={true} onBookmarkChange={handleBookmarkChange} />
+                // 🔥 onBookmarkChange 콜백 제거
+                <ProductCard key={getProductId(product)} product={product} onClick={handleProductClick} isMobile={true} />
               ))}
             </div>
           )}
@@ -465,7 +458,8 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
             ) : (
               <div className='grid grid-cols-3 gap-6 xl:grid-cols-3 xl:gap-8 2xl:grid-cols-4 2xl:gap-10'>
                 {paginatedProducts.map((product) => (
-                  <ProductCard key={getProductId(product)} product={product} onClick={handleProductClick} onBookmarkChange={handleBookmarkChange} />
+                  // 🔥 onBookmarkChange 콜백 제거
+                  <ProductCard key={getProductId(product)} product={product} onClick={handleProductClick} />
                 ))}
               </div>
             )}

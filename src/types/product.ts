@@ -3,6 +3,8 @@
 // ============================================================================
 // 상품 관련 타입 (API 원본 + UI 확장)
 // ============================================================================
+export type ProductCategory = 'new' | 'plant' | 'supplies';
+
 export interface ProductExtra {
   isNew?: boolean;
   isBest?: boolean;
@@ -31,6 +33,48 @@ export interface Product {
   // 북마크 관련 (로그인된 사용자에게만 제공)
   isBookmarked?: boolean;
   myBookmarkId?: number; // 북마크된 경우에만 존재하는 북마크 ID
+}
+
+/**
+ * 북마크 아이템 타입
+ */
+export interface BookmarkItem {
+  _id: number;
+  memo?: string;
+  createdAt: string;
+  product?: {
+    _id: number;
+    name?: string;
+    price?: number;
+  };
+}
+
+/**
+ * 페이지네이션 타입 (API 응답에 포함될 수 있음)
+ */
+export interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+/**
+ * 배열 응답을 위한 확장 타입
+ * ApiRes를 확장하지 않고 별도로 정의
+ */
+export interface ApiArrayResponse<T> {
+  ok: 1;
+  item: T[];
+  pagination?: Pagination;
+}
+
+/**
+ * 북마크 액션 응답 타입
+ */
+export interface BookmarkActionResponse {
+  action: 'added' | 'removed';
+  bookmarkId?: number;
 }
 
 // 기존 타입들은 그대로 유지

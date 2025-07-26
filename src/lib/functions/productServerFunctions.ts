@@ -1,5 +1,5 @@
 // src/lib/functions/productServerFunctions.ts
-import { ApiResPromise, Product } from '@/types/product';
+import { ApiResPromise, Product, BookmarkItem } from '@/types/product';
 import { cookies } from 'next/headers';
 
 const API_URL = process.env.API_URL || 'https://fesp-api.koyeb.app/market';
@@ -30,7 +30,7 @@ async function getServerAccessToken(): Promise<string | null> {
 /**
  * 특정 상품의 북마크 정보를 조회합니다.
  */
-async function getProductBookmark(productId: number, accessToken: string): Promise<any | null> {
+async function getProductBookmark(productId: number, accessToken: string): Promise<BookmarkItem | null> {
   try {
     console.log(`[서버 북마크 조회] 상품 ID: ${productId}`);
 
@@ -105,7 +105,7 @@ export async function getServerAllProducts(params?: { page?: number; limit?: num
 
     const res = await fetch(`${API_URL}${endpoint}`, {
       headers,
-      cache: 'no-cache', // 북마크 상태 변경 반영을 위해 캐시 비활성화
+      cache: 'no-cache', // 🔥 북마크 상태 변경 반영을 위해 캐시 비활성화
     });
 
     const data = await res.json();
@@ -114,7 +114,7 @@ export async function getServerAllProducts(params?: { page?: number; limit?: num
       return data;
     }
 
-    // 로그인된 사용자인 경우 각 상품의 북마크 정보 추가
+    // 🔥 로그인된 사용자인 경우 각 상품의 북마크 정보 추가
     if (accessToken && Array.isArray(data.item)) {
       console.log(`[서버 상품 목록] ${data.item.length}개 상품의 북마크 정보 조회 시작`);
 
@@ -182,7 +182,7 @@ export async function getServerProductById(productId: number): ApiResPromise<Pro
     const [productRes, bookmark] = await Promise.all([
       fetch(`${API_URL}/products/${productId}`, {
         headers,
-        cache: 'no-cache', // 북마크 상태 변경 반영을 위해 캐시 비활성화
+        cache: 'no-cache', // 🔥 북마크 상태 변경 반영을 위해 캐시 비활성화
       }),
       accessToken ? getProductBookmark(productId, accessToken) : null,
     ]);
@@ -199,7 +199,7 @@ export async function getServerProductById(productId: number): ApiResPromise<Pro
       return data;
     }
 
-    // 북마크 정보 추가 (중복 조회 방지)
+    // 🔥 북마크 정보 추가 (중복 조회 방지)
     if (data.item) {
       console.log('[서버 상품 상세 조회] 북마크 정보 추가:', {
         북마크존재: !!bookmark,
@@ -230,6 +230,66 @@ export async function getServerProductById(productId: number): ApiResPromise<Pro
   }
 }
 
+/**
+ * 서버에서 베스트 상품 목록을 가져옵니다. (북마크 정보 포함)
+ */
+export async function getBestProducts(limit: number = 4): ApiResPromise<Product[]> {
+  try {
+    // 서버에서 토큰 가져오기
+    const accessToken = await getServerAccessToken();
+
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'client-id': CLIENT_ID,
+    };
+
+    // 토큰이 있으면 Authorization 헤더 추가
+    if (accessToken) {
+      headers['Authorization'] = `Bearer ${accessToken}`;
+    }
+
+    const res = await fetch(`${API_URL}/products?custom.isBest=true&limit=${limit}`, {
+      headers,
+      cache: 'no-cache', // 🔥 북마크 상태 변경 반영을 위해 캐시 비활성화
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      return data;
+    }
+
+    // 🔥 로그인된 사용자인 경우 각 상품의 북마크 정보 추가
+    if (accessToken && Array.isArray(data.item)) {
+      console.log(`[서버 베스트 상품] ${data.item.length}개 상품의 북마크 정보 조회 시작`);
+
+      // 병렬로 모든 상품의 북마크 정보 조회
+      const productsWithBookmarks = await Promise.all(
+        data.item.map(async (product: Product) => {
+          const bookmark = await getProductBookmark(product._id, accessToken);
+
+          return {
+            ...product,
+            myBookmarkId: bookmark?._id || undefined,
+            isBookmarked: !!bookmark,
+          };
+        }),
+      );
+
+      data.item = productsWithBookmarks;
+      console.log(`[서버 베스트 상품] 북마크 정보 추가 완료`);
+    }
+
+    return data;
+  } catch (error) {
+    console.error('베스트 상품 조회 실패:', error);
+    return {
+      ok: 0,
+      message: '일시적인 네트워크 문제로 베스트 상품 조회에 실패했습니다.',
+    };
+  }
+}
+
 // ============================================================================
 // 고수준 조합 함수들 (서버 컴포넌트에서 사용)
 // ============================================================================
@@ -240,14 +300,14 @@ export async function getServerProductById(productId: number): ApiResPromise<Pro
  */
 export async function searchAllProducts(): Promise<Product[]> {
   try {
-    const response = await getServerAllProducts({ limit: 100 });
+    const response = await getServerAllProducts({ limit: 12 });
 
     if (!response.ok) {
       console.error('상품 로딩 실패:', response.message);
       return [];
     }
 
-    return (response.item || response.items || []) as Product[];
+    return (response.item || response.item || []) as Product[];
   } catch (error) {
     console.error('상품 로딩 실패:', error);
     return [];
@@ -276,7 +336,7 @@ export async function getProductDetailWithRecommendations(id: string): Promise<{
     let recommendProducts: Product[] = [];
 
     if (recommendResponse.ok) {
-      const recommendData = (recommendResponse.item || recommendResponse.items || []) as Product[];
+      const recommendData = (recommendResponse.item || recommendResponse.item || []) as Product[];
       recommendProducts = recommendData.filter((p) => p._id.toString() !== id).slice(0, 4);
     }
 
@@ -289,66 +349,6 @@ export async function getProductDetailWithRecommendations(id: string): Promise<{
     return {
       product: null,
       recommendProducts: [],
-    };
-  }
-}
-
-/**
- * 서버에서 베스트 상품 목록을 가져옵니다.
- */
-export async function getBestProducts(limit: number = 4): ApiResPromise<Product[]> {
-  try {
-    // 서버에서 토큰 가져오기
-    const accessToken = await getServerAccessToken();
-
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-      'client-id': CLIENT_ID,
-    };
-
-    // 토큰이 있으면 Authorization 헤더 추가
-    if (accessToken) {
-      headers['Authorization'] = `Bearer ${accessToken}`;
-    }
-
-    const res = await fetch(`${API_URL}/products?custom.isBest=true&limit=${limit}`, {
-      headers,
-      cache: 'no-cache', // 북마크 상태 변경 반영을 위해 캐시 비활성화
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      return data;
-    }
-
-    // 로그인된 사용자인 경우 각 상품의 북마크 정보 추가
-    if (accessToken && Array.isArray(data.item)) {
-      console.log(`[서버 베스트 상품] ${data.item.length}개 상품의 북마크 정보 조회 시작`);
-
-      // 병렬로 모든 상품의 북마크 정보 조회
-      const productsWithBookmarks = await Promise.all(
-        data.item.map(async (product: Product) => {
-          const bookmark = await getProductBookmark(product._id, accessToken);
-
-          return {
-            ...product,
-            myBookmarkId: bookmark?._id || undefined,
-            isBookmarked: !!bookmark,
-          };
-        }),
-      );
-
-      data.item = productsWithBookmarks;
-      console.log(`[서버 베스트 상품] 북마크 정보 추가 완료`);
-    }
-
-    return data;
-  } catch (error) {
-    console.error('베스트 상품 조회 실패:', error);
-    return {
-      ok: 0,
-      message: '일시적인 네트워크 문제로 베스트 상품 조회에 실패했습니다.',
     };
   }
 }

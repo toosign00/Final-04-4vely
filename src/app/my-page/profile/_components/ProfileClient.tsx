@@ -4,10 +4,11 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import { updateUserProfile } from '@/lib/actions/userActions';
 import type { UserDetail } from '@/lib/functions/userFunctions';
-import { AlertCircle, Calendar, Camera, Mail, MapPin, Phone, User } from 'lucide-react';
+import { AlertCircle, Calendar, Camera, ChevronRight, Mail, MapPin, Phone, User } from 'lucide-react';
 import { useEffect, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import ChangePasswordDialog from './ChangePasswordDialog';
 
 interface ProfileClientProps {
   user: UserDetail | null;
@@ -24,11 +25,13 @@ interface ProfileFormValues {
 export default function ProfileClient({ user }: ProfileClientProps) {
   const [isPending, startTransition] = useTransition();
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
+  const [displayName, setDisplayName] = useState(user?.name || '');
+  const [displayEmail, setDisplayEmail] = useState(user?.email || '');
 
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors, isDirty },
     reset,
   } = useForm<ProfileFormValues>({
@@ -50,12 +53,10 @@ export default function ProfileClient({ user }: ProfileClientProps) {
         phone: user.phone || '',
         address: user.address || '',
       });
+      setDisplayName(user.name || '');
+      setDisplayEmail(user.email || '');
     }
   }, [user, reset]);
-
-  // 파일 미리보기
-  const watchName = watch('name');
-  const watchEmail = watch('email');
 
   // 파일 변경 시 미리보기
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,12 +100,19 @@ export default function ProfileClient({ user }: ProfileClientProps) {
       if (res.ok) {
         // setCurrentImage(res.item?.image || currentImage); // 저장 후 이미지 갱신하지 않음
         // setPreviewUrl(null); // 저장 후 미리보기 유지
-        reset({
+        const updatedData = {
           name: res.item?.name ?? values.name,
           email: res.item?.email ?? values.email,
           phone: res.item?.phone ?? values.phone,
           address: res.item?.address ?? values.address,
-        });
+        };
+
+        reset(updatedData);
+
+        // 저장 후 표시용 데이터 업데이트
+        setDisplayName(updatedData.name);
+        setDisplayEmail(updatedData.email);
+
         toast.success('프로필이 성공적으로 수정되었습니다!');
       } else {
         toast.error(res.message || '프로필 수정에 실패했습니다.');
@@ -127,8 +135,8 @@ export default function ProfileClient({ user }: ProfileClientProps) {
             <div className='relative'>
               {/* 프로필 이미지 */}
               <Avatar className='size-20 ring-4 ring-gray-100'>
-                <AvatarImage src={previewUrl || user?.image} alt='프로필 이미지' />
-                <AvatarFallback className='from-primary to-primary/80 text-secondary t-h3 bg-gradient-to-br font-semibold'>{(watchName || user.name).charAt(0)}</AvatarFallback>
+                <AvatarImage src={previewUrl || user?.image} alt='프로필 이미지' className='object-cover' />
+                <AvatarFallback className='from-primary to-primary/80 text-secondary t-h3 bg-gradient-to-br font-semibold'>{displayName.charAt(0)}</AvatarFallback>
               </Avatar>
               <input
                 type='file'
@@ -151,8 +159,8 @@ export default function ProfileClient({ user }: ProfileClientProps) {
               </label>
             </div>
             <div className='flex-1'>
-              <h3 className='t-h3 text-secondary mb-1'>{watchName || user.name}</h3>
-              <p className='t-body text-secondary/70 mb-2'>{watchEmail || user.email}</p>
+              <h3 className='t-h3 text-secondary mb-1'>{displayName}</h3>
+              <p className='t-body text-secondary/70 mb-2'>{displayEmail}</p>
               <div className='t-small text-secondary/50 flex items-center gap-2'>
                 <Calendar className='size-4' />
                 <span>{user.createdAt} 가입</span>
@@ -247,12 +255,13 @@ export default function ProfileClient({ user }: ProfileClientProps) {
 
           <div className='divide-y divide-gray-200 bg-white'>
             {/* 비밀번호 변경 */}
-            <div className='flex h-auto w-full cursor-not-allowed items-center justify-between rounded-none px-8 py-6 text-left opacity-50'>
+            <button type='button' onClick={() => setIsPasswordDialogOpen(true)} className='flex h-auto w-full cursor-pointer items-center justify-between rounded-none px-8 py-6 text-left transition-colors hover:bg-gray-50'>
               <div className='flex-1'>
                 <h4 className='t-body text-secondary mb-1 font-semibold'>비밀번호 변경</h4>
-                <p className='t-small text-secondary/70'>비밀번호 변경은 현재 지원하지 않습니다</p>
+                <p className='t-small text-secondary/70'>계정 보안을 위해 주기적으로 비밀번호를 변경하세요</p>
               </div>
-            </div>
+              <ChevronRight className='text-secondary/50 size-5' />
+            </button>
 
             {/* 이메일 알림 */}
             <div className='flex h-auto w-full cursor-not-allowed items-center justify-between rounded-none border-t border-gray-100 px-8 py-6 text-left opacity-50'>
@@ -271,6 +280,9 @@ export default function ProfileClient({ user }: ProfileClientProps) {
             </div>
           </div>
         </div>
+
+        {/* 비밀번호 변경 다이얼로그 */}
+        <ChangePasswordDialog isOpen={isPasswordDialogOpen} onClose={() => setIsPasswordDialogOpen(false)} />
       </div>
     </div>
   );

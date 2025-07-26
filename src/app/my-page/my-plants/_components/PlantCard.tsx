@@ -1,6 +1,6 @@
 'use client';
 import { Button } from '@/components/ui/Button';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/AlertDialog';
 import { Trash2 } from 'lucide-react';
 import Image, { StaticImageData } from 'next/image';
 import { useRouter } from 'next/navigation';

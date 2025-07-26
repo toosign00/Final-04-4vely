@@ -96,8 +96,13 @@ export interface SortOption {
 export function getImageUrl(imagePath?: string): string {
   if (!imagePath) return '/images/placeholder-plant.jpg';
   if (imagePath.startsWith('http')) return imagePath;
-  const API_URL = process.env.API_SERVER || 'https://fesp-api.koyeb.app/market';
-  return `${API_URL}${imagePath}`;
+
+  // 다른 서버 함수들과 환경변수 통일
+  const API_URL = process.env.API_URL || 'https://fesp-api.koyeb.app/market';
+
+  // imagePath가 /로 시작하지 않으면 /를 추가
+  const normalizedPath = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
+  return `${API_URL}${normalizedPath}`;
 }
 
 /**

@@ -258,7 +258,7 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
     if (currentPage > newTotalPages && newTotalPages > 0) {
       setCurrentPage(1);
     }
-  }, [initialProducts, searchTerm, filters, sortBy, selectedCategory, itemsPerPage, currentPage]); // 🔥 productsWithBookmarks 제거
+  }, [initialProducts, searchTerm, filters, sortBy, selectedCategory, itemsPerPage, currentPage]);
 
   // 페이지네이션 계산
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);

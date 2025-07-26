@@ -172,7 +172,7 @@ export default function CategoryFilterSidebar({ filters, onFilterChange, isMobil
     <div className='bg-surface w-64 border-r border-gray-200 p-4 pt-8'>
       {/* 카테고리 헤더 */}
       <div className='mb-6'>
-        <h2 className='text-secondary t-h2 mb-4'>Category</h2>
+        <h2 className='text-secondary t-h3 mb-4'>Category</h2>
         <div className='space-y-1'>
           {CATEGORY_OPTIONS.map((option) => (
             <Button key={option.value} variant={selectedCategory === option.value ? 'primary' : 'ghost'} size='sm' className='w-full justify-start' onClick={() => handleCategoryClick(option.value)}>

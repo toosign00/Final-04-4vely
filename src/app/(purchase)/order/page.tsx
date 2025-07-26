@@ -95,10 +95,6 @@ export default function OrderPage() {
       // 주문 완료 페이지로 이동
       if (result.data?.redirectUrl) {
         setTimeout(() => {
-          router.push(result.data.redirectUrl);
-        }, 1000);
-      } else {
-        setTimeout(() => {
           router.push('/order/order-complete');
         }, 1000);
       }

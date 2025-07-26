@@ -4,8 +4,11 @@
 import BookmarkButton from '@/components/ui/BookmarkButton';
 import { Button } from '@/components/ui/Button';
 import { addToCartAction, checkLoginStatusAction } from '@/lib/actions/cartServerActions';
+import { checkOrderLoginStatusAction } from '@/lib/actions/orderServerActions';
 import { getBestProducts } from '@/lib/functions/productClientFunctions';
 import { useCartStore } from '@/store/cartStore';
+import { usePurchaseStore } from '@/store/orderStore';
+import { DirectPurchaseItem } from '@/types/order.types';
 import { Product, getImageUrl, getProductCategories, getProductId, getProductPotColors, getProductTags, isNewProduct } from '@/types/product';
 import { Minus, Plus } from 'lucide-react';
 import Image from 'next/image';
@@ -44,6 +47,7 @@ export default function ProductDetailClient({ productData, productId }: ProductD
 
   // Zustand 스토어 사용
   const { addItem } = useCartStore();
+  const { setDirectPurchase } = usePurchaseStore();
 
   // 상태 관리
   const [selectedColorIndex, setSelectedColorIndex] = useState(0);
@@ -316,14 +320,71 @@ export default function ProductDetailClient({ productData, productId }: ProductD
     }
   };
 
-  const handlePurchase = () => {
-    // TODO: 구매 기능 구현시 추가
-    console.log('구매하기:', {
-      productId: getProductId(productData),
-      quantity,
-      selectedColor: hasColorOptions ? colorOptions[selectedColorIndex] : null,
-    });
-    toast.info('구매 기능은 곧 출시예정입니다!');
+  const handlePurchase = async () => {
+    try {
+      console.log('[직접 구매] 시작:', {
+        상품ID: productData._id,
+        수량: quantity,
+        선택된색상: hasColorOptions ? colorOptions[selectedColorIndex]?.label : null,
+      });
+
+      // 1. 로그인 상태 확인
+      const isLoggedIn = await checkOrderLoginStatusAction();
+
+      if (!isLoggedIn) {
+        console.log('[직접 구매] 로그인 필요');
+        toast.error('로그인이 필요합니다', {
+          description: '구매하려면 로그인해주세요.',
+          action: {
+            label: '로그인',
+            onClick: () => {
+              // 현재 페이지를 callback URL로 하여 로그인 페이지로 이동
+              const currentUrl = window.location.pathname + window.location.search;
+              window.location.href = `/login?callbackUrl=${encodeURIComponent(currentUrl)}`;
+            },
+          },
+          duration: 5000,
+        });
+        return;
+      }
+
+      // 2. 직접 구매 아이템 데이터 준비
+      const purchaseItem: DirectPurchaseItem = {
+        productId: productData._id,
+        productName: productData.name,
+        productImage: currentImageUrl,
+        price: productData.price,
+        quantity,
+        selectedColor: hasColorOptions
+          ? {
+              colorIndex: selectedColorIndex,
+              colorName: colorOptions[selectedColorIndex]?.label || '',
+            }
+          : undefined,
+      };
+
+      // 3. 구매 스토어에 데이터 설정
+      setDirectPurchase(purchaseItem);
+
+      // 4. 결제 페이지로 이동
+      console.log('[직접 구매] 결제 페이지로 이동');
+
+      toast.success('결제 페이지로 이동합니다', {
+        description: `${productData.name} ${quantity}개${hasColorOptions ? ` (${colorOptions[selectedColorIndex]?.label})` : ''}`,
+        duration: 2000,
+      });
+
+      // 약간의 딜레이 후 페이지 이동 (toast 메시지 표시 시간)
+      setTimeout(() => {
+        router.push('/order');
+      }, 1000);
+    } catch (error) {
+      console.error('[직접 구매] 예상치 못한 오류:', error);
+      toast.error('구매 처리 중 오류가 발생했습니다', {
+        description: '잠시 후 다시 시도해주세요.',
+        duration: 4000,
+      });
+    }
   };
 
   const handleProductClick = (id: number) => {

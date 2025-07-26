@@ -4,7 +4,7 @@
 import { Card } from '@/components/ui/Card';
 import { Product, getProductId, getProductImageUrl, isNewProduct } from '@/types/product';
 import Image from 'next/image';
-import BookmarkButton from '../../../_components/BookmarkButton';
+import BookmarkButton from '../../../../../components/ui/BookmarkButton';
 
 interface ProductDetailCardProps {
   product: Product;
@@ -34,7 +34,7 @@ export default function ProductDetailCard({ product, onClick }: ProductDetailCar
           {/* NEW 태그 */}
           {isNew && <div className='bg-secondary absolute top-0 left-0 rounded-ee-lg px-1.5 py-0.5 text-[10px] font-semibold text-white sm:px-2 sm:py-1 sm:text-xs'>NEW</div>}
 
-          {/* 🔥 북마크 버튼 - myBookmarkId prop 추가 */}
+          {/* 북마크 버튼 */}
           <div className='absolute top-1 right-1'>
             <BookmarkButton productId={productId} myBookmarkId={product.myBookmarkId} size={32} />
           </div>

@@ -11,7 +11,6 @@ interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
  * - 상품 태그 표시용
  * - 다양한 variant 스타일 지원
  * - 디자인 시스템 색상 사용
- * - 상호작용 없는 순수 UI 컴포넌트
  */
 export function Badge({ variant = 'default', className = '', children, ...props }: BadgeProps) {
   const baseStyles = 'inline-flex items-center rounded-full text-xs font-medium px-3 py-1';

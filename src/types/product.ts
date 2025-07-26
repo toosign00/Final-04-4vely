@@ -1,8 +1,12 @@
-// src/types/product.types.ts
+// src/types/product.ts
 
 // ============================================================================
 // 상품 관련 타입 (API 원본 + UI 확장)
 // ============================================================================
+
+// 북마크 관련 타입
+export type { Bookmark as BookmarkItem } from './bookmark.types';
+
 export type ProductCategory = 'new' | 'plant' | 'supplies';
 
 export interface ProductExtra {
@@ -36,20 +40,6 @@ export interface Product {
 }
 
 /**
- * 북마크 아이템 타입
- */
-export interface BookmarkItem {
-  _id: number;
-  memo?: string;
-  createdAt: string;
-  product?: {
-    _id: number;
-    name?: string;
-    price?: number;
-  };
-}
-
-/**
  * 페이지네이션 타입 (API 응답에 포함될 수 있음)
  */
 export interface Pagination {
@@ -77,7 +67,6 @@ export interface BookmarkActionResponse {
   bookmarkId?: number;
 }
 
-// 기존 타입들은 그대로 유지
 export type { ApiRes, ApiResPromise } from './api.types';
 
 // ============================================================================

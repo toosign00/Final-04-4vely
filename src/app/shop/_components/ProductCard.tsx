@@ -4,13 +4,12 @@
 import { Card } from '@/components/ui/Card';
 import { Product, getProductId, getProductImageUrl, isNewProduct } from '@/types/product';
 import Image from 'next/image';
-import BookmarkButton from './BookmarkButton';
+import BookmarkButton from '../../../components/ui/BookmarkButton';
 
 interface ProductCardProps {
   product: Product;
   onClick: (id: number) => void;
   isMobile?: boolean;
-  // 🔥 onBookmarkChange 콜백 제거 - 상품 상세 페이지처럼 단순화
 }
 
 /**
@@ -25,7 +24,7 @@ export default function ProductCard({ product, onClick, isMobile = false }: Prod
   const imageUrl = getProductImageUrl(product);
   const isNew = isNewProduct(product);
 
-  // 북마크 상태 정보 (서버에서 전달받은 정보)
+  // 북마크 상태 정보 (서버)
   const myBookmarkId = product.myBookmarkId;
   const isCurrentlyBookmarked = !!myBookmarkId;
 
@@ -55,7 +54,7 @@ export default function ProductCard({ product, onClick, isMobile = false }: Prod
             {/* NEW 태그 */}
             {isNew && <div className='bg-secondary t-body absolute top-0 left-0 rounded-ee-lg px-2 py-1 font-semibold text-white'>NEW</div>}
 
-            {/* 🔥 북마크 버튼 - 상품 상세처럼 콜백 제거 */}
+            {/* 북마크 버튼 */}
             <div className='absolute top-1 right-1'>
               <BookmarkButton productId={productId} myBookmarkId={myBookmarkId} size={32} />
             </div>
@@ -84,7 +83,7 @@ export default function ProductCard({ product, onClick, isMobile = false }: Prod
           {/* NEW 태그 */}
           {isNew && <div className='bg-secondary absolute top-0 left-0 z-1 rounded-ss-2xl rounded-ee-xl px-3 py-1.5 text-xs font-semibold text-white'>NEW</div>}
 
-          {/* 🔥 북마크 버튼 - 상품 상세처럼 콜백 제거 */}
+          {/* 북마크 버튼 */}
           <div className='absolute top-3 right-3'>
             <BookmarkButton productId={productId} myBookmarkId={myBookmarkId} size={32} />
           </div>

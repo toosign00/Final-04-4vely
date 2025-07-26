@@ -250,7 +250,7 @@ export async function getBestProducts(limit: number = 4): ApiResPromise<Product[
 
     const res = await fetch(`${API_URL}/products?custom.isBest=true&limit=${limit}`, {
       headers,
-      cache: 'no-cache', // 🔥 북마크 상태 변경 반영을 위해 캐시 비활성화
+      cache: 'no-cache',
     });
 
     const data = await res.json();
@@ -259,7 +259,7 @@ export async function getBestProducts(limit: number = 4): ApiResPromise<Product[
       return data;
     }
 
-    // 🔥 로그인된 사용자인 경우 각 상품의 북마크 정보 추가
+    // 로그인된 사용자인 경우 각 상품의 북마크 정보 추가
     if (accessToken && Array.isArray(data.item)) {
       console.log(`[서버 베스트 상품] ${data.item.length}개 상품의 북마크 정보 조회 시작`);
 
@@ -289,10 +289,6 @@ export async function getBestProducts(limit: number = 4): ApiResPromise<Product[
     };
   }
 }
-
-// ============================================================================
-// 고수준 조합 함수들 (서버 컴포넌트에서 사용)
-// ============================================================================
 
 /**
  * 서버에서 모든 상품을 조회합니다.
@@ -331,7 +327,7 @@ export async function getProductDetailWithRecommendations(id: string): Promise<{
 
     const product = productResponse.item;
 
-    // 간단한 추천 로직: 베스트 상품에서 현재 상품 제외
+    // 추천 로직
     const recommendResponse = await getBestProducts(5);
     let recommendProducts: Product[] = [];
 

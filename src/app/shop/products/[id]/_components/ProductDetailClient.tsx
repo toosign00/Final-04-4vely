@@ -1,9 +1,9 @@
 // src/app/shop/products/[id]/_components/ProductDetailClient.tsx
 'use client';
 
-import BookmarkButton from '@/app/shop/_components/BookmarkButton';
+import BookmarkButton from '@/components/ui/BookmarkButton';
 import { Button } from '@/components/ui/Button';
-import { getBestProducts } from '@/lib/functions/productFunctions';
+import { getBestProducts } from '@/lib/functions/productClientFunctions';
 import { useCartStore } from '@/store/cartStore';
 import { Product, getImageUrl, getProductCategories, getProductId, getProductPotColors, getProductTags, isNewProduct } from '@/types/product';
 import { Minus, Plus } from 'lucide-react';
@@ -25,7 +25,7 @@ interface ProductDetailClientProps {
   productId: string;
 }
 
-// 한국어 색상명을 영어로 매핑하는 함수
+// 한국어 -> 영어 매핑 함수
 const getColorMapping = (koreanColor: string): { englishName: string; hexColor: string } => {
   const colorMap: Record<string, { englishName: string; hexColor: string }> = {
     흑색: { englishName: 'black', hexColor: '#000000' },
@@ -41,17 +41,15 @@ const getColorMapping = (koreanColor: string): { englishName: string; hexColor: 
 export default function ProductDetailClient({ productData, productId }: ProductDetailClientProps) {
   const router = useRouter();
 
-  // ⚠️ 모든 Hook을 먼저 호출 (조건부 return 이전에)
-
   // Zustand 스토어 사용
   const { addItem } = useCartStore();
 
-  // 상태 관리 (항상 호출)
+  // 상태 관리
   const [selectedColorIndex, setSelectedColorIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [recommendProducts, setRecommendProducts] = useState<Product[]>([]);
 
-  // 상품 기본 정보 (안전하게 추출) - Hook을 먼저 호출
+  // 상품 기본 정보
   const productTags = useMemo(() => {
     if (!productData) return [];
     try {
@@ -82,7 +80,7 @@ export default function ProductDetailClient({ productData, productId }: ProductD
     }
   }, [productData]);
 
-  // 상품의 화분 색상 정보 추출 (안전하게)
+  // 상품의 화분 색상 정보 추출
   const colorValues = useMemo(() => {
     if (!productData) return null;
 
@@ -124,7 +122,7 @@ export default function ProductDetailClient({ productData, productId }: ProductD
     }
   }, [colorValues, hasColorOptions]);
 
-  // 현재 선택된 색상에 해당하는 이미지 URL 계산 (안전하게)
+  // 현재 선택된 색상에 해당하는 이미지 URL 계산
   const currentImageUrl = useMemo(() => {
     if (!productData) return getImageUrl('');
 
@@ -151,7 +149,7 @@ export default function ProductDetailClient({ productData, productId }: ProductD
     return productData.price * quantity;
   }, [productData, quantity]);
 
-  // 카테고리 표시 이름 가져오기 (안전하게)
+  // 카테고리 표시 이름 가져오기
   const getCategoryDisplayName = useMemo(() => {
     return () => {
       if (!productData) return '상품';
@@ -170,7 +168,7 @@ export default function ProductDetailClient({ productData, productId }: ProductD
     };
   }, [productData, productCategories]);
 
-  // 추천 상품 로딩 (Hook이므로 항상 호출)
+  // 추천 상품 로딩
   useEffect(() => {
     const loadRecommendProducts = async () => {
       try {
@@ -192,7 +190,7 @@ export default function ProductDetailClient({ productData, productId }: ProductD
     }
   }, [productId]);
 
-  // ✅ 이제 모든 Hook 호출이 완료된 후 조건부 return
+  // 모든 Hook 호출이 완료된 후 조건부 return
   if (!productData) {
     console.error('[ProductDetailClient] 상품 데이터가 없습니다.');
     return (
@@ -300,7 +298,7 @@ export default function ProductDetailClient({ productData, productId }: ProductD
             </div>
           )}
 
-          {/* 북마크 버튼 - myBookmarkId prop 추가 */}
+          {/* 북마크 버튼 */}
           <div className='absolute top-3 right-3 sm:top-4 sm:right-4'>
             <BookmarkButton productId={getProductId(productData)} myBookmarkId={productData.myBookmarkId} size={32} className='sm:scale-110 md:scale-125' />
           </div>

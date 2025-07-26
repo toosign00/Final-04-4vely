@@ -47,28 +47,7 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
   const [selectedCategory, setSelectedCategory] = useState<ProductCategory>(getInitialCategory());
   const [filters, setFilters] = useState<CategoryFilter>(getInitialFilters());
   const [itemsPerPage, setItemsPerPage] = useState(9);
-
-  // 🔥 북마크 상태 관리 제거 - initialProducts 직접 사용
-  // const [productsWithBookmarks, setProductsWithBookmarks] = useState<Product[]>(initialProducts);
-  // useEffect(() => { setProductsWithBookmarks(initialProducts); }, [initialProducts]);
-
-  // 🔥 북마크 상태 변경 핸들러 제거
-  // const handleBookmarkChange = useCallback((productId: number, isBookmarked: boolean, bookmarkId?: number) => {
-  //   console.log('[ShopClientContent] 북마크 상태 변경:', { productId, isBookmarked, bookmarkId });
-  //   setProductsWithBookmarks((prevProducts) =>
-  //     prevProducts.map((product) => {
-  //       if (product._id === productId) {
-  //         return {
-  //           ...product,
-  //           myBookmarkId: isBookmarked ? bookmarkId : undefined,
-  //           isBookmarked,
-  //         };
-  //       }
-  //       return product;
-  //     }),
-  //   );
-  // }, []);
-
+  
   // 정렬 옵션 상수
   const SORT_OPTIONS: SortOption[] = [
     { value: 'recommend', label: '추천순' },
@@ -210,7 +189,7 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
 
   // 상품 필터링 및 정렬 로직
   useEffect(() => {
-    let result = [...initialProducts]; // 🔥 productsWithBookmarks 대신 initialProducts 사용
+    let result = [...initialProducts];
 
     // 1단계: 메인 카테고리로 필터링
     switch (selectedCategory) {
@@ -387,7 +366,6 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
           ) : (
             <div className='grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-2 md:gap-8'>
               {paginatedProducts.map((product) => (
-                // 🔥 onBookmarkChange 콜백 제거
                 <ProductCard key={getProductId(product)} product={product} onClick={handleProductClick} isMobile={true} />
               ))}
             </div>
@@ -458,7 +436,6 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
             ) : (
               <div className='grid grid-cols-3 gap-6 xl:grid-cols-3 xl:gap-8 2xl:grid-cols-4 2xl:gap-10'>
                 {paginatedProducts.map((product) => (
-                  // 🔥 onBookmarkChange 콜백 제거
                   <ProductCard key={getProductId(product)} product={product} onClick={handleProductClick} />
                 ))}
               </div>

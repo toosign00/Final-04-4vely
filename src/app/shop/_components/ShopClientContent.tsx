@@ -47,7 +47,7 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
   const [selectedCategory, setSelectedCategory] = useState<ProductCategory>(getInitialCategory());
   const [filters, setFilters] = useState<CategoryFilter>(getInitialFilters());
   const [itemsPerPage, setItemsPerPage] = useState(9);
-  
+
   // 정렬 옵션 상수
   const SORT_OPTIONS: SortOption[] = [
     { value: 'recommend', label: '추천순' },
@@ -222,14 +222,14 @@ export default function ShopClientContent({ initialProducts }: ShopClientContent
     }
 
     // 3단계: 세부 카테고리 필터링
-   Object.values(filters).forEach((filterValues) => {
-     if (filterValues.length > 0) {
-       result = result.filter((product) => {
-         const categories = getProductCategories(product);
-         return filterValues.some((value: string) => categories.includes(value));
-       });
-     }
-   });
+    Object.values(filters).forEach((filterValues) => {
+      if (filterValues.length > 0) {
+        result = result.filter((product) => {
+          const categories = getProductCategories(product);
+          return filterValues.some((value: string) => categories.includes(value));
+        });
+      }
+    });
 
     // 4단계: 정렬 적용
     switch (sortBy) {

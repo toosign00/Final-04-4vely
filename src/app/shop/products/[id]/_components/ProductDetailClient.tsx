@@ -3,6 +3,7 @@
 
 import BookmarkButton from '@/components/ui/BookmarkButton';
 import { Button } from '@/components/ui/Button';
+import { addToCartAction, checkLoginStatusAction } from '@/lib/actions/cartServerActions';
 import { getBestProducts } from '@/lib/functions/productClientFunctions';
 import { useCartStore } from '@/store/cartStore';
 import { Product, getImageUrl, getProductCategories, getProductId, getProductPotColors, getProductTags, isNewProduct } from '@/types/product';
@@ -227,10 +228,58 @@ export default function ProductDetailClient({ productData, productId }: ProductD
   };
 
   // Zustand 스토어를 사용한 장바구니 추가 기능
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     try {
-      const cartItem = {
-        productId: getProductId(productData).toString(),
+      console.log('[장바구니 추가] 시작:', {
+        상품ID: productData._id,
+        수량: quantity,
+        선택된색상: hasColorOptions ? colorOptions[selectedColorIndex]?.label : null,
+      });
+
+      // 1. 로그인 상태 확인
+      const isLoggedIn = await checkLoginStatusAction();
+
+      if (!isLoggedIn) {
+        console.log('[장바구니 추가] 로그인 필요');
+        toast.error('로그인이 필요합니다', {
+          description: '장바구니 기능을 사용하려면 로그인해주세요.',
+          action: {
+            label: '로그인',
+            onClick: () => {
+              // 현재 페이지를 callback URL로 하여 로그인 페이지로 이동
+              const currentUrl = window.location.pathname + window.location.search;
+              window.location.href = `/login?callbackUrl=${encodeURIComponent(currentUrl)}`;
+            },
+          },
+          duration: 5000,
+        });
+        return;
+      }
+
+      // 2. 서버 API 호출 데이터 준비
+      const cartData = {
+        product_id: productData._id,
+        quantity,
+        size: hasColorOptions ? colorOptions[selectedColorIndex]?.label || '' : undefined,
+      };
+
+      console.log('[장바구니 추가] 서버 요청 데이터:', cartData);
+
+      // 3. 서버에 장바구니 추가 요청
+      const result = await addToCartAction(cartData);
+
+      if (!result.success) {
+        console.error('[장바구니 추가] 서버 오류:', result.message);
+        toast.error('장바구니 추가 실패', {
+          description: result.message,
+          duration: 4000,
+        });
+        return;
+      }
+
+      // 4. 성공 시 로컬 스토어에도 추가 (UI 반영용)
+      const localCartItem = {
+        productId: productData._id.toString(),
         productName: productData.name,
         productImage: currentImageUrl,
         price: productData.price,
@@ -243,17 +292,27 @@ export default function ProductDetailClient({ productData, productId }: ProductD
           : undefined,
       };
 
-      addItem(cartItem);
+      addItem(localCartItem);
 
+      // 5. 성공 알림
       toast.success('장바구니에 추가되었습니다!', {
-        description: `${productData.name} ${quantity}개가 장바구니에 추가되었습니다.`,
-        duration: 3000,
+        description: `${productData.name} ${quantity}개${hasColorOptions ? ` (${colorOptions[selectedColorIndex]?.label})` : ''}가 장바구니에 추가되었습니다.`,
+        action: {
+          label: '장바구니 보기',
+          onClick: () => {
+            window.location.href = '/cart';
+          },
+        },
+        duration: 4000,
       });
 
-      console.log('장바구니에 추가 완료:', cartItem);
+      console.log('[장바구니 추가] 성공 완료');
     } catch (error) {
-      console.error('장바구니 추가 실패:', error);
-      toast.error('장바구니 추가에 실패했습니다.');
+      console.error('[장바구니 추가] 예상치 못한 오류:', error);
+      toast.error('장바구니 추가에 실패했습니다', {
+        description: '잠시 후 다시 시도해주세요.',
+        duration: 4000,
+      });
     }
   };
 

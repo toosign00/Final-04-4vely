@@ -4,9 +4,7 @@ import { CurationCarousel } from '@/components/_home/CurationCarousel';
 import NewProductSection from '@/components/_home/NewProductSection';
 import ReviewCarousel from '@/components/_home/ReviewCarousel';
 import WeatherWidget from '@/components/_home/WeatherWidget';
-import { Button } from '@/components/ui/Button';
 import Image from 'next/image';
-import Link from 'next/link';
 
 export default function Home() {
   // 신상품 리스트
@@ -189,15 +187,7 @@ export default function Home() {
       </section> */}
 
       {/* 날씨 정보 - API 연결 필요 */}
-      <section className='relative mb-4 flex min-h-[9rem] flex-col bg-amber-300 px-5 pt-5 pb-2' aria-label='현재 날씨 정보'>
-        <WeatherWidget />
-        {/* 하단 버튼 */}
-        <div className='self-end'>
-          <Button asChild variant='secondary' size='sm' className='md:h-9 md:px-4 md:py-2 md:text-base lg:h-10 lg:px-6 lg:text-xl'>
-            <Link href='/my-page/my-plants'>내 식물 관리하기</Link>
-          </Button>
-        </div>
-      </section>
+      <WeatherWidget />
 
       {/* 신상품 - 상품페이지의 신상품과 연결 필요 */}
       <NewProductSection newProductList={newProductList} />

@@ -56,7 +56,7 @@ export async function fetchWeather(lat: number, lon: number) {
     return {
       city: data.name,
       datetime: data.dt,
-      temp: data.main.temp,
+      temp: Math.round(data.main.temp * 10) / 10,
       humidity: data.main.humidity,
       description,
       icon,

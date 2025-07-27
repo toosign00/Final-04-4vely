@@ -28,7 +28,7 @@ export default function ProductCard({ product, onClick, isMobile = false }: Prod
           <div className='relative'>
             {/* 상품 이미지 */}
             <div className='bg-surface relative aspect-square w-full overflow-hidden' onClick={() => onClick(product.id)}>
-              <Image src={product.image || '/placeholder-plant.jpg'} alt={product.name} fill className='object-cover' sizes='(max-width: 640px) 48vw, (max-width: 1024px) 30vw, 200px' priority={false} />
+              <Image src={product.image || '/placeholder-plant.svg'} alt={product.name} fill className='object-cover' sizes='(max-width: 640px) 48vw, (max-width: 1024px) 30vw, 200px' priority={false} />
             </div>
 
             {/* NEW 태그 */}
@@ -57,7 +57,7 @@ export default function ProductCard({ product, onClick, isMobile = false }: Prod
         <div className='relative'>
           {/* 상품 이미지 */}
           <div className='bg-surface relative aspect-square w-full overflow-hidden' onClick={() => onClick(product.id)}>
-            <Image src={product.image || '/placeholder-plant.jpg'} alt={product.name} fill className='object-cover' sizes='280px' priority={false} />
+            <Image src={product.image || '/placeholder-plant.svg'} alt={product.name} fill className='object-cover' sizes='280px' priority={false} />
           </div>
 
           {/* NEW 태그 */}

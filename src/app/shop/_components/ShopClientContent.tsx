@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/Input';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/Pagination';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/Sheet';
-import { CategoryFilter, Product, ProductCategory, SortOption, getProductCategories, getProductId, isNewProduct } from '@/types/product';
+import { CategoryFilter, Product, ProductCategory, SortOption, getProductCategories, getProductId, isNewProduct } from '@/types/product.types';
 import { Filter, Search } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';

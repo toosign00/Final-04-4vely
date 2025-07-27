@@ -4,7 +4,7 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/Accordion';
 import { Button } from '@/components/ui/Button';
 import { Checkbox } from '@/components/ui/Checkbox';
-import { CategoryFilter } from '@/types/product';
+import { CategoryFilter } from '@/types/product.types';
 
 // 상품 카테고리 타입 정의
 type ProductCategory = 'new' | 'plant' | 'supplies';

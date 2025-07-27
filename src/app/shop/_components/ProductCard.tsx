@@ -2,7 +2,7 @@
 'use client';
 
 import { Card } from '@/components/ui/Card';
-import { Product, getProductId, getProductImageUrl, isNewProduct } from '@/types/product';
+import { Product, getProductId, getProductImageUrl, isNewProduct } from '@/types/product.types';
 import Image from 'next/image';
 import BookmarkButton from '../../../components/ui/BookmarkButton';
 

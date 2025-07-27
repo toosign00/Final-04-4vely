@@ -1,7 +1,7 @@
 // src/types/order.types.ts
 
 import { ApiRes } from './api.types';
-import { Product } from './product';
+import { Product } from './product.types';
 
 /**
  * ===========================

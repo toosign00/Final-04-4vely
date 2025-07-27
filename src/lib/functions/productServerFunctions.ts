@@ -1,5 +1,5 @@
 // src/lib/functions/productServerFunctions.ts
-import { ApiResPromise, Product, BookmarkItem } from '@/types/product';
+import { ApiResPromise, BookmarkItem, Product } from '@/types/product.types';
 import { cookies } from 'next/headers';
 
 const API_URL = process.env.API_URL || 'https://fesp-api.koyeb.app/market';

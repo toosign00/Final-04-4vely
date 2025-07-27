@@ -4,16 +4,13 @@
 import BookmarkButton from '@/components/ui/BookmarkButton';
 import { Button } from '@/components/ui/Button';
 import { addToCartAction, checkLoginStatusAction } from '@/lib/actions/cartServerActions';
-import { checkOrderLoginStatusAction } from '@/lib/actions/orderServerActions';
-import { getBestProducts } from '@/lib/functions/productClientFunctions';
-import { useCartStore } from '@/store/cartStore';
-import { usePurchaseStore } from '@/store/orderStore';
+import { checkOrderLoginStatusAction, createDirectPurchaseTempOrderAction } from '@/lib/actions/orderServerActions';
 import { DirectPurchaseItem } from '@/types/order.types';
-import { Product, getImageUrl, getProductCategories, getProductId, getProductPotColors, getProductTags, isNewProduct } from '@/types/product';
+import { Product, getImageUrl, getProductCategories, getProductId, getProductPotColors, getProductTags, isNewProduct } from '@/types/product.types';
 import { Minus, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { Badge } from './Badge';
 import ProductDetailCard from './ProductDetailCard';
@@ -27,13 +24,18 @@ interface ColorOption {
 interface ProductDetailClientProps {
   productData: Product;
   productId: string;
+  recommendProducts?: Product[];
 }
 
-// 한국어 -> 영어 매핑 함수
+/**
+ * 한국어 색상명을 영어명과 HEX 색상 코드로 매핑
+ */
 const getColorMapping = (koreanColor: string): { englishName: string; hexColor: string } => {
   const colorMap: Record<string, { englishName: string; hexColor: string }> = {
     흑색: { englishName: 'black', hexColor: '#000000' },
     갈색: { englishName: 'brown', hexColor: '#8B4513' },
+    백색: { englishName: 'white', hexColor: '#FFFFFF' },
+    황색: { englishName: 'yellow', hexColor: '#FFD700' },
     회색: { englishName: 'gray', hexColor: '#808080' },
     흰색: { englishName: 'white', hexColor: '#FFFFFF' },
     남색: { englishName: 'blue', hexColor: '#4169E1' },
@@ -42,35 +44,34 @@ const getColorMapping = (koreanColor: string): { englishName: string; hexColor: 
   return colorMap[koreanColor] || { englishName: koreanColor.toLowerCase(), hexColor: '#808080' };
 };
 
-export default function ProductDetailClient({ productData, productId }: ProductDetailClientProps) {
+/**
+ * 상품 상세 페이지 클라이언트 컴포넌트
+ * Zustand 없이 서버 액션만 사용
+ */
+export default function ProductDetailClient({ productData, recommendProducts = [] }: ProductDetailClientProps) {
   const router = useRouter();
 
-  // Zustand 스토어 사용
-  const { addItem } = useCartStore();
-  const { setDirectPurchase } = usePurchaseStore();
-
   // 상태 관리
-  const [selectedColorIndex, setSelectedColorIndex] = useState(0);
-  const [quantity, setQuantity] = useState(1);
-  const [recommendProducts, setRecommendProducts] = useState<Product[]>([]);
+  const [quantity, setQuantity] = useState<number>(1);
+  const [selectedColorIndex, setSelectedColorIndex] = useState<number>(0);
 
-  // 상품 기본 정보
-  const productTags = useMemo(() => {
-    if (!productData) return [];
-    try {
-      return getProductTags(productData) || [];
-    } catch (error) {
-      console.error('[ProductDetailClient] 태그 추출 오류:', error);
-      return [];
-    }
-  }, [productData]);
-
+  // 상품 정보 파싱
   const productCategories = useMemo(() => {
     if (!productData) return [];
     try {
       return getProductCategories(productData) || [];
     } catch (error) {
       console.error('[ProductDetailClient] 카테고리 추출 오류:', error);
+      return [];
+    }
+  }, [productData]);
+
+  const productTags = useMemo(() => {
+    if (!productData) return [];
+    try {
+      return getProductTags(productData) || [];
+    } catch (error) {
+      console.error('[ProductDetailClient] 태그 추출 오류:', error);
       return [];
     }
   }, [productData]);
@@ -148,76 +149,29 @@ export default function ProductDetailClient({ productData, productId }: ProductD
     }
   }, [hasColorOptions, productData, selectedColorIndex]);
 
-  // 계산된 값들
-  const totalPrice = useMemo(() => {
-    if (!productData) return 0;
-    return productData.price * quantity;
-  }, [productData, quantity]);
+  // 카테고리 표시 이름
+  const getCategoryDisplayName = () => {
+    if (productCategories.includes('화분')) return '화분';
+    if (productCategories.includes('소품')) return '소품';
+    if (productCategories.includes('선인장')) return '선인장';
+    if (productCategories.includes('관엽식물')) return '관엽식물';
+    if (productCategories.includes('공기정화식물')) return '공기정화식물';
+    if (productCategories.includes('꽃')) return '꽃';
+    return '식물';
+  };
 
-  // 카테고리 표시 이름 가져오기
-  const getCategoryDisplayName = useMemo(() => {
-    return () => {
-      if (!productData) return '상품';
+  // 총 가격 계산
+  const totalPrice = productData.price * quantity;
 
-      try {
-        if (productCategories.includes('식물') || (!productCategories.includes('원예 용품') && !productCategories.includes('화분') && !productCategories.includes('도구') && !productCategories.includes('조명'))) {
-          return '식물';
-        } else if (productCategories.includes('원예 용품') || productCategories.includes('화분') || productCategories.includes('도구') || productCategories.includes('조명')) {
-          return '원예 용품';
-        }
-        return '상품';
-      } catch (error) {
-        console.error('[ProductDetailClient] 카테고리 표시명 오류:', error);
-        return '상품';
-      }
-    };
-  }, [productData, productCategories]);
-
-  // 추천 상품 로딩
-  useEffect(() => {
-    const loadRecommendProducts = async () => {
-      try {
-        console.log('[ProductDetailClient] 추천 상품 로딩 시작');
-        const response = await getBestProducts(4);
-        if (response.ok) {
-          const products = (response.item || []) as Product[];
-          const transformedProducts = products.filter((p) => p._id.toString() !== productId).slice(0, 4);
-          setRecommendProducts(transformedProducts);
-          console.log('[ProductDetailClient] 추천 상품 로딩 완료:', transformedProducts.length);
-        }
-      } catch (error) {
-        console.error('[ProductDetailClient] 추천 상품 로딩 실패:', error);
-      }
-    };
-
-    if (productId) {
-      loadRecommendProducts();
-    }
-  }, [productId]);
-
-  // 모든 Hook 호출이 완료된 후 조건부 return
+  // 렌더링 체크
   if (!productData) {
-    console.error('[ProductDetailClient] 상품 데이터가 없습니다.');
+    console.error('[ProductDetailClient] 상품 데이터가 없습니다');
     return (
       <div className='flex min-h-screen items-center justify-center'>
         <p className='text-red-500'>상품 정보를 불러올 수 없습니다.</p>
       </div>
     );
   }
-
-  console.log('[ProductDetailClient] 렌더링 시작:', {
-    상품ID: productData._id,
-    상품명: productData.name,
-    myBookmarkId: productData.myBookmarkId,
-    extra존재: !!productData.extra,
-    extra내용: productData.extra,
-  });
-
-  console.log('[ProductDetailClient] 기본 정보 추출 완료:', {
-    태그수: productTags.length,
-    카테고리수: productCategories.length,
-    신상품여부: isNew,
-  });
 
   // 이벤트 핸들러들
   const handleQuantityChange = (change: number) => {
@@ -231,7 +185,7 @@ export default function ProductDetailClient({ productData, productId }: ProductD
     setSelectedColorIndex(colorIndex);
   };
 
-  // Zustand 스토어를 사용한 장바구니 추가 기능
+  // 서버 액션만 사용한 장바구니 추가 기능
   const handleAddToCart = async () => {
     try {
       console.log('[장바구니 추가] 시작:', {
@@ -250,7 +204,6 @@ export default function ProductDetailClient({ productData, productId }: ProductD
           action: {
             label: '로그인',
             onClick: () => {
-              // 현재 페이지를 callback URL로 하여 로그인 페이지로 이동
               const currentUrl = window.location.pathname + window.location.search;
               window.location.href = `/login?callbackUrl=${encodeURIComponent(currentUrl)}`;
             },
@@ -264,7 +217,7 @@ export default function ProductDetailClient({ productData, productId }: ProductD
       const cartData = {
         product_id: productData._id,
         quantity,
-        size: hasColorOptions ? colorOptions[selectedColorIndex]?.label || '' : undefined,
+        extra: hasColorOptions ? { potColor: colorOptions[selectedColorIndex]?.label || '' } : undefined,
       };
 
       console.log('[장바구니 추가] 서버 요청 데이터:', cartData);
@@ -281,28 +234,11 @@ export default function ProductDetailClient({ productData, productId }: ProductD
         return;
       }
 
-      // 4. 성공 시 로컬 스토어에도 추가 (UI 반영용)
-      const localCartItem = {
-        productId: productData._id.toString(),
-        productName: productData.name,
-        productImage: currentImageUrl,
-        price: productData.price,
-        quantity,
-        selectedColor: hasColorOptions
-          ? {
-              colorIndex: selectedColorIndex,
-              colorName: colorOptions[selectedColorIndex]?.label || '',
-            }
-          : undefined,
-      };
-
-      addItem(localCartItem);
-
-      // 5. 성공 알림
+      // 4. 성공 알림 (로컬 스토어 추가 부분 제거)
       toast.success('장바구니에 추가되었습니다!', {
         description: `${productData.name} ${quantity}개${hasColorOptions ? ` (${colorOptions[selectedColorIndex]?.label})` : ''}`,
         action: {
-          label: undefined,
+          label: '장바구니 보기',
           onClick: () => {
             window.location.href = '/cart';
           },
@@ -338,7 +274,6 @@ export default function ProductDetailClient({ productData, productId }: ProductD
           action: {
             label: '로그인',
             onClick: () => {
-              // 현재 페이지를 callback URL로 하여 로그인 페이지로 이동
               const currentUrl = window.location.pathname + window.location.search;
               window.location.href = `/login?callbackUrl=${encodeURIComponent(currentUrl)}`;
             },
@@ -363,8 +298,17 @@ export default function ProductDetailClient({ productData, productId }: ProductD
           : undefined,
       };
 
-      // 3. 구매 스토어에 데이터 설정
-      setDirectPurchase(purchaseItem);
+      // 3. 임시 주문 생성 (서버 액션)
+      const success = await createDirectPurchaseTempOrderAction(purchaseItem);
+
+      if (!success) {
+        console.error('[직접 구매] 임시 주문 생성 실패');
+        toast.error('주문 처리에 실패했습니다', {
+          description: '잠시 후 다시 시도해주세요.',
+          duration: 4000,
+        });
+        return;
+      }
 
       // 4. 결제 페이지로 이동
       console.log('[직접 구매] 결제 페이지로 이동');
@@ -374,7 +318,7 @@ export default function ProductDetailClient({ productData, productId }: ProductD
         duration: 2000,
       });
 
-      // 약간의 딜레이 후 페이지 이동 (toast 메시지 표시 시간)
+      // 약간의 딜레이 후 페이지 이동
       setTimeout(() => {
         router.push('/order');
       }, 1000);

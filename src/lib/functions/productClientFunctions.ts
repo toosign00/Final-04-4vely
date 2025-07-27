@@ -6,7 +6,7 @@
  * @module productClientFunctions
  */
 
-import { ApiResPromise, Product } from '@/types/product';
+import { ApiResPromise, Product } from '@/types/product.types';
 
 const API_URL = process.env.API_URL || 'https://fesp-api.koyeb.app/market';
 const CLIENT_ID = process.env.CLIENT_ID || 'febc13-final04-emjf';

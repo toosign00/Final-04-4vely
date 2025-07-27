@@ -23,11 +23,11 @@ interface ReviewCarouselProps {
 // 리뷰 슬라이드
 export default function ReviewCarousel({ reviews }: ReviewCarouselProps) {
   return (
-    <section className='mb-15 w-full justify-items-center px-4'>
+    <section className='mb-15 flex w-full flex-col justify-items-center px-4'>
       <h2 className='mb-2 text-center text-2xl font-bold md:text-3xl lg:text-4xl'>사용자 리얼 후기</h2>
       <p className='text-muted mb-7 text-center text-sm md:text-lg'>실제 식물 집사들의 생생한 키우기 경험담</p>
 
-      <div className='relative w-full max-w-[63rem]'>
+      <div className='relative w-full max-w-[63rem] self-center'>
         <Carousel
           opts={{
             loop: true,

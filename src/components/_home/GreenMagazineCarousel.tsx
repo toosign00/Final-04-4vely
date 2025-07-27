@@ -4,7 +4,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import Image from 'next/image';
 import Link from 'next/link';
 
-interface CurationItem {
+interface GreenMagazineItem {
   title: string;
   explain: string;
   image: string;
@@ -12,14 +12,14 @@ interface CurationItem {
 }
 
 interface Props {
-  curationItems: CurationItem[];
+  greenMagazineItems: GreenMagazineItem[];
 }
 
-// 큐레이션 소개글
-export function CurationCarousel({ curationItems }: Props) {
+// 매거진 소개글
+export function GreenMagazineCarousel({ greenMagazineItems }: Props) {
   return (
     <section className='mx-auto w-full max-w-screen-xl px-4'>
-      <h2 className='mb-7 text-center text-2xl font-bold md:text-3xl lg:text-5xl'>Curation</h2>
+      <h2 className='mb-7 text-center text-2xl font-bold md:text-3xl lg:text-5xl'>Green Magazine</h2>
 
       <div className='relative w-full'>
         <Carousel
@@ -30,7 +30,7 @@ export function CurationCarousel({ curationItems }: Props) {
           }}
         >
           <CarouselContent>
-            {curationItems.map((item, index) => (
+            {greenMagazineItems.map((item, index) => (
               <CarouselItem key={index} className='mb-4 px-4'>
                 <Link href={item.href} className='group h-full'>
                   {/* 슬라이드 카드 - 콘텐츠 부분 */}

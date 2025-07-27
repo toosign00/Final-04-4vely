@@ -1,4 +1,4 @@
-export default function CurationPage() {
+export default function greenMagazinePage() {
   return (
     <div className='bg-surface flex min-h-screen flex-col items-center justify-center p-8'>
       <div className='mx-auto max-w-2xl text-center'>

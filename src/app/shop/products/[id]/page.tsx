@@ -64,7 +64,6 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
     return (
       <div className='bg-surface min-h-screen'>
         <ProductDetailClient productData={product} productId={id} recommendProducts={recommendProducts}>
-          {/* Description과 Recommend 사이에 리뷰 섹션 추가 */}
           <ReviewSection productId={product._id} />
         </ProductDetailClient>
       </div>

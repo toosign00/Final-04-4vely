@@ -29,7 +29,7 @@ export default async function ReviewSection({ productId }: ReviewSectionProps) {
 
   return (
     <section className='pb-8 sm:pb-10 md:pb-12'>
-      <h2 className='text-secondary t-h2 sm:t-h1 mb-6 sm:mb-8'>Reviews ({reviews.length})</h2>
+      <h2 className='text-secondary mb-6 text-xl font-semibold sm:mb-8 md:text-2xl lg:text-4xl lg:font-bold'>Review</h2>
 
       {reviews.length === 0 ? (
         <div className='py-12 text-center'>

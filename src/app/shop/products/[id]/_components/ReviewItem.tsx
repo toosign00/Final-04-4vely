@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { deleteReplyAction, updateReplyAction } from '@/lib/actions/reviewServerActions';
 import { getImageUrl } from '@/types/product.types';
 import { ProductReply } from '@/types/review.types';
-import { Check, Edit2, Star, Trash2, X } from 'lucide-react';
+import { Star } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -128,11 +128,11 @@ export default function ReviewItem({ review, isAuthor, productId }: ReviewItemPr
         {/* 액션 버튼 */}
         {isAuthor && !isEditing && (
           <div className='flex gap-2'>
-            <Button variant='ghost' size='sm' onClick={() => setIsEditing(true)} disabled={isLoading}>
-              <Edit2 size={16} />
+            <Button className='text-xs md:text-sm lg:text-base' variant='ghost' size='icon' onClick={() => setIsEditing(true)} disabled={isLoading}>
+              수정
             </Button>
-            <Button variant='ghost' size='sm' onClick={handleDelete} disabled={isLoading}>
-              <Trash2 size={16} />
+            <Button className='text-error text-xs md:text-sm lg:text-base' variant='ghost' size='icon' onClick={handleDelete} disabled={isLoading}>
+              삭제
             </Button>
           </div>
         )}
@@ -144,11 +144,9 @@ export default function ReviewItem({ review, isAuthor, productId }: ReviewItemPr
           <textarea value={editContent} onChange={(e) => setEditContent(e.target.value)} className='focus:border-primary w-full rounded-lg border border-gray-300 p-3 text-sm focus:outline-none' rows={3} placeholder='리뷰를 작성해주세요.' />
           <div className='flex justify-end gap-2'>
             <Button variant='outline' size='sm' onClick={handleCancel} disabled={isLoading}>
-              <X size={16} className='mr-1' />
               취소
             </Button>
             <Button variant='primary' size='sm' onClick={handleUpdate} disabled={isLoading}>
-              <Check size={16} className='mr-1' />
               수정
             </Button>
           </div>

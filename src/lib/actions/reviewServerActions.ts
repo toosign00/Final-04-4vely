@@ -162,7 +162,7 @@ export async function getCurrentUserAction(): Promise<{ id: number | null; name:
     }
 
     const userData = JSON.parse(userAuthCookie);
-    const user = userData?.state?.user?.user;
+    const user = userData?.state?.user;
 
     return {
       id: user?._id || null,

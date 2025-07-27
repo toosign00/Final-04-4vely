@@ -484,7 +484,7 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
               {/* NEW 태그 */}
               {isNew && <div className='bg-secondary t-h3 absolute top-0 left-0 z-1 rounded-ss-2xl rounded-ee-2xl px-6 py-3 text-white'>NEW</div>}
 
-              {/* 북마크 버튼 - myBookmarkId prop 추가 */}
+              {/* 북마크 버튼 */}
               <div className='absolute top-4 right-4'>
                 <BookmarkButton productId={getProductId(productData)} myBookmarkId={productData.myBookmarkId} size={48} />
               </div>

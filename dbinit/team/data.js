@@ -11,13 +11,13 @@ export const initData = async (clientId, nextSeq) => {
       {
         _id: await nextSeq('user'),
         email: 'admin@market.com',
-        password: '$2a$10$Xlj.lkOmtXCch8UhtCuZAuFl1vTgTvmNQwYVfMSMr5GvgV6gmJV46',
+        password: '$2a$10$GuEyVTkqijXx58GmQC.fW.WEShfxE/bk9hH3oiiEzLiYzdEHmjPva',
         name: '테스트 관리자',
         phone: '01011112222',
         address: '테스트시 테스트구 관리자동 123',
         type: 'admin',
         loginType: 'email',
-        image: `files/${clientId}/user_admin.png`,
+        image: `files/${clientId}/user_admin.webp`,
         createdAt: getTime(),
         updatedAt: getTime(),
         extra: {
@@ -27,13 +27,13 @@ export const initData = async (clientId, nextSeq) => {
       {
         _id: await nextSeq('user'),
         email: 'test@test.com',
-        password: '$2a$10$I/Mi2LNNyS7/Jf6buPzJK.01XUWXd3QefUGl2uodoH9TA4YhOhIhW',
+        password: '$2a$10$Adma5vG8KIGixsl9TWdOCejFVmjp2/KLwk960jPe5jRv4Tz9hp01u',
         name: '테스트 유저 1',
         phone: '01012345678',
         address: '테스트시 테스트구 테스트동 123',
         type: 'user',
         loginType: 'email',
-        image: `files/${clientId}/user-test1.png`,
+        image: `files/${clientId}/user_test01.webp`,
         createdAt: getTime(),
         updatedAt: getTime(),
         extra: {
@@ -43,13 +43,13 @@ export const initData = async (clientId, nextSeq) => {
       {
         _id: await nextSeq('user'),
         email: 'test2@test.com',
-        password: '$2a$10$I/Mi2LNNyS7/Jf6buPzJK.01XUWXd3QefUGl2uodoH9TA4YhOhIhW',
+        password: '$2a$10$Adma5vG8KIGixsl9TWdOCejFVmjp2/KLwk960jPe5jRv4Tz9hp01u',
         name: '테스트 유저 2',
         phone: '01012345678',
         address: '테스트시 테스트구 테스트동 456',
         type: 'user',
         loginType: 'email',
-        image: `files/${clientId}/user-test2.png`,
+        image: `files/${clientId}/user_test02.webp`,
         createdAt: getTime(),
         updatedAt: getTime(),
         extra: {
@@ -105,7 +105,7 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 50, // 상품 재고
         buyQuantity: 12, // 판매된 수량
-        mainImages: [`/files/${clientId}/hoya_heart_black.webp`, `/files/${clientId}/hoya_heart_brown.webp`], // 상품 메인 이미지
+        mainImages: [`files/${clientId}/hoya_heart_black.webp`, `files/${clientId}/hoya_heart_brown.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
             <p>통통한 하트모양의 잎이 사랑스러운 하트호야는 예쁜 생김새는 물론이고 키우기도 까다롭지 않아 식물을 처음 키우는 초보 식집사에게 선물하기 좋은 식물입니다. 그 사랑스러운 생김새 떄문에 서양에서는 연인에게 발렌타인 데이에 하트호야를 선물한다고 해요. 그래서 'Sweetheart Vine', 'Valentine's Hoya'라고도 불리운답니다.</p>
@@ -146,7 +146,7 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 60, // 상품 재고
         buyQuantity: 15, // 판매된 수량
-        mainImages: [`/files/${clientId}/Spathiphyllum_black.webp`, `/files/${clientId}/Spathiphyllum_brown.webp`, `/files/${clientId}/Spathiphyllum_gray.webp`], // 상품 메인 이미지
+        mainImages: [`files/${clientId}/Spathiphyllum_black.webp`, `files/${clientId}/Spathiphyllum_brown.webp`, `files/${clientId}/Spathiphyllum_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
             <p>스파티필름은 공기 정화 능력이 매우 뛰어난 식물이에요. 게다가 빛이 많이 들지 않는 환경에서도 잘 견디고 꽃도 피우기 때문에 초보가드너도 쉽게 키울 수 있는 실내 공기정화 식물이랍니다.</p>
@@ -186,7 +186,7 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 30, // 상품 재고
         buyQuantity: 10, // 판매된 수량
-        mainImages: [`/files/${clientId}/monstera_adansonii_black.webp`], // 상품 메인 이미지
+        mainImages: [`files/${clientId}/monstera_adansonii_black.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
             <p>몬스테라 아단소니는 관리가 쉬운 식물로, 잎에 구멍이 나 있는 듯한 화려한 무늬가 특징입니다. 덩굴식물이기 때문에 화분 위로 뻗으며, 말뚝이나 격자를 따라 기어오를 수 있습니다.</p>
@@ -225,7 +225,7 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 35, // 상품 재고
         buyQuantity: 11, // 판매된 수량
-        mainImages: [`/files/${clientId}/ocjamhwa_brown.webp`, `/files/${clientId}/ocjamhwa_gray.webp`], // 상품 메인 이미지
+        mainImages: [`files/${clientId}/ocjamhwa_brown.webp`, `files/${clientId}/ocjamhwa_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
             <p>옥잠화는 가장 사랑받는 다육식물 중 하나입니다. 관리가 쉽고 오래가는 이 식물은 대대로 물려줄 수 있어 가족의 가보가 될 수 있습니다.</p>
@@ -266,7 +266,7 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 50, // 상품 재고
         buyQuantity: 13, // 판매된 수량
-        mainImages: [`/files/${clientId}/nabiran_black.webp`, `/files/${clientId}/nabiran_brown.webp`, `/files/${clientId}/nabiran_gray.webp`], // 상품 메인 이미지
+        mainImages: [`files/${clientId}/nabiran_black.webp`, `files/${clientId}/nabiran_brown.webp`, `files/${clientId}/nabiran_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
             <p>나비란은 실내 식물 중 적응력이 가장 뛰어나며 키우기도 매우 쉽습니다. 이 우아한 식물은 테이블 위부터 벽난로까지, 또는 아름다운 아치형 잎으로 매달아 두는 식물까지 어디에서나 돋보입니다.</p>
@@ -310,7 +310,7 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 50, // 상품 재고
         buyQuantity: 20, // 판매된 수량
-        mainImages: [`/files/${clientId}/parlor_palm_black.webp`, `/files/${clientId}/parlor_palm_brown.webp`, `/files/${clientId}/parlor_palm_gray.webp`], // 상품 메인 이미지
+        mainImages: [`files/${clientId}/parlor_palm_black.webp`, `files/${clientId}/parlor_palm_brown.webp`, `files/${clientId}/parlor_palm_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
             <p>느리게 자라는 이 소형 야자나무는 다양한 조명 환경과 좁은 공간에서 잘 자랍니다. 짙은 녹색 잎은 무성하고 풍성한 식물로, 탁상, 책상, 선반에 놓으면 더욱 아름답습니다.</p>
@@ -353,7 +353,7 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 40, // 상품 재고
         buyQuantity: 19, // 판매된 수량
-        mainImages: [`/files/${clientId}/dracaena_black.webp`, `/files/${clientId}/dracaena_brown.webp`, `/files/${clientId}/dracaena_white.webp`, `/files/${clientId}/dracaena_blue.webp`], // 상품 메인 이미지
+        mainImages: [`files/${clientId}/dracaena_black.webp`, `files/${clientId}/dracaena_brown.webp`, `files/${clientId}/dracaena_white.webp`, `files/${clientId}/dracaena_blue.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
             <p>드라세나 골든 하트는 실내에서 키우기 가장 쉬운 식물 중 하나입니다. 밝은 줄무늬 잎은 거의 모든 실내 환경에 잘 적응하며 잘 자랍니다.</p>
@@ -396,7 +396,7 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 30, // 상품 재고
         buyQuantity: 25, // 판매된 수량
-        mainImages: [`/files/${clientId}/bromeliad_black.webp`, `/files/${clientId}/bromeliad_brown.webp`, `/files/${clientId}/bromeliad_white.webp`, `/files/${clientId}/bromeliad_gray.webp`], // 상품 메인 이미지
+        mainImages: [`files/${clientId}/bromeliad_black.webp`, `files/${clientId}/bromeliad_brown.webp`, `files/${clientId}/bromeliad_white.webp`, `files/${clientId}/bromeliad_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
             <p>화려하고 관리가 쉬운 브로멜리아드는 집안에 따스함을 더하는 매력적인 실내 식물입니다.</p>
@@ -440,7 +440,7 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 20, // 상품 재고
         buyQuantity: 11, // 판매된 수량
-        mainImages: [`/files/${clientId}/philodendron_birkin_black.webp`, `/files/${clientId}/philodendron_birkin_brown.webp`, `/files/${clientId}/philodendron_birkin_gray.webp`], // 상품 메인 이미지
+        mainImages: [`files/${clientId}/philodendron_birkin_black.webp`, `files/${clientId}/philodendron_birkin_brown.webp`, `files/${clientId}/philodendron_birkin_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
             <p>필로덴드론 버킨은 윤기 있고 두꺼운 잎에 섬세한 흰색 핀스트라이프 무늬가 있는 순한 식물입니다. 다양한 실내 환경에 잘 적응하는 버킨은 어떤 집에서든 시선을 사로잡는 식물입니다.</p>
@@ -484,7 +484,7 @@ export const initData = async (clientId, nextSeq) => {
         active: true, // 상품 활성화 여부
         quantity: 40, // 상품 재고
         buyQuantity: 35, // 판매된 수량
-        mainImages: [`/files/${clientId}/philodendron_moonlight_black.webp`, `/files/${clientId}/philodendron_moonlight_white.webp`, `/files/${clientId}/philodendron_moonlight_gray.webp`], // 상품 메인 이미지
+        mainImages: [`files/${clientId}/philodendron_moonlight_black.webp`, `files/${clientId}/philodendron_moonlight_white.webp`, `files/${clientId}/philodendron_moonlight_gray.webp`], // 상품 메인 이미지
         content: `
           <div class="product-detail">
             <p>네온 옐로우 색상의 새 잎이 밝고 윤기 나는 녹색으로 자라는 필로덴드론 문라이트로 집안에 생기를 더하세요. 이 간편한 식물은 밝은 간접광에서 잘 자라며 어떤 실내 공간에도 열대적인 분위기를 더합니다.</p>
@@ -3276,12 +3276,64 @@ export const initData = async (clientId, nextSeq) => {
         user: {
           _id: 2,
           name: '테스트 유저 1',
-          image: `files/${clientId}/user-test1.png`,
+          image: `files/${clientId}/user_test01.webp`,
+        },
+        type: 'product',
+        target_id: 1,
+        memo: '내일 이모네집에 선물하기',
+        createdAt: getTime(-3, -60 * 60 * 2),
+      },
+      {
+        _id: await nextSeq('bookmark'),
+        user_id: 2,
+        user: {
+          _id: 2,
+          name: '테스트 유저 1',
+          image: `files/${clientId}/user_test01.webp`,
+        },
+        type: 'product',
+        target_id: 2,
+        memo: '2번 상품 북마크',
+        createdAt: getTime(-1, -60 * 60 * 12),
+      },
+      {
+        _id: await nextSeq('bookmark'),
+        user_id: 2,
+        user: {
+          _id: 2,
+          name: '테스트 유저 1',
+          image: `files/${clientId}/user_test01.webp`,
+        },
+        type: 'product',
+        target_id: 3,
+        memo: '3번 상품 북마크',
+        createdAt: getTime(-1, -60 * 60 * 12),
+      },
+      {
+        _id: await nextSeq('bookmark'),
+        user_id: 2,
+        user: {
+          _id: 2,
+          name: '테스트 유저 1',
+          image: `files/${clientId}/user_test01.webp`,
+        },
+        type: 'product',
+        target_id: 4,
+        memo: '4번 상품 북마크',
+        createdAt: getTime(-1, -60 * 60 * 12),
+      },
+      {
+        _id: await nextSeq('bookmark'),
+        user_id: 2,
+        user: {
+          _id: 2,
+          name: '테스트 유저 1',
+          image: `files/${clientId}/user_test01.webp`,
         },
         type: 'product',
         target_id: 5,
-        memo: '내일 이모네집에 선물하기',
-        createdAt: getTime(-3, -60 * 60 * 2),
+        memo: '5번 상품 북마크',
+        createdAt: getTime(-1, -60 * 60 * 12),
       },
     ],
 

@@ -1,0 +1,17 @@
+meta {
+  name: 회원 정보 수정 (단일 속성, name)
+  type: http
+  seq: 2
+}
+
+patch {
+  url: {{url}}/user/2
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "테스트 유저입니다!!"
+  }
+}

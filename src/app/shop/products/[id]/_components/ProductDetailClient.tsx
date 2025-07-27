@@ -47,7 +47,7 @@ const getColorMapping = (koreanColor: string): { englishName: string; hexColor: 
 
 /**
  * 상품 상세 페이지 클라이언트 컴포넌트
- * Zustand 없이 서버 액션만 사용
+ * 서버 액션만 사용
  */
 export default function ProductDetailClient({ productData, recommendProducts, children = [] }: ProductDetailClientProps) {
   const router = useRouter();
@@ -235,7 +235,7 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
         return;
       }
 
-      // 4. 성공 알림 (로컬 스토어 추가 부분 제거)
+      // 4. 성공 알림
       toast.success('장바구니에 추가되었습니다!', {
         description: `${productData.name} ${quantity}개${hasColorOptions ? ` (${colorOptions[selectedColorIndex]?.label})` : ''}`,
         action: {
@@ -319,7 +319,7 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
         duration: 2000,
       });
 
-      // 약간의 딜레이 후 페이지 이동
+      // 페이지 이동
       setTimeout(() => {
         router.push('/order');
       }, 1000);

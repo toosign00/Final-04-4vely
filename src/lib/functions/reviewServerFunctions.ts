@@ -21,7 +21,7 @@ export async function getProductReplies(productId: number): ApiResPromise<Produc
         'Content-Type': 'application/json',
         'client-id': CLIENT_ID,
       },
-      cache: 'no-cache', // 항상 최신 데이터 가져오기
+      cache: 'no-cache',
     });
 
     const data = await res.json();

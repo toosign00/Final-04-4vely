@@ -100,7 +100,7 @@ export default function BookmarkButton({ targetId: propTargetId, type = 'product
 
     setIsProcessing(true);
 
-    // 낙관적 업데이트 (로컬 state 즉시 업데이트)
+    // 낙관적 업데이트
     const previousBookmarkId = localBookmarkId;
     const previousIsBookmarked = isBookmarked;
 
@@ -109,7 +109,7 @@ export default function BookmarkButton({ targetId: propTargetId, type = 'product
       setLocalBookmarkId(undefined);
     } else {
       setIsBookmarked(true);
-      setLocalBookmarkId(-1); // 임시 ID
+      setLocalBookmarkId(-1);
     }
 
     // 서버 액션 호출

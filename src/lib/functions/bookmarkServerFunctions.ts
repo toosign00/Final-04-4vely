@@ -116,7 +116,7 @@ export async function getBookmarks(type: BookmarkType, options?: { page?: number
         'client-id': CLIENT_ID,
         Authorization: `Bearer ${accessToken}`,
       },
-      cache: 'no-store', // 북마크는 실시간 데이터
+      cache: 'no-store',
     });
 
     const data = await res.json();

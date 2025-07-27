@@ -22,7 +22,6 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
   // 상태 관리
   const [orderData, setOrderData] = useState<OrderPageData>(initialOrderData);
   const [showItems, setShowItems] = useState(false);
-  // const [activeTab, setActiveTab] = useState<'select' | 'new'>('select');
   const [isProcessingOrder, setIsProcessingOrder] = useState(false);
 
   // 배송 정보 폼 상태

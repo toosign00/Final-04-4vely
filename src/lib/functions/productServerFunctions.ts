@@ -41,7 +41,7 @@ async function getProductBookmark(productId: number, accessToken: string): Promi
         'client-id': CLIENT_ID,
         Authorization: `Bearer ${accessToken}`,
       },
-      cache: 'no-cache', // 캐시 완전 비활성화
+      cache: 'no-cache',
     });
 
     console.log(`[서버 북마크 조회] 상품 ${productId} API 응답 상태: ${res.status}`);
@@ -61,7 +61,7 @@ async function getProductBookmark(productId: number, accessToken: string): Promi
         console.log(`[서버 북마크 조회] 상품 ${productId} 북마크 없음 (data.ok=false)`);
       }
     } else if (res.status === 404) {
-      // 404는 북마크가 없다는 정상적인 응답
+      // 404 -> 북마크가 없다는 정상적인 응답
       console.log(`[서버 북마크 조회] 상품 ${productId} 북마크 없음 (404)`);
     } else {
       const errorData = await res.json();
@@ -105,7 +105,7 @@ export async function getServerAllProducts(params?: { page?: number; limit?: num
 
     const res = await fetch(`${API_URL}${endpoint}`, {
       headers,
-      cache: 'no-cache', // 🔥 북마크 상태 변경 반영을 위해 캐시 비활성화
+      cache: 'no-cache',
     });
 
     const data = await res.json();
@@ -114,7 +114,7 @@ export async function getServerAllProducts(params?: { page?: number; limit?: num
       return data;
     }
 
-    // 🔥 로그인된 사용자인 경우 각 상품의 북마크 정보 추가
+    // 로그인된 사용자인 경우 각 상품의 북마크 정보 추가
     if (accessToken && Array.isArray(data.item)) {
       console.log(`[서버 상품 목록] ${data.item.length}개 상품의 북마크 정보 조회 시작`);
 
@@ -182,7 +182,7 @@ export async function getServerProductById(productId: number): ApiResPromise<Pro
     const [productRes, bookmark] = await Promise.all([
       fetch(`${API_URL}/products/${productId}`, {
         headers,
-        cache: 'no-cache', // 🔥 북마크 상태 변경 반영을 위해 캐시 비활성화
+        cache: 'no-cache',
       }),
       accessToken ? getProductBookmark(productId, accessToken) : null,
     ]);
@@ -199,7 +199,7 @@ export async function getServerProductById(productId: number): ApiResPromise<Pro
       return data;
     }
 
-    // 🔥 북마크 정보 추가 (중복 조회 방지)
+    // 북마크 정보 추가 (중복 조회 방지)
     if (data.item) {
       console.log('[서버 상품 상세 조회] 북마크 정보 추가:', {
         북마크존재: !!bookmark,

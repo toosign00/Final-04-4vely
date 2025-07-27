@@ -1,16 +1,17 @@
-// src/app/shop/products/[id]/_components/ProductDetailClient.tsx (client 컴포넌트)
+// src/app/shop/products/[id]/_components/ProductDetailClient.tsx
 'use client';
 
-import BookmarkButton from '@/app/shop/_components/BookmarkButton';
+import BookmarkButton from '@/components/ui/BookmarkButton';
 import { Button } from '@/components/ui/Button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/Dialog';
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/Pagination';
-import { getProductReviewsTransformed } from '@/lib/functions/market';
-import { Product, ProductDetail, Review } from '@/types/product';
-import { Minus, Plus, ShoppingCart } from 'lucide-react';
+import { addToCartAction, checkLoginStatusAction } from '@/lib/actions/cartServerActions';
+import { checkOrderLoginStatusAction, createDirectPurchaseTempOrderAction } from '@/lib/actions/orderServerActions';
+import { DirectPurchaseItem } from '@/types/order.types';
+import { Product, getImageUrl, getProductCategories, getProductId, getProductPotColors, getProductTags, isNewProduct } from '@/types/product.types';
+import { Minus, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
+import { toast } from 'sonner';
 import { Badge } from './Badge';
 import ProductDetailCard from './ProductDetailCard';
 
@@ -21,18 +22,21 @@ interface ColorOption {
 }
 
 interface ProductDetailClientProps {
-  product: ProductDetail;
-  recommendProducts: Product[];
-  initialReviews: Review[];
-  initialReviewsPagination: { total: number; totalPages: number };
+  productData: Product;
   productId: string;
+  recommendProducts?: Product[];
+  children?: React.ReactNode;
 }
 
-// 한국어 색상명을 영어로 매핑하는 함수
+/**
+ * 한국어 색상명을 영어명과 HEX 색상 코드로 매핑
+ */
 const getColorMapping = (koreanColor: string): { englishName: string; hexColor: string } => {
   const colorMap: Record<string, { englishName: string; hexColor: string }> = {
     흑색: { englishName: 'black', hexColor: '#000000' },
     갈색: { englishName: 'brown', hexColor: '#8B4513' },
+    백색: { englishName: 'white', hexColor: '#FFFFFF' },
+    황색: { englishName: 'yellow', hexColor: '#FFD700' },
     회색: { englishName: 'gray', hexColor: '#808080' },
     흰색: { englishName: 'white', hexColor: '#FFFFFF' },
     남색: { englishName: 'blue', hexColor: '#4169E1' },
@@ -41,83 +45,134 @@ const getColorMapping = (koreanColor: string): { englishName: string; hexColor: 
   return colorMap[koreanColor] || { englishName: koreanColor.toLowerCase(), hexColor: '#808080' };
 };
 
-export default function ProductDetailClient({ product, recommendProducts, initialReviews, initialReviewsPagination, productId }: ProductDetailClientProps) {
+/**
+ * 상품 상세 페이지 클라이언트 컴포넌트
+ * 서버 액션만 사용
+ */
+export default function ProductDetailClient({ productData, recommendProducts, children = [] }: ProductDetailClientProps) {
   const router = useRouter();
 
-  // 상품의 화분 색상 옵션 추출
-  const potColorOption = useMemo(() => {
-    return product.options?.find((option) => option.name === '화분 색상');
-  }, [product.options]);
+  // 상태 관리
+  const [quantity, setQuantity] = useState<number>(1);
+  const [selectedColorIndex, setSelectedColorIndex] = useState<number>(0);
+
+  // 상품 정보 파싱
+  const productCategories = useMemo(() => {
+    if (!productData) return [];
+    try {
+      return getProductCategories(productData) || [];
+    } catch (error) {
+      console.error('[ProductDetailClient] 카테고리 추출 오류:', error);
+      return [];
+    }
+  }, [productData]);
+
+  const productTags = useMemo(() => {
+    if (!productData) return [];
+    try {
+      return getProductTags(productData) || [];
+    } catch (error) {
+      console.error('[ProductDetailClient] 태그 추출 오류:', error);
+      return [];
+    }
+  }, [productData]);
+
+  const isNew = useMemo(() => {
+    if (!productData) return false;
+    try {
+      return isNewProduct(productData);
+    } catch (error) {
+      console.error('[ProductDetailClient] 신상품 확인 오류:', error);
+      return false;
+    }
+  }, [productData]);
+
+  // 상품의 화분 색상 정보 추출
+  const colorValues = useMemo(() => {
+    if (!productData) return null;
+
+    try {
+      const potColors = getProductPotColors(productData) || [];
+      console.log('[ProductDetailClient] 색상 정보:', potColors);
+
+      if (potColors && Array.isArray(potColors) && potColors.length > 0) {
+        return potColors;
+      }
+      return null;
+    } catch (error) {
+      console.error('[ProductDetailClient] 색상 정보 추출 오류:', error);
+      return null;
+    }
+  }, [productData]);
 
   // 색상 옵션이 있는지 확인
-  const hasColorOptions = Boolean(potColorOption?.values && potColorOption.values.length > 0);
+  const hasColorOptions = useMemo(() => {
+    return Boolean(colorValues && colorValues.length > 0);
+  }, [colorValues]);
 
   // 동적 색상 옵션 생성
   const colorOptions: ColorOption[] = useMemo(() => {
-    if (!hasColorOptions) return [];
+    if (!hasColorOptions || !colorValues) return [];
 
-    return potColorOption!.values.map((koreanColor) => {
-      const { englishName, hexColor } = getColorMapping(koreanColor);
-      return {
-        value: englishName,
-        label: koreanColor,
-        color: hexColor,
-      };
-    });
-  }, [potColorOption, hasColorOptions]);
-
-  // 선택된 색상 상태 (첫 번째 색상을 기본값으로)
-  const [selectedColorIndex, setSelectedColorIndex] = useState(0);
-  const [quantity, setQuantity] = useState(1);
-  const [currentReviewPage, setCurrentReviewPage] = useState(1);
-  const [isCartModalOpen, setIsCartModalOpen] = useState(false);
-
-  // 리뷰 관련 상태
-  const [reviews, setReviews] = useState<Review[]>(initialReviews);
-  const [reviewsPagination, setReviewsPagination] = useState(initialReviewsPagination);
-  const [reviewsLoading, setReviewsLoading] = useState(false);
+    try {
+      return colorValues.map((koreanColor) => {
+        const { englishName, hexColor } = getColorMapping(koreanColor);
+        return {
+          value: englishName,
+          label: koreanColor,
+          color: hexColor,
+        };
+      });
+    } catch (error) {
+      console.error('[ProductDetailClient] 색상 옵션 생성 오류:', error);
+      return [];
+    }
+  }, [colorValues, hasColorOptions]);
 
   // 현재 선택된 색상에 해당하는 이미지 URL 계산
   const currentImageUrl = useMemo(() => {
-    if (!hasColorOptions || !product.mainImages || product.mainImages.length === 0) {
-      return product.image; // 기본 이미지 사용
-    }
+    if (!productData) return getImageUrl('');
 
-    // 선택된 색상 인덱스에 해당하는 이미지가 있으면 사용, 없으면 첫 번째 이미지 사용
-    const imageIndex = Math.min(selectedColorIndex, product.mainImages.length - 1);
-    return product.mainImages[imageIndex] || product.image;
-  }, [hasColorOptions, product.mainImages, product.image, selectedColorIndex]);
-
-  // 리뷰 데이터 로딩 (페이지 변경 시)
-  useEffect(() => {
-    if (currentReviewPage === 1) {
-      setReviews(initialReviews);
-      setReviewsPagination(initialReviewsPagination);
-      return;
-    }
-
-    const fetchReviews = async () => {
-      try {
-        setReviewsLoading(true);
-
-        const { reviews: transformedReviews, pagination } = await getProductReviewsTransformed(parseInt(productId), {
-          page: currentReviewPage,
-          limit: 2,
-        });
-
-        setReviews(transformedReviews);
-        setReviewsPagination(pagination);
-      } catch (err) {
-        console.warn('리뷰 로딩 실패:', err);
-        setReviews([]);
-        setReviewsPagination({ total: 0, totalPages: 0 });
-      } finally {
-        setReviewsLoading(false);
+    try {
+      if (!hasColorOptions || !productData.mainImages || productData.mainImages.length === 0) {
+        const fallbackImage = productData.mainImages?.[0] || '';
+        console.log('[ProductDetailClient] 기본 이미지 사용:', fallbackImage);
+        return getImageUrl(fallbackImage);
       }
-    };
 
-    fetchReviews();
-  }, [currentReviewPage, productId, initialReviews, initialReviewsPagination]);
+      const imageIndex = Math.min(selectedColorIndex, productData.mainImages.length - 1);
+      const selectedImagePath = productData.mainImages[imageIndex];
+      console.log('[ProductDetailClient] 선택된 이미지:', { imageIndex, selectedImagePath });
+      return getImageUrl(selectedImagePath || '');
+    } catch (error) {
+      console.error('[ProductDetailClient] 이미지 URL 계산 오류:', error);
+      return getImageUrl('');
+    }
+  }, [hasColorOptions, productData, selectedColorIndex]);
+
+  // 카테고리 표시 이름
+  const getCategoryDisplayName = () => {
+    if (productCategories.includes('화분')) return '화분';
+    if (productCategories.includes('소품')) return '소품';
+    if (productCategories.includes('선인장')) return '선인장';
+    if (productCategories.includes('관엽식물')) return '관엽식물';
+    if (productCategories.includes('공기정화식물')) return '공기정화식물';
+    if (productCategories.includes('꽃')) return '꽃';
+    return '식물';
+  };
+
+  // 총 가격 계산
+  const totalPrice = productData.price * quantity;
+
+  // 렌더링 체크
+  if (!productData) {
+    console.error('[ProductDetailClient] 상품 데이터가 없습니다');
+    return (
+      <div className='flex min-h-screen items-center justify-center'>
+        <p className='text-red-500'>상품 정보를 불러올 수 없습니다.</p>
+      </div>
+    );
+  }
 
   // 이벤트 핸들러들
   const handleQuantityChange = (change: number) => {
@@ -131,125 +186,167 @@ export default function ProductDetailClient({ product, recommendProducts, initia
     setSelectedColorIndex(colorIndex);
   };
 
-  const handleAddToCart = () => {
-    // TODO: 선택된 색상 정보도 함께 장바구니에 추가
-    const selectedColorInfo = hasColorOptions
-      ? {
-          colorIndex: selectedColorIndex,
-          colorName: colorOptions[selectedColorIndex]?.label,
-        }
-      : null;
+  // 서버 액션만 사용한 장바구니 추가 기능
+  const handleAddToCart = async () => {
+    try {
+      console.log('[장바구니 추가] 시작:', {
+        상품ID: productData._id,
+        수량: quantity,
+        선택된색상: hasColorOptions ? colorOptions[selectedColorIndex]?.label : null,
+      });
 
-    console.log('장바구니에 추가:', {
-      productId: product.id,
-      quantity,
-      selectedColor: selectedColorInfo,
-    });
+      // 1. 로그인 상태 확인
+      const isLoggedIn = await checkLoginStatusAction();
 
-    setIsCartModalOpen(true);
+      if (!isLoggedIn) {
+        console.log('[장바구니 추가] 로그인 필요');
+        toast.error('로그인이 필요합니다', {
+          description: '장바구니 기능을 사용하려면 로그인해주세요.',
+          action: {
+            label: '로그인',
+            onClick: () => {
+              const currentUrl = window.location.pathname + window.location.search;
+              window.location.href = `/login?callbackUrl=${encodeURIComponent(currentUrl)}`;
+            },
+          },
+          duration: 5000,
+        });
+        return;
+      }
+
+      // 2. 서버 API 호출 데이터 준비
+      const cartData = {
+        product_id: productData._id,
+        quantity,
+        extra: hasColorOptions ? { potColor: colorOptions[selectedColorIndex]?.label || '' } : undefined,
+      };
+
+      console.log('[장바구니 추가] 서버 요청 데이터:', cartData);
+
+      // 3. 서버에 장바구니 추가 요청
+      const result = await addToCartAction(cartData);
+
+      if (!result.success) {
+        console.error('[장바구니 추가] 서버 오류:', result.message);
+        toast.error('장바구니 추가 실패', {
+          description: result.message,
+          duration: 4000,
+        });
+        return;
+      }
+
+      // 4. 성공 알림
+      toast.success('장바구니에 추가되었습니다!', {
+        description: `${productData.name} ${quantity}개${hasColorOptions ? ` (${colorOptions[selectedColorIndex]?.label})` : ''}`,
+        action: {
+          label: '장바구니 보기',
+          onClick: () => {
+            window.location.href = '/cart';
+          },
+        },
+        duration: 4000,
+      });
+
+      console.log('[장바구니 추가] 성공 완료');
+    } catch (error) {
+      console.error('[장바구니 추가] 예상치 못한 오류:', error);
+      toast.error('장바구니 추가에 실패했습니다', {
+        description: '잠시 후 다시 시도해주세요.',
+        duration: 4000,
+      });
+    }
   };
 
-  const handleGoToCart = () => {
-    setIsCartModalOpen(false);
-    router.push('/cart');
+  const handlePurchase = async () => {
+    try {
+      console.log('[직접 구매] 시작:', {
+        상품ID: productData._id,
+        수량: quantity,
+        선택된색상: hasColorOptions ? colorOptions[selectedColorIndex]?.label : null,
+      });
+
+      // 1. 로그인 상태 확인
+      const isLoggedIn = await checkOrderLoginStatusAction();
+
+      if (!isLoggedIn) {
+        console.log('[직접 구매] 로그인 필요');
+        toast.error('로그인이 필요합니다', {
+          description: '구매하려면 로그인해주세요.',
+          action: {
+            label: '로그인',
+            onClick: () => {
+              const currentUrl = window.location.pathname + window.location.search;
+              window.location.href = `/login?callbackUrl=${encodeURIComponent(currentUrl)}`;
+            },
+          },
+          duration: 5000,
+        });
+        return;
+      }
+
+      // 2. 직접 구매 아이템 데이터 준비
+      const purchaseItem: DirectPurchaseItem = {
+        productId: productData._id,
+        productName: productData.name,
+        productImage: currentImageUrl,
+        price: productData.price,
+        quantity,
+        selectedColor: hasColorOptions
+          ? {
+              colorIndex: selectedColorIndex,
+              colorName: colorOptions[selectedColorIndex]?.label || '',
+            }
+          : undefined,
+      };
+
+      // 3. 임시 주문 생성 (서버 액션)
+      const success = await createDirectPurchaseTempOrderAction(purchaseItem);
+
+      if (!success) {
+        console.error('[직접 구매] 임시 주문 생성 실패');
+        toast.error('주문 처리에 실패했습니다', {
+          description: '잠시 후 다시 시도해주세요.',
+          duration: 4000,
+        });
+        return;
+      }
+
+      // 4. 결제 페이지로 이동
+      console.log('[직접 구매] 결제 페이지로 이동');
+
+      toast.success('결제 페이지로 이동합니다', {
+        description: `${productData.name} ${quantity}개${hasColorOptions ? ` (${colorOptions[selectedColorIndex]?.label})` : ''}`,
+        duration: 2000,
+      });
+
+      // 페이지 이동
+      setTimeout(() => {
+        router.push('/order');
+      }, 1000);
+    } catch (error) {
+      console.error('[직접 구매] 예상치 못한 오류:', error);
+      toast.error('구매 처리 중 오류가 발생했습니다', {
+        description: '잠시 후 다시 시도해주세요.',
+        duration: 4000,
+      });
+    }
   };
 
-  const handleStayOnPage = () => {
-    setIsCartModalOpen(false);
-  };
-
-  const handlePurchase = () => {
-    // TODO: 선택된 색상 정보도 함께 주문에 포함
-    const selectedColorInfo = hasColorOptions
-      ? {
-          colorIndex: selectedColorIndex,
-          colorName: colorOptions[selectedColorIndex]?.label,
-        }
-      : null;
-
-    console.log('구매하기:', {
-      productId: product.id,
-      quantity,
-      selectedColor: selectedColorInfo,
-    });
-
-    setTimeout(() => {
-      router.push('/order');
-    }, 100);
-  };
-
-  const handleProductClick = (id: string) => {
+  const handleProductClick = (id: number) => {
     router.push(`/shop/products/${id}`);
   };
 
-  const handleEditReview = (reviewId: string) => {
-    console.log('리뷰 수정:', reviewId);
-    // TODO: 리뷰 수정 모달로 이동
-  };
-
-  const handleDeleteReview = (reviewId: string) => {
-    console.log('리뷰 삭제:', reviewId);
-    // TODO: 리뷰 삭제 확인 모달 및 API 호출
-  };
-
-  // 계산된 값
-  const totalPrice = product.price * quantity;
-  const totalReviewPages = reviewsPagination.totalPages;
-
-  // 리뷰 페이지네이션 렌더링
-  const renderReviewPagination = () => (
-    <Pagination className='mt-4 mb-6 lg:mt-0'>
-      <PaginationContent>
-        <PaginationItem>
-          <PaginationPrevious onClick={() => setCurrentReviewPage((prev) => Math.max(1, prev - 1))} className={`cursor-pointer ${currentReviewPage === 1 ? 'pointer-events-none opacity-50' : ''}`} />
-        </PaginationItem>
-
-        {Array.from({ length: totalReviewPages }, (_, i) => i + 1).map((pageNumber) => (
-          <PaginationItem key={pageNumber}>
-            <PaginationLink onClick={() => setCurrentReviewPage(pageNumber)} isActive={pageNumber === currentReviewPage} className='cursor-pointer'>
-              {pageNumber}
-            </PaginationLink>
-          </PaginationItem>
-        ))}
-
-        <PaginationItem>
-          <PaginationNext onClick={() => setCurrentReviewPage((prev) => Math.min(totalReviewPages, prev + 1))} className={`cursor-pointer ${currentReviewPage === totalReviewPages ? 'pointer-events-none opacity-50' : ''}`} />
-        </PaginationItem>
-      </PaginationContent>
-    </Pagination>
-  );
+  console.log('[ProductDetailClient] 렌더링 준비 완료');
 
   return (
     <>
-      {/* 장바구니 확인 모달 */}
-      <Dialog open={isCartModalOpen} onOpenChange={setIsCartModalOpen}>
-        <DialogContent className='p-8 sm:max-w-lg lg:max-w-xl' showCloseButton={false}>
-          <DialogHeader>
-            <DialogTitle className='t-h3 flex items-center justify-center gap-2'>
-              <ShoppingCart size={24} />
-              상품이 장바구니에 추가되었습니다.
-            </DialogTitle>
-            <DialogDescription className='t-h4 mt-4 text-center'>장바구니 페이지로 이동하시겠습니까?</DialogDescription>
-          </DialogHeader>
-
-          <DialogFooter className='mt-6 flex gap-3'>
-            <Button variant='primary' onClick={handleGoToCart} className='t-h3 flex-1 py-3'>
-              예
-            </Button>
-            <Button variant='default' onClick={handleStayOnPage} className='t-h3 flex-1 py-3'>
-              아니오
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
       {/* 모바일/태블릿 레이아웃 */}
       <div className='lg:hidden'>
         {/* 상품 이미지 섹션 */}
         <div className='relative mx-4 mt-4 aspect-square w-auto rounded-2xl bg-white sm:mx-6 sm:mt-6 md:mx-8 md:mt-8'>
           <Image
             src={currentImageUrl}
-            alt={`${product.name}${hasColorOptions ? ` - ${colorOptions[selectedColorIndex]?.label}` : ''}`}
+            alt={`${productData.name}${hasColorOptions ? ` - ${colorOptions[selectedColorIndex]?.label}` : ''}`}
             fill
             className='rounded-2xl object-cover'
             priority
@@ -260,7 +357,7 @@ export default function ProductDetailClient({ product, recommendProducts, initia
           />
 
           {/* NEW 태그 */}
-          {product.isNew && (
+          {isNew && (
             <div className='absolute top-0 left-0 z-1'>
               <div className='bg-secondary t-h4 rounded-ss-2xl rounded-ee-2xl px-3 py-2 text-white sm:px-4 sm:py-2 md:px-5 md:py-3'>NEW</div>
             </div>
@@ -268,20 +365,21 @@ export default function ProductDetailClient({ product, recommendProducts, initia
 
           {/* 북마크 버튼 */}
           <div className='absolute top-3 right-3 sm:top-4 sm:right-4'>
-            <BookmarkButton productId={product.id} initialBookmarked={product.isBookmarked} size={32} variant='default' className='sm:scale-110 md:scale-125' />
+            <BookmarkButton productId={getProductId(productData)} myBookmarkId={productData.myBookmarkId} size={32} className='sm:scale-110 md:scale-125' />
           </div>
         </div>
 
         {/* 상품 정보 섹션 */}
         <div className='mx-4 mt-6 w-auto sm:mx-6 sm:mt-8 md:mx-8'>
-          {/* 상품명 */}
+          {/* 카테고리 및 상품명 */}
           <div className='mb-4'>
-            <h1 className='text-secondary t-h1 mb-4'>{product.name}</h1>
+            <p className='mb-2 text-sm text-gray-500'>{getCategoryDisplayName()}</p>
+            <h1 className='text-secondary t-h1 mb-4'>{productData.name}</h1>
           </div>
 
           {/* 태그 목록 */}
           <div className='mb-12 flex flex-wrap gap-2 sm:mb-8 sm:gap-3'>
-            {product.tags?.map((tag) => (
+            {productTags.map((tag) => (
               <Badge key={tag} variant='default' className='t-desc md:t-body border-1 border-gray-300 px-3 py-1 sm:px-4 sm:py-1.5'>
                 {tag}
               </Badge>
@@ -341,65 +439,22 @@ export default function ProductDetailClient({ product, recommendProducts, initia
           {/* 상품 설명 */}
           <section className='mb-8 border-y border-gray-300 py-8 sm:mb-10 sm:py-10 md:mb-12 md:py-12'>
             <h2 className='text-secondary t-h2 sm:t-h1 mb-4 sm:mb-5'>Description</h2>
-            <div className='text-secondary t-body sm:t-h4 space-y-3 sm:space-y-4'>{product.content ? <div dangerouslySetInnerHTML={{ __html: product.content }} /> : <p>상품 설명이 없습니다.</p>}</div>
+            <div className='text-secondary t-body sm:t-h4 space-y-3 sm:space-y-4'>{productData.content ? <div dangerouslySetInnerHTML={{ __html: productData.content }} /> : <p>상품 설명이 없습니다.</p>}</div>
           </section>
 
-          {/* 리뷰 섹션 */}
-          <section className='mb-10 sm:mb-12 md:mb-14'>
-            <h2 className='text-secondary t-h2 sm:t-h1 mb-4 sm:mb-5'>Review {reviewsPagination.total > 0 && `(${reviewsPagination.total})`}</h2>
-
-            {reviewsLoading ? (
-              <div className='py-8 text-center'>
-                <div className='mx-auto mb-2 h-6 w-6 animate-spin rounded-full border-b-2 border-gray-600' />
-                <p className='text-sm text-gray-600'>리뷰를 불러오는 중...</p>
-              </div>
-            ) : reviews.length === 0 ? (
-              <div className='py-8 text-center'>
-                <p className='text-gray-600'>아직 리뷰가 없습니다.</p>
-              </div>
-            ) : (
-              <>
-                {reviews.map((review) => (
-                  <div key={review.id} className='mb-6 pb-6 sm:mb-8 sm:pb-8'>
-                    <div className='mb-3 flex items-center gap-3 sm:gap-4'>
-                      <div className='bg-secondary flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium text-white sm:h-9 sm:w-9'>{review.userName.charAt(0)}</div>
-                      <p className='text-secondary t-h4 sm:t-h3 flex-1'>{review.userName}</p>
-
-                      <div className='flex items-center'>
-                        <span className='text-secondary t-h4'>{review.date}</span>
-
-                        <div className='flex pl-3'>
-                          <Button variant='ghost' size='sm' onClick={() => handleEditReview(review.id)} className='h-6 px-2 py-1 sm:h-7 sm:px-2.5 sm:text-sm'>
-                            수정
-                          </Button>
-                          <span className='text-xs text-gray-300 sm:text-sm'>·</span>
-                          <Button variant='ghost' size='sm' onClick={() => handleDeleteReview(review.id)} className='text-error h-6 px-2 py-1 sm:h-7 sm:px-2.5 sm:text-sm'>
-                            삭제
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-
-                    <p className='text-secondary t-desc sm:t-body whitespace-pre-line'>{review.content}</p>
-                  </div>
-                ))}
-
-                {totalReviewPages > 1 && renderReviewPagination()}
-              </>
-            )}
-          </section>
+          {children}
 
           {/* 추천 상품 */}
           <section className='border-t-1 border-gray-300 pt-8 pb-8 sm:pb-10 md:pb-12'>
             <h2 className='text-secondary t-h2 sm:t-h1 mb-4 sm:mb-5'>Recommend</h2>
-            {recommendProducts.length === 0 ? (
+            {!recommendProducts || recommendProducts.length === 0 ? (
               <div className='py-8 text-center'>
                 <p className='text-gray-600'>추천 상품이 없습니다.</p>
               </div>
             ) : (
               <div className='grid grid-cols-2 gap-3 sm:gap-4 md:gap-6'>
                 {recommendProducts.slice(0, 2).map((product) => (
-                  <ProductDetailCard key={product.id} product={product} onClick={handleProductClick} />
+                  <ProductDetailCard key={getProductId(product)} product={product} onClick={handleProductClick} />
                 ))}
               </div>
             )}
@@ -416,7 +471,7 @@ export default function ProductDetailClient({ product, recommendProducts, initia
             <div className='relative aspect-square w-full max-w-[800px] min-w-[280px] flex-1'>
               <Image
                 src={currentImageUrl}
-                alt={`${product.name}${hasColorOptions ? ` - ${colorOptions[selectedColorIndex]?.label}` : ''}`}
+                alt={`${productData.name}${hasColorOptions ? ` - ${colorOptions[selectedColorIndex]?.label}` : ''}`}
                 fill
                 className='rounded-2xl object-cover'
                 priority
@@ -427,21 +482,24 @@ export default function ProductDetailClient({ product, recommendProducts, initia
               />
 
               {/* NEW 태그 */}
-              {product.isNew && <div className='bg-secondary t-h3 absolute top-0 left-0 z-1 rounded-ss-2xl rounded-ee-2xl px-6 py-3 text-white'>NEW</div>}
+              {isNew && <div className='bg-secondary t-h3 absolute top-0 left-0 z-1 rounded-ss-2xl rounded-ee-2xl px-6 py-3 text-white'>NEW</div>}
 
               {/* 북마크 버튼 */}
               <div className='absolute top-4 right-4'>
-                <BookmarkButton productId={product.id} initialBookmarked={product.isBookmarked} size={48} variant='default' />
+                <BookmarkButton productId={getProductId(productData)} myBookmarkId={productData.myBookmarkId} size={48} />
               </div>
             </div>
 
             {/* 상품 정보 */}
             <div className='w-full min-w-[280px] flex-1'>
-              <h1 className='text-secondary mb-6 text-3xl font-bold xl:text-4xl 2xl:text-5xl'>{product.name}</h1>
+              {/* 카테고리 */}
+              <p className='mb-2 text-lg text-gray-500'>{getCategoryDisplayName()}</p>
+
+              <h1 className='text-secondary mb-6 text-3xl font-bold xl:text-4xl 2xl:text-5xl'>{productData.name}</h1>
 
               {/* 태그 */}
               <div className='mb-8 flex flex-wrap gap-3 xl:mb-10'>
-                {product.tags?.map((tag) => (
+                {productTags.map((tag) => (
                   <Badge key={tag} variant='default' className='border-1 border-gray-300 px-3 py-1.5 text-sm xl:px-4 xl:py-2 xl:text-base'>
                     {tag}
                   </Badge>
@@ -499,66 +557,22 @@ export default function ProductDetailClient({ product, recommendProducts, initia
           {/* 상품 설명 */}
           <section className='mb-10 border-y border-gray-300 py-8 xl:py-10'>
             <h2 className='text-secondary t-h1 mb-6 xl:mb-8 xl:text-3xl'>Description</h2>
-            <div className='text-secondary t-h3 space-y-4 xl:space-y-6'>{product.content ? <div dangerouslySetInnerHTML={{ __html: product.content }} /> : <p>상품 설명이 없습니다.</p>}</div>
+            <div className='text-secondary t-h3 space-y-4 xl:space-y-6'>{productData.content ? <div dangerouslySetInnerHTML={{ __html: productData.content }} /> : <p>상품 설명이 없습니다.</p>}</div>
           </section>
 
-          {/* 리뷰 섹션 */}
-          <section className='mb-8'>
-            <h2 className='text-secondary t-h1 mb-6 xl:mb-8'>Review {reviewsPagination.total > 0 && `(${reviewsPagination.total})`}</h2>
-
-            {reviewsLoading ? (
-              <div className='py-8 text-center'>
-                <div className='mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-b-2 border-gray-600' />
-                <p className='text-gray-600'>리뷰를 불러오는 중...</p>
-              </div>
-            ) : reviews.length === 0 ? (
-              <div className='py-8 text-center'>
-                <p className='text-gray-600'>아직 리뷰가 없습니다.</p>
-              </div>
-            ) : (
-              <>
-                {reviews.map((review) => (
-                  <div key={review.id} className='mb-8 pb-8 xl:mb-10 xl:pb-10'>
-                    <div className='mb-3 flex items-center gap-3 xl:mb-4 xl:gap-4'>
-                      <div className='bg-secondary flex h-10 w-10 items-center justify-center rounded-full font-medium text-white xl:h-12 xl:w-12'>{review.userName.charAt(0)}</div>
-                      <p className='text-secondary t-h4 flex-1'>{review.userName}</p>
-
-                      {/* 날짜 및 액션 */}
-                      <div className='flex items-center'>
-                        <span className='t-h4'>{review.date}</span>
-
-                        <div className='flex items-center pl-4'>
-                          <Button variant='ghost' size='sm' onClick={() => handleEditReview(review.id)} className='h-8 px-3 py-1.5'>
-                            수정
-                          </Button>
-                          <span className='text-gray-300'>·</span>
-                          <Button variant='ghost' size='sm' onClick={() => handleDeleteReview(review.id)} className='text-error h-8 px-3 py-1.5'>
-                            삭제
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-
-                    <p className='text-secondary t-body whitespace-pre-line'>{review.content}</p>
-                  </div>
-                ))}
-
-                {totalReviewPages > 1 && renderReviewPagination()}
-              </>
-            )}
-          </section>
+          {children}
 
           {/* 추천 상품 */}
           <section className='border-t-1 border-gray-300 pt-8'>
             <h2 className='text-secondary t-h1 mb-6 xl:mb-8'>Recommend</h2>
-            {recommendProducts.length === 0 ? (
+            {!recommendProducts || recommendProducts.length === 0 ? (
               <div className='py-8 text-center'>
                 <p className='text-gray-600'>추천 상품이 없습니다.</p>
               </div>
             ) : (
               <div className='grid grid-cols-4 gap-6 xl:gap-8'>
                 {recommendProducts.map((product) => (
-                  <ProductDetailCard key={product.id} product={product} onClick={handleProductClick} />
+                  <ProductDetailCard key={getProductId(product)} product={product} onClick={handleProductClick} />
                 ))}
               </div>
             )}

@@ -1,8 +1,8 @@
 // src/app/community/page.tsx
 'use client';
 
-import BookmarkButton from '@/app/shop/_components/BookmarkButton';
 import hoyaImg from '@/assets/images/hoya_heart_brown.webp';
+import BookmarkButton from '@/components/ui/BookmarkButton';
 import { Button } from '@/components/ui/Button';
 import { Card, CardAvatar, CardContent, CardDescription, CardFooter, CardImage, CardTitle } from '@/components/ui/Card';
 import PaginationWrapper from '@/components/ui/PaginationWrapper';

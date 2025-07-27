@@ -1,0 +1,19 @@
+meta {
+  name: 상품 검색 (custom 속성 사용)
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{url}}/products?custom={"extra.tags":{"$in":["주 1회 물주기", "보통 습도", "따뜻함 선호"]}}
+  body: none
+  auth: inherit
+}
+
+params:query {
+  custom: {"extra.tags":{"$in":["주 1회 물주기", "보통 습도", "따뜻함 선호"]}}
+}
+
+settings {
+  encodeUrl: true
+}

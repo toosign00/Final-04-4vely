@@ -1,6 +1,6 @@
 'use client';
 
-import type { Product } from '@/types/product';
+import type { Product } from '@/types/product.types';
 import Image from 'next/image';
 
 type NewProduct = Pick<Product, 'id' | 'name' | 'price' | 'isNew' | 'image'>;

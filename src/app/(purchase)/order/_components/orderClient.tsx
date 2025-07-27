@@ -127,7 +127,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
       // 주문 완료 페이지로 이동
       if (result.data?.redirectUrl) {
         setTimeout(() => {
-          router.push(result.data.redirectUrl!);
+          router.push(result.data?.redirectUrl || '/');
         }, 1000);
       }
     } catch (error) {

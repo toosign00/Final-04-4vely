@@ -3,6 +3,7 @@ import { getProductDetailWithRecommendations, getServerProductById } from '@/lib
 import { getImageUrl } from '@/types/product.types';
 import { notFound } from 'next/navigation';
 import ProductDetailClient from './_components/ProductDetailClient';
+import ReviewSection from './_components/ReviewSection';
 
 interface ProductDetailPageProps {
   params: Promise<{ id: string }>;
@@ -62,7 +63,10 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
 
     return (
       <div className='bg-surface min-h-screen'>
-        <ProductDetailClient productData={product} productId={id} recommendProducts={recommendProducts} />
+        <ProductDetailClient productData={product} productId={id} recommendProducts={recommendProducts}>
+          {/* Description과 Recommend 사이에 리뷰 섹션 추가 */}
+          <ReviewSection productId={product._id} />
+        </ProductDetailClient>
       </div>
     );
   } catch (error) {

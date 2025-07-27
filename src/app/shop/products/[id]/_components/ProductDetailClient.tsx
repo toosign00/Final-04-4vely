@@ -25,6 +25,7 @@ interface ProductDetailClientProps {
   productData: Product;
   productId: string;
   recommendProducts?: Product[];
+  children?: React.ReactNode;
 }
 
 /**
@@ -48,7 +49,7 @@ const getColorMapping = (koreanColor: string): { englishName: string; hexColor: 
  * 상품 상세 페이지 클라이언트 컴포넌트
  * Zustand 없이 서버 액션만 사용
  */
-export default function ProductDetailClient({ productData, recommendProducts = [] }: ProductDetailClientProps) {
+export default function ProductDetailClient({ productData, recommendProducts, children = [] }: ProductDetailClientProps) {
   const router = useRouter();
 
   // 상태 관리
@@ -441,10 +442,12 @@ export default function ProductDetailClient({ productData, recommendProducts = [
             <div className='text-secondary t-body sm:t-h4 space-y-3 sm:space-y-4'>{productData.content ? <div dangerouslySetInnerHTML={{ __html: productData.content }} /> : <p>상품 설명이 없습니다.</p>}</div>
           </section>
 
+          {children}
+
           {/* 추천 상품 */}
           <section className='border-t-1 border-gray-300 pt-8 pb-8 sm:pb-10 md:pb-12'>
             <h2 className='text-secondary t-h2 sm:t-h1 mb-4 sm:mb-5'>Recommend</h2>
-            {recommendProducts.length === 0 ? (
+            {!recommendProducts || recommendProducts.length === 0 ? (
               <div className='py-8 text-center'>
                 <p className='text-gray-600'>추천 상품이 없습니다.</p>
               </div>
@@ -557,10 +560,12 @@ export default function ProductDetailClient({ productData, recommendProducts = [
             <div className='text-secondary t-h3 space-y-4 xl:space-y-6'>{productData.content ? <div dangerouslySetInnerHTML={{ __html: productData.content }} /> : <p>상품 설명이 없습니다.</p>}</div>
           </section>
 
+          {children}
+
           {/* 추천 상품 */}
           <section className='border-t-1 border-gray-300 pt-8'>
             <h2 className='text-secondary t-h1 mb-6 xl:mb-8'>Recommend</h2>
-            {recommendProducts.length === 0 ? (
+            {!recommendProducts || recommendProducts.length === 0 ? (
               <div className='py-8 text-center'>
                 <p className='text-gray-600'>추천 상품이 없습니다.</p>
               </div>

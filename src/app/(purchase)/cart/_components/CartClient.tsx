@@ -99,7 +99,7 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
         toast.error(result.message);
       }
     } catch (error) {
-      toast.error('수량 변경에 실패했습니다.');
+      toast.error(`수량 변경에 실패했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
     } finally {
       setIsLoading(null);
     }
@@ -123,7 +123,7 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
         toast.error(result.message);
       }
     } catch (error) {
-      toast.error('상품 삭제에 실패했습니다.');
+      toast.error(`수량 변경에 실패했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
     } finally {
       setIsLoading(null);
     }
@@ -153,7 +153,9 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
         toast.success(`${successCount}개의 상품이 삭제되었습니다.`);
       }
     } catch (error) {
-      toast.error('상품 삭제 중 오류가 발생했습니다.');
+      toast.error(`수량 변경에 실패했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
+    } finally {
+      setIsLoading(null);
     }
   };
 
@@ -253,7 +255,7 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
             <div key={item._id}>
               {/* 카드 */}
               <div className='lg:bg-surface md:border-gray-300-1 mt-5 flex items-stretch justify-between rounded-2xl bg-white px-4 py-5 md:mt-6 md:px-5 md:py-6 lg:mt-7 lg:px-3 lg:py-7'>
-                {/* 왼쪽: 이미지 + 텍스트 */}
+                {/* 이미지 + 텍스트 */}
                 <div className='flex h-full items-start gap-3 md:gap-4'>
                   <div className='relative'>
                     <div className='relative h-28 w-20 shrink-0 sm:h-32 sm:w-24 md:h-36 md:w-28 lg:h-40 lg:w-40'>

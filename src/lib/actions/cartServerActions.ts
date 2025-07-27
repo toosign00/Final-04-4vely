@@ -52,14 +52,12 @@ export async function getCartItemsAction(): Promise<CartItem[]> {
         'client-id': CLIENT_ID,
         Authorization: `Bearer ${accessToken}`,
       },
-      cache: 'no-cache', // 항상 최신 데이터 가져오기
+      cache: 'no-cache',
     });
 
     const data: CartListApiResponse = await res.json();
-    console.log('[Cart 서버 액션] API 응답:', { status: res.status, itemCount: data.item?.length || 0 });
 
     if (!res.ok || data.ok === 0) {
-      console.error('[Cart 서버 액션] 장바구니 조회 실패:', data.message);
       return [];
     }
 

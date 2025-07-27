@@ -1,7 +1,7 @@
 // src/app/(purchase)/order/page.tsx (서버 컴포넌트)
 import { getTempOrderAction } from '@/lib/actions/orderServerActions';
 import { redirect } from 'next/navigation';
-import OrderClientSection from './_components/orderClient';
+import OrderClientSection from './_components/OrderClient';
 
 export default async function OrderPage() {
   // 서버에서 임시 주문 데이터 가져오기

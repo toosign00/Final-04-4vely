@@ -39,36 +39,36 @@ export default function Home() {
     },
   ];
 
-  // 큐레이션 콘텐츠
+  // GreenMagazine 콘텐츠
   const greenMagazineItems = [
     {
       image: '/images/acadia_palenopsis_orchid.webp',
       title: '해피트리, 물 주는 타이밍이 중요해요',
-      explain: '잎이 처지거나 노랗게 변하셨나요? 해피트리는 과습에 민감한 식물입니다. 물 주는 빈도보다, “흙이 마른 시점”을 기준으로 판단하는 것이 핵심입니다.',
+      content: '잎이 처지거나 노랗게 변하셨나요? 해피트리는 과습에 민감한 식물입니다. 물 주는 빈도보다, “흙이 마른 시점”을 기준으로 판단하는 것이 핵심입니다.',
       href: '/green-magazine/happy-tree-watering',
     },
     {
       image: '/images/baby_gomu.webp',
       title: '화분은 어디에 두는 게 좋을까요?',
-      explain: '빛의 방향, 창문의 위치, 에어컨 바람까지… 식물은 단순히 빛만 있으면 되는 게 아닙니다. 집 구조를 고려한 최적의 배치 전략을 소개합니다.',
+      content: '빛의 방향, 창문의 위치, 에어컨 바람까지… 식물은 단순히 빛만 있으면 되는 게 아닙니다. 집 구조를 고려한 최적의 배치 전략을 소개합니다.',
       href: '/green-magazine/plant-positioning',
     },
     {
       image: '/images/aglaonema_siam_black.webp',
       title: '식물도 밤에는 쉬고 싶어해요',
-      explain: '낮과 밤의 온도 차, 인공조명의 영향까지 생각해 본 적 있으신가요? 식물의 생체리듬에 맞춘 야간 관리 습관으로 더 건강하게 키워보세요.',
+      content: '낮과 밤의 온도 차, 인공조명의 영향까지 생각해 본 적 있으신가요? 식물의 생체리듬에 맞춘 야간 관리 습관으로 더 건강하게 키워보세요.',
       href: '/green-magazine/plant-night-care',
     },
     {
       image: '/images/olive_tree_gray.webp',
       title: '초보자를 위한 실내 식물 추천',
-      explain: '물을 자주 주지 않아도 잘 자라는 식물들이 있습니다. 관리가 쉬우면서도 인테리어 효과까지 주는 식물들을 소개합니다.',
+      content: '물을 자주 주지 않아도 잘 자라는 식물들이 있습니다. 관리가 쉬우면서도 인테리어 효과까지 주는 식물들을 소개합니다.',
       href: '/green-magazine/easy-indoor-plants',
     },
     {
       image: '/images/alocasia_polly_black.webp',
       title: '식물의 휴식 시간도 중요해요',
-      explain: '물, 햇빛 못지않게 식물에게는 “쉼”도 필요합니다. 잠시라도 어둡고 조용한 환경을 제공해보세요.',
+      content: '물, 햇빛 못지않게 식물에게는 “쉼”도 필요합니다. 잠시라도 어둡고 조용한 환경을 제공해보세요.',
       href: '/green-magazine/plant-break-time',
     },
   ];

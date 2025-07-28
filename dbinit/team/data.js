@@ -3330,7 +3330,7 @@ export const initData = async (clientId, nextSeq) => {
           name: '테스트 유저 1',
           image: `files/${clientId}/user_test01.webp`,
         },
-        type: 'community',
+        type: 'post',
         target_id: 1,
         memo: '커뮤니티 게시물 북마크 테스트 1',
         createdAt: getTime(-1, -60 * 60 * 12),
@@ -3343,7 +3343,7 @@ export const initData = async (clientId, nextSeq) => {
           name: '테스트 유저 1',
           image: `files/${clientId}/user_test01.webp`,
         },
-        type: 'community',
+        type: 'post',
         target_id: 2,
         memo: '커뮤니티 게시물 북마크 테스트 2',
         createdAt: getTime(-1, -60 * 60 * 12),
@@ -3363,6 +3363,8 @@ export const initData = async (clientId, nextSeq) => {
         },
         title: '테스트용 커뮤니티 게시물입니다!',
         content: '테스트용 커뮤니티 게시물 내용입니다.',
+        image: `files/${clientId}/user_test01.webp`,
+        views: 25,
         replies: [
           {
             _id: 1,
@@ -3407,6 +3409,8 @@ export const initData = async (clientId, nextSeq) => {
         },
         title: '관리자가 작성한 테스트용 커뮤니티 게시물입니다!',
         content: '관리자가 작성한 테스트용 커뮤니티 게시물 내용입니다.',
+        image: `files/${clientId}/user_test01.webp`,
+        views: 30,
         replies: [
           {
             _id: 1,

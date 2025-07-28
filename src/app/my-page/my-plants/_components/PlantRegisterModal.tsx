@@ -171,6 +171,7 @@ const PlantRegisterModal = memo(function PlantRegisterModal({ open, onClose, onS
         formData.append('name', data.name.trim());
         formData.append('species', data.species.trim());
         formData.append('location', data.location.trim());
+        formData.append('date', data.date);
         formData.append('memoTitle', data.memoTitle.trim());
         formData.append('memo', data.memo.trim());
 

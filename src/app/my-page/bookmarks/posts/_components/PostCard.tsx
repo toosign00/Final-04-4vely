@@ -1,6 +1,8 @@
 import { Button } from '@/components/ui/Button';
+import { deleteBookmark } from '@/lib/actions/mypage/bookmarkActions';
 import { Eye, MessageCircle, Trash2, User } from 'lucide-react';
 import Image from 'next/image';
+import { useState } from 'react';
 
 interface PostCardProps {
   post: {
@@ -12,14 +14,44 @@ interface PostCardProps {
     viewCount: number;
     commentCount: number;
   };
+  bookmarkId: number;
+  onDetailClick?: (postId: number) => void;
+  onDelete?: () => void;
 }
 
-export default function PostCard({ post }: PostCardProps) {
+export default function PostCard({ post, bookmarkId, onDetailClick, onDelete }: PostCardProps) {
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    if (isDeleting) return;
+
+    setIsDeleting(true);
+    try {
+      const result = await deleteBookmark(bookmarkId);
+      if (result.success) {
+        onDelete?.();
+      } else {
+        alert(result.message || '북마크 삭제에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('북마크 삭제 오류:', error);
+      alert('북마크 삭제 중 오류가 발생했습니다.');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleDetailClick = () => {
+    if (onDetailClick) {
+      onDetailClick(post.id);
+    }
+  };
+
   return (
     <div className='group relative mx-auto w-full max-w-6xl cursor-pointer rounded-2xl bg-white p-3 shadow-sm transition-shadow duration-300 hover:shadow-lg'>
       {/* 삭제버튼 */}
       <div className='absolute top-3 right-3 z-10 md:hidden'>
-        <Button variant='destructive' size='sm'>
+        <Button variant='destructive' size='sm' onClick={handleDelete} disabled={isDeleting}>
           <Trash2 className='size-4' />
         </Button>
       </div>
@@ -67,12 +99,12 @@ export default function PostCard({ post }: PostCardProps) {
         {/* 액션 버튼 - md 이상에서만 표시 */}
         <div className='flex h-full min-w-[12.5rem] flex-col items-end justify-between gap-3'>
           <div className='hidden flex-col gap-3 md:flex'>
-            <Button variant='destructive' size='sm'>
+            <Button variant='destructive' size='sm' onClick={handleDelete} disabled={isDeleting}>
               <Trash2 className='size-4' />
             </Button>
           </div>
           <div className='flex w-full flex-col gap-3'>
-            <Button variant='default' size='sm' fullWidth>
+            <Button variant='default' size='sm' fullWidth onClick={handleDetailClick}>
               상세보기
             </Button>
           </div>

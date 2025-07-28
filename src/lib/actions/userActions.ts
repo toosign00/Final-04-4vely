@@ -41,9 +41,7 @@ export async function updateUserProfile(formData: FormData): Promise<ApiRes<User
   }
 
   // 요청 본문 구성
-  const requestBody = isPasswordChange 
-    ? buildPasswordChangeBody(profileData.currentPassword!, profileData.newPassword!)
-    : buildProfileUpdateBody(profileData, image);
+  const requestBody = isPasswordChange ? buildPasswordChangeBody(profileData.currentPassword!, profileData.newPassword!) : buildProfileUpdateBody(profileData, image);
 
   // API 요청 실행
   try {
@@ -84,10 +82,7 @@ export async function updateUserProfile(formData: FormData): Promise<ApiRes<User
 }
 
 // 인증 정보 검증 헬퍼 함수
-async function validateAuth(): Promise<
-  | { success: false; message: string }
-  | { success: true; accessToken: string; userId: string }
-> {
+async function validateAuth(): Promise<{ success: false; message: string } | { success: true; accessToken: string; userId: string }> {
   const cookieStore = await cookies();
   const userAuthCookie = cookieStore.get('user-auth')?.value;
 
@@ -132,10 +127,7 @@ function buildPasswordChangeBody(currentPassword: string, newPassword: string) {
 }
 
 // 프로필 업데이트 요청 본문 구성
-function buildProfileUpdateBody(
-  data: ReturnType<typeof extractFormData>,
-  image?: string
-) {
+function buildProfileUpdateBody(data: ReturnType<typeof extractFormData>, image?: string) {
   return {
     ...(data.name && { name: data.name }),
     ...(data.email && { email: data.email }),
@@ -147,14 +139,9 @@ function buildProfileUpdateBody(
 
 // 에러 메시지 헬퍼 함수들
 function getErrorMessage(isPasswordChange: boolean) {
-  return isPasswordChange 
-    ? '비밀번호 변경에 실패했습니다.' 
-    : '회원 정보 수정에 실패했습니다.';
+  return isPasswordChange ? '비밀번호 변경에 실패했습니다.' : '회원 정보 수정에 실패했습니다.';
 }
 
 function getServerErrorMessage(isPasswordChange: boolean) {
-  return isPasswordChange 
-    ? '서버 오류로 비밀번호를 변경하지 못했습니다.' 
-    : '서버 오류로 회원 정보를 수정하지 못했습니다.';
+  return isPasswordChange ? '서버 오류로 비밀번호를 변경하지 못했습니다.' : '서버 오류로 회원 정보를 수정하지 못했습니다.';
 }
-

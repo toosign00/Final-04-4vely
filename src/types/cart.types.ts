@@ -9,6 +9,7 @@ export interface CartItem {
   _id: number;
   product_id: number;
   quantity: number;
+  size?: string; // 화분 색상 등의 옵션 (API 문서에 따라)
   createdAt: string;
   updatedAt: string;
   product: {
@@ -18,17 +19,20 @@ export interface CartItem {
     seller_id: number;
     quantity: number;
     buyQuantity: number;
-    mainImages?: string[];
+    image: string; // 현재 선택된 색상의 이미지
+    mainImages?: string[]; // 모든 색상의 이미지 배열 (상세 API에서 가져옴)
     extra?: {
       isNew?: boolean;
       isBest?: boolean;
+      tags?: string[];
       category?: string[];
       potColors?: string[];
+      sort?: number;
     };
   };
-  // 선택된 화분 색상 정보 (extra에 저장)
+  // 장바구니 추가 시 클라이언트에서 사용하는 extra (size로 이동 예정)
   extra?: {
-    potColor?: string; // 선택된 화분 색상
+    potColor?: string;
   };
 }
 
@@ -38,9 +42,7 @@ export interface CartItem {
 export interface AddToCartRequest {
   product_id: number;
   quantity: number;
-  extra?: {
-    potColor?: string; // 선택된 화분 색상
-  };
+  size?: string; // 화분 색상을 size로 저장 (API 문서 준수)
 }
 
 /**

@@ -1,8 +1,10 @@
 'use client';
-
 import { Button } from '@/components/ui/Button';
+import { createPost, uploadFile } from '@/lib/functions/community';
+import useUserStore from '@/store/authStore';
 import { Plus, X } from 'lucide-react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { ChangeEvent, useState } from 'react';
 
 interface PostForm {
@@ -13,106 +15,150 @@ interface PostForm {
   thumbnailImage: File | null;
 }
 
-const MAX_FORMS = 10; // 기본 폼 포함 최대 10개
+const MAX_FORMS = 10;
 
 export default function CommunityWritePage() {
+  const router = useRouter();
+  const user = useUserStore((state) => state.user); // 로그인한 유저 정보 가져오기
+  const token = user?.token?.accessToken;
+
   const [cover, setCover] = useState<File | null>(null);
   const [postForms, setPostForms] = useState<PostForm[]>([{ id: '1', title: '', content: '', postImage: null, thumbnailImage: null }]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleCoverChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files?.length) return;
-    setCover(files[0]);
-  };
-
-  const removePostForm = (formId: string) => {
-    if (postForms.length > 1) {
-      setPostForms((prev) => prev.filter((f) => f.id !== formId));
-    }
+    const file = e.target.files?.[0] ?? null;
+    setCover(file);
   };
 
   const updatePostForm = (formId: string, field: keyof PostForm, value: string | File | null) => {
-    setPostForms((prev) => prev.map((form) => (form.id === formId ? { ...form, [field]: value } : form)));
+    setPostForms((prev) => prev.map((f) => (f.id === formId ? { ...f, [field]: value } : f)));
   };
 
   const addNewForm = () => {
-    if (postForms.length >= MAX_FORMS) return; // 제한 10개
-    const newForm: PostForm = {
-      id: Date.now().toString(),
-      title: '',
-      content: '',
-      postImage: null,
-      thumbnailImage: null,
-    };
-    setPostForms((prev) => [...prev, newForm]);
+    if (postForms.length >= MAX_FORMS) return;
+    setPostForms((prev) => [...prev, { id: Date.now().toString(), title: '', content: '', postImage: null, thumbnailImage: null }]);
   };
 
-  const handlePostImageChange = (formId: string, e: ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files?.length) return;
-    updatePostForm(formId, 'postImage', files[0]);
-    updatePostForm(formId, 'thumbnailImage', files[0]);
+  const removePostForm = (formId: string) => {
+    if (postForms.length <= 1) return;
+    setPostForms((prev) => prev.filter((f) => f.id !== formId));
+  };
+
+  const handleSubmit = async () => {
+    const first = postForms[0];
+    if (!first.title.trim()) {
+      alert('제목을 입력해주세요.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      // 1) 커버 업로드
+      const coverUrl = cover ? await uploadFile(cover) : '';
+
+      // 2)  이미지 업로드
+      const contentsPayload = await Promise.all(
+        postForms.map(async (f) => {
+          const postImageUrl = f.postImage ? await uploadFile(f.postImage) : '';
+          const thumbUrl = f.thumbnailImage ? await uploadFile(f.thumbnailImage) : '';
+          return {
+            id: f.id,
+            title: f.title,
+            content: f.content,
+            postImage: postImageUrl,
+            thumbnailImage: thumbUrl,
+          };
+        }),
+      );
+
+      // 3) 서버 호출
+      await createPost(
+        {
+          type: 'community',
+          title: first.title,
+          content: first.content,
+          image: coverUrl || contentsPayload[0]?.postImage || '',
+          extra: { contents: contentsPayload },
+        },
+        token,
+      );
+
+      alert('글이 성공적으로 작성되었습니다!');
+      router.push('/community');
+      router.refresh();
+    } catch (err) {
+      console.error('게시글 작성 에러:', err);
+      alert(err instanceof Error ? err.message : '작성에 실패했습니다.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <main className='flex flex-col items-center space-y-12 pb-8'>
-      {/* 1) 대문 이미지 추가 */}
+      {/* 대문 이미지 */}
       <section className='w-full bg-white text-gray-500'>
         <label htmlFor='cover-upload' className='block w-full cursor-pointer'>
-          {!cover && <h2 className='py-4 text-center text-2xl font-semibold'>대문 이미지 추가</h2>}
           <div className='relative flex h-64 w-full items-center justify-center overflow-hidden bg-white'>
-            {cover ? <Image src={URL.createObjectURL(cover)} alt='cover' fill className='object-cover' /> : <Plus size={90} className='text-gray-500' />}
+            {cover ? (
+              <Image src={URL.createObjectURL(cover)} alt='cover' fill className='object-cover' priority />
+            ) : (
+              <div className='flex flex-col items-center gap-1'>
+                <h2 className='text-2xl font-semibold'>대문 이미지 추가</h2>
+                <Plus size={90} className='text-gray-500' />
+              </div>
+            )}
           </div>
-          <input id='cover-upload' type='file' accept='image/*' onChange={handleCoverChange} className='hidden' />
+          <input id='cover-upload' type='file' accept='image/*' onChange={handleCoverChange} className='hidden' disabled={isSubmitting} />
         </label>
       </section>
 
-      <h1 className='ml-15 w-full max-w-4xl text-2xl font-bold'>글 쓰기</h1>
+      {/* 제목 */}
+      <h1 className='w-full max-w-4xl px-4 text-2xl font-bold'>글쓰기</h1>
 
-      {/* 2) 썸네일 섹션(데스크탑 전용) + 글쓰기 폼들 */}
       <div className='flex w-full max-w-4xl flex-col gap-6 md:flex-row'>
-        {/* A) 썸네일 섹션 : md 이상에서만 보임 */}
+        {/* 썸네일 섹션 (md 이상) */}
         <div className='mt-2 ml-4 hidden flex-col items-end gap-4 md:flex'>
           {postForms.map((form) => (
             <div key={form.id}>
               {form.thumbnailImage ? (
-                <div className='relative h-20 w-20 cursor-default overflow-hidden rounded-lg border border-gray-300'>
-                  <Image fill src={URL.createObjectURL(form.thumbnailImage)} alt={`thumb-${form.id}`} className='object-cover' />
+                <div className='relative h-20 w-20 overflow-hidden rounded-lg border border-gray-300'>
+                  <Image fill src={URL.createObjectURL(form.thumbnailImage)} alt='thumb' className='object-cover' priority />
                 </div>
               ) : (
-                <div className={`flex h-20 w-20 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-400 ${postForms.length >= MAX_FORMS ? 'cursor-not-allowed opacity-40' : 'cursor-pointer'}`}>
+                <div className='flex h-20 w-20 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-400'>
                   <Plus size={24} />
                 </div>
               )}
             </div>
           ))}
-
-          {/* 폼 추가 버튼 (md 이상) */}
-          <Button
-            onClick={addNewForm}
-            disabled={postForms.length >= MAX_FORMS}
-            className={`flex h-20 w-20 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-400 ${postForms.length >= MAX_FORMS ? 'cursor-not-allowed opacity-40' : 'cursor-pointer'}`}
-          >
-            <Plus size={24} />
-          </Button>
         </div>
 
-        {/* 글쓰기 폼들 */}
+        {/* 글쓰기 폼 영역 */}
         <div className='flex-1 space-y-6'>
-          {postForms.map((form) => (
-            <section key={form.id} className='rounded-lg p-4'>
-              {/* 제목 + 삭제 */}
-              <div className='mb-6 flex items-center gap-4'>
-                <input type='text' placeholder='제목을 입력해주세요.' value={form.title} onChange={(e) => updatePostForm(form.id, 'title', e.target.value)} className='h-12 flex-1 rounded-lg border border-gray-300 bg-white px-4' />
-                <Button variant='destructive' className='h-12' onClick={() => removePostForm(form.id)} disabled={postForms.length === 1}>
-                  삭제
-                </Button>
-              </div>
+          {postForms.map((form, idx) => (
+            <section key={form.id} className='rounded-lg border p-4'>
+              {/* 첫 번째 폼: 제목 + 삭제 */}
+              {idx === 0 ? (
+                <div className='mb-6 flex items-center gap-4'>
+                  <input type='text' placeholder='제목을 입력해주세요.' value={form.title} onChange={(e) => updatePostForm(form.id, 'title', e.target.value)} className='h-12 flex-1 rounded-lg border border-gray-300 px-4' disabled={isSubmitting} />
+                  <Button variant='destructive' onClick={() => removePostForm(form.id)} disabled={isSubmitting || postForms.length === 1}>
+                    삭제
+                  </Button>
+                </div>
+              ) : (
+                /* 나머지 폼: 삭제 버튼 */
+                <div className='mb-4 flex justify-end'>
+                  <Button variant='destructive' onClick={() => removePostForm(form.id)} disabled={isSubmitting}>
+                    삭제
+                  </Button>
+                </div>
+              )}
 
-              {/* 이미지 & 내용 */}
               <div className='grid grid-cols-1 gap-6 md:grid-cols-2'>
-                {/* 이미지 */}
-                <div className='relative min-h-[200px] flex-1 overflow-hidden rounded-lg border border-gray-300 bg-gray-100'>
+                {/* 이미지 업로드 */}
+                <div className='relative min-h-[200px] overflow-hidden rounded-lg border border-gray-300 bg-gray-100'>
                   <label htmlFor={`post-upload-${form.id}`} className='absolute inset-0 flex cursor-pointer items-center justify-center text-gray-400'>
                     {!form.postImage && (
                       <div className='text-center'>
@@ -121,42 +167,57 @@ export default function CommunityWritePage() {
                       </div>
                     )}
                   </label>
-                  <input id={`post-upload-${form.id}`} type='file' accept='image/*' onChange={(e) => handlePostImageChange(form.id, e)} className='hidden' />
-                  {form.postImage && <Image fill src={URL.createObjectURL(form.postImage)} alt='post' className='object-cover' />}
+                  <input
+                    id={`post-upload-${form.id}`}
+                    type='file'
+                    accept='image/*'
+                    onChange={(e) => {
+                      const file = e.target.files?.[0] ?? null;
+                      updatePostForm(form.id, 'postImage', file);
+                      updatePostForm(form.id, 'thumbnailImage', file);
+                    }}
+                    className='hidden'
+                    disabled={isSubmitting}
+                  />
                   {form.postImage && (
-                    <button
-                      type='button'
-                      onClick={() => {
-                        updatePostForm(form.id, 'postImage', null);
-                        updatePostForm(form.id, 'thumbnailImage', null);
-                      }}
-                      className='absolute top-2 right-2 text-gray-400 hover:text-gray-600'
-                    >
-                      <X size={20} />
-                    </button>
+                    <>
+                      <Image fill src={URL.createObjectURL(form.postImage)} alt='post' className='object-cover' />
+                      <button
+                        type='button'
+                        onClick={() => {
+                          updatePostForm(form.id, 'postImage', null);
+                          updatePostForm(form.id, 'thumbnailImage', null);
+                        }}
+                        className='absolute top-2 right-2 text-gray-400 hover:text-gray-600'
+                        disabled={isSubmitting}
+                      >
+                        <X size={20} />
+                      </button>
+                    </>
                   )}
                 </div>
 
-                {/* 내용 */}
-                <div className='flex w-full flex-col'>
-                  <textarea placeholder='내용을 입력해주세요.' value={form.content} onChange={(e) => updatePostForm(form.id, 'content', e.target.value)} className='min-h-[200px] w-full resize-none rounded-lg border border-gray-300 bg-white p-4' />
-                </div>
+                {/* 내용 입력 */}
+                <textarea
+                  placeholder='내용을 입력해주세요.'
+                  value={form.content}
+                  onChange={(e) => updatePostForm(form.id, 'content', e.target.value)}
+                  className='min-h-[200px] w-full resize-none rounded-lg border border-gray-300 bg-white p-4'
+                  disabled={isSubmitting}
+                />
               </div>
             </section>
           ))}
         </div>
       </div>
 
-      {/* 하단 버튼 영역 */}
-      <div className='flex w-full max-w-4xl justify-between px-30 md:justify-end md:px-4'>
-        {/* 모바일 전용 추가하기 버튼 (md 이상에서는 숨김) */}
-        <Button size='lg' onClick={addNewForm} disabled={postForms.length >= MAX_FORMS} className={`md:hidden ${postForms.length >= MAX_FORMS ? 'cursor-not-allowed opacity-40' : ''}`}>
+      {/* 하단 버튼 */}
+      <div className='flex w-full max-w-4xl justify-between px-4 md:pl-33'>
+        <Button onClick={addNewForm} disabled={isSubmitting || postForms.length >= MAX_FORMS}>
           추가하기
         </Button>
-
-        {/* 작성하기 버튼 */}
-        <Button size='lg' variant='primary'>
-          작성하기
+        <Button variant='primary' onClick={handleSubmit} disabled={isSubmitting}>
+          {isSubmitting ? '작성 중...' : '작성하기'}
         </Button>
       </div>
     </main>

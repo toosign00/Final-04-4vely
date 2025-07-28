@@ -6,8 +6,8 @@ import BookmarkButton from '@/components/ui/BookmarkButton';
 import { Button } from '@/components/ui/Button';
 import { addToCartAction, checkLoginStatusAction } from '@/lib/actions/cartServerActions';
 import { checkOrderLoginStatusAction, createDirectPurchaseTempOrderAction } from '@/lib/actions/orderServerActions';
-import { DirectPurchaseItem } from '@/types/order.types';
 import { AddToCartRequest } from '@/types/cart.types';
+import { DirectPurchaseItem } from '@/types/order.types';
 import { Product, getImageUrl, getProductCategories, getProductId, getProductPotColors, getProductTags, isNewProduct } from '@/types/product.types';
 import { Minus, Plus } from 'lucide-react';
 import Image from 'next/image';
@@ -230,8 +230,6 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
       const result = await addToCartAction(cartData);
 
       if (result.success) {
-        console.log('[장바구니 추가] 성공');
-        toast.success(result.message);
         setShowCartAlert(true);
       } else {
         console.error('[장바구니 추가] 실패:', result.message);
@@ -339,12 +337,12 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
             <AlertDialogDescription className='text-center text-base'>장바구니로 이동하시겠습니까?</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className='mt-6 gap-3 sm:justify-between'>
-            <AlertDialogAction onClick={handleGoToCart} className='bg-primary text-secondary active:bg-primary px-10 shadow-sm hover:bg-[#AEBB2E]'>
-              예
-            </AlertDialogAction>
-            <AlertDialogCancel onClick={() => setShowCartAlert(false)} className='text-secondary hover:bg-secondary border-[0.5px] border-gray-300 bg-white px-7 shadow-sm hover:text-white'>
+            <AlertDialogCancel onClick={() => setShowCartAlert(false)} className='text-secondary hover:bg-secondary border-[0.5px] border-gray-300 bg-white px-7 shadow-sm hover:text-white sm:order-1'>
               아니오
             </AlertDialogCancel>
+            <AlertDialogAction onClick={handleGoToCart} className='bg-primary text-secondary active:bg-primary px-10 shadow-sm hover:bg-[#AEBB2E] sm:order-2'>
+              예
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

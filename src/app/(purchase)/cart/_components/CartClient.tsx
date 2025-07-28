@@ -108,7 +108,7 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
 
   // 단일 아이템 삭제
   const handleRemoveItem = async (itemId: number) => {
-    const confirmDelete = confirm('정말로 이 상품을 삭제하시겠습니까?');
+    const confirmDelete = confirm('정말로 이 상품을 에시겠습니까?');
     if (!confirmDelete) return;
 
     setIsLoading(itemId);

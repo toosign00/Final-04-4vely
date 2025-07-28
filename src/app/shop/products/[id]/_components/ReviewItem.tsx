@@ -107,12 +107,12 @@ export default function ReviewItem({ review, isAuthor, productId }: ReviewItemPr
             <AlertDialogDescription className='text-center text-base'>삭제된 리뷰는 복구할 수 없습니다.</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className='mt-6 gap-3 sm:justify-between'>
-            <AlertDialogAction onClick={handleConfirmDelete} className='bg-primary text-secondary active:bg-primary px-10 shadow-sm hover:bg-[#AEBB2E]'>
-              예
-            </AlertDialogAction>
             <AlertDialogCancel onClick={() => setShowDeleteAlert(false)} className='text-secondary hover:bg-secondary border-[0.5px] border-gray-300 bg-white px-7 shadow-sm hover:text-white'>
               아니오
             </AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDelete} className='bg-primary text-secondary active:bg-primary px-10 shadow-sm hover:bg-[#AEBB2E]'>
+              예
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

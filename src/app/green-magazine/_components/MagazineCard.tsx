@@ -1,33 +1,26 @@
 'use client';
 
+import { MagazinePostData } from '@/app/green-magazine/_types/magazine.types';
 import { formatDate } from '@/app/my-page/my-plants/_utils/diaryUtils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import BookmarkButton from '@/components/ui/BookmarkButton';
 import { Button } from '@/components/ui/Button';
-import { Post } from '@/types/post.types';
 import Image from 'next/image';
 import Link from 'next/link';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
+
 interface MagazineCardProps {
-  post: Pick<Post, '_id' | 'type' | 'title' | 'content' | 'createdAt' | 'updatedAt' | 'views' | 'user'> & {
-    bookmarks: number;
-    myBookmarkId: number | null;
-    image: string;
-    extra?: {
-      contents: {
-        content: string;
-        postImage: string;
-      }[];
-    };
-  };
+  post: MagazinePostData;
 }
 
+// 매거진 메인 페이지 카드 컴포넌트
 export default function MagazineCard({ post }: MagazineCardProps) {
   return (
     <div className='flex flex-col gap-4 rounded-xl bg-white p-4 shadow-sm hover:shadow-md md:flex-row md:gap-10'>
       {/* 이미지 */}
       <div className='relative h-40 w-full overflow-hidden rounded-lg md:h-50 md:w-1/5'>
-        <Image src={post.image} alt={post.title} fill sizes='(max-width: 768px) 100vw, 20vw' className='object-cover' priority />
+        <Image src={`${API_URL}/${post.image}`} alt={post.title} fill sizes='(max-width: 768px) 100vw, 20vw' className='object-cover' priority />
       </div>
 
       {/* 콘텐츠 영역 */}

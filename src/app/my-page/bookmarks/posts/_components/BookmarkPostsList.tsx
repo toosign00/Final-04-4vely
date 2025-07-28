@@ -1,8 +1,8 @@
 /**
- * @fileoverview 북마크된 상품 목록을 표시하는 클라이언트 컴포넌트
+ * @fileoverview 북마크된 게시글 목록을 표시하는 클라이언트 컴포넌트
  * @description `useEffect`와 `useState`를 사용하여 부모로부터 받은 데이터를 안정적으로 관리하고,
  *              `useMemo`를 통해 페이지네이션 관련 계산을 최적화합니다.
- *              북마크된 상품이 없을 경우 사용자에게 친절한 안내 메시지를 표시합니다.
+ *              북마크된 게시글이 없을 경우 사용자에게 친절한 안내 메시지를 표시합니다.
  */
 'use client';
 
@@ -10,30 +10,30 @@ import PaginationWrapper from '@/components/ui/PaginationWrapper';
 import { TransformedBookmarkItem } from '@/lib/functions/mypage/bookmarkFunctions';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
-import ProductCard from './ProductCard';
+import PostCard from './PostCard';
 
 /**
- * @interface BookmarkProductsListProps
- * @description BookmarkProductsList 컴포넌트가 받는 props의 타입을 정의합니다.
- * @property {TransformedBookmarkItem[]} bookmarks - 서버로부터 변환되어 전달된 북마크 상품 아이템의 배열입니다.
+ * @interface BookmarkPostsListProps
+ * @description BookmarkPostsList 컴포넌트가 받는 props의 타입을 정의합니다.
+ * @property {TransformedBookmarkItem[]} bookmarks - 서버로부터 변환되어 전달된 북마크 게시글 아이템의 배열입니다.
  */
-interface BookmarkProductsListProps {
+interface BookmarkPostsListProps {
   bookmarks: TransformedBookmarkItem[];
 }
 
 /**
  * @constant {number} ITEMS_PER_PAGE
- * @description 한 페이지에 표시될 상품의 수를 정의하는 상수입니다.
+ * @description 한 페이지에 표시될 게시글의 수를 정의하는 상수입니다.
  */
 const ITEMS_PER_PAGE = 3;
 
 /**
- * @function BookmarkProductsList
- * @description 북마크된 상품 목록을 페이지네이션 기능과 함께 표시하는 메인 컴포넌트입니다.
- * @param {BookmarkProductsListProps} props - 컴포넌트 props.
- * @returns {JSX.Element} 렌더링된 북마크 상품 목록 또는 빈 상태 메시지를 반환합니다.
+ * @function BookmarkPostsList
+ * @description 북마크된 게시글 목록을 페이지네이션 기능과 함께 표시하는 메인 컴포넌트입니다.
+ * @param {BookmarkPostsListProps} props - 컴포넌트 props.
+ * @returns {JSX.Element} 렌더링된 북마크 게시글 목록 또는 빈 상태 메시지를 반환합니다.
  */
-export default function BookmarkProductsList({ bookmarks: initialBookmarks }: BookmarkProductsListProps) {
+export default function BookmarkPostsList({ bookmarks: initialBookmarks }: BookmarkPostsListProps) {
   const router = useRouter();
 
   /**
@@ -50,11 +50,11 @@ export default function BookmarkProductsList({ bookmarks: initialBookmarks }: Bo
 
   /**
    * @function handleDetailClick
-   * @description 상품 상세보기 버튼 클릭 시 상품 상세 페이지로 이동하는 핸들러입니다.
-   * @param {number} productId - 이동할 상품의 ID
+   * @description 게시글 상세보기 버튼 클릭 시 게시글 상세 페이지로 이동하는 핸들러입니다.
+   * @param {number} postId - 이동할 게시글의 ID
    */
-  const handleDetailClick = (productId: number) => {
-    router.push(`/shop/products/${productId}`);
+  const handleDetailClick = (postId: number) => {
+    router.push(`/community/${postId}`);
   };
 
   /**
@@ -81,8 +81,8 @@ export default function BookmarkProductsList({ bookmarks: initialBookmarks }: Bo
    * @description 페이지네이션과 관련된 데이터를 계산하고 메모이제이션합니다.
    *              내부 `bookmarks` 상태나 `currentPage`가 변경될 때만 재계산하여 성능을 최적화합니다.
    * @property {number} totalPages - 전체 페이지 수.
-   * @property {TransformedBookmarkItem[]} displayItems - 현재 페이지에 표시될 상품 목록.
-   * @property {boolean} hasItems - 북마크된 상품이 하나 이상 존재하는지 여부.
+   * @property {TransformedBookmarkItem[]} displayItems - 현재 페이지에 표시될 게시글 목록.
+   * @property {boolean} hasItems - 북마크된 게시글이 하나 이상 존재하는지 여부.
    * @property {boolean} showPagination - 페이지네이션 UI를 표시할지 여부 (전체 페이지가 2 이상일 때).
    */
   const paginationData = useMemo(() => {
@@ -98,37 +98,39 @@ export default function BookmarkProductsList({ bookmarks: initialBookmarks }: Bo
     };
   }, [bookmarks, currentPage]);
 
-  // 북마크된 상품이 없을 경우, 사용자에게 친절한 안내 메시지를 표시합니다.
+  // 북마크된 게시글이 없을 경우, 사용자에게 친절한 안내 메시지를 표시합니다.
   if (!paginationData.hasItems) {
     return (
       <div className='grid gap-6 p-4 md:p-5 lg:p-6'>
         <div className='py-8 text-center text-gray-500'>
-          <p className='text-lg font-medium'>북마크한 상품이 없습니다.</p>
-          <p className='mt-2 text-sm'>관심 있는 상품을 북마크해보세요!</p>
+          <p className='text-lg font-medium'>북마크한 게시글이 없습니다.</p>
+          <p className='mt-2 text-sm'>관심 있는 게시글을 북마크해보세요!</p>
         </div>
       </div>
     );
   }
 
-  // 북마크된 상품이 있을 경우, 목록과 페이지네이션을 렌더링합니다.
+  // 북마크된 게시글이 있을 경우, 목록과 페이지네이션을 렌더링합니다.
   return (
     <div className='grid gap-6 p-4 md:p-5 lg:p-6'>
-      {/* 현재 페이지에 해당하는 상품 카드 목록을 렌더링합니다. */}
+      {/* 현재 페이지에 해당하는 게시글 카드 목록을 렌더링합니다. */}
       <div className='grid gap-4'>
-        {paginationData.displayItems.map((product) => (
-          <ProductCard
-            // 각 상품에 고유한 key를 할당하여 React의 렌더링 성능을 최적화합니다.
-            key={`bookmark-product-${product.id}`}
-            order={{
-              id: product.id,
-              imageUrl: product.imageUrl,
-              name: product.name,
-              description: product.description,
-              price: product.price || 0,
+        {paginationData.displayItems.map((post) => (
+          <PostCard
+            // 각 게시글에 고유한 key를 할당하여 React의 렌더링 성능을 최적화합니다.
+            key={`bookmark-post-${post.id}`}
+            post={{
+              id: post.id,
+              imageUrl: post.imageUrl,
+              title: post.name,
+              content: post.description,
+              author: post.author || '작성자 없음',
+              viewCount: post.views || 0,
+              commentCount: post.repliesCount || 0,
             }}
-            bookmarkId={product.bookmarkId}
+            bookmarkId={post.bookmarkId}
             onDetailClick={handleDetailClick}
-            onDelete={() => handleDelete(product.id)}
+            onDelete={() => handleDelete(post.id)}
           />
         ))}
       </div>

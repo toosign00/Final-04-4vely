@@ -45,8 +45,8 @@ export default function ReviewCarousel({ reviews }: ReviewCarouselProps) {
           </Link>
 
           {/* 슬라이드 좌우 버튼 */}
-          <CarouselPrevious className='left-0' />
-          <CarouselNext className='right-0' />
+          <CarouselPrevious className='left-[-5]' />
+          <CarouselNext className='right-[-15] md:right-[-5]' />
         </Carousel>
       </div>
     </section>
@@ -58,7 +58,7 @@ function ReviewSlide({ review }: { review: Review }) {
   const [imageError, setImageError] = useState(false);
 
   return (
-    <CarouselItem className='mb-3 flex basis-full place-content-center'>
+    <CarouselItem className='mb-3 flex basis-full place-content-center md:px-6'>
       <div className='flex w-full max-w-[60rem] items-start gap-6 rounded-xl bg-white shadow-lg transition-all duration-300 hover:shadow-xl md:gap-8 lg:h-[20rem]'>
         {/* 왼쪽 이미지 */}
         <div className='relative h-full w-[80%] overflow-hidden rounded-l-xl'>

@@ -62,7 +62,7 @@ export async function fetchWeather(lat: number, lon: number) {
       icon,
       windSpeed,
     };
-  } catch (error) {
+  } catch {
     return null;
   }
 }

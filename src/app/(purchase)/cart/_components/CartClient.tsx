@@ -1,6 +1,7 @@
 // src/app/(purchase)/cart/_components/CartClient.tsx
 'use client';
 
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/AlertDialog';
 import { Button } from '@/components/ui/Button';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/Dialog';
@@ -47,6 +48,11 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
 
   // 옵션 변경 상태
   const [selectedOptions, setSelectedOptions] = useState<Record<number, string>>({});
+
+  // AlertDialog 상태
+  const [showDeleteAllAlert, setShowDeleteAllAlert] = useState(false);
+  const [showDeleteSingleAlert, setShowDeleteSingleAlert] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
 
   // 초기 선택된 옵션 설정
   useState(() => {
@@ -108,17 +114,22 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
 
   // 단일 아이템 삭제
   const handleRemoveItem = async (itemId: number) => {
-    const confirmDelete = confirm('정말로 이 상품을 에시겠습니까?');
-    if (!confirmDelete) return;
+    setDeleteTargetId(itemId);
+    setShowDeleteSingleAlert(true);
+  };
 
-    setIsLoading(itemId);
+  // 실제 단일 아이템 삭제 처리
+  const confirmRemoveSingleItem = async () => {
+    if (!deleteTargetId) return;
+
+    setIsLoading(deleteTargetId);
     try {
-      const result = await removeFromCartAction(itemId);
+      const result = await removeFromCartAction(deleteTargetId);
       if (result.success) {
-        setCartItems((prevItems) => prevItems.filter((item) => item._id !== itemId));
+        setCartItems((prevItems) => prevItems.filter((item) => item._id !== deleteTargetId));
         setSelectedItems((prevSelected) => {
           const newSelected = new Set(prevSelected);
-          newSelected.delete(itemId);
+          newSelected.delete(deleteTargetId);
           return newSelected;
         });
         toast.success('상품이 삭제되었습니다.');
@@ -126,9 +137,11 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
         toast.error(result.message);
       }
     } catch (error) {
-      toast.error(`수량 변경에 실패했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
+      toast.error(`삭제에 실패했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
     } finally {
       setIsLoading(null);
+      setShowDeleteSingleAlert(false);
+      setDeleteTargetId(null);
     }
   };
 
@@ -152,33 +165,33 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
     }
   };
 
-  // 선택 삭제
-  const handleRemoveSelected = async () => {
-    if (selectedItems.size === 0) {
-      toast.error('삭제할 상품을 선택해주세요.');
+  // 모두 삭제
+  const handleRemoveAll = async () => {
+    if (cartItems.length === 0) {
+      toast.error('삭제할 상품이 없습니다.');
       return;
     }
+    setShowDeleteAllAlert(true);
+  };
 
-    const confirmDelete = confirm(`선택한 ${selectedItems.size}개의 상품을 삭제하시겠습니까?`);
-    if (!confirmDelete) return;
-
-    const deletePromises = Array.from(selectedItems).map((itemId) => removeFromCartAction(itemId));
+  // 실제 모두 삭제 처리
+  const confirmRemoveAll = async () => {
+    const deletePromises = cartItems.map((item) => removeFromCartAction(item._id));
 
     try {
       const results = await Promise.all(deletePromises);
       const successCount = results.filter((r) => r.success).length;
 
       if (successCount > 0) {
-        const successIds = Array.from(selectedItems).filter((_, index) => results[index].success);
-        setCartItems((prevItems) => prevItems.filter((item) => !successIds.includes(item._id)));
+        setCartItems([]);
         setSelectedItems(new Set());
-
-        toast.success(`${successCount}개의 상품이 삭제되었습니다.`);
+        toast.success('모든 상품이 삭제되었습니다.');
       }
     } catch (error) {
-      toast.error(`수량 변경에 실패했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
+      toast.error(`삭제에 실패했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
     } finally {
       setIsLoading(null);
+      setShowDeleteAllAlert(false);
     }
   };
 
@@ -329,8 +342,8 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
                   모두 선택
                 </label>
               </div>
-              <Button variant='ghost' className='mr-3 ml-auto text-base md:mr-6 lg:mr-2 lg:text-xl xl:mr-4' onClick={handleRemoveSelected}>
-                선택 삭제
+              <Button variant='ghost' className='mr-3 ml-auto text-base md:mr-6 lg:mr-2 lg:text-xl xl:mr-4' onClick={handleRemoveAll}>
+                모두 삭제
               </Button>
             </div>
 
@@ -346,7 +359,7 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
               cartItems.map((item) => (
                 <div key={item._id}>
                   {/* 카드 */}
-                  <div className='lg:bg-surface md:border-gray-300-1 mt-5 flex items-stretch justify-between rounded-2xl bg-white px-4 py-5 md:mt-6 md:px-5 md:py-6 lg:mt-7 lg:px-3 lg:py-7'>
+                  <div className='lg:bg-surface md:border-gray-300-1 mt-5 flex items-stretch justify-between rounded-2xl lg:rounded-none bg-white px-4 py-5 md:mt-6 md:px-5 md:py-6 lg:mt-7 lg:px-3 lg:py-7 border-b'>
                     {/* 이미지 + 텍스트 */}
                     <div className='flex h-full items-start gap-3 md:gap-4'>
                       <div className='relative'>
@@ -486,6 +499,46 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
           )}
         </div>
       </div>
+
+      {/* 단일 상품 삭제 확인 다이얼로그 */}
+      <AlertDialog open={showDeleteSingleAlert} onOpenChange={setShowDeleteSingleAlert}>
+        <AlertDialogContent className='px-12 sm:max-w-md'>
+          <AlertDialogHeader>
+            <AlertDialogTitle className='t-h3 text-center'>정말로 이 상품을 삭제하시겠습니까?</AlertDialogTitle>
+            <AlertDialogDescription className='text-center text-base'>장바구니에서 상품이 삭제됩니다.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className='mt-6 gap-3 sm:justify-between'>
+            <AlertDialogCancel
+              onClick={() => {
+                setShowDeleteSingleAlert(false);
+                setDeleteTargetId(null);
+              }}
+              className='text-secondary hover:bg-secondary border-[0.5px] border-gray-300 bg-white px-10 shadow-sm hover:text-white'
+            >
+              취소
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={confirmRemoveSingleItem} className='bg-error hover:bg-error/90 active:bg-error/80 px-10 text-white shadow-sm'>
+              삭제
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* 모든 상품 삭제 확인 다이얼로그 */}
+      <AlertDialog open={showDeleteAllAlert} onOpenChange={setShowDeleteAllAlert}>
+        <AlertDialogContent className='px-12 sm:max-w-md'>
+          <AlertDialogHeader>
+            <AlertDialogTitle className='t-h3 text-center'>정말로 상품을 삭제하시겠습니까?</AlertDialogTitle>
+            <AlertDialogDescription className='text-center text-base'>장바구니의 모든 상품이 삭제됩니다.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className='mt-6 gap-3 sm:justify-between'>
+            <AlertDialogCancel className='text-secondary hover:bg-secondary border-[0.5px] border-gray-300 bg-white px-10 shadow-sm hover:text-white'>취소</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmRemoveAll} className='bg-error hover:bg-error/90 active:bg-error/80 px-10 text-white shadow-sm'>
+              삭제
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

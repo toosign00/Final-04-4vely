@@ -298,6 +298,94 @@ export async function updateCartQuantityAction(cartId: number, quantity: number)
 }
 
 /**
+ * 장바구니 옵션(색상)을 업데이트하는 서버 액션
+ * API가 size 필드 업데이트를 지원하지 않으므로, 삭제 후 재추가 방식으로 구현
+ * @param {number} cartId - 장바구니 아이템 ID
+ * @param {number} productId - 상품 ID
+ * @param {number} quantity - 수량
+ * @param {string} size - 새로운 색상
+ * @returns {Promise<CartActionResult>} 업데이트 결과
+ */
+export async function updateCartOptionAction(cartId: number, productId: number, quantity: number, size: string): Promise<CartActionResult> {
+  try {
+    console.log('[Cart 서버 액션] 옵션 업데이트 시작:', { cartId, productId, quantity, size });
+
+    // 액세스 토큰 확인
+    const accessToken = await getServerAccessToken();
+    if (!accessToken) {
+      console.log('[Cart 서버 액션] 로그인 필요');
+      return {
+        success: false,
+        message: '로그인이 필요합니다.',
+      };
+    }
+
+    // 1. 기존 아이템 삭제
+    const deleteRes = await fetch(`${API_URL}/carts/${cartId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'client-id': CLIENT_ID,
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    const deleteData = await deleteRes.json();
+    console.log('[Cart 서버 액션] 삭제 응답:', { status: deleteRes.status, ok: deleteData.ok });
+
+    if (!deleteRes.ok || deleteData.ok === 0) {
+      return {
+        success: false,
+        message: '기존 상품 삭제에 실패했습니다.',
+      };
+    }
+
+    // 2. 새로운 색상으로 재추가
+    const addRes = await fetch(`${API_URL}/carts`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'client-id': CLIENT_ID,
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({
+        product_id: productId,
+        quantity: quantity,
+        size: size, // 새로운 색상
+      }),
+    });
+
+    const addData: CartApiResponse = await addRes.json();
+    console.log('[Cart 서버 액션] 추가 응답:', { status: addRes.status, ok: addData.ok });
+
+    if (!addRes.ok || addData.ok === 0) {
+      // 추가 실패 시 원래 상태로 복구 시도
+      console.error('[Cart 서버 액션] 재추가 실패, 복구 불가능');
+      return {
+        success: false,
+        message: '옵션 변경에 실패했습니다. 장바구니를 다시 확인해주세요.',
+      };
+    }
+
+    // 장바구니 페이지 재검증
+    revalidatePath('/cart');
+
+    console.log('[Cart 서버 액션] 옵션 업데이트 성공');
+    return {
+      success: true,
+      message: '옵션이 변경되었습니다.',
+      data: addData.item,
+    };
+  } catch (error) {
+    console.error('[Cart 서버 액션] 네트워크 오류:', error);
+    return {
+      success: false,
+      message: '일시적인 네트워크 문제로 옵션 변경에 실패했습니다.',
+    };
+  }
+}
+
+/**
  * 사용자의 로그인 상태를 확인하는 서버 액션
  * @returns {Promise<boolean>} 로그인 여부
  */

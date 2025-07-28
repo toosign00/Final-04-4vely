@@ -14,13 +14,11 @@ export default async function CartPage() {
   // 장바구니가 비어있는 경우
   if (cartItems.length === 0) {
     return (
-      <div className='bg-surface mx-auto w-full max-w-[1500px] p-4 md:p-6 lg:p-8'>
+      <div className='bg-surface min-h-screen w-full p-4 sm:p-6 lg:p-8'>
         {/* 헤더 영역 */}
-        <div className='mt-2 mb-6 flex items-center md:mb-8 lg:mt-0 lg:mb-24'>
-          <h1 className='font-regular flex flex-col items-start gap-1 text-3xl md:text-4xl'>
-            <span className='text-base'>|Shopping Cart</span>
-            <span>CART</span>
-          </h1>
+        <div className='mx-auto mb-8 max-w-6xl'>
+          <div className='text-secondary t-small font-medium'>| Shopping Cart</div>
+          <h2 className='text-secondary t-h2 mt-2 font-light'>Cart</h2>
         </div>
 
         {/* 빈 장바구니 메시지 */}

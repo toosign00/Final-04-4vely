@@ -30,6 +30,15 @@ interface OrderHistoryCardProps {
     deliveryStatus: 'preparing' | 'shipping' | 'completed';
     products?: ProductDetail[];
     hasMultipleProducts?: boolean;
+    cost?: {
+      products: number;
+      shippingFees: number;
+      discount: {
+        products: number;
+        shippingFees: number;
+      };
+      total: number;
+    };
   };
 }
 
@@ -195,7 +204,7 @@ export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
                           </p>
                           <div className='flex items-center justify-between'>
                             <span className='t-small text-muted'>{product.quantity}개</span>
-                            <span className='text-secondary font-semibold'>{product.price.toLocaleString()}원</span>
+                            <span className='text-secondary font-semibold'>{(product.price * product.quantity).toLocaleString()}원</span>
                           </div>
                         </div>
                       </div>
@@ -248,11 +257,21 @@ export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
 
                   {/* 총계 */}
                   <div className='border-t border-gray-200 pt-3'>
-                    <div className='flex items-center justify-between text-sm'>
-                      <span className='t-small text-muted'>총 주문 수량</span>
-                      <span className='t-small text-secondary' style={{ fontWeight: '600' }}>
-                        {order.quantity}개
-                      </span>
+                    <div className='space-y-2 text-sm'>
+                      <div className='flex items-center justify-between'>
+                        <span className='t-small text-muted'>총 주문 수량</span>
+                        <span className='t-small text-secondary' style={{ fontWeight: '600' }}>
+                          {order.quantity}개
+                        </span>
+                      </div>
+                      {order.cost && (
+                        <div className='flex items-center justify-between'>
+                          <span className='t-small text-muted'>배송비</span>
+                          <span className='t-small text-secondary' style={{ fontWeight: '600' }}>
+                            {order.cost.shippingFees === 0 ? '무료' : `${order.cost.shippingFees.toLocaleString()}원`}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

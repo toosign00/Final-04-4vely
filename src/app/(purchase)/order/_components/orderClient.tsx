@@ -229,7 +229,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
               </DialogHeader>
 
               <div className='space-y-6 p-6'>
-                <div className='grid gap-4'>
+                <div className='grid gap-8'>
                   <div>
                     <Label htmlFor='name'>받는 사람</Label>
                     <input id='name' type='text' className='mt-1 w-full rounded-lg border p-2' value={addressForm.name} onChange={(e) => setAddressForm((prev) => ({ ...prev, name: e.target.value }))} placeholder='이름을 입력하세요' />

@@ -114,7 +114,7 @@ export default function BookmarkProductsList({ bookmarks: initialBookmarks }: Bo
   return (
     <div className='grid gap-6 p-4 md:p-5 lg:p-6'>
       {/* 현재 페이지에 해당하는 상품 카드 목록을 렌더링합니다. */}
-      <div className='grid gap-4'>
+      <div className='grid gap-8'>
         {paginationData.displayItems.map((product) => (
           <ProductCard
             // 각 상품에 고유한 key를 할당하여 React의 렌더링 성능을 최적화합니다.

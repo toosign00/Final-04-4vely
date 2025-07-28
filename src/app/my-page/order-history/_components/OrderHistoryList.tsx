@@ -24,6 +24,15 @@ interface OrderCardData {
   deliveryStatus: 'preparing' | 'shipping' | 'completed';
   products?: ProductDetail[];
   hasMultipleProducts?: boolean;
+  cost?: {
+    products: number;
+    shippingFees: number;
+    discount: {
+      products: number;
+      shippingFees: number;
+    };
+    total: number;
+  };
 }
 
 interface OrderHistoryListProps {

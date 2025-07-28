@@ -23,6 +23,15 @@ interface OrderCardData {
   deliveryStatus: 'preparing' | 'shipping' | 'completed';
   products?: ProductDetail[];
   hasMultipleProducts?: boolean;
+  cost?: {
+    products: number;
+    shippingFees: number;
+    discount: {
+      products: number;
+      shippingFees: number;
+    };
+    total: number;
+  };
 }
 
 async function transformOrderData(orders: Order[]): Promise<OrderCardData[]> {
@@ -56,6 +65,7 @@ async function transformOrderData(orders: Order[]): Promise<OrderCardData[]> {
         deliveryStatus: getDeliveryStatus(order.state),
         products: productDetails,
         hasMultipleProducts,
+        cost: order.cost,
       };
     }),
   );

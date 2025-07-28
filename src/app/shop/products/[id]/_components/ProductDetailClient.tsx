@@ -1,6 +1,7 @@
 // src/app/shop/products/[id]/_components/ProductDetailClient.tsx
 'use client';
 
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/AlertDialog';
 import BookmarkButton from '@/components/ui/BookmarkButton';
 import { Button } from '@/components/ui/Button';
 import { addToCartAction, checkLoginStatusAction } from '@/lib/actions/cartServerActions';
@@ -55,6 +56,7 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
   // 상태 관리
   const [quantity, setQuantity] = useState<number>(1);
   const [selectedColorIndex, setSelectedColorIndex] = useState<number>(0);
+  const [showCartAlert, setShowCartAlert] = useState<boolean>(false);
 
   // 상품 정보 파싱
   const productCategories = useMemo(() => {
@@ -236,17 +238,7 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
       }
 
       // 4. 성공 알림
-      toast.success('장바구니에 추가되었습니다!', {
-        description: `${productData.name} ${quantity}개${hasColorOptions ? ` (${colorOptions[selectedColorIndex]?.label})` : ''}`,
-        action: {
-          label: '장바구니 보기',
-          onClick: () => {
-            window.location.href = '/cart';
-          },
-        },
-        duration: 4000,
-      });
-
+      setShowCartAlert(true);
       console.log('[장바구니 추가] 성공 완료');
     } catch (error) {
       console.error('[장바구니 추가] 예상치 못한 오류:', error);
@@ -332,6 +324,11 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
     }
   };
 
+  const handleGoToCart = () => {
+    setShowCartAlert(false);
+    router.push('/cart');
+  };
+
   const handleProductClick = (id: number) => {
     router.push(`/shop/products/${id}`);
   };
@@ -340,6 +337,24 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
 
   return (
     <>
+      {/* 장바구니 추가 알림 다이얼로그 */}
+      <AlertDialog open={showCartAlert} onOpenChange={setShowCartAlert}>
+        <AlertDialogContent className='px-12 sm:max-w-md'>
+          <AlertDialogHeader>
+            <AlertDialogTitle className='t-h3 text-center'>상품을 장바구니에 담았습니다.</AlertDialogTitle>
+            <AlertDialogDescription className='text-center text-base'>장바구니로 이동하시겠습니까?</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className='mt-6 gap-3 sm:justify-between'>
+            <AlertDialogAction onClick={handleGoToCart} className='bg-primary text-secondary active:bg-primary px-10 shadow-sm hover:bg-[#AEBB2E]'>
+              예
+            </AlertDialogAction>
+            <AlertDialogCancel onClick={() => setShowCartAlert(false)} className='text-secondary hover:bg-secondary border-[0.5px] border-gray-300 bg-white px-7 shadow-sm hover:text-white'>
+              아니오
+            </AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* 모바일/태블릿 레이아웃 */}
       <div className='lg:hidden'>
         {/* 상품 이미지 섹션 */}

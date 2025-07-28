@@ -2,6 +2,8 @@
  * @fileoverview 북마크 API 관련 함수들
  */
 
+'use server';
+
 import { BookmarkItem, PostDetail, ProductDetail } from '@/types/mypageBookmark.types';
 
 // API 서버 설정
@@ -56,4 +58,52 @@ export async function getProductDetail(productId: number): Promise<ProductDetail
 export async function getPostDetail(postId: number): Promise<PostDetail | null> {
   const result = await apiRequest<{ ok: number; item: PostDetail }>(`/posts/${postId}`);
   return result?.ok ? result.item : null;
+}
+
+/**
+ * 여러 상품의 상세 정보를 배치로 조회 (성능 최적화)
+ */
+export async function getProductDetailsBatch(productIds: number[]): Promise<Map<number, ProductDetail>> {
+  if (productIds.length === 0) return new Map();
+
+  const productDetailsMap = new Map<number, ProductDetail>();
+
+  // 병렬로 상품 상세 정보 조회 (API에서 배치 조회를 지원하지 않으므로 병렬 처리)
+  const promises = productIds.map(async (productId) => {
+    try {
+      const detail = await getProductDetail(productId);
+      if (detail) {
+        productDetailsMap.set(productId, detail);
+      }
+    } catch (error) {
+      console.warn(`상품 ${productId} 상세 정보 조회 실패:`, error);
+    }
+  });
+
+  await Promise.all(promises);
+  return productDetailsMap;
+}
+
+/**
+ * 여러 게시글의 상세 정보를 배치로 조회 (성능 최적화)
+ */
+export async function getPostDetailsBatch(postIds: number[]): Promise<Map<number, PostDetail>> {
+  if (postIds.length === 0) return new Map();
+
+  const postDetailsMap = new Map<number, PostDetail>();
+
+  // 병렬로 게시글 상세 정보 조회 (API에서 배치 조회를 지원하지 않으므로 병렬 처리)
+  const promises = postIds.map(async (postId) => {
+    try {
+      const detail = await getPostDetail(postId);
+      if (detail) {
+        postDetailsMap.set(postId, detail);
+      }
+    } catch (error) {
+      console.warn(`게시글 ${postId} 상세 정보 조회 실패:`, error);
+    }
+  });
+
+  await Promise.all(promises);
+  return postDetailsMap;
 }

@@ -5,17 +5,13 @@ meta {
 }
 
 get {
-  url: {{url}}/posts
+  url: {{url}}/posts?type=magazine
   body: none
   auth: inherit
 }
 
 params:query {
+  type: magazine
   ~type: plant
   ~type: community
-  ~type: info
-  ~type: music
-  ~type: qna
-  ~type: homework
-  ~type: notice
 }

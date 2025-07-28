@@ -36,8 +36,8 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
   useState(() => {
     const options: Record<number, string> = {};
     cartItems.forEach((item) => {
-      if (item.extra?.potColor) {
-        options[item._id] = item.extra.potColor;
+      if (item.size) {
+        options[item._id] = item.size;
       }
     });
     setSelectedOptions(options);
@@ -177,21 +177,23 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
   // 주문하기
   const handleOrder = async () => {
     if (selectedItems.size === 0) {
-      toast.error('주문할 상품을 선택해주세요.');
+      toast.error('상품을 선택해주세요');
       return;
     }
 
     const selectedCartItems = cartItems.filter((item) => selectedItems.has(item._id));
+
+    // 선택된 상품을 DirectPurchaseItem 형태로 변환
     const purchaseItems: DirectPurchaseItem[] = selectedCartItems.map((item) => ({
       productId: item.product._id,
       productName: item.product.name,
-      productImage: getImageUrl(item.product.mainImages?.[0] || ''),
+      productImage: getImageUrl(item.product.image),
       price: item.product.price,
       quantity: item.quantity,
-      selectedColor: item.extra?.potColor
+      selectedColor: item.size
         ? {
             colorIndex: 0,
-            colorName: item.extra.potColor,
+            colorName: item.size,
           }
         : undefined,
     }));
@@ -268,7 +270,7 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
                     <div className='flex h-full items-start gap-3 md:gap-4'>
                       <div className='relative'>
                         <div className='relative ml-4 h-28 w-20 shrink-0 sm:h-32 sm:w-24 md:h-36 md:w-28 lg:h-40 lg:w-40'>
-                          <Image src={getImageUrl(item.product.mainImages?.[0] || '')} alt={item.product.name} fill className='rounded object-cover' />
+                          <Image src={getImageUrl(item.product.image)} alt={item.product.name} fill className='rounded object-cover' />
                         </div>
                         <Checkbox
                           id={`item-${item._id}`}
@@ -281,7 +283,7 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
                       <div className='flex h-28 flex-col justify-between py-1 sm:h-32 md:h-36 lg:h-40'>
                         <div className='space-y-1'>
                           <h2 className='text-sm leading-tight font-semibold sm:text-lg md:text-lg xl:text-xl'>{item.product.name}</h2>
-                          {item.extra?.potColor && <p className='text-muted-foreground text-xs sm:text-sm md:text-sm lg:text-base'>화분 색상 : {getColorKoreanName(item.extra.potColor)}</p>}
+                          {item.size && <p className='text-muted-foreground text-xs sm:text-sm md:text-sm lg:text-base'>화분 색상 : {getColorKoreanName(item.size)}</p>}
                         </div>
                         <p className='text-sm font-semibold sm:text-base md:text-lg xl:text-xl'>₩ {(item.product.price * item.quantity).toLocaleString()}</p>
                       </div>
@@ -304,7 +306,7 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
                               </DialogHeader>
                               <div className='flex items-start gap-4'>
                                 <div className='relative h-[100px] w-[100px] shrink-0'>
-                                  <Image src={getImageUrl(item.product.mainImages?.[0] || '')} alt={item.product.name} fill className='rounded object-cover' />
+                                  <Image src={getImageUrl(item.product.image)} alt={item.product.name} fill className='rounded object-cover' />
                                 </div>
                                 <div>
                                   <h2 className='text-2xl font-bold'>{item.product.name}</h2>

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { addToCartAction, checkLoginStatusAction } from '@/lib/actions/cartServerActions';
 import { checkOrderLoginStatusAction, createDirectPurchaseTempOrderAction } from '@/lib/actions/orderServerActions';
 import { DirectPurchaseItem } from '@/types/order.types';
+import { AddToCartRequest } from '@/types/cart.types';
 import { Product, getImageUrl, getProductCategories, getProductId, getProductPotColors, getProductTags, isNewProduct } from '@/types/product.types';
 import { Minus, Plus } from 'lucide-react';
 import Image from 'next/image';
@@ -216,36 +217,29 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
         return;
       }
 
-      // 2. 서버 API 호출 데이터 준비
-      const cartData = {
+      // 2. 서버 API 호출 데이터 준비 - size 필드 사용
+      const cartData: AddToCartRequest = {
         product_id: productData._id,
         quantity,
-        extra: hasColorOptions ? { potColor: colorOptions[selectedColorIndex]?.label || '' } : undefined,
+        size: hasColorOptions ? colorOptions[selectedColorIndex]?.label : undefined,
       };
 
       console.log('[장바구니 추가] 서버 요청 데이터:', cartData);
 
-      // 3. 서버에 장바구니 추가 요청
+      // 3. 서버 액션 호출
       const result = await addToCartAction(cartData);
 
-      if (!result.success) {
-        console.error('[장바구니 추가] 서버 오류:', result.message);
-        toast.error('장바구니 추가 실패', {
-          description: result.message,
-          duration: 4000,
-        });
-        return;
+      if (result.success) {
+        console.log('[장바구니 추가] 성공');
+        toast.success(result.message);
+        setShowCartAlert(true);
+      } else {
+        console.error('[장바구니 추가] 실패:', result.message);
+        toast.error(result.message);
       }
-
-      // 4. 성공 알림
-      setShowCartAlert(true);
-      console.log('[장바구니 추가] 성공 완료');
     } catch (error) {
       console.error('[장바구니 추가] 예상치 못한 오류:', error);
-      toast.error('장바구니 추가에 실패했습니다', {
-        description: '잠시 후 다시 시도해주세요.',
-        duration: 4000,
-      });
+      toast.error('장바구니 추가 중 오류가 발생했습니다');
     }
   };
 

@@ -1,10 +1,10 @@
 // src/app/(purchase)/cart/page.tsx (서버 컴포넌트)
-import { getCartItemsAction } from '@/lib/actions/cartServerActions';
+import { getCartItemsActionOptimized } from '@/lib/actions/cartServerActions';
 import CartClientSection from './_components/CartClient';
 
 export default async function CartPage() {
   // 서버에서 장바구니 데이터 가져오기
-  const cartItems = await getCartItemsAction();
+  const cartItems = await getCartItemsActionOptimized();
 
   console.log('[CartPage] 장바구니 데이터 조회:', {
     아이템수: cartItems.length,

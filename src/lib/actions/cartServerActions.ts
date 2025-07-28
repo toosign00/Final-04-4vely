@@ -33,18 +33,16 @@ async function getServerAccessToken(): Promise<string | null> {
  * 장바구니 목록을 조회하는 서버 액션
  * @returns {Promise<CartItem[]>} 장바구니 아이템 목록
  */
-export async function getCartItemsAction(): Promise<CartItem[]> {
+export async function getCartItemsActionOptimized(): Promise<CartItem[]> {
   try {
     console.log('[Cart 서버 액션] 장바구니 목록 조회 시작');
 
-    // 액세스 토큰 확인
     const accessToken = await getServerAccessToken();
     if (!accessToken) {
       console.log('[Cart 서버 액션] 로그인되지 않은 사용자');
       return [];
     }
 
-    // API 요청
     const res = await fetch(`${API_URL}/carts`, {
       method: 'GET',
       headers: {
@@ -61,7 +59,55 @@ export async function getCartItemsAction(): Promise<CartItem[]> {
       return [];
     }
 
-    return data.item || [];
+    const cartItems = data.item || [];
+
+    // 색상이 선택된 상품들만 상세 정보 조회
+    const enrichedCartItems = await Promise.all(
+      cartItems.map(async (item) => {
+        // 색상이 선택되지 않은 경우 그대로 반환
+        if (!item.size) {
+          return item;
+        }
+
+        try {
+          // 캐시된 상품 상세 정보 사용 (revalidate 옵션으로 캐싱)
+          const productRes = await fetch(`${API_URL}/products/${item.product._id}`, {
+            headers: {
+              'Content-Type': 'application/json',
+              'client-id': CLIENT_ID,
+            },
+            next: { revalidate: 3600 }, // 1시간 캐싱
+          });
+
+          if (productRes.ok) {
+            const productData = await productRes.json();
+
+            if (productData.ok && productData.item) {
+              const mainImages = productData.item.mainImages || [];
+              const potColors = productData.item.extra?.potColors || [];
+
+              if (potColors.length > 0 && mainImages.length > 0) {
+                const colorIndex = potColors.findIndex((color: string) => color === item.size);
+                const selectedImage = mainImages[colorIndex] || mainImages[0] || item.product.image;
+
+                item.product = {
+                  ...item.product,
+                  image: selectedImage,
+                  mainImages: mainImages,
+                  extra: productData.item.extra,
+                };
+              }
+            }
+          }
+        } catch (error) {
+          console.error(`[Cart 서버 액션] 상품 ${item.product._id} 상세 조회 실패:`, error);
+        }
+
+        return item;
+      }),
+    );
+
+    return enrichedCartItems;
   } catch (error) {
     console.error('[Cart 서버 액션] 네트워크 오류:', error);
     return [];
@@ -76,7 +122,7 @@ export async function getCartItemsAction(): Promise<CartItem[]> {
  * const result = await addToCartAction({
  *   product_id: 1,
  *   quantity: 2,
- *   extra: { potColor: '흑색' }
+ *   size: '흑색'  // 화분 색상 옵션
  * });
  */
 export async function addToCartAction(cartData: AddToCartRequest): Promise<CartActionResult> {
@@ -101,7 +147,11 @@ export async function addToCartAction(cartData: AddToCartRequest): Promise<CartA
         'client-id': CLIENT_ID,
         Authorization: `Bearer ${accessToken}`,
       },
-      body: JSON.stringify(cartData),
+      body: JSON.stringify({
+        product_id: cartData.product_id,
+        quantity: cartData.quantity,
+        size: cartData.size, // 화분 색상을 size로 전송
+      }),
     });
 
     const data: CartApiResponse = await res.json();

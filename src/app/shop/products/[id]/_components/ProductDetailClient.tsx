@@ -343,7 +343,7 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
       {/* 모바일/태블릿 레이아웃 */}
       <div className='lg:hidden'>
         {/* 상품 이미지 섹션 */}
-        <div className='relative mx-4 mt-4 aspect-square w-auto rounded-2xl bg-white sm:mx-6 sm:mt-6 md:mx-8 md:mt-8'>
+        <div className='relative mx-auto my-6 aspect-square w-auto max-w-[260px] min-w-[260px] rounded-2xl bg-white sm:my-6 sm:max-w-[400px] md:my-8 md:max-w-[500px]'>
           <Image
             src={currentImageUrl}
             alt={`${productData.name}${hasColorOptions ? ` - ${colorOptions[selectedColorIndex]?.label}` : ''}`}
@@ -466,9 +466,9 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
       <div className='hidden lg:block'>
         <div className='mx-auto my-12 max-w-3/4'>
           {/* 상품 이미지 및 정보 섹션 */}
-          <div className='mb-24 flex gap-12 xl:gap-20'>
+          <div className='mb-12 flex gap-12 xl:gap-20'>
             {/* 상품 이미지 */}
-            <div className='relative aspect-square w-full max-w-[800px] min-w-[280px] flex-1'>
+            <div className='relative aspect-square w-full max-w-[800px] min-w-[280px] flex-1 lg:max-w-[350px] lg:min-w-[350px] xl:max-w-[800px] xl:min-w-[280px]'>
               <Image
                 src={currentImageUrl}
                 alt={`${productData.name}${hasColorOptions ? ` - ${colorOptions[selectedColorIndex]?.label}` : ''}`}
@@ -557,7 +557,7 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
           {/* 상품 설명 */}
           <section className='mb-10 border-y border-gray-300 py-8 xl:py-10'>
             <h2 className='text-secondary t-h1 mb-6 xl:mb-8 xl:text-3xl'>Description</h2>
-            <div className='text-secondary text-2xl space-y-4 xl:space-y-6'>{productData.content ? <div dangerouslySetInnerHTML={{ __html: productData.content }} /> : <p>상품 설명이 없습니다.</p>}</div>
+            <div className='text-secondary space-y-4 text-2xl xl:space-y-6'>{productData.content ? <div dangerouslySetInnerHTML={{ __html: productData.content }} /> : <p>상품 설명이 없습니다.</p>}</div>
           </section>
 
           {children}

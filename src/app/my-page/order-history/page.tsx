@@ -1,4 +1,4 @@
-import { getOrders, Order } from '@/lib/functions/orderServerFunctions';
+import { getOrders, Order } from '@/lib/functions/orderFunctions';
 import { getImageUrl } from '@/lib/utils/auth.server';
 import OrderHistoryList from './_components/OrderHistoryList';
 import { formatOrderDate, formatPrice, getDeliveryStatus } from './utils/orderUtils';

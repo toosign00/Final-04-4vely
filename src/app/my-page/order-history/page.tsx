@@ -79,7 +79,9 @@ export default async function OrderHistoryPage() {
 
   let ordersData: OrderCardData[] = [];
   if (ordersResponse.ok === 1) {
-    ordersData = await transformOrderData(ordersResponse.item);
+    // 최신순으로 정렬 (createdAt 기준 내림차순)
+    const sortedOrders = ordersResponse.item.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    ordersData = await transformOrderData(sortedOrders);
   }
 
   if (ordersResponse.ok === 0) {

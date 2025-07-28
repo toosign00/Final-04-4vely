@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/Button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/Dialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/Tooltip';
 import { ChevronDownIcon, ChevronUpIcon, PlusIcon } from 'lucide-react';
 import Image from 'next/image';
@@ -35,6 +36,7 @@ interface OrderHistoryCardProps {
 export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
   const [isReviewOpen, setReviewOpen] = useState(false);
   const [showAllProducts, setShowAllProducts] = useState(false);
+  const [isExchangeDialogOpen, setExchangeDialogOpen] = useState(false);
 
   const hasMultipleProducts = order.hasMultipleProducts && order.products && order.products.length > 1;
 
@@ -272,7 +274,7 @@ export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
             {/* 우측 액션 버튼 */}
             <div className='flex-shrink-0 lg:min-w-[200px]'>
               <div className='grid grid-cols-2 gap-3'>
-                <Button variant='default' size='sm'>
+                <Button variant='default' size='sm' onClick={() => setExchangeDialogOpen(true)}>
                   교환/환불
                 </Button>
                 <Button variant='primary' size='sm' disabled={order.deliveryStatus !== 'completed'} onClick={() => setReviewOpen(true)}>
@@ -287,6 +289,23 @@ export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
         <ReviewModal open={isReviewOpen} onOpenChange={setReviewOpen}>
           <ReviewForm onSuccess={() => setReviewOpen(false)} />
         </ReviewModal>
+
+        {/* 교환/환불 다이얼로그 */}
+        <Dialog open={isExchangeDialogOpen} onOpenChange={setExchangeDialogOpen}>
+          <DialogContent className='max-w-md' showCloseButton={false}>
+            <DialogHeader>
+              <DialogTitle className='t-h4 text-secondary'>교환/환불 안내</DialogTitle>
+              <DialogDescription className='text-muted text-sm md:text-base'>
+                {order.deliveryStatus === 'shipping' ? '상품이 배송 중입니다. 배송완료 후 교환 및 환불을 진행하시기 바랍니다.' : '아직 교환/환불 기능을 제공하지 않습니다. 양해 부탁드립니다.'}
+              </DialogDescription>
+            </DialogHeader>
+            <div className='mt-4 flex justify-end'>
+              <Button variant='default' onClick={() => setExchangeDialogOpen(false)}>
+                확인
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </TooltipProvider>
   );

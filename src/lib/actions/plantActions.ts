@@ -3,7 +3,7 @@
 import { uploadFile } from '@/lib/actions/fileActions';
 import { ApiRes } from '@/types/api.types';
 import { Post } from '@/types/post.types';
-import { cookies } from 'next/headers';
+import { getAuthInfo } from '@/lib/utils/auth.server';
 
 // 환경 변수를 통해 API URL과 클라이언트 ID 설정
 const API_URL = process.env.API_URL || '';
@@ -52,29 +52,7 @@ export interface Plant {
   memoTitle: string;
 }
 
-/**
- * 사용자 인증 정보를 쿠키에서 추출하는 유틸리티 함수
- * @description Next.js cookies에서 user-auth 쿠키를 파싱하여 액세스 토큰과 사용자 ID 반환
- * @returns {Promise<{accessToken: string, userId: number} | null>} 인증 정보 객체 또는 null
- * @throws 쿠키 파싱 실패 시 null 반환
- */
-async function getAuthInfo(): Promise<{ accessToken: string; userId: number } | null> {
-  try {
-    const cookieStore = await cookies();
-    const userAuthCookie = cookieStore.get('user-auth')?.value;
-
-    if (!userAuthCookie) return null;
-
-    const userData = JSON.parse(userAuthCookie);
-    const accessToken = userData.state?.user?.token?.accessToken;
-    const userId = userData.state?.user?._id;
-
-    return accessToken && userId ? { accessToken, userId } : null;
-  } catch {
-    // 쿠키 파싱 실패 시 null 반환
-    return null;
-  }
-}
+// getAuthInfo 함수는 @/lib/utils/auth.server.ts로 이동됨
 
 /**
  * 사용자의 식물 목록을 조회하는 서버 액션

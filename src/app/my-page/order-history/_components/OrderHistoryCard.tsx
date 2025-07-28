@@ -169,12 +169,12 @@ export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
                     <h4 className='t-h4 text-secondary mb-2 line-clamp-2'>{order.name}</h4>
                     <div className='grid grid-cols-1 gap-3 text-sm sm:grid-cols-2'>
                       <div>
-                        <span className='text-muted'>옵션:</span>
-                        <span className='text-secondary ml-2'>{order.option}</span>
+                        <span className='text-muted text-sm sm:text-base'>옵션:</span>
+                        <span className='text-secondary ml-2 text-sm sm:text-base'>{order.option}</span>
                       </div>
                       <div>
-                        <span className='text-muted'>수량:</span>
-                        <span className='text-secondary ml-2 font-medium'>{order.quantity}개</span>
+                        <span className='text-muted text-sm sm:text-base'>수량:</span>
+                        <span className='text-secondary ml-2 text-sm sm:text-base'>{order.quantity}개</span>
                       </div>
                     </div>
                   </div>
@@ -199,12 +199,12 @@ export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
                         </div>
                         <div className='min-w-0 flex-1'>
                           <h5 className='t-body text-secondary mb-1 line-clamp-1 font-medium'>{product.name}</h5>
-                          <p className='t-small text-muted mb-2'>
-                            옵션: <span className='text-secondary'>{product.option}</span>
+                          <p className='text-muted mb-2 text-sm sm:text-base'>
+                            옵션: <span className='text-secondary mb-2 text-sm sm:text-base'>{product.option}</span>
                           </p>
                           <div className='flex items-center justify-between'>
                             <span className='t-small text-muted'>{product.quantity}개</span>
-                            <span className='text-secondary font-semibold'>{(product.price * product.quantity).toLocaleString()}원</span>
+                            <span className='text-secondary text-sm font-semibold sm:text-base'>{(product.price * product.quantity).toLocaleString()}원</span>
                           </div>
                         </div>
                       </div>
@@ -234,12 +234,12 @@ export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
                           </div>
                           <div className='min-w-0 flex-1'>
                             <h5 className='t-body text-secondary mb-1 line-clamp-1 font-medium'>{product.name}</h5>
-                            <p className='t-small text-muted mb-2'>
-                              옵션: <span className='text-secondary'>{product.option}</span>
+                            <p className='text-muted mb-2 text-sm sm:text-base'>
+                              옵션: <span className='text-secondary mb-2 text-sm sm:text-base'>{product.option}</span>
                             </p>
                             <div className='flex items-center justify-between'>
                               <span className='t-small text-muted'>{product.quantity}개</span>
-                              <span className='text-secondary font-semibold'>{product.price.toLocaleString()}원</span>
+                              <span className='text-secondary text-sm font-semibold sm:text-base'>{product.price.toLocaleString()}원</span>
                             </div>
                           </div>
                         </div>
@@ -259,17 +259,13 @@ export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
                   <div className='border-t border-gray-200 pt-3'>
                     <div className='space-y-2 text-sm'>
                       <div className='flex items-center justify-between'>
-                        <span className='t-small text-muted'>총 주문 수량</span>
-                        <span className='t-small text-secondary' style={{ fontWeight: '600' }}>
-                          {order.quantity}개
-                        </span>
+                        <span className='text-muted text-sm sm:text-base'>총 주문 수량</span>
+                        <span className='text-secondary text-sm font-semibold sm:text-base'>{order.quantity}개</span>
                       </div>
                       {order.cost && (
                         <div className='flex items-center justify-between'>
-                          <span className='t-small text-muted'>배송비</span>
-                          <span className='t-small text-secondary' style={{ fontWeight: '600' }}>
-                            {order.cost.shippingFees === 0 ? '무료' : `${order.cost.shippingFees.toLocaleString()}원`}
-                          </span>
+                          <span className='text-muted text-sm sm:text-base'>배송비</span>
+                          <span className='text-secondary text-sm font-semibold sm:text-base'>{order.cost.shippingFees === 0 ? '무료' : `${order.cost.shippingFees.toLocaleString()}원`}</span>
                         </div>
                       )}
                     </div>
@@ -280,12 +276,12 @@ export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
               {/* 주문 정보 */}
               <div className='grid grid-cols-1 gap-4 border-t border-gray-100 pt-4 sm:grid-cols-2'>
                 <div className='flex items-center justify-between sm:flex-col sm:items-start sm:gap-1'>
-                  <span className='t-small text-muted'>주문 일시</span>
-                  <span className='text-secondary font-medium'>{order.orderDate}</span>
+                  <span className='text-muted text-sm sm:text-base'>주문 일시</span>
+                  <span className='text-secondary text-sm font-semibold sm:text-base'>{order.orderDate}</span>
                 </div>
                 <div className='flex items-center justify-between sm:flex-col sm:items-start sm:gap-1'>
-                  <span className='t-small text-muted'>총 결제 금액</span>
-                  <span className='text-secondary text-lg font-bold'>{order.totalPrice}</span>
+                  <span className='text-muted text-sm sm:text-base'>총 결제 금액</span>
+                  <span className='text-secondary text-sm font-semibold sm:text-base'>{order.totalPrice}</span>
                 </div>
               </div>
             </div>

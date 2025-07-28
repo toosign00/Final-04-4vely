@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/Button';
 import { WeatherInfo } from '@/lib/functions/weather/fetchWeather';
 import { mapWeatherToTips } from '@/lib/functions/weather/mapWeatherToTips';
 import { weatherImage } from '@/lib/utils/weaterImage';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { FiMapPin, FiWind } from 'react-icons/fi';
@@ -32,7 +33,7 @@ export default function WeatherWidget() {
             weather: tips.weather,
             plants: tips.plants.map((p) => p.name),
           });
-        } catch (err) {
+        } catch {
           setError(true);
         }
         setLoading(false);
@@ -48,7 +49,7 @@ export default function WeatherWidget() {
             weather: tips.weather,
             plants: tips.plants.map((p) => p.name),
           });
-        } catch (err) {
+        } catch {
           setError(true);
         }
         setLoading(false);
@@ -90,7 +91,7 @@ export default function WeatherWidget() {
                   </div>
                   <div className='flex flex-row items-center'>
                     {tipsData.weather.description} {tipsData.weather.temp}°C
-                    <img src={`https://openweathermap.org/img/wn/${tipsData.weather.icon}@2x.png`} alt={tipsData.weather.description} className='h-12 w-12 md:h-16 md:w-16' />
+                    <Image src={`https://openweathermap.org/img/wn/${tipsData.weather.icon}@2x.png`} width={48} height={48} alt={tipsData.weather.description} className='h-12 w-12 md:h-16 md:w-16' />
                   </div>
                   <div className='flex flex-row items-center text-base text-gray-200 md:text-lg lg:text-xl'>
                     <IoWaterOutline className='mr-1' /> {tipsData.weather.humidity}%

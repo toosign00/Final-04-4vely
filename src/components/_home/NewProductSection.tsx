@@ -3,14 +3,13 @@
 import type { Product } from '@/types/product.types';
 import Image from 'next/image';
 
-type NewProduct = Pick<Product, 'id' | 'name' | 'price' | 'isNew' | 'image'>;
-
-interface NewProductCardProps {
-  product: NewProduct;
-}
+type NewProduct = Pick<Product, '_id' | 'name' | 'price'> & {
+  isNew?: boolean;
+  image: string;
+};
 
 // 신상품 단일 카드
-function NewProductCard({ product }: NewProductCardProps) {
+function NewProductCard({ product }: { product: NewProduct }) {
   return (
     <div className='relative aspect-square w-full rounded-2xl shadow-2xl'>
       {/* New 배지 */}
@@ -28,21 +27,16 @@ function NewProductCard({ product }: NewProductCardProps) {
   );
 }
 
-interface NewProductSectionProps {
-  newProductList: NewProduct[];
-}
-
 // 신상품 전체 리스트 영역
-export default function NewProductSection({ newProductList }: NewProductSectionProps) {
+export default function NewProductSection({ newProductList }: { newProductList: NewProduct[] }) {
   return (
     <section className='w-full px-4 pb-4 sm:px-6 lg:px-8'>
       <div className='mx-auto max-w-screen-md'>
         <h2 className='mb-7 text-center text-2xl font-bold md:text-3xl lg:text-5xl'>New Product</h2>
-
         {/* 상품 카드 리스트 */}
         <div className='grid grid-cols-2 gap-4'>
           {newProductList.map((product) => (
-            <NewProductCard key={product.id} product={product} />
+            <NewProductCard key={product._id} product={product} />
           ))}
         </div>
       </div>

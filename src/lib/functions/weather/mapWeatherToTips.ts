@@ -2,7 +2,7 @@
 
 import { fetchWeather } from '@/lib/functions/weather/fetchWeather';
 import { plantByWeather } from '@/lib/functions/weather/plantByWeather';
-import { ProductApiData } from '@/types/product';
+import { Product } from '@/types/product.types';
 
 /**
  * 배열을 랜덤하게 섞는 함수
@@ -53,7 +53,7 @@ export async function mapWeatherToTips(lat: number, lon: number) {
   const matchedCondition = conditionPriority.find((priorityItem) => priorityItem.condition);
 
   // 추천 식물 데이터
-  let plantsData: ProductApiData[] = [];
+  let plantsData: Product[] = [];
 
   if (matchedCondition) {
     // 서버에서 해당 조건에 맞는 식물 데이터 가져옴

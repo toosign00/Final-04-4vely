@@ -1,7 +1,7 @@
 'use server';
 
 import { ApiRes } from '@/types/api.types';
-import { ProductApiData } from '@/types/product';
+import { Product } from '@/types/product.types';
 
 const API_URL = process.env.API_URL;
 const CLIENT_ID = process.env.CLIENT_ID || '';
@@ -9,7 +9,7 @@ const CLIENT_ID = process.env.CLIENT_ID || '';
 /**
  * 날씨 조건별 팁과 해당 조건에 맞는 식물 추천
  */
-export async function plantByWeather(tags?: string[]): Promise<ApiRes<ProductApiData[]>> {
+export async function plantByWeather(tags?: string[]): Promise<ApiRes<Product[]>> {
   try {
     const params = new URLSearchParams({
       custom: JSON.stringify({ 'extra.tags': { $all: tags } }),
@@ -32,7 +32,7 @@ export async function plantByWeather(tags?: string[]): Promise<ApiRes<ProductApi
     const result = await res.json();
 
     return result;
-  } catch (error) {
+  } catch {
     return {
       ok: 0,
       message: '일시적인 네트워크 문제로 식물 데이터를 불러올 수 없습니다.',

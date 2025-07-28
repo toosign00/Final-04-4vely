@@ -10,28 +10,28 @@ export default function Home() {
   // 신상품 리스트
   const newProductList = [
     {
-      id: '1',
+      _id: 1,
       name: '히비스커스',
       image: '/images/hibiscus_white.webp',
       price: 18000,
       isNew: true,
     },
     {
-      id: '2',
+      _id: 2,
       name: '고양이 야자수',
       image: '/images/cat_palm_gray.webp',
       price: 25000,
       isNew: true,
     },
     {
-      id: '3',
+      _id: 3,
       name: '버건디 고무나무',
       image: '/images/burgundy_rubber_tree_blue.webp',
       price: 28000,
       isNew: true,
     },
     {
-      id: '4',
+      _id: 4,
       name: '아프리칸 바이올렛',
       image: '/images/african_violet_black.webp',
       price: 20000,
@@ -192,7 +192,7 @@ export default function Home() {
       {/* 신상품 - 상품페이지의 신상품과 연결 필요 */}
       <NewProductSection newProductList={newProductList} />
 
-      {/* 큐레이션 - 큐레이션 페이지의 데이터와 연동 필요 */}
+      {/* Green Magazine - 매거진 페이지의 데이터와 연동 필요 */}
       <GreenMagazineCarousel greenMagazineItems={greenMagazineItems} />
 
       {/* 인기 반려 식물 게시글 */}

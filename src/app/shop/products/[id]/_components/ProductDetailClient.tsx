@@ -415,7 +415,7 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
           )}
 
           {/* 수량 선택 및 가격 */}
-          <div className='mb-8 flex items-center justify-between sm:mb-10'>
+          <div className='mb-5 flex items-center justify-between'>
             {/* 수량 선택 */}
             <div className='flex items-center gap-3 rounded-4xl border-1 border-gray-300 bg-white p-2 sm:gap-4'>
               <Button variant='ghost' size='icon' disabled={quantity <= 1} onClick={() => handleQuantityChange(-1)} className='h-6 w-6 hover:bg-transparent active:bg-transparent sm:h-8 sm:w-8'>
@@ -431,6 +431,10 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
 
             {/* 총 가격 */}
             <p className='text-secondary text-lg font-semibold sm:text-xl'>₩ {totalPrice.toLocaleString()}</p>
+          </div>
+
+          <div className='pb-6 text-right'>
+            <span className='t-desc'>배송비 : 3000원</span>
           </div>
 
           {/* 액션 버튼 */}
@@ -533,7 +537,7 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
               )}
 
               {/* 수량 선택 */}
-              <div className='mb-10 flex items-center justify-between xl:mb-12'>
+              <div className='mb-5 flex items-center justify-between'>
                 <div className='flex items-center gap-3 rounded-4xl border-1 border-gray-300 bg-white p-2 xl:gap-4'>
                   <Button variant='ghost' size='icon' disabled={quantity <= 1} onClick={() => handleQuantityChange(-1)} className='hover:bg-transparent active:bg-transparent xl:h-10 xl:w-10'>
                     <Minus size={18} className='xl:size-5' />
@@ -547,6 +551,10 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
                 </div>
 
                 <p className='text-secondary t-h2'>₩ {totalPrice.toLocaleString()}</p>
+              </div>
+
+              <div className='pb-6 text-right'>
+                <span className='t-desc'>배송비 : 3000원</span>
               </div>
 
               {/* 액션 버튼 */}

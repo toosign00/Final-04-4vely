@@ -1,6 +1,6 @@
 'use client';
 
-import BookmarkButton from '@/app/shop/_components/BookmarkButton';
+import BookmarkButton from '@/components/ui/BookmarkButton';
 import { Button } from '@/components/ui/Button';
 import { Card, CardAvatar, CardContent, CardDescription, CardFooter, CardImage, CardTitle } from '@/components/ui/Card';
 import PaginationWrapper from '@/components/ui/PaginationWrapper';

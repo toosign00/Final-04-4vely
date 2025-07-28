@@ -33,7 +33,7 @@ export default function RootLayout({
             position='top-center'
             richColors={true}
             theme='light'
-            closeButton={true}
+            closeButton={false}
             toastOptions={{
               duration: 2500,
               style: {

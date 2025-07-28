@@ -2,7 +2,7 @@
 
 import { ApiRes } from '@/types/api.types';
 import { User } from '@/types/user.types';
-import { cookies } from 'next/headers';
+import { getAuthInfo } from '@/lib/utils/auth.server';
 
 // 상세 정보 타입 (User 확장)
 export interface UserDetail extends User {
@@ -21,24 +21,21 @@ export interface UserDetail extends User {
 const API_URL = process.env.API_URL || '';
 const CLIENT_ID = process.env.CLIENT_ID || '';
 
-// 인증 정보 추출 유틸 함수
-async function getAuthInfo() {
-  const cookieStore = await cookies();
-  const userAuthCookie = cookieStore.get('user-auth')?.value;
-  if (!userAuthCookie) return null;
-  const userData = JSON.parse(userAuthCookie);
-  const accessToken = userData.state?.user?.token?.accessToken;
-  const userId = userData.state?.user?._id;
-  return accessToken && userId ? { accessToken, userId } : null;
-}
+// getAuthInfo 함수는 auth.server.ts로 이동됨
 
 /**
  * 내 회원 상세 정보 조회 (모든 속성 포함)
  * @returns ApiRes<UserDetail>
  */
 export async function getUserDetail(): Promise<ApiRes<UserDetail>> {
+  const { getAuthInfo } = await import('@/lib/utils/auth.server');
   const auth = await getAuthInfo();
-  if (!auth) throw new Error('로그인이 필요합니다.');
+  if (!auth) {
+    return {
+      ok: 0,
+      message: '로그인이 필요합니다.',
+    };
+  }
   const { userId } = auth;
 
   try {

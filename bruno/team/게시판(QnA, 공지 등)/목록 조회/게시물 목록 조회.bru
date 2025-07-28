@@ -1,0 +1,17 @@
+meta {
+  name: 게시물 목록 조회
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{url}}/posts?type=magazine
+  body: none
+  auth: inherit
+}
+
+params:query {
+  type: magazine
+  ~type: plant
+  ~type: community
+}

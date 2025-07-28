@@ -1,10 +1,12 @@
 // src/app/shop/products/[id]/_components/ProductDetailClient.tsx
 'use client';
 
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/AlertDialog';
 import BookmarkButton from '@/components/ui/BookmarkButton';
 import { Button } from '@/components/ui/Button';
 import { addToCartAction, checkLoginStatusAction } from '@/lib/actions/cartServerActions';
 import { checkOrderLoginStatusAction, createDirectPurchaseTempOrderAction } from '@/lib/actions/orderServerActions';
+import { AddToCartRequest } from '@/types/cart.types';
 import { DirectPurchaseItem } from '@/types/order.types';
 import { Product, getImageUrl, getProductCategories, getProductId, getProductPotColors, getProductTags, isNewProduct } from '@/types/product.types';
 import { Minus, Plus } from 'lucide-react';
@@ -55,6 +57,7 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
   // 상태 관리
   const [quantity, setQuantity] = useState<number>(1);
   const [selectedColorIndex, setSelectedColorIndex] = useState<number>(0);
+  const [showCartAlert, setShowCartAlert] = useState<boolean>(false);
 
   // 상품 정보 파싱
   const productCategories = useMemo(() => {
@@ -214,46 +217,27 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
         return;
       }
 
-      // 2. 서버 API 호출 데이터 준비
-      const cartData = {
+      // 2. 서버 API 호출 데이터 준비 - size 필드 사용
+      const cartData: AddToCartRequest = {
         product_id: productData._id,
         quantity,
-        extra: hasColorOptions ? { potColor: colorOptions[selectedColorIndex]?.label || '' } : undefined,
+        size: hasColorOptions ? colorOptions[selectedColorIndex]?.label : undefined,
       };
 
       console.log('[장바구니 추가] 서버 요청 데이터:', cartData);
 
-      // 3. 서버에 장바구니 추가 요청
+      // 3. 서버 액션 호출
       const result = await addToCartAction(cartData);
 
-      if (!result.success) {
-        console.error('[장바구니 추가] 서버 오류:', result.message);
-        toast.error('장바구니 추가 실패', {
-          description: result.message,
-          duration: 4000,
-        });
-        return;
+      if (result.success) {
+        setShowCartAlert(true);
+      } else {
+        console.error('[장바구니 추가] 실패:', result.message);
+        toast.error(result.message);
       }
-
-      // 4. 성공 알림
-      toast.success('장바구니에 추가되었습니다!', {
-        description: `${productData.name} ${quantity}개${hasColorOptions ? ` (${colorOptions[selectedColorIndex]?.label})` : ''}`,
-        action: {
-          label: '장바구니 보기',
-          onClick: () => {
-            window.location.href = '/cart';
-          },
-        },
-        duration: 4000,
-      });
-
-      console.log('[장바구니 추가] 성공 완료');
     } catch (error) {
       console.error('[장바구니 추가] 예상치 못한 오류:', error);
-      toast.error('장바구니 추가에 실패했습니다', {
-        description: '잠시 후 다시 시도해주세요.',
-        duration: 4000,
-      });
+      toast.error('장바구니 추가 중 오류가 발생했습니다');
     }
   };
 
@@ -332,6 +316,11 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
     }
   };
 
+  const handleGoToCart = () => {
+    setShowCartAlert(false);
+    router.push('/cart');
+  };
+
   const handleProductClick = (id: number) => {
     router.push(`/shop/products/${id}`);
   };
@@ -340,10 +329,28 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
 
   return (
     <>
+      {/* 장바구니 추가 알림 다이얼로그 */}
+      <AlertDialog open={showCartAlert} onOpenChange={setShowCartAlert}>
+        <AlertDialogContent className='px-12 sm:max-w-md'>
+          <AlertDialogHeader>
+            <AlertDialogTitle className='t-h3 text-center'>상품을 장바구니에 담았습니다.</AlertDialogTitle>
+            <AlertDialogDescription className='text-center text-base'>장바구니로 이동하시겠습니까?</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className='mt-6 gap-3 sm:justify-between'>
+            <AlertDialogCancel onClick={() => setShowCartAlert(false)} className='text-secondary hover:bg-secondary border-[0.5px] border-gray-300 bg-white px-7 shadow-sm hover:text-white sm:order-1'>
+              아니오
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleGoToCart} className='bg-primary text-secondary active:bg-primary px-10 shadow-sm hover:bg-[#AEBB2E] sm:order-2'>
+              예
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* 모바일/태블릿 레이아웃 */}
       <div className='lg:hidden'>
         {/* 상품 이미지 섹션 */}
-        <div className='relative mx-4 mt-4 aspect-square w-auto rounded-2xl bg-white sm:mx-6 sm:mt-6 md:mx-8 md:mt-8'>
+        <div className='relative mx-auto my-6 aspect-square w-auto max-w-[260px] min-w-[260px] rounded-2xl bg-white sm:my-6 sm:max-w-[400px] md:my-8 md:max-w-[500px]'>
           <Image
             src={currentImageUrl}
             alt={`${productData.name}${hasColorOptions ? ` - ${colorOptions[selectedColorIndex]?.label}` : ''}`}
@@ -408,7 +415,7 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
           )}
 
           {/* 수량 선택 및 가격 */}
-          <div className='mb-8 flex items-center justify-between sm:mb-10'>
+          <div className='mb-5 flex items-center justify-between'>
             {/* 수량 선택 */}
             <div className='flex items-center gap-3 rounded-4xl border-1 border-gray-300 bg-white p-2 sm:gap-4'>
               <Button variant='ghost' size='icon' disabled={quantity <= 1} onClick={() => handleQuantityChange(-1)} className='h-6 w-6 hover:bg-transparent active:bg-transparent sm:h-8 sm:w-8'>
@@ -426,6 +433,10 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
             <p className='text-secondary text-lg font-semibold sm:text-xl'>₩ {totalPrice.toLocaleString()}</p>
           </div>
 
+          <div className='pb-6 text-right'>
+            <span className='t-desc'>배송비 : 3000원</span>
+          </div>
+
           {/* 액션 버튼 */}
           <div className='mb-10 flex gap-3 sm:mb-12 sm:gap-4'>
             <Button onClick={handleAddToCart} variant='default' className='t-h4 sm:t-h3 h-10 flex-1 sm:h-12'>
@@ -439,7 +450,7 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
           {/* 상품 설명 */}
           <section className='mb-8 border-y border-gray-300 py-8 sm:mb-10 sm:py-10 md:mb-12 md:py-12'>
             <h2 className='text-secondary t-h2 sm:t-h1 mb-4 sm:mb-5'>Description</h2>
-            <div className='text-secondary t-body sm:t-h4 space-y-3 sm:space-y-4'>{productData.content ? <div dangerouslySetInnerHTML={{ __html: productData.content }} /> : <p>상품 설명이 없습니다.</p>}</div>
+            <div className='text-secondary t-body space-y-3 sm:space-y-4'>{productData.content ? <div dangerouslySetInnerHTML={{ __html: productData.content }} /> : <p>상품 설명이 없습니다.</p>}</div>
           </section>
 
           {children}
@@ -466,9 +477,9 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
       <div className='hidden lg:block'>
         <div className='mx-auto my-12 max-w-3/4'>
           {/* 상품 이미지 및 정보 섹션 */}
-          <div className='mb-24 flex gap-12 xl:gap-20'>
+          <div className='mb-12 flex gap-12 xl:gap-20'>
             {/* 상품 이미지 */}
-            <div className='relative aspect-square w-full max-w-[800px] min-w-[280px] flex-1'>
+            <div className='relative aspect-square w-full max-w-[800px] min-w-[280px] flex-1 lg:max-w-[350px] lg:min-w-[350px] xl:max-w-[800px] xl:min-w-[280px]'>
               <Image
                 src={currentImageUrl}
                 alt={`${productData.name}${hasColorOptions ? ` - ${colorOptions[selectedColorIndex]?.label}` : ''}`}
@@ -526,7 +537,7 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
               )}
 
               {/* 수량 선택 */}
-              <div className='mb-10 flex items-center justify-between xl:mb-12'>
+              <div className='mb-5 flex items-center justify-between'>
                 <div className='flex items-center gap-3 rounded-4xl border-1 border-gray-300 bg-white p-2 xl:gap-4'>
                   <Button variant='ghost' size='icon' disabled={quantity <= 1} onClick={() => handleQuantityChange(-1)} className='hover:bg-transparent active:bg-transparent xl:h-10 xl:w-10'>
                     <Minus size={18} className='xl:size-5' />
@@ -540,6 +551,10 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
                 </div>
 
                 <p className='text-secondary t-h2'>₩ {totalPrice.toLocaleString()}</p>
+              </div>
+
+              <div className='pb-6 text-right'>
+                <span className='t-desc'>배송비 : 3000원</span>
               </div>
 
               {/* 액션 버튼 */}
@@ -557,7 +572,7 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
           {/* 상품 설명 */}
           <section className='mb-10 border-y border-gray-300 py-8 xl:py-10'>
             <h2 className='text-secondary t-h1 mb-6 xl:mb-8 xl:text-3xl'>Description</h2>
-            <div className='text-secondary t-h3 space-y-4 xl:space-y-6'>{productData.content ? <div dangerouslySetInnerHTML={{ __html: productData.content }} /> : <p>상품 설명이 없습니다.</p>}</div>
+            <div className='text-secondary space-y-4 text-2xl xl:space-y-6'>{productData.content ? <div dangerouslySetInnerHTML={{ __html: productData.content }} /> : <p>상품 설명이 없습니다.</p>}</div>
           </section>
 
           {children}

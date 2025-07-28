@@ -1,10 +1,10 @@
 // src/app/(purchase)/cart/page.tsx (서버 컴포넌트)
-import { getCartItemsAction } from '@/lib/actions/cartServerActions';
+import { getCartItemsActionOptimized } from '@/lib/actions/cartServerActions';
 import CartClientSection from './_components/CartClient';
 
 export default async function CartPage() {
   // 서버에서 장바구니 데이터 가져오기
-  const cartItems = await getCartItemsAction();
+  const cartItems = await getCartItemsActionOptimized();
 
   console.log('[CartPage] 장바구니 데이터 조회:', {
     아이템수: cartItems.length,
@@ -14,13 +14,11 @@ export default async function CartPage() {
   // 장바구니가 비어있는 경우
   if (cartItems.length === 0) {
     return (
-      <div className='bg-surface mx-auto w-full max-w-[1500px] p-4 md:p-6 lg:p-8'>
+      <div className='bg-surface min-h-screen w-full p-4 sm:p-6 lg:p-8'>
         {/* 헤더 영역 */}
-        <div className='mt-2 mb-6 flex items-center md:mb-8 lg:mt-0 lg:mb-24'>
-          <h1 className='font-regular flex flex-col items-start gap-1 text-3xl md:text-4xl'>
-            <span className='text-base'>|Shopping Cart</span>
-            <span>CART</span>
-          </h1>
+        <div className='mx-auto mb-8 max-w-6xl'>
+          <div className='text-secondary t-small font-medium'>| Shopping Cart</div>
+          <h2 className='text-secondary t-h2 mt-2 font-light'>Cart</h2>
         </div>
 
         {/* 빈 장바구니 메시지 */}

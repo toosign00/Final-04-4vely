@@ -57,7 +57,7 @@ export default function OrderHistoryList({ orders }: OrderHistoryListProps) {
 
   if (orders.length === 0) {
     return (
-      <div className='text-center py-12'>
+      <div className='py-12 text-center'>
         <p className='text-gray-500'>주문 내역이 없습니다.</p>
       </div>
     );
@@ -69,15 +69,11 @@ export default function OrderHistoryList({ orders }: OrderHistoryListProps) {
       {displayItems.map((order) => (
         <OrderHistoryCard key={order.id} order={order} />
       ))}
-      
+
       {/* 페이지네이션 UI */}
       {totalPages > 1 && (
         <div className='mt-8 flex justify-center'>
-          <PaginationWrapper 
-            currentPage={currentPage} 
-            totalPages={totalPages} 
-            setCurrentPage={setCurrentPage} 
-          />
+          <PaginationWrapper currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage} />
         </div>
       )}
     </>

@@ -97,7 +97,6 @@ export async function getOrders(userId?: number): Promise<ApiRes<Order[]>> {
       },
     });
 
-
     // 응답 상태 확인
     if (!response.ok) {
       const errorText = await response.text();

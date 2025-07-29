@@ -79,7 +79,7 @@ export default function ReviewForm({ productId, orderId, onSuccess, products, re
                   type='button'
                   disabled={isReviewed}
                   className={`flex w-full items-center gap-3 rounded-lg border p-3 text-left transition-colors ${
-                    isReviewed ? 'cursor-not-allowed border-gray-200 bg-gray-100 opacity-60' : isSelected ? 'cursor-pointer border-primary bg-primary/5' : 'cursor-pointer border-gray-200 bg-white hover:bg-gray-50'
+                    isReviewed ? 'cursor-not-allowed border-gray-200 bg-gray-100 opacity-60' : isSelected ? 'border-primary bg-primary/5 cursor-pointer' : 'cursor-pointer border-gray-200 bg-white hover:bg-gray-50'
                   }`}
                   onClick={() => !isReviewed && onProductSelect?.(product)}
                 >

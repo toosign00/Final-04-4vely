@@ -426,7 +426,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
                     {orderData.memo && (
                       <div className='flex items-start justify-between lg:justify-start lg:gap-4'>
                         <span className='w-24 shrink-0 lg:w-48'>배송 메모</span>
-                        <span className='break-words text-gray-600'>{orderData.memo}</span>
+                        <span className='break-words text-secondary'>{orderData.memo}</span>
                       </div>
                     )}
                   </>

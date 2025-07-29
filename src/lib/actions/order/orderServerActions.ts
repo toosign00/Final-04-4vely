@@ -126,22 +126,92 @@ export async function createDirectPurchaseTempOrderAction(item: DirectPurchaseIt
 
 /**
  * 장바구니 구매 임시 주문 생성
- * @param {DirectPurchaseItem[]} items - 구매할 상품들
+ * @param {number[]} selectedCartIds - 선택된 장바구니 아이템 ID들
  * @returns {Promise<boolean>} 생성 성공 여부
  */
-export async function createCartPurchaseTempOrderAction(items: DirectPurchaseItem[]): Promise<boolean> {
+export async function createCartPurchaseTempOrderAction(selectedCartIds: number[]): Promise<boolean> {
   try {
-    const totalAmount = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    console.log('[Order 서버 액션] 장바구니 구매 임시 주문 생성 시작:', selectedCartIds);
+
+    // 액세스 토큰 확인
+    const accessToken = await getServerAccessToken();
+    if (!accessToken) {
+      console.log('[Order 서버 액션] 로그인 필요');
+      return false;
+    }
+
+    // 장바구니 아이템 정보 가져오기
+    const { getCartItemsActionOptimized } = await import('@/lib/actions/cart/cartServerActions');
+    const cartItems = await getCartItemsActionOptimized();
+
+    // 선택된 아이템만 필터링
+    const selectedItems = cartItems.filter((item) => selectedCartIds.includes(item._id));
+
+    if (selectedItems.length === 0) {
+      console.log('[Order 서버 액션] 선택된 장바구니 아이템이 없음');
+      return false;
+    }
+
+    // DirectPurchaseItem 형태로 변환
+    const purchaseItems: DirectPurchaseItem[] = selectedItems.map((item) => {
+      // 이미지 URL 처리
+      let imageUrl = '/images/placeholder-plant.jpg';
+      if (item.product.image) {
+        if (item.product.image.startsWith('http')) {
+          imageUrl = item.product.image;
+        } else {
+          const API_URL = process.env.API_URL || 'https://fesp-api.koyeb.app/market';
+          const normalizedPath = item.product.image.startsWith('/') ? item.product.image : `/${item.product.image}`;
+          imageUrl = `${API_URL}${normalizedPath}`;
+        }
+      }
+
+      return {
+        productId: item.product._id,
+        productName: item.product.name,
+        productImage: imageUrl,
+        price: item.product.price,
+        quantity: item.quantity,
+        selectedColor: item.size
+          ? {
+              colorIndex: 0,
+              colorName: item.size,
+            }
+          : undefined,
+      };
+    });
+
+    // 총 금액 계산
+    const totalAmount = purchaseItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const shippingFee = totalAmount >= 50000 ? 0 : 3000;
 
+    // 임시 주문 데이터 생성
     const orderData: OrderPageData = {
       type: 'cart',
-      items,
+      items: purchaseItems,
       totalAmount,
       shippingFee,
     };
 
-    return await saveTempOrderAction(orderData);
+    // 임시 주문 데이터 저장
+    const orderSaved = await saveTempOrderAction(orderData);
+    if (!orderSaved) {
+      console.log('[Order 서버 액션] 임시 주문 데이터 저장 실패');
+      return false;
+    }
+
+    // 선택된 장바구니 아이템 ID들을 별도로 저장
+    const cookieStore = await cookies();
+    cookieStore.set('temp-cart-ids', JSON.stringify(selectedCartIds), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 60 * 60, // 1시간
+      path: '/',
+    });
+
+    console.log('[Order 서버 액션] 장바구니 구매 임시 주문 생성 완료');
+    return true;
   } catch (error) {
     console.error('[Order 서버 액션] 장바구니 구매 임시 주문 생성 실패:', error);
     return false;
@@ -213,6 +283,17 @@ export async function createOrderAction(orderData: CreateOrderRequest): Promise<
     const tempOrder = await getTempOrderAction();
     const isCartOrder = tempOrder?.type === 'cart';
 
+    // 장바구니 아이템 ID들 가져오기
+    let cartItemIds: number[] = [];
+    if (isCartOrder) {
+      const cookieStore = await cookies();
+      const cartIdsCookie = cookieStore.get('temp-cart-ids')?.value;
+      if (cartIdsCookie) {
+        cartItemIds = JSON.parse(cartIdsCookie);
+        console.log('[Order 서버 액션] 삭제할 장바구니 아이템 IDs:', cartItemIds);
+      }
+    }
+
     // API 요청
     const res = await fetch(`${API_URL}/orders`, {
       method: 'POST',
@@ -237,10 +318,33 @@ export async function createOrderAction(orderData: CreateOrderRequest): Promise<
       };
     }
 
-    // 주문 생성 성공 시 임시 주문 데이터 삭제
+    // 주문 생성 성공 후 장바구니 아이템 삭제
+    if (isCartOrder && cartItemIds.length > 0) {
+      console.log('[Order 서버 액션] 장바구니 아이템 삭제 시작');
+
+      // removeFromCartAction 임포트해서 사용
+      const { removeFromCartAction } = await import('@/lib/actions/cart/cartServerActions');
+
+      // 모든 장바구니 아이템 삭제 (병렬 처리)
+      const deletePromises = cartItemIds.map((cartId) =>
+        removeFromCartAction(cartId).catch((error) => {
+          console.error(`[Order 서버 액션] 장바구니 아이템 ${cartId} 삭제 실패:`, error);
+          return null;
+        }),
+      );
+
+      await Promise.all(deletePromises);
+      console.log('[Order 서버 액션] 장바구니 아이템 삭제 완료');
+
+      // temp-cart-ids 쿠키 삭제
+      const cookieStore = await cookies();
+      cookieStore.delete('temp-cart-ids');
+    }
+
+    // 임시 주문 데이터 삭제
     await clearTempOrderAction();
 
-    // 장바구니에서 구매한 경우 장바구니 페이지 재검증
+    // 장바구니 페이지 재검증
     if (isCartOrder) {
       revalidatePath('/cart');
     }

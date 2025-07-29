@@ -8,7 +8,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { removeFromCartAction, updateCartOptionAction, updateCartQuantityAction } from '@/lib/actions/cart/cartServerActions';
 import { createCartPurchaseTempOrderAction } from '@/lib/actions/order/orderServerActions';
 import { CartItem } from '@/types/cart.types';
-import { DirectPurchaseItem } from '@/types/order.types';
 import { getImageUrl } from '@/types/product.types';
 import { Trash2 } from 'lucide-react';
 import Image from 'next/image';
@@ -285,24 +284,10 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
       return;
     }
 
-    const selectedCartItems = cartItems.filter((item) => selectedItems.has(item._id));
+    // 선택된 장바구니 아이템 ID들을 배열로 변환
+    const selectedCartIds = Array.from(selectedItems);
 
-    // 선택된 상품을 DirectPurchaseItem 형태로 변환
-    const purchaseItems: DirectPurchaseItem[] = selectedCartItems.map((item) => ({
-      productId: item.product._id,
-      productName: item.product.name,
-      productImage: getImageUrl(item.product.image),
-      price: item.product.price,
-      quantity: item.quantity,
-      selectedColor: item.size
-        ? {
-            colorIndex: 0,
-            colorName: item.size,
-          }
-        : undefined,
-    }));
-
-    const success = await createCartPurchaseTempOrderAction(purchaseItems);
+    const success = await createCartPurchaseTempOrderAction(selectedCartIds);
 
     if (!success) {
       toast.error('주문 처리에 실패했습니다', {

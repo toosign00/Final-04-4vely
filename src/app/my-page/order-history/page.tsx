@@ -6,7 +6,7 @@ import { formatOrderDate, formatPrice, getDeliveryStatus } from './utils/orderUt
 interface ProductDetail {
   id: number;
   name: string;
-  image: string;
+  imageUrl: string;
   option: string;
   quantity: number;
   price: number;
@@ -45,7 +45,7 @@ function transformOrderData(orders: Order[]): OrderCardData[] {
     const productDetails: ProductDetail[] = order.products.map((product) => ({
       id: product._id,
       name: product.name,
-      image: product.image,
+      imageUrl: product.image,
       option: product.extra.potColors?.[0] ? `${product.extra.potColors[0]} 화분` : '기본 옵션',
       quantity: product.quantity,
       price: product.price,

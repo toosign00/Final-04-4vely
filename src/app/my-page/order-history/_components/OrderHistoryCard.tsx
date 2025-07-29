@@ -1,9 +1,9 @@
 'use client';
 
+import { useOrderDeliveryStatus } from '@/app/my-page/order-history/_hooks/useOrderDeliveryStatus';
 import { Button } from '@/components/ui/Button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/Dialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/Tooltip';
-import { useOrderDeliveryStatus } from '@/app/my-page/order-history/_hooks/useOrderDeliveryStatus';
 import { getOrderReviewStatusAction } from '@/lib/actions/orderReviewServerActions';
 import { getImageUrlClient } from '@/lib/utils/auth.client';
 import { ChevronDownIcon, ChevronUpIcon, PlusIcon } from 'lucide-react';
@@ -146,7 +146,7 @@ export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
                       <div key={product.id} className='flex gap-3 rounded-lg border border-gray-100 bg-gray-50 p-3 transition-colors hover:bg-gray-100'>
                         <div className='flex-shrink-0'>
                           <div className='h-14 w-14 overflow-hidden rounded-lg border border-gray-200 bg-white'>
-                            <Image src={getImageUrlClient(product.image)} alt={product.name} width={56} height={56} className='h-full w-full object-cover' />
+                            <Image src={getImageUrlClient(product.imageUrl)} alt={product.name} width={56} height={56} className='h-full w-full object-cover' />
                           </div>
                         </div>
                         <div className='min-w-0 flex-1'>
@@ -181,7 +181,7 @@ export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
                         <div key={product.id} className='flex gap-3 rounded-lg border border-gray-100 bg-gray-50 p-3 transition-colors hover:bg-gray-100'>
                           <div className='flex-shrink-0'>
                             <div className='h-14 w-14 overflow-hidden rounded-lg border border-gray-200 bg-white'>
-                              <Image src={getImageUrlClient(product.image)} alt={product.name} width={56} height={56} className='h-full w-full object-cover' />
+                              <Image src={getImageUrlClient(product.imageUrl)} alt={product.name} width={56} height={56} className='h-full w-full object-cover' />
                             </div>
                           </div>
                           <div className='min-w-0 flex-1'>
@@ -258,7 +258,7 @@ export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
                         const productToReview = {
                           id: 0,
                           name: order.name,
-                          image: order.image,
+                          imageUrl: order.image,
                           option: order.option,
                           quantity: order.quantity,
                           price: 0,
@@ -288,7 +288,7 @@ export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
             {!hasMultipleProducts && selectedProduct && (
               <div className='flex items-center gap-3 border-b border-gray-200 pb-4'>
                 <div className='h-12 w-12 overflow-hidden rounded-lg border border-gray-200 bg-gray-100'>
-                  <Image src={getImageUrlClient(selectedProduct.image)} alt={selectedProduct.name} width={48} height={48} className='h-full w-full object-cover' />
+                  <Image src={getImageUrlClient(selectedProduct.imageUrl)} alt={selectedProduct.name} width={48} height={48} className='h-full w-full object-cover' />
                 </div>
                 <div className='flex-1'>
                   <h4 className='text-secondary t-body line-clamp-1 font-medium'>{selectedProduct.name}</h4>

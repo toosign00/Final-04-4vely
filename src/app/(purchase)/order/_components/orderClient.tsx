@@ -511,7 +511,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
                                   </SelectTrigger>
                                   <SelectContent>
                                     <SelectGroup>
-                                      <SelectLabel>배송 메모를 선택해 주세요.</SelectLabel>
+                                      <SelectLabel>추천 메모</SelectLabel>
                                       <SelectItem value='부재 시 경비실에 맡겨주세요.'>부재 시 경비실에 맡겨주세요.</SelectItem>
                                       <SelectItem value='배송 전 연락 바랍니다.'>배송 전 연락 바랍니다.</SelectItem>
                                       <SelectItem value='문 앞에 보관해주세요.'>문 앞에 보관해주세요.</SelectItem>
@@ -529,7 +529,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
                       <div className='mt-4 grid gap-4'>
                         <div>
                           <label className='block text-sm font-medium'>이름</label>
-                          <input type='text' className='mt-1 w-full rounded border p-2' placeholder='받는 분 이름' value={addressForm.name} onChange={(e) => setAddressForm((prev) => ({ ...prev, name: e.target.value }))} />
+                          <input type='text' className='mt-1 w-full rounded border p-2' placeholder='받는 분 성함' value={addressForm.name} onChange={(e) => setAddressForm((prev) => ({ ...prev, name: e.target.value }))} />
                         </div>
                         <div>
                           <label className='block text-sm font-medium'>전화번호</label>
@@ -537,12 +537,12 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
                         </div>
                         <div>
                           <label className='block text-sm font-medium'>우편번호</label>
-                          <input type='text' className='mt-1 w-full rounded border p-2' placeholder='주소를 찾아주세요!' value={addressForm.zipCode} onChange={(e) => setAddressForm((prev) => ({ ...prev, zipCode: e.target.value }))} readOnly />
+                          <input type='text' className='mt-1 w-full rounded border p-2' placeholder='주소를 찾아주세요' value={addressForm.zipCode} onChange={(e) => setAddressForm((prev) => ({ ...prev, zipCode: e.target.value }))} readOnly />
                         </div>
                         <div className='mt-4'>
                           <label className='block text-sm font-medium'>도로명 주소</label>
                           <div className='mt-1 flex gap-2'>
-                            <input type='text' className='flex-1 rounded border p-2' placeholder='주소를 찾아주세요!' value={addressForm.address} onChange={(e) => setAddressForm((prev) => ({ ...prev, address: e.target.value }))} readOnly />
+                            <input type='text' className='w-[150px] flex-1 rounded border p-2' placeholder='주소를 찾아주세요' value={addressForm.address} onChange={(e) => setAddressForm((prev) => ({ ...prev, address: e.target.value }))} readOnly />
                             <Button size='lg' variant='default' onClick={handleAddressSearch}>
                               주소 찾기
                             </Button>
@@ -550,7 +550,13 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
                         </div>
                         <div>
                           <label className='block text-sm font-medium'>상세 주소</label>
-                          <input type='text' className='mt-1 w-full rounded border p-2' placeholder='1층 아임웹' value={addressForm.detailAddress} onChange={(e) => setAddressForm((prev) => ({ ...prev, detailAddress: e.target.value }))} />
+                          <input
+                            type='text'
+                            className='mt-1 w-full rounded border p-2'
+                            placeholder='상세 주소를 입력해주세요'
+                            value={addressForm.detailAddress}
+                            onChange={(e) => setAddressForm((prev) => ({ ...prev, detailAddress: e.target.value }))}
+                          />
                         </div>
                       </div>
                     )}

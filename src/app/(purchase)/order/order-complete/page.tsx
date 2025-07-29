@@ -4,6 +4,7 @@
 import { Button } from '@/components/ui/Button';
 import { getOrderByIdAction } from '@/lib/actions/order/orderServerActions';
 import { Order } from '@/types/order.types';
+import { getImageUrl } from '@/types/product.types';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -87,10 +88,8 @@ export default function OrderComplete() {
   // 로딩 중
   if (isLoading) {
     return (
-      <div className='bg-surface min-h-screen w-full p-4 sm:p-6 lg:p-8'>
-        <div className='mx-auto flex min-h-[400px] max-w-6xl flex-col items-center justify-center'>
-          <p className='text-xl'>주문 정보를 불러오는 중...</p>
-        </div>
+      <div className='bg-surface flex min-h-screen flex-col items-center px-4 py-20'>
+        <p className='text-xl'>주문 정보를 불러오는 중...</p>
       </div>
     );
   }
@@ -98,19 +97,18 @@ export default function OrderComplete() {
   // 주문 정보가 없는 경우
   if (!orderInfo) {
     return (
-      <div className='bg-surface min-h-screen w-full p-4 sm:p-6 lg:p-8'>
-        <div className='mx-auto flex min-h-[400px] max-w-6xl flex-col items-center justify-center'>
-          <p className='mb-4 text-xl text-red-500'>주문 정보를 찾을 수 없습니다</p>
-          <Link href='/shop'>
-            <Button variant='primary' size='lg'>
-              쇼핑 계속하기
-            </Button>
-          </Link>
-        </div>
+      <div className='bg-surface flex min-h-screen flex-col items-center px-4 py-20'>
+        <p className='mb-4 text-xl text-red-500'>주문 정보를 찾을 수 없습니다</p>
+        <Link href='/shop'>
+          <Button variant='primary' size='lg'>
+            쇼핑 계속하기
+          </Button>
+        </Link>
       </div>
     );
   }
 
+  // 날짜 포맷팅
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleString('ko-KR', {
@@ -122,60 +120,68 @@ export default function OrderComplete() {
     });
   };
 
+  // 첫 번째 상품 정보 가져오기 (sessionStorage 데이터 사용 시)
+  const tempOrderData = sessionStorage.getItem('lastOrderData');
+  let firstProductName = '식물 구매';
+  let firstProductImage = '/images/placeholder-plant.jpg';
+  let productCount = orderInfo.products.length;
+
+  if (tempOrderData) {
+    try {
+      const parsedData = JSON.parse(tempOrderData);
+      const firstItem = parsedData.items[0];
+      if (firstItem) {
+        firstProductName = firstItem.productName;
+        firstProductImage = getImageUrl(firstItem.productImage);
+        productCount = parsedData.items.length;
+      }
+    } catch (error) {
+      console.error('임시 주문 데이터 파싱 오류:', error);
+    }
+  }
+
+  // 여러 상품인 경우 표시 텍스트 조정
+  const displayProductName = productCount > 1 ? `${firstProductName} 외 ${productCount - 1}건` : firstProductName;
+
   return (
-    <div className='bg-surface min-h-screen w-full p-4 sm:p-6 lg:p-8'>
-      {/* 전체 컨테이너 */}
-      <div className='mx-auto max-w-6xl'>
-        {/* 헤더 영역 - 중앙 정렬, 더 큰 여백 */}
-        <div className='mb-20 text-center lg:mb-40'>
-          <h1 className='text-4xl font-bold'>결제가 완료되었습니다!</h1>
+    <div className='bg-surface flex min-h-screen flex-col items-center px-4 py-20'>
+      <h1 className='mb-20 text-4xl font-bold lg:mb-40'>결제가 완료되었습니다!</h1>
+
+      {/* 흰색 배경 카드 */}
+      <div className='mb-12 w-full max-w-md rounded-2xl bg-white p-6 shadow-md'>
+        <div className='mb-8 flex flex-col items-center gap-8 lg:flex-row-reverse lg:items-center lg:justify-between'>
+          {/* 결제된 상품 이미지 */}
+          <div className='flex h-40 w-40 items-center justify-center rounded'>
+            <Image src={firstProductImage} alt={firstProductName} width={160} height={160} className='h-40 w-40 rounded object-cover' />
+          </div>
+
+          {/* 주문 정보 */}
+          <div className='space-y-4 text-left text-lg'>
+            <div className='flex items-center gap-2'>
+              <span>주문 상품:</span>
+              <span className='font-semibold'>{displayProductName}</span>
+            </div>
+            <p>
+              결제 일시: <span className='font-medium'>{formatDate(orderInfo.createdAt)}</span>
+            </p>
+            <p>
+              결제 금액: <span className='font-medium'>₩ {orderInfo.cost.total.toLocaleString()}</span>
+            </p>
+          </div>
         </div>
 
-        {/* 컨텐츠 영역 */}
-        <div className='flex justify-center'>
-          {/* 흰색 배경 카드 */}
-          <div className='mb-12 w-full max-w-md rounded-2xl bg-white p-6 shadow-md'>
-            <div className='mb-8 flex flex-col items-center gap-8 lg:flex-row-reverse lg:items-center lg:justify-between'>
-              {/* 결제된 상품 이미지 */}
-              <div className='flex h-40 w-40 items-center justify-center rounded'>
-                {orderImage ? (
-                  <Image src={orderImage} alt={orderProductName} className='h-40 w-40 rounded object-cover' width={160} height={160} />
-                ) : (
-                  <div className='flex h-40 w-40 items-center justify-center rounded bg-gray-100'>
-                    <span className='text-gray-400'>상품 이미지</span>
-                  </div>
-                )}
-              </div>
-
-              {/* 주문 정보 */}
-              <div className='space-y-4 text-left text-lg'>
-                <div className='flex items-center gap-2'>
-                  <span>주문 상품:</span>
-                  <span className='font-semibold'>{orderProductName || '식물 구매'}</span>
-                </div>
-                <p>
-                  결제 일시: <span className='font-medium'>{formatDate(orderInfo.createdAt)}</span>
-                </p>
-                <p>
-                  결제 금액: <span className='font-medium'>₩ {orderInfo.cost.total.toLocaleString()}</span>
-                </p>
-              </div>
-            </div>
-
-            {/* 버튼 */}
-            <div className='flex justify-center gap-4'>
-              <Link href='/shop'>
-                <Button variant='primary' size='lg'>
-                  쇼핑 계속하기
-                </Button>
-              </Link>
-              <Link href='/my-page/order-history'>
-                <Button variant='default' size='lg'>
-                  상세 주문 보기
-                </Button>
-              </Link>
-            </div>
-          </div>
+        {/* 버튼 */}
+        <div className='flex justify-center gap-4'>
+          <Link href='/shop'>
+            <Button variant='primary' size='lg'>
+              쇼핑 계속하기
+            </Button>
+          </Link>
+          <Link href='/my-page/order-history'>
+            <Button variant='default' size='lg'>
+              상세 주문 보기
+            </Button>
+          </Link>
         </div>
       </div>
     </div>

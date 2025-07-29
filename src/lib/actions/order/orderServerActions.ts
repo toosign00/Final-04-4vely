@@ -209,6 +209,10 @@ export async function createOrderAction(orderData: CreateOrderRequest): Promise<
       };
     }
 
+    // 임시 주문 타입 확인 (삭제 전에 먼저 확인)
+    const tempOrder = await getTempOrderAction();
+    const isCartOrder = tempOrder?.type === 'cart';
+
     // API 요청
     const res = await fetch(`${API_URL}/orders`, {
       method: 'POST',
@@ -237,8 +241,7 @@ export async function createOrderAction(orderData: CreateOrderRequest): Promise<
     await clearTempOrderAction();
 
     // 장바구니에서 구매한 경우 장바구니 페이지 재검증
-    const tempOrder = await getTempOrderAction();
-    if (tempOrder?.type === 'cart') {
+    if (isCartOrder) {
       revalidatePath('/cart');
     }
 

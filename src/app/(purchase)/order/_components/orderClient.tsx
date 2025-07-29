@@ -10,7 +10,7 @@ import { createOrderAction, updateTempOrderAddressAction, updateTempOrderMemoAct
 import { CreateOrderRequest, OrderPageData } from '@/types/order.types';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 interface OrderClientSectionProps {
@@ -37,6 +37,7 @@ declare global {
 
 export default function OrderClientSection({ initialOrderData }: OrderClientSectionProps) {
   const router = useRouter();
+  const hasSetInitialAddress = useRef(false);
 
   // 상태 관리
   const [orderData, setOrderData] = useState<OrderPageData>(initialOrderData);
@@ -86,36 +87,30 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
   const shippingFee = orderData.shippingFee;
   const finalAmount = totalProductAmount + shippingFee;
 
-  // 초기 로드 시 기본 배송지 설정
+  // 초기 주소 설정 - useRef로 한 번만 실행되도록 보장
   useEffect(() => {
-    const initializeDefaultAddress = async () => {
-      if (!orderData.address && savedAddresses.length > 0) {
-        const defaultAddress = savedAddresses.find((addr) => addr.isDefault) || savedAddresses[0];
-        const success = await updateTempOrderAddressAction({
+    if (!hasSetInitialAddress.current && !orderData.address && savedAddresses.length > 0) {
+      hasSetInitialAddress.current = true;
+
+      const defaultAddress = savedAddresses.find((addr) => addr.isDefault) || savedAddresses[0];
+
+      if (defaultAddress) {
+        const addressData = {
           name: defaultAddress.name,
           phone: defaultAddress.phone,
           address: defaultAddress.address,
           detailAddress: defaultAddress.detailAddress || '',
           zipCode: defaultAddress.zipCode || '',
+        };
+
+        setOrderData((prev) => ({ ...prev, address: addressData }));
+
+        updateTempOrderAddressAction(addressData).catch((error) => {
+          console.error('[초기 주소 설정] 서버 업데이트 실패:', error);
         });
-
-        if (success) {
-          setOrderData((prev) => ({
-            ...prev,
-            address: {
-              name: defaultAddress.name,
-              phone: defaultAddress.phone,
-              address: defaultAddress.address,
-              detailAddress: defaultAddress.detailAddress || '',
-              zipCode: defaultAddress.zipCode || '',
-            },
-          }));
-        }
       }
-    };
-
-    initializeDefaultAddress();
-  }, []); // 빈 dependency 배열로 초기 로드 시에만 실행
+    }
+  }, [orderData.address, savedAddresses]);
 
   // Daum 우편번호 API 스크립트 로드
   useEffect(() => {
@@ -254,23 +249,29 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
       // 배송지 정보 확인
       if (!orderData.address || !orderData.address.name || !orderData.address.phone || !orderData.address.address) {
         toast.error('배송지 정보를 입력해주세요');
+        setIsProcessingOrder(false);
         return;
       }
 
       // 결제 방법 확인
       if (!selectedPaymentMethod) {
         toast.error('결제 방법을 선택해주세요');
+        setIsProcessingOrder(false);
         return;
       }
 
-      // 주문 생성 요청 데이터 준비
+      // 주문 생성 요청 데이터 준비 - API 형식에 맞게 변환
       const createOrderData: CreateOrderRequest = {
         products: orderData.items.map((item) => ({
           _id: item.productId,
           quantity: item.quantity,
           size: item.selectedColor?.colorName,
         })),
-        address: orderData.address,
+        address: {
+          name: orderData.address.name,
+          value: `${orderData.address.zipCode || ''} ${orderData.address.address} ${orderData.address.detailAddress || ''}`.trim(),
+          phone: orderData.address.phone,
+        },
         memo: orderData.memo,
       };
 

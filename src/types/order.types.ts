@@ -47,18 +47,16 @@ export interface Order {
 /** 주문 생성 요청 타입 */
 export interface CreateOrderRequest {
   products: Array<{
-    _id: number; // 상품 ID
-    quantity: number; // 수량
-    size?: string; // 옵션 (화분 색상 등)
+    _id: number;
+    quantity: number;
+    size?: string;
   }>;
   address?: {
     name: string;
+    value: string; // 전체 주소를 하나의 문자열로
     phone: string;
-    address: string;
-    detailAddress?: string;
-    zipCode?: string;
   };
-  memo?: string; // 배송 메모
+  memo?: string;
 }
 
 /** 직접 구매 아이템 타입 */

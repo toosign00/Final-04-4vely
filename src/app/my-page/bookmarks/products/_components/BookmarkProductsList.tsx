@@ -7,6 +7,7 @@
 
 import PaginationWrapper from '@/components/ui/PaginationWrapper';
 import { TransformedBookmarkItem } from '@/lib/functions/mypage/bookmarkFunctions';
+import { getImageUrlClient } from '@/lib/utils/auth.client';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import ProductCard from './ProductCard';
@@ -85,14 +86,23 @@ export default function BookmarkProductsList({ bookmarks: initialBookmarks }: Bo
    * @property {boolean} showPagination - 페이지네이션 UI를 표시할지 여부 (전체 페이지가 2 이상일 때).
    */
   const paginationData = useMemo(() => {
-    const totalPages = Math.ceil(bookmarks.length / ITEMS_PER_PAGE);
+    // 북마크 목록을 최신순으로 정렬 (createdAt 기준)
+    const sortedBookmarks = [...bookmarks].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    
+    // 이미지 URL을 클라이언트에서 처리
+    const processedBookmarks = sortedBookmarks.map(bookmark => ({
+      ...bookmark,
+      imageUrl: getImageUrlClient(bookmark.imageUrl)
+    }));
+    
+    const totalPages = Math.ceil(processedBookmarks.length / ITEMS_PER_PAGE);
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    const displayItems = bookmarks.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+    const displayItems = processedBookmarks.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
     return {
       totalPages,
       displayItems,
-      hasItems: bookmarks.length > 0,
+      hasItems: processedBookmarks.length > 0,
       showPagination: totalPages > 1,
     };
   }, [bookmarks, currentPage]);

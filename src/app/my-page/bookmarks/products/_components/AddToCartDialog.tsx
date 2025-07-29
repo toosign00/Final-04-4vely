@@ -10,12 +10,12 @@ import { Button } from '@/components/ui/Button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/Dialog';
 import { addToCartAction } from '@/lib/actions/cartServerActions';
 import { getProductById } from '@/lib/functions/productClientFunctions';
+import { getImageUrlClient } from '@/lib/utils/auth.client';
 import { getProductPotColors, Product } from '@/types/product.types';
 import { Minus, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { useProductImageContext } from '../_contexts/ProductImageContext';
 
 /**
  * 장바구니 추가 다이얼로그 컴포넌트의 Props 타입 정의
@@ -48,8 +48,6 @@ const DEFAULT_PLACEHOLDER_IMAGE = '/images/placeholder-plant.svg';
  * @returns {JSX.Element} 렌더링된 다이얼로그 컴포넌트
  */
 export default function AddToCartDialog({ productId, isOpen, onClose, onSuccess }: AddToCartDialogProps) {
-  // Context에서 상품 이미지 처리 함수 가져오기
-  const { processProductImages } = useProductImageContext();
 
   // 상태 관리
   const [quantity, setQuantity] = useState<number | string>(QUANTITY_LIMITS.MIN); // 선택된 수량
@@ -70,10 +68,13 @@ export default function AddToCartDialog({ productId, isOpen, onClose, onSuccess 
 
       // 상품 정보 비동기 로드
       getProductById(productId)
-        .then(async (response) => {
+        .then((response) => {
           if (response.ok && response.item) {
-            // 상품 이미지 처리
-            const processedProduct = await processProductImages(response.item);
+            // 상품 이미지 클라이언트에서 처리
+            const processedProduct = {
+              ...response.item,
+              mainImages: response.item.mainImages?.map(imagePath => getImageUrlClient(imagePath)) || []
+            };
             setProduct(processedProduct);
 
             // 첫 번째 색상을 기본 선택으로 설정
@@ -91,7 +92,7 @@ export default function AddToCartDialog({ productId, isOpen, onClose, onSuccess 
           setIsProductLoading(false);
         });
     }
-  }, [isOpen, productId, product, processProductImages]);
+  }, [isOpen, productId, product]);
 
   /**
    * 다이얼로그 닫기 핸들러
@@ -204,8 +205,8 @@ export default function AddToCartDialog({ productId, isOpen, onClose, onSuccess 
       const result = await addToCartAction({
         product_id: productId,
         quantity: quantityNumber,
-        // 색상이 선택된 경우에만 extra 정보 포함
-        extra: selectedColor ? { potColor: selectedColor } : undefined,
+        // 색상이 선택된 경우에만 size 정보 포함
+        size: selectedColor || undefined,
       });
 
       if (result.success) {

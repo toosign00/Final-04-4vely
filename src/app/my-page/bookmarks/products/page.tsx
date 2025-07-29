@@ -4,32 +4,9 @@
  *              데이터 로딩 중 에러가 발생할 경우, 사용자에게 적절한 에러 메시지를 보여줍니다.
  */
 import { getBookmarksFromServer } from '@/lib/functions/mypage/bookmarkFunctions';
-import { getImageUrl } from '@/lib/utils/auth.server';
-import { Product } from '@/types/product.types';
 import BookmarkProductsList from './_components/BookmarkProductsList';
 import ErrorDisplay from './_components/ErrorDisplay';
-import { ProcessedProduct, ProductImageProvider } from './_contexts/ProductImageContext';
 
-/**
- * 상품의 이미지 URL을 서버에서 처리하는 액션
- */
-async function processProductImages(productData: Product): Promise<ProcessedProduct> {
-  'use server';
-
-  if (!productData || !productData.mainImages) {
-    return {
-      ...productData,
-      mainImages: [],
-    };
-  }
-
-  const processedMainImages = await Promise.all(productData.mainImages.map((imagePath: string) => getImageUrl(imagePath)));
-
-  return {
-    ...productData,
-    mainImages: processedMainImages,
-  };
-}
 
 /**
  * @function ProductsPage
@@ -59,11 +36,7 @@ export default async function ProductsPage() {
 
   // 데이터 로딩에 성공했을 경우, `BookmarkProductsList` 컴포넌트에 데이터를 전달하여 렌더링합니다.
   // `result.data`가 `undefined`일 경우를 대비하여 빈 배열(`[]`)을 기본값으로 전달하여 안정성을 높입니다.
-  return (
-    <ProductImageProvider processProductImages={processProductImages}>
-      <BookmarkProductsList bookmarks={result.data || []} />
-    </ProductImageProvider>
-  );
+  return <BookmarkProductsList bookmarks={result.data || []} />;
 }
 
 /**

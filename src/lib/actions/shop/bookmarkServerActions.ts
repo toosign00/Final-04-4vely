@@ -1,4 +1,4 @@
-// src/lib/actions/bookmarkServerActions.ts
+// src/lib/actions/shop/bookmarkServerActions.ts
 'use server';
 
 /**

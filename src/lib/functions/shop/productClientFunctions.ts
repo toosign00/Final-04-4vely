@@ -1,4 +1,4 @@
-// src/lib/functions/productClientFunctions.ts
+// src/lib/functions/shop/productClientFunctions.ts
 
 /**
  * 상품 클라이언트 함수

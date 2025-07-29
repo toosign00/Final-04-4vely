@@ -1,4 +1,4 @@
-// src/lib/functions/productServerFunctions.ts
+// src/lib/functions/shop/productServerFunctions.ts
 import { ApiResPromise, BookmarkItem, Product } from '@/types/product.types';
 import { cookies } from 'next/headers';
 

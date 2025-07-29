@@ -1,4 +1,4 @@
-// src/lib/functions/bookmarkServerFunctions.ts
+// src/lib/functions/shop/bookmarkServerFunctions.ts
 
 /**
  * 북마크 서버 함수

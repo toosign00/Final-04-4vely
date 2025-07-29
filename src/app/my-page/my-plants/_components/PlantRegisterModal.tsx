@@ -251,25 +251,17 @@ const PlantRegisterModal = memo(function PlantRegisterModal({ open, onClose, onS
                         <label className='t-small mb-2 font-medium'>식물 사진 *</label>
                         {/* 고정 크기 컨테이너로 레이아웃 안정화 */}
                         <div className='relative h-56 w-56'>
-                          <div 
-                            onClick={handleImageAreaClick} 
-                            className={`absolute inset-0 transition-all ${loading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:opacity-80'}`}
-                          >
+                          <div onClick={handleImageAreaClick} className={`absolute inset-0 transition-all ${loading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:opacity-80'}`}>
                             {previewUrl ? (
                               <div className='relative h-full w-full'>
-                                <Image 
-                                  src={previewUrl} 
-                                  alt='식물 미리보기' 
-                                  fill
-                                  className='rounded-2xl border-2 border-gray-200 object-cover shadow-lg' 
-                                />
+                                <Image src={previewUrl} alt='식물 미리보기' fill className='rounded-2xl border-2 border-gray-200 object-cover shadow-lg' />
                                 <button
                                   type='button'
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     handleImageRemove();
                                   }}
-                                  className='absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-sm text-white shadow-lg transition-colors hover:bg-red-600 z-10'
+                                  className='absolute -top-2 -right-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-sm text-white shadow-lg transition-colors hover:bg-red-600'
                                 >
                                   ×
                                 </button>
@@ -283,11 +275,7 @@ const PlantRegisterModal = memo(function PlantRegisterModal({ open, onClose, onS
                           </div>
                         </div>
                         {/* 에러 메시지 고정 높이 영역 */}
-                        <div className='mt-2 h-5 w-full'>
-                          {imageError && (
-                            <p className='text-error px-2 text-xs leading-5'>{imageError}</p>
-                          )}
-                        </div>
+                        <div className='mt-2 h-5 w-full'>{imageError && <p className='text-error px-2 text-xs leading-5'>{imageError}</p>}</div>
                       </div>
                     </div>
                     <input ref={fileInputRef} type='file' accept='image/*' onChange={handleImageChange} disabled={loading} className='hidden' />

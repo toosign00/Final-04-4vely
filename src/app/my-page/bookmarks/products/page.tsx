@@ -7,7 +7,6 @@ import { getBookmarksFromServer } from '@/lib/functions/mypage/bookmarkFunctions
 import BookmarkProductsList from './_components/BookmarkProductsList';
 import ErrorDisplay from './_components/ErrorDisplay';
 
-
 /**
  * @function ProductsPage
  * @description 북마크된 상품 목록을 표시하는 페이지 컴포넌트입니다.

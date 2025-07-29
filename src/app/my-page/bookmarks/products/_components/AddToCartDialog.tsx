@@ -48,7 +48,6 @@ const DEFAULT_PLACEHOLDER_IMAGE = '/images/placeholder-plant.svg';
  * @returns {JSX.Element} 렌더링된 다이얼로그 컴포넌트
  */
 export default function AddToCartDialog({ productId, isOpen, onClose, onSuccess }: AddToCartDialogProps) {
-
   // 상태 관리
   const [quantity, setQuantity] = useState<number | string>(QUANTITY_LIMITS.MIN); // 선택된 수량
   const [selectedColor, setSelectedColor] = useState(''); // 선택된 색상
@@ -73,7 +72,7 @@ export default function AddToCartDialog({ productId, isOpen, onClose, onSuccess 
             // 상품 이미지 클라이언트에서 처리
             const processedProduct = {
               ...response.item,
-              mainImages: response.item.mainImages?.map(imagePath => getImageUrlClient(imagePath)) || []
+              mainImages: response.item.mainImages?.map((imagePath) => getImageUrlClient(imagePath)) || [],
             };
             setProduct(processedProduct);
 

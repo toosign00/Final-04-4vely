@@ -4,20 +4,6 @@
 
 import { BookmarkItem } from '@/types/mypageBookmark.types';
 
-// API 서버 설정
-const API_BASE_URL = process.env.API_SERVER || 'https://fesp-api.koyeb.app/market';
-
-/**
- * 이미지 경로를 전체 URL로 변환
- */
-export function getImageUrl(imagePath: string): string {
-  if (!imagePath) return '/images/placeholder-plant.svg';
-  if (imagePath.startsWith('http')) return imagePath;
-
-  const normalizedPath = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
-  return `${API_BASE_URL}${normalizedPath}`;
-}
-
 /**
  * HTML 태그 제거 및 텍스트 추출
  */

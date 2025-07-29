@@ -9,6 +9,8 @@ import { deleteBookmark } from '@/lib/actions/mypage/bookmarkActions';
 import { Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
+import { toast } from 'sonner';
+import AddToCartDialog from './AddToCartDialog';
 
 /**
  * @interface ProductCardProps
@@ -44,6 +46,7 @@ interface ProductCardProps {
  */
 export default function ProductCard({ order, bookmarkId, onDetailClick, onDelete }: ProductCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isCartDialogOpen, setIsCartDialogOpen] = useState(false);
 
   const handleDelete = async () => {
     if (isDeleting) return;
@@ -130,12 +133,21 @@ export default function ProductCard({ order, bookmarkId, onDetailClick, onDelete
             <Button variant='default' size='sm' fullWidth className='flex-1' onClick={() => onDetailClick?.(order.id)}>
               상세보기
             </Button>
-            <Button variant='primary' size='sm' fullWidth className='flex-1'>
+            <Button variant='primary' size='sm' fullWidth className='flex-1' onClick={() => setIsCartDialogOpen(true)}>
               장바구니 담기
             </Button>
           </div>
         </div>
       </div>
+
+      <AddToCartDialog
+        productId={order.id}
+        isOpen={isCartDialogOpen}
+        onClose={() => setIsCartDialogOpen(false)}
+        onSuccess={() => {
+          toast.success('장바구니에 추가되었습니다.');
+        }}
+      />
     </div>
   );
 }

@@ -47,8 +47,10 @@ export function formatDateString(dateString: string): string {
  * @validation 필수 필드가 없어도 빈 문자열로 안전하게 대체
  */
 export function mapPlantPostToPlant(post: PlantPost): Plant {
-  // 날짜 파싱 최적화: ISO 날짜 문자열에서 YYYY.MM.DD 형식으로 변환
-  const formattedDate = formatDateString(post.createdAt || '');
+  // 사용자 지정 날짜가 있으면 우선 사용, 없으면 생성일 사용
+  const userDate = post.extra?.date;
+  const dateToUse = userDate || post.createdAt || '';
+  const formattedDate = formatDateString(dateToUse);
 
   return {
     id: post._id,

@@ -60,3 +60,28 @@ export function isTokenExpiringSoon(token: string): boolean {
     return true;
   }
 }
+
+/**
+ * 이미지 경로를 완전한 URL로 변환하는 클라이언트 함수
+ */
+export function getImageUrlClient(imagePath: string): string {
+  if (!imagePath) return '';
+
+  // 이미 완전한 URL인 경우 그대로 반환
+  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+    return imagePath;
+  }
+
+  // NEXT_PUBLIC_API_URL 환경변수 사용
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (!apiUrl) {
+    console.error('NEXT_PUBLIC_API_URL 환경변수가 설정되지 않았습니다.');
+    return imagePath;
+  }
+
+  // 슬래시 처리
+  const baseUrl = apiUrl.endsWith('/') ? apiUrl.slice(0, -1) : apiUrl;
+  const path = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
+
+  return `${baseUrl}${path}`;
+}

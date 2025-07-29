@@ -28,6 +28,12 @@ export interface ProductReply {
   extra?: {
     title?: string;
     potColor?: string;
+    order_id?: number; // 주문 ID 추가
+  };
+  product?: {
+    _id: number;
+    name: string;
+    image: string;
   };
 }
 

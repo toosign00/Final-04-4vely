@@ -2,9 +2,8 @@
  * @fileoverview 북마크된 상품 목록 페이지
  * @description 서버에서 북마크된 상품 데이터를 가져와 `BookmarkProductsList` 컴포넌트에 전달하여 화면에 표시합니다.
  *              데이터 로딩 중 에러가 발생할 경우, 사용자에게 적절한 에러 메시지를 보여줍니다.
- *              이 페이지는 서버 컴포넌트로 동작하여 초기 로딩 성능을 최적화합니다.
  */
-import { getBookmarksFromServer } from '@/lib/functions/bookmarkFunctions';
+import { getBookmarksFromServer } from '@/lib/functions/mypage/bookmarkFunctions';
 import BookmarkProductsList from './_components/BookmarkProductsList';
 import ErrorDisplay from './_components/ErrorDisplay';
 
@@ -12,7 +11,7 @@ import ErrorDisplay from './_components/ErrorDisplay';
  * @function ProductsPage
  * @description 북마크된 상품 목록을 표시하는 페이지 컴포넌트입니다.
  *              서버 사이드에서 비동기적으로 상품 데이터를 가져와 클라이언트 컴포넌트로 전달합니다.
- * @returns {Promise<JSX.Element>} 서버에서 렌더링된 페이지 컴포넌트를 반환합니다.
+ * @returns 서버에서 렌더링된 페이지 컴포넌트를 반환합니다.
  */
 export default async function ProductsPage() {
   // 서버로부터 'product' 타입의 북마크 데이터를 비동기적으로 가져옵니다.
@@ -38,3 +37,12 @@ export default async function ProductsPage() {
   // `result.data`가 `undefined`일 경우를 대비하여 빈 배열(`[]`)을 기본값으로 전달하여 안정성을 높입니다.
   return <BookmarkProductsList bookmarks={result.data || []} />;
 }
+
+/**
+ * 페이지 메타데이터 (선택사항)
+ * Next.js App Router에서 사용할 수 있는 메타데이터 설정
+ */
+export const metadata = {
+  title: '내 북마크 - 상품',
+  description: '북마크한 상품 목록을 확인하고 관리하세요',
+};

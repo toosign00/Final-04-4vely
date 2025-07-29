@@ -2,6 +2,8 @@
 
 import { cookies } from 'next/headers';
 
+const API_URL = process.env.API_URL;
+
 /**
  * 사용자 인증 정보를 쿠키에서 추출하는 유틸리티 함수
  * @description Next.js cookies에서 user-auth 쿠키를 파싱하여 액세스 토큰과 사용자 ID 반환
@@ -24,4 +26,15 @@ export async function getAuthInfo(): Promise<{ accessToken: string; userId: numb
     // 쿠키 파싱 실패 시 null 반환
     return null;
   }
+}
+
+/**
+ * 이미지 경로를 전체 URL로 변환
+ */
+export async function getImageUrl(imagePath: string): Promise<string> {
+  if (!imagePath) return '/images/placeholder-plant.svg';
+  if (imagePath.startsWith('http')) return imagePath;
+
+  const normalizedPath = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
+  return `${API_URL}${normalizedPath}`;
 }

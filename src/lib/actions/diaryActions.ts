@@ -463,6 +463,41 @@ export async function updateDiary(plantId: number, diaryId: number, formData: Fo
  * @warning 이 작업은 되돌릴 수 없으며, 일지와 관련된 이미지도 함께 삭제될 수 있음
  * @validation plantId와 diaryId는 모두 양의 정수여야 함
  */
+/**
+ * 여러 식물의 최신 일지를 배치로 조회하는 서버 액션
+ * @description 여러 식물 ID를 받아 각각의 최신 일지를 한 번에 조회하여 성능 최적화
+ * @param {number[]} plantIds - 일지를 조회할 식물 ID 배열
+ * @returns {Promise<{[plantId: number]: DiaryReply | null}>} 식물 ID를 키로 하는 최신 일지 객체
+ * @performance 병렬 API 호출로 처리 시간 단축
+ */
+export async function getLatestDiariesBatch(plantIds: number[]): Promise<{ [plantId: number]: DiaryReply | null }> {
+  if (!plantIds || plantIds.length === 0) {
+    return {};
+  }
+
+  try {
+    // 각 식물의 최신 일지를 병렬로 조회
+    const diaryPromises = plantIds.map(async (plantId) => {
+      const result = await getDiariesByPlantId(plantId);
+      const latestDiary = result.ok && result.item && result.item.length > 0 ? result.item[0] : null;
+      return { plantId, diary: latestDiary };
+    });
+
+    const results = await Promise.all(diaryPromises);
+
+    // 결과를 객체로 변환
+    const diaryMap: { [plantId: number]: DiaryReply | null } = {};
+    results.forEach(({ plantId, diary }) => {
+      diaryMap[plantId] = diary;
+    });
+
+    return diaryMap;
+  } catch (error) {
+    console.error('배치 일지 조회 중 오류:', error);
+    return {};
+  }
+}
+
 export async function deleteDiary(plantId: number, diaryId: number): Promise<ApiRes<void>> {
   // 입력값 검증
   if (!plantId || plantId <= 0) {

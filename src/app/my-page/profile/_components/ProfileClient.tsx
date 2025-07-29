@@ -4,10 +4,11 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import { updateUserProfile } from '@/lib/actions/userActions';
 import type { UserDetail } from '@/lib/functions/userFunctions';
-import { AlertCircle, Calendar, Camera, ChevronRight, Mail, MapPin, Phone, User } from 'lucide-react';
+import { Calendar, Camera, ChevronRight, Mail, MapPin, Phone, User } from 'lucide-react';
 import { useEffect, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import ErrorDisplay from '../../_components/ErrorDisplay';
 import ChangePasswordDialog from './ChangePasswordDialog';
 
 interface ProfileClientProps {
@@ -67,22 +68,7 @@ export default function ProfileClient({ user }: ProfileClientProps) {
   };
 
   if (!user) {
-    return (
-      <div className='flex items-center justify-center'>
-        <div className='flex w-full max-w-md flex-col items-center gap-6 px-8 py-12'>
-          <AlertCircle className='text-error mb-2 size-12' />
-          <div className='t-h3 text-secondary mb-1'>프로필 정보를 불러오지 못했습니다</div>
-          <div className='t-desc text-secondary/70 mb-4 text-center'>
-            일시적인 오류가 발생했어요.
-            <br />
-            잠시 후 다시 시도해 주세요.
-          </div>
-          <Button variant='secondary' onClick={() => window.location.reload()}>
-            새로고침
-          </Button>
-        </div>
-      </div>
-    );
+    return <ErrorDisplay title='프로필 정보를 불러오지 못했습니다' message='일시적인 오류가 발생했어요.' />;
   }
 
   // 저장 핸들러

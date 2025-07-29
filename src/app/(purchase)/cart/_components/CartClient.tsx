@@ -1,11 +1,11 @@
-// src/app/(purchase)/cart/_components/CartClientSection.tsx
+// src/app/(purchase)/cart/_components/CartClient.tsx
 'use client';
 
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/AlertDialog';
 import { Button } from '@/components/ui/Button';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/Dialog';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/RadioGroup';
-import { removeFromCartAction, updateCartQuantityAction } from '@/lib/actions/cartServerActions';
+import { removeFromCartAction, updateCartOptionAction, updateCartQuantityAction } from '@/lib/actions/cartServerActions';
 import { createCartPurchaseTempOrderAction } from '@/lib/actions/orderServerActions';
 import { CartItem } from '@/types/cart.types';
 import { DirectPurchaseItem } from '@/types/order.types';
@@ -20,6 +20,23 @@ interface CartClientSectionProps {
   initialCartItems: CartItem[];
 }
 
+/**
+ * 한국어 색상명을 영어명과 HEX 색상 코드로 매핑
+ */
+const getColorMapping = (koreanColor: string): { englishName: string; hexColor: string } => {
+  const colorMap: Record<string, { englishName: string; hexColor: string }> = {
+    흑색: { englishName: 'black', hexColor: '#000000' },
+    갈색: { englishName: 'brown', hexColor: '#8B4513' },
+    백색: { englishName: 'white', hexColor: '#FFFFFF' },
+    황색: { englishName: 'yellow', hexColor: '#FFD700' },
+    회색: { englishName: 'gray', hexColor: '#808080' },
+    흰색: { englishName: 'white', hexColor: '#FFFFFF' },
+    남색: { englishName: 'blue', hexColor: '#4169E1' },
+  };
+
+  return colorMap[koreanColor] || { englishName: koreanColor.toLowerCase(), hexColor: '#808080' };
+};
+
 export default function CartClientSection({ initialCartItems }: CartClientSectionProps) {
   const router = useRouter();
 
@@ -32,12 +49,17 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
   // 옵션 변경 상태
   const [selectedOptions, setSelectedOptions] = useState<Record<number, string>>({});
 
+  // AlertDialog 상태
+  const [showDeleteAllAlert, setShowDeleteAllAlert] = useState(false);
+  const [showDeleteSingleAlert, setShowDeleteSingleAlert] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
+
   // 초기 선택된 옵션 설정
   useState(() => {
     const options: Record<number, string> = {};
     cartItems.forEach((item) => {
-      if (item.extra?.potColor) {
-        options[item._id] = item.extra.potColor;
+      if (item.size) {
+        options[item._id] = item.size;
       }
     });
     setSelectedOptions(options);
@@ -56,9 +78,19 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
     return totalAmount >= 50000 ? 0 : 3000;
   };
 
-  const selectedTotal = calculateSelectedTotal();
-  const shippingFee = calculateShippingFee(selectedTotal);
-  const finalTotal = selectedTotal + shippingFee;
+  // 색상 매핑
+  const getColorKoreanName = (color: string) => {
+    const colorMap: Record<string, string> = {
+      흑색: '블랙',
+      갈색: '브라운',
+      백색: '화이트',
+      황색: '옐로우',
+      회색: '그레이',
+      흰색: '화이트',
+      남색: '블루',
+    };
+    return colorMap[color] || color;
+  };
 
   // 전체 선택/해제
   const handleSelectAll = (checked: boolean) => {
@@ -71,27 +103,55 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
 
   // 개별 선택
   const handleSelectItem = (itemId: number, checked: boolean) => {
-    const newSelected = new Set(selectedItems);
+    const newSelectedItems = new Set(selectedItems);
     if (checked) {
-      newSelected.add(itemId);
+      newSelectedItems.add(itemId);
     } else {
-      newSelected.delete(itemId);
+      newSelectedItems.delete(itemId);
     }
-    setSelectedItems(newSelected);
+    setSelectedItems(newSelectedItems);
+  };
+
+  // 단일 아이템 삭제
+  const handleRemoveItem = async (itemId: number) => {
+    setDeleteTargetId(itemId);
+    setShowDeleteSingleAlert(true);
+  };
+
+  // 실제 단일 아이템 삭제 처리
+  const confirmRemoveSingleItem = async () => {
+    if (!deleteTargetId) return;
+
+    setIsLoading(deleteTargetId);
+    try {
+      const result = await removeFromCartAction(deleteTargetId);
+      if (result.success) {
+        setCartItems((prevItems) => prevItems.filter((item) => item._id !== deleteTargetId));
+        setSelectedItems((prevSelected) => {
+          const newSelected = new Set(prevSelected);
+          newSelected.delete(deleteTargetId);
+          return newSelected;
+        });
+        toast.success('상품이 삭제되었습니다.');
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      toast.error(`삭제에 실패했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
+    } finally {
+      setIsLoading(null);
+      setShowDeleteSingleAlert(false);
+      setDeleteTargetId(null);
+    }
   };
 
   // 수량 변경
-  const handleQuantityChange = async (itemId: number, change: number) => {
-    const item = cartItems.find((item) => item._id === itemId);
-    if (!item) return;
-
-    const newQuantity = item.quantity + change;
+  const handleQuantityChange = async (itemId: number, newQuantity: number) => {
     if (newQuantity < 1) return;
 
     setIsLoading(itemId);
     try {
       const result = await updateCartQuantityAction(itemId, newQuantity);
-
       if (result.success) {
         setCartItems((prevItems) => prevItems.map((item) => (item._id === itemId ? { ...item, quantity: newQuantity } : item)));
         toast.success('수량이 변경되었습니다.');
@@ -105,93 +165,143 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
     }
   };
 
-  // 아이템 삭제
-  const handleRemoveItem = async (itemId: number) => {
-    setIsLoading(itemId);
-    try {
-      const result = await removeFromCartAction(itemId);
-
-      if (result.success) {
-        setCartItems((prevItems) => prevItems.filter((item) => item._id !== itemId));
-        setSelectedItems((prev) => {
-          const newSet = new Set(prev);
-          newSet.delete(itemId);
-          return newSet;
-        });
-        toast.success('상품이 삭제되었습니다.');
-      } else {
-        toast.error(result.message);
-      }
-    } catch (error) {
-      toast.error(`수량 변경에 실패했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
-    } finally {
-      setIsLoading(null);
-    }
-  };
-
-  // 선택 삭제
-  const handleRemoveSelected = async () => {
-    if (selectedItems.size === 0) {
-      toast.error('삭제할 상품을 선택해주세요.');
+  // 모두 삭제
+  const handleRemoveAll = async () => {
+    if (cartItems.length === 0) {
+      toast.error('삭제할 상품이 없습니다.');
       return;
     }
+    setShowDeleteAllAlert(true);
+  };
 
-    const confirmDelete = confirm(`선택한 ${selectedItems.size}개의 상품을 삭제하시겠습니까?`);
-    if (!confirmDelete) return;
-
-    const deletePromises = Array.from(selectedItems).map((itemId) => removeFromCartAction(itemId));
+  // 실제 모두 삭제 처리
+  const confirmRemoveAll = async () => {
+    const deletePromises = cartItems.map((item) => removeFromCartAction(item._id));
 
     try {
       const results = await Promise.all(deletePromises);
       const successCount = results.filter((r) => r.success).length;
 
       if (successCount > 0) {
-        const successIds = Array.from(selectedItems).filter((_, index) => results[index].success);
-        setCartItems((prevItems) => prevItems.filter((item) => !successIds.includes(item._id)));
+        setCartItems([]);
         setSelectedItems(new Set());
-
-        toast.success(`${successCount}개의 상품이 삭제되었습니다.`);
+        toast.success('모든 상품이 삭제되었습니다.');
       }
     } catch (error) {
-      toast.error(`수량 변경에 실패했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
+      toast.error(`삭제에 실패했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
+    } finally {
+      setIsLoading(null);
+      setShowDeleteAllAlert(false);
+    }
+  };
+
+  // 옵션 변경 처리
+  // size 속성을 통한 필드 직접 수정(옵션 변경)을 지원하지 않는 것 같아서, 기존 상품을 삭제하고 옵션 변경된 상품으로 재등록 하는 로직 사용.
+  const handleOptionChange = async (itemId: number) => {
+    const newColor = selectedOptions[itemId];
+    const item = cartItems.find((item) => item._id === itemId);
+
+    if (!item || !newColor || newColor === item.size) {
+      setOpenDialogId(null);
+      return;
+    }
+
+    setIsLoading(itemId);
+    try {
+      const result = await updateCartOptionAction(itemId, item.product._id, item.quantity, newColor);
+
+      if (result.success && result.data) {
+        const newItemId = result.data._id;
+
+        // 옵션 변경 (ID가 변경됨)
+        setCartItems((prevItems) => {
+          // 기존 아이템을 찾아서 새 아이템으로 교체
+          const itemIndex = prevItems.findIndex((cartItem) => cartItem._id === itemId);
+          if (itemIndex !== -1) {
+            const newItems = [...prevItems];
+            // 선택한 색상의 인덱스를 찾아서 이미지 업데이트
+            const colorIndex = item.product.extra?.potColors?.findIndex((color) => color === newColor) || 0;
+            const newImage = item.product.mainImages?.[colorIndex] || item.product.mainImages?.[0] || result.data!.product.image;
+
+            newItems[itemIndex] = {
+              ...result.data!, // 서버에서 반환된 새 아이템 데이터 사용
+              product: {
+                ...result.data!.product,
+                image: newImage, // 올바른 색상 이미지로 설정
+                mainImages: item.product.mainImages, // mainImages
+                extra: item.product.extra, // extra
+              },
+            };
+            return newItems;
+          }
+          return prevItems;
+        });
+
+        // 선택 상태 업데이트 (새 아이템 ID로)
+        if (selectedItems.has(itemId)) {
+          setSelectedItems((prev) => {
+            const newSet = new Set(prev);
+            newSet.delete(itemId);
+            newSet.add(newItemId);
+            return newSet;
+          });
+        }
+
+        // 옵션 상태도 새 ID로 업데이트
+        setSelectedOptions((prev) => {
+          const newOptions = { ...prev };
+          delete newOptions[itemId];
+          newOptions[newItemId] = newColor;
+          return newOptions;
+        });
+
+        setOpenDialogId(null);
+
+        // router.refresh로는 새로고침이 되지 않는 현상이 발생하여, 확실한 페이지 새로고침을 위해 location.href 사용.
+        setTimeout(() => {
+          window.location.href = '/cart';
+        });
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      toast.error(`옵션 변경에 실패했습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
     } finally {
       setIsLoading(null);
     }
   };
 
-  // 옵션 변경 처리
-  const handleOptionChange = async (itemId: number) => {
-    const newColor = selectedOptions[itemId];
-    const item = cartItems.find((item) => item._id === itemId);
-
-    if (!item || !newColor || newColor === item.extra?.potColor) {
-      setOpenDialogId(null);
-      return;
+  // 현재 선택된 색상에 해당하는 이미지 URL 계산
+  const getPreviewImageUrl = (item: CartItem, selectedColor: string) => {
+    if (!item.product.mainImages || !item.product.extra?.potColors) {
+      return getImageUrl(item.product.image);
     }
 
-    // TODO: 옵션 변경 API 호출 (서버 액션 필요)
-    toast.info('옵션 변경 기능은 준비 중입니다.');
-    setOpenDialogId(null);
+    const colorIndex = item.product.extra.potColors.findIndex((color) => color === selectedColor);
+    const previewImage = item.product.mainImages[colorIndex] || item.product.mainImages[0] || item.product.image;
+    return getImageUrl(previewImage);
   };
 
   // 주문하기
   const handleOrder = async () => {
     if (selectedItems.size === 0) {
-      toast.error('주문할 상품을 선택해주세요.');
+      toast.error('상품을 선택해주세요');
       return;
     }
 
     const selectedCartItems = cartItems.filter((item) => selectedItems.has(item._id));
+
+    // 선택된 상품을 DirectPurchaseItem 형태로 변환
     const purchaseItems: DirectPurchaseItem[] = selectedCartItems.map((item) => ({
       productId: item.product._id,
       productName: item.product.name,
-      productImage: getImageUrl(item.product.mainImages?.[0] || ''),
+      productImage: getImageUrl(item.product.image),
       price: item.product.price,
       quantity: item.quantity,
-      selectedColor: item.extra?.potColor
+      selectedColor: item.size
         ? {
             colorIndex: 0,
-            colorName: item.extra.potColor,
+            colorName: item.size,
           }
         : undefined,
     }));
@@ -210,188 +320,225 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
     router.push('/order');
   };
 
-  // 색상 매핑
-  const getColorKoreanName = (color: string) => {
-    const colorMap: Record<string, string> = {
-      흑색: '블랙',
-      갈색: '브라운',
-      백색: '화이트',
-      황색: '옐로우',
-      회색: '그레이',
-      흰색: '화이트',
-      남색: '블루',
-    };
-    return colorMap[color] || color;
-  };
-
   return (
-    <div className='bg-surface mx-auto w-full max-w-[1500px] p-4 md:p-6 lg:p-8'>
-      {/* 헤더 영역 */}
-      <div className='mt-2 mb-6 flex items-center md:mb-8 lg:mt-0 lg:mb-24'>
-        <h1 className='font-regular flex flex-col items-start gap-1 text-3xl md:text-4xl'>
-          <span className='text-base'>|Shopping Cart</span>
-          <span>CART</span>
-        </h1>
-      </div>
+    <div className='bg-surface min-h-screen w-full p-4 sm:p-6 lg:p-8'>
+      {/* 전체 컨테이너 */}
+      <div className='mx-auto max-w-6xl'>
+        {/* 헤더 영역 */}
+        <div className='mb-8'>
+          <div className='text-secondary t-small font-medium'>| Shopping Cart</div>
+          <h2 className='text-secondary t-h2 mt-2 font-light'>Cart</h2>
+        </div>
 
-      <div className='mx-1 sm:mx-8 lg:flex lg:gap-6'>
-        {/* 왼쪽: 장바구니 아이템 목록 */}
-        <div className='flex-1'>
-          {/* 선택 영역 */}
-          <div className='flex items-center justify-start border-b-2 pb-3 text-base lg:text-2xl'>
-            <div className='flex items-center gap-2'>
-              <Checkbox id='select-all' className='bg-white' checked={isAllSelected} onCheckedChange={handleSelectAll} />
-              <label htmlFor='select-all' className='cursor-pointer'>
-                모두 선택
-              </label>
+        {/* 컨텐츠 영역 - flex로 좌우 배치 */}
+        <div className='flex flex-col gap-8 lg:flex-row lg:gap-8'>
+          {/* 왼쪽: 장바구니 아이템 목록 */}
+          <div className='flex-1'>
+            {/* 선택 영역 */}
+            <div className='flex items-center justify-start border-b-2 pb-3 text-base lg:text-xl'>
+              <div className='flex items-center gap-2'>
+                <Checkbox id='select-all' className='ml-1 bg-white md:ml-2 lg:ml-0' checked={isAllSelected} onCheckedChange={handleSelectAll} />
+                <label htmlFor='select-all' className='cursor-pointer'>
+                  모두 선택
+                </label>
+              </div>
+              <Button variant='ghost' className='mr-3 ml-auto text-base md:mr-6 lg:mr-2 lg:text-xl xl:mr-4' onClick={handleRemoveAll}>
+                모두 삭제
+              </Button>
             </div>
-            <Button variant='ghost' className='ml-auto lg:text-2xl' onClick={handleRemoveSelected}>
-              선택 삭제
-            </Button>
-          </div>
 
-          {/* 장바구니 아이템 목록 */}
-          {cartItems.map((item, idx) => (
-            <div key={item._id}>
-              {/* 카드 */}
-              <div className='lg:bg-surface md:border-gray-300-1 mt-5 flex items-stretch justify-between rounded-2xl bg-white px-4 py-5 md:mt-6 md:px-5 md:py-6 lg:mt-7 lg:px-3 lg:py-7'>
-                {/* 이미지 + 텍스트 */}
-                <div className='flex h-full items-start gap-3 md:gap-4'>
-                  <div className='relative'>
-                    <div className='relative h-28 w-20 shrink-0 sm:h-32 sm:w-24 md:h-36 md:w-28 lg:h-40 lg:w-40'>
-                      <Image src={getImageUrl(item.product.mainImages?.[0] || '')} alt={item.product.name} fill className='rounded object-cover' />
+            {/* 장바구니 아이템 목록 */}
+            {cartItems.length === 0 ? (
+              <div className='flex flex-col items-center justify-center py-20'>
+                <p className='text-lg text-gray-500'>장바구니가 비어있습니다.</p>
+                <Button variant='primary' className='mt-4' onClick={() => router.push('/shop')}>
+                  쇼핑 계속하기
+                </Button>
+              </div>
+            ) : (
+              cartItems.map((item) => (
+                <div key={item._id}>
+                  {/* 카드 */}
+                  <div className='lg:bg-surface md:border-gray-300-1 mt-5 flex items-stretch justify-between rounded-2xl border-b bg-white px-4 py-5 md:mt-6 md:px-5 md:py-6 lg:mt-7 lg:rounded-none lg:px-3 lg:py-7'>
+                    {/* 이미지 + 텍스트 */}
+                    <div className='flex h-full items-start gap-3 md:gap-4'>
+                      <div className='relative'>
+                        <div className='relative ml-4 h-28 w-20 shrink-0 sm:h-32 sm:w-24 md:h-36 md:w-28 lg:h-40 lg:w-40'>
+                          <Image src={getImageUrl(item.product.image)} alt={item.product.name} fill className='rounded object-cover' />
+                        </div>
+                        <Checkbox
+                          id={`item-${item._id}`}
+                          className='absolute -top-0 -left-3 bg-white'
+                          checked={selectedItems.has(item._id)}
+                          onCheckedChange={(checked) => handleSelectItem(item._id, checked as boolean)}
+                          disabled={isLoading === item._id}
+                        />
+                      </div>
+                      <div className='flex h-28 flex-col justify-between py-1 sm:h-32 md:h-36 lg:h-40'>
+                        <div className='space-y-1'>
+                          <h2 className='text-sm leading-tight font-semibold sm:text-lg md:text-lg xl:text-xl'>{item.product.name}</h2>
+                          {item.size && <p className='text-muted-foreground text-xs sm:text-sm md:text-sm lg:text-base'>화분 색상 : {getColorKoreanName(item.size)}</p>}
+                        </div>
+                        <p className='text-sm font-semibold sm:text-base md:text-lg xl:text-xl'>₩ {(item.product.price * item.quantity).toLocaleString()}</p>
+                      </div>
                     </div>
-                    <Checkbox
-                      id={`item-${item._id}`}
-                      className='absolute -top-2 -left-2 bg-white'
-                      checked={selectedItems.has(item._id)}
-                      onCheckedChange={(checked) => handleSelectItem(item._id, checked as boolean)}
-                      disabled={isLoading === item._id}
-                    />
-                  </div>
-                  <div className='flex h-28 flex-col justify-between py-1 sm:h-32 md:h-36 lg:h-40'>
-                    <div className='space-y-1'>
-                      <h2 className='text-base leading-tight font-semibold sm:text-lg md:text-xl lg:text-3xl'>{item.product.name}</h2>
-                      {item.extra?.potColor && <p className='text-muted-foreground text-xs sm:text-sm md:text-sm lg:text-base'>화분 색상 : {getColorKoreanName(item.extra.potColor)}</p>}
+
+                    {/* 버튼들 */}
+                    <div className='flex h-full flex-col items-end justify-between lg:gap-20'>
+                      <div className='flex flex-col gap-2 md:gap-3 lg:flex-row lg:gap-5'>
+                        {/* 옵션 변경 버튼 */}
+                        {item.product.extra?.potColors && item.product.extra.potColors.length > 0 && (
+                          <Dialog open={openDialogId === item._id} onOpenChange={(open) => setOpenDialogId(open ? item._id : null)}>
+                            <DialogTrigger asChild>
+                              <Button size='sm' variant='outline' className='order-2 h-8 w-20 text-xs md:h-9 md:w-24 md:text-sm lg:order-1 lg:h-10 lg:w-22 lg:text-base xl:w-28' disabled={isLoading === item._id}>
+                                옵션 변경
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className='h-[480px] w-[500px] gap-0'>
+                              <DialogHeader>
+                                <DialogTitle className='mb-5 text-left text-2xl font-semibold'>옵션 변경</DialogTitle>
+                              </DialogHeader>
+                              <div className='flex items-start gap-4'>
+                                <div className='relative h-[100px] w-[100px] shrink-0'>
+                                  <Image src={getPreviewImageUrl(item, selectedOptions[item._id] || item.size || '')} alt={item.product.name} fill className='rounded object-cover' />
+                                </div>
+                                <div>
+                                  <h2 className='text-base font-bold md:text-2xl'>{item.product.name}</h2>
+                                </div>
+                              </div>
+                              <hr className='my-2 border-gray-300' />
+                              <p className='t-h2 font-semibold'>화분 색상</p>
+
+                              {/* 색상 선택 UI - 색상 원으로 변경 */}
+                              <div className='flex gap-3 pb-5'>
+                                {item.product.extra?.potColors?.map((color) => {
+                                  const { hexColor } = getColorMapping(color);
+                                  const isSelected = selectedOptions[item._id] === color;
+
+                                  return (
+                                    <button
+                                      key={color}
+                                      type='button'
+                                      aria-label={color}
+                                      onClick={() => setSelectedOptions((prev) => ({ ...prev, [item._id]: color }))}
+                                      className={`h-10 w-10 rounded-full border-2 transition ${isSelected ? 'border-secondary scale-110 border-3' : 'border-gray-300'} ${color === '백색' || color === '흰색' ? 'ring-1 ring-gray-200' : ''}`}
+                                      style={{ backgroundColor: hexColor }}
+                                    />
+                                  );
+                                })}
+                              </div>
+
+                              <Button fullWidth variant='primary' className='mx-auto block h-11 text-xl font-bold' onClick={() => handleOptionChange(item._id)}>
+                                변경하기
+                              </Button>
+                            </DialogContent>
+                          </Dialog>
+                        )}
+
+                        {/* 삭제 버튼 */}
+                        <Button
+                          size='sm'
+                          variant='destructive'
+                          fullWidth
+                          className='order-1 flex h-8 w-20 items-center justify-center text-xs md:h-9 md:w-24 md:text-sm lg:order-2 lg:h-10 lg:w-22 lg:text-base xl:w-28'
+                          onClick={() => handleRemoveItem(item._id)}
+                          disabled={isLoading === item._id}
+                        >
+                          <Trash2 className='mr-1' size={14} />
+                          삭제
+                        </Button>
+                      </div>
+
+                      {/* 수량 버튼 */}
+                      <div className='mt-2 flex h-10 w-20 items-center rounded-4xl border bg-white sm:mt-3 md:mt-4 md:h-10 md:w-24 lg:mt-0 lg:h-12 lg:w-28'>
+                        <Button variant='ghost' size='icon' className='hover:bg-transparent' onClick={() => handleQuantityChange(item._id, item.quantity - 1)} disabled={item.quantity <= 1 || isLoading === item._id}>
+                          -
+                        </Button>
+                        <span className='flex-1 text-center text-sm md:text-base'>{item.quantity}</span>
+                        <Button variant='ghost' size='icon' className='hover:bg-transparent' onClick={() => handleQuantityChange(item._id, item.quantity + 1)} disabled={isLoading === item._id}>
+                          +
+                        </Button>
+                      </div>
                     </div>
-                    <p className='text-sm font-semibold sm:text-base md:text-lg lg:text-2xl'>₩ {(item.product.price * item.quantity).toLocaleString()}</p>
                   </div>
                 </div>
+              ))
+            )}
+          </div>
 
-                {/* 버튼들 */}
-                <div className='flex h-full flex-col items-end justify-between lg:gap-20'>
-                  <div className='flex flex-col gap-2 md:gap-3 lg:flex-row lg:gap-5'>
-                    {/* 옵션 변경 버튼 */}
-                    {item.product.extra?.potColors && item.product.extra.potColors.length > 0 && (
-                      <Dialog open={openDialogId === item._id} onOpenChange={(open) => setOpenDialogId(open ? item._id : null)}>
-                        <DialogTrigger asChild>
-                          <Button size='sm' variant='primary' className='order-2 h-8 w-20 text-xs md:h-9 md:w-24 md:text-sm lg:order-1 lg:h-10 lg:w-28 lg:text-base' disabled={isLoading === item._id}>
-                            옵션 변경
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className='h-[580px] w-[500px]'>
-                          <DialogHeader>
-                            <DialogTitle className='text-2xl font-semibold'>옵션 변경</DialogTitle>
-                          </DialogHeader>
-                          <div className='flex items-start gap-4'>
-                            <div className='relative h-[100px] w-[100px] shrink-0'>
-                              <Image src={getImageUrl(item.product.mainImages?.[0] || '')} alt={item.product.name} fill className='rounded object-cover' />
-                            </div>
-                            <div>
-                              <h2 className='text-2xl font-bold'>{item.product.name}</h2>
-                            </div>
-                          </div>
-                          <hr className='my-2 border-gray-300' />
-                          <p className='text-[20px] font-medium'>화분 색상</p>
-                          <RadioGroup
-                            value={selectedOptions[item._id] || item.extra?.potColor}
-                            onValueChange={(value) => setSelectedOptions((prev) => ({ ...prev, [item._id]: value }))}
-                            className='mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4'
-                          >
-                            {item.product.extra?.potColors?.map((color) => (
-                              <div key={color} className='mr-4 flex h-[34px] w-[94px] items-center rounded-2xl border-1'>
-                                <RadioGroupItem className='mx-1 h-[20px] w-[20px]' value={color} id={`${item._id}-${color}`} />
-                                <label htmlFor={`${item._id}-${color}`} className='mx-2 text-base'>
-                                  {getColorKoreanName(color)}
-                                </label>
-                              </div>
-                            ))}
-                          </RadioGroup>
-                          <Button fullWidth variant='primary' className='mx-auto block h-11 font-bold lg:w-25' onClick={() => handleOptionChange(item._id)}>
-                            변경하기
-                          </Button>
-                        </DialogContent>
-                      </Dialog>
-                    )}
+          {/* 오른쪽: 결제 정보 영역 */}
+          {cartItems.length > 0 && (
+            <div className='w-full lg:w-[358px]'>
+              <div className='rounded-2xl bg-white p-6 shadow-md'>
+                <h3 className='mb-6 text-xl font-bold lg:text-2xl'>결제 금액</h3>
 
-                    {/* 삭제 버튼 */}
-                    <Button
-                      size='sm'
-                      variant='destructive'
-                      fullWidth
-                      className='order-1 flex h-8 w-20 items-center justify-center text-xs md:h-9 md:w-24 md:text-sm lg:order-2 lg:h-10 lg:w-28 lg:text-base'
-                      onClick={() => handleRemoveItem(item._id)}
-                      disabled={isLoading === item._id}
-                    >
-                      <Trash2 className='mr-1' size={14} />
-                      삭제
-                    </Button>
+                <div className='space-y-4'>
+                  <div className='flex justify-between'>
+                    <span className='text-gray-600'>상품 금액</span>
+                    <span className='font-semibold'>₩ {calculateSelectedTotal().toLocaleString()}</span>
                   </div>
 
-                  {/* 수량 버튼 */}
-                  <div className='mt-2 flex h-10 w-20 items-center rounded-4xl border bg-white sm:mt-3 md:mt-4 md:h-10 md:w-24 lg:h-12 lg:w-28'>
-                    <Button
-                      variant='ghost'
-                      size='icon'
-                      className='h-6 w-6 text-base md:h-6 md:w-8 md:text-base lg:h-7 lg:w-10 lg:text-lg'
-                      aria-label='수량 감소'
-                      onClick={() => handleQuantityChange(item._id, -1)}
-                      disabled={item.quantity <= 1 || isLoading === item._id}
-                    >
-                      -
-                    </Button>
-
-                    <span className='mx-2 text-center text-sm md:text-sm lg:text-base'>{item.quantity}</span>
-
-                    <Button variant='ghost' size='icon' className='h-6 w-6 text-base md:h-6 md:w-8 md:text-base lg:h-7 lg:w-10 lg:text-lg' aria-label='수량 증가' onClick={() => handleQuantityChange(item._id, 1)} disabled={isLoading === item._id}>
-                      +
-                    </Button>
+                  <div className='flex justify-between'>
+                    <span className='text-gray-600'>배송비</span>
+                    <span className='font-semibold'>{calculateShippingFee(calculateSelectedTotal()) === 0 ? '무료' : `₩ ${calculateShippingFee(calculateSelectedTotal()).toLocaleString()}`}</span>
                   </div>
+
+                  <div className='my-4 border-t pt-4'>
+                    <div className='flex justify-between'>
+                      <span className='text-lg font-bold lg:text-xl'>총 결제 금액</span>
+                      <span className='text-secondary text-lg font-bold lg:text-xl'>₩ {(calculateSelectedTotal() + calculateShippingFee(calculateSelectedTotal())).toLocaleString()}</span>
+                    </div>
+                  </div>
+
+                  <Button variant='primary' className='mt-6 w-full py-6 text-lg font-bold' onClick={handleOrder} disabled={selectedItems.size === 0}>
+                    주문하기
+                  </Button>
                 </div>
               </div>
-
-              {idx !== cartItems.length - 1 && <div className='my-6 hidden h-px w-full bg-gray-300 md:my-7 lg:my-8 lg:block' />}
             </div>
-          ))}
-        </div>
-
-        {/* 주문 내역 */}
-        <hr className='mt-8 mb-6 border-gray-300 md:mt-10 md:mb-8 lg:hidden' />
-        <div className='bg-surface h-auto w-full shrink-0 p-4 md:p-6 lg:mt-0 lg:h-119 lg:w-1/3 lg:bg-white'>
-          <h2 className='mb-8 text-xl font-bold md:mb-10 md:text-2xl lg:mb-12'>주문 내역</h2>
-
-          <div className='mb-4 flex justify-between text-sm md:mb-5 md:text-base lg:mb-6 lg:text-[16px]'>
-            <span>상품 금액</span>
-            <span>₩ {selectedTotal.toLocaleString()}</span>
-          </div>
-
-          <div className='mb-4 flex justify-between text-sm md:mb-5 md:text-base lg:mb-10 lg:text-[16px]'>
-            <span>배송비</span>
-            <span>{shippingFee === 0 ? '무료' : `₩ ${shippingFee.toLocaleString()}`}</span>
-          </div>
-
-          <hr className='mb-4 border-gray-300 md:mb-5 lg:mb-10' />
-
-          <div className='mb-6 flex justify-between text-base font-semibold md:mb-8 md:text-lg lg:mb-10'>
-            <span>총 결제 금액</span>
-            <span>₩ {finalTotal.toLocaleString()}</span>
-          </div>
-
-          <Button fullWidth variant='primary' className='h-[45px] text-lg md:h-[48px] md:text-xl lg:h-[50px] lg:text-3xl' onClick={handleOrder} disabled={selectedItems.size === 0}>
-            주문하기
-          </Button>
+          )}
         </div>
       </div>
+
+      {/* 단일 상품 삭제 확인 다이얼로그 */}
+      <AlertDialog open={showDeleteSingleAlert} onOpenChange={setShowDeleteSingleAlert}>
+        <AlertDialogContent className='px-12 sm:max-w-md'>
+          <AlertDialogHeader>
+            <AlertDialogTitle className='t-h3 text-center'>정말로 이 상품을 삭제하시겠습니까?</AlertDialogTitle>
+            <AlertDialogDescription className='text-center text-base'>장바구니에서 상품이 삭제됩니다.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className='mt-6 gap-3 sm:justify-between'>
+            <AlertDialogCancel
+              onClick={() => {
+                setShowDeleteSingleAlert(false);
+                setDeleteTargetId(null);
+              }}
+              className='text-secondary hover:bg-secondary border-[0.5px] border-gray-300 bg-white px-10 shadow-sm hover:text-white'
+            >
+              취소
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={confirmRemoveSingleItem} className='bg-error hover:bg-error/90 active:bg-error/80 px-10 text-white shadow-sm'>
+              삭제
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* 모든 상품 삭제 확인 다이얼로그 */}
+      <AlertDialog open={showDeleteAllAlert} onOpenChange={setShowDeleteAllAlert}>
+        <AlertDialogContent className='px-12 sm:max-w-md'>
+          <AlertDialogHeader>
+            <AlertDialogTitle className='t-h3 text-center'>정말로 상품을 삭제하시겠습니까?</AlertDialogTitle>
+            <AlertDialogDescription className='text-center text-base'>장바구니의 모든 상품이 삭제됩니다.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className='mt-6 gap-3 sm:justify-between'>
+            <AlertDialogCancel className='text-secondary hover:bg-secondary border-[0.5px] border-gray-300 bg-white px-10 shadow-sm hover:text-white'>취소</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmRemoveAll} className='bg-error hover:bg-error/90 active:bg-error/80 px-10 text-white shadow-sm'>
+              삭제
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

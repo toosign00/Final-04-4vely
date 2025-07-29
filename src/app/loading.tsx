@@ -1,8 +1,8 @@
 export default function Loading() {
   return (
     <div className='flex h-screen flex-col items-center justify-center'>
-      <div className='border-t-status-info mb-6 h-10 w-10 animate-spin rounded-full border-4 border-gray-300' />
-      <p className='text-secondary text-center text-xl font-semibold'>Loading</p>
+      <div className='border-primary mb-3 h-9 w-9 animate-spin rounded-full border-2 border-t-transparent' />
+      <p className='t-h4 text-secondary pl-2.5'>Loading...</p>
     </div>
   );
 }

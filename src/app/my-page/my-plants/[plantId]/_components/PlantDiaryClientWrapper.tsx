@@ -1,5 +1,6 @@
 'use client';
 
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/AlertDialog';
 import { Button } from '@/components/ui/Button';
 import { Plant } from '@/lib/actions/plantActions';
 import { ArrowLeft } from 'lucide-react';
@@ -63,6 +64,8 @@ const PlantDiaryClientWrapper = React.memo<PlantDiaryClientWrapperProps>(({ plan
 
   // 일지 작성 모달 상태
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false);
+  // 삭제할 일지 ID 상태
+  const [diaryToDelete, setDiaryToDelete] = useState<number | null>(null);
 
   /**
    * 뒤로 가기 핸들러
@@ -110,20 +113,33 @@ const PlantDiaryClientWrapper = React.memo<PlantDiaryClientWrapperProps>(({ plan
    * @description 사용자 확인 후 일지 삭제 수행
    * @param {number} diaryId - 삭제할 일지 ID
    */
-  const handleDeleteDiary = useCallback(
-    async (diaryId: number) => {
-      const confirmed = window.confirm('정말로 이 일지를 삭제하시겠습니까?');
-      if (!confirmed) return;
+  const handleDeleteDiary = useCallback(async (diaryId: number) => {
+    setDiaryToDelete(diaryId);
+  }, []);
 
-      try {
-        await deleteDiary(diaryId);
-      } catch (error) {
-        console.error('일지 삭제 실패:', error);
-        // 에러는 hook 내부에서 toast로 처리되므로 여기서는 로깅만
-      }
-    },
-    [deleteDiary],
-  );
+  /**
+   * 일지 삭제 확인 핸들러
+   * @description AlertDialog에서 확인 버튼 클릭 시 실제 삭제 수행
+   */
+  const handleDeleteConfirm = useCallback(async () => {
+    if (diaryToDelete === null) return;
+
+    try {
+      await deleteDiary(diaryToDelete);
+      setDiaryToDelete(null);
+    } catch (error) {
+      console.error('일지 삭제 실패:', error);
+      // 에러는 hook 내부에서 toast로 처리되므로 여기서는 로깅만
+    }
+  }, [diaryToDelete, deleteDiary]);
+
+  /**
+   * 일지 삭제 취소 핸들러
+   * @description AlertDialog에서 취소 버튼 클릭 시 상태 초기화
+   */
+  const handleDeleteCancel = useCallback(() => {
+    setDiaryToDelete(null);
+  }, []);
 
   /**
    * 일지 수정 핸들러
@@ -158,13 +174,9 @@ const PlantDiaryClientWrapper = React.memo<PlantDiaryClientWrapperProps>(({ plan
   // 로딩 상태 UI
   if (isLoading) {
     return (
-      <div className='bg-surface min-h-screen'>
-        <div className='flex min-h-[25rem] items-center justify-center'>
-          <div className='flex flex-col items-center text-center'>
-            <div className='border-primary mb-4 h-8 w-8 animate-spin rounded-full border-4 border-t-transparent' />
-            <p className='t-body text-secondary/70'>식물 정보를 불러오는 중...</p>
-          </div>
-        </div>
+      <div className='bg-surface flex h-screen flex-col items-center justify-center'>
+        <div className='border-primary mb-3 h-9 w-9 animate-spin rounded-full border-2 border-t-transparent' />
+        <p className='t-h4 text-secondary pl-2.5'>식물 정보를 불러오는 중...</p>
       </div>
     );
   }
@@ -216,6 +228,24 @@ const PlantDiaryClientWrapper = React.memo<PlantDiaryClientWrapperProps>(({ plan
 
       {/* 일지 작성 모달 */}
       <DiaryModal isOpen={isWriteModalOpen} onClose={() => setIsWriteModalOpen(false)} onSave={handleCreateDiary} mode='create' plantId={plantId} />
+
+      {/* 일지 삭제 확인 다이얼로그 */}
+      <AlertDialog open={diaryToDelete !== null} onOpenChange={(open) => !open && setDiaryToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>일지 삭제</AlertDialogTitle>
+            <AlertDialogDescription>
+              정말로 이 일지를 삭제하시겠습니까?
+              <br />
+              삭제된 일지는 복구할 수 없습니다.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleDeleteCancel}>취소</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteConfirm}>삭제</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 });

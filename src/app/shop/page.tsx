@@ -1,5 +1,5 @@
 // src/app/shop/page.tsx (서버 컴포넌트)
-import { searchAllProducts } from '@/lib/functions/productServerFunctions';
+import { searchAllProducts } from '@/lib/functions/shop/productServerFunctions';
 import ShopClientContent from './_components/ShopClientContent';
 
 export default async function ShopPage() {

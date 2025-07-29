@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/Dialog';
 import { Label } from '@/components/ui/Label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/Select';
-import { createOrderAction, updateTempOrderAddressAction, updateTempOrderMemoAction } from '@/lib/actions/orderServerActions';
+import { createOrderAction, updateTempOrderAddressAction, updateTempOrderMemoAction } from '@/lib/actions/order/orderServerActions';
 import { CreateOrderRequest, OrderPageData } from '@/types/order.types';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';

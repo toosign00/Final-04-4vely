@@ -5,8 +5,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Button } from '@/components/ui/Button';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/Dialog';
-import { removeFromCartAction, updateCartOptionAction, updateCartQuantityAction } from '@/lib/actions/cartServerActions';
-import { createCartPurchaseTempOrderAction } from '@/lib/actions/orderServerActions';
+import { removeFromCartAction, updateCartOptionAction, updateCartQuantityAction } from '@/lib/actions/cart/cartServerActions';
+import { createCartPurchaseTempOrderAction } from '@/lib/actions/order/orderServerActions';
 import { CartItem } from '@/types/cart.types';
 import { DirectPurchaseItem } from '@/types/order.types';
 import { getImageUrl } from '@/types/product.types';
@@ -359,7 +359,7 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
               cartItems.map((item) => (
                 <div key={item._id}>
                   {/* 카드 */}
-                  <div className='lg:bg-surface md:border-gray-300-1 mt-5 flex items-stretch justify-between rounded-2xl lg:rounded-none bg-white px-4 py-5 md:mt-6 md:px-5 md:py-6 lg:mt-7 lg:px-3 lg:py-7 border-b'>
+                  <div className='lg:bg-surface md:border-gray-300-1 mt-5 flex items-stretch justify-between rounded-2xl border-b bg-white px-4 py-5 md:mt-6 md:px-5 md:py-6 lg:mt-7 lg:rounded-none lg:px-3 lg:py-7'>
                     {/* 이미지 + 텍스트 */}
                     <div className='flex h-full items-start gap-3 md:gap-4'>
                       <div className='relative'>

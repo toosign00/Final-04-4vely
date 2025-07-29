@@ -1,5 +1,5 @@
 // src/app/(purchase)/order/page.tsx (서버 컴포넌트)
-import { getTempOrderAction } from '@/lib/actions/orderServerActions';
+import { getTempOrderAction } from '@/lib/actions/order/orderServerActions';
 import { redirect } from 'next/navigation';
 import OrderClientSection from './_components/orderClient';
 

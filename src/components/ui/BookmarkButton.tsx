@@ -7,11 +7,11 @@
  * @module BookmarkButton
  */
 
-import { toggleBookmarkAction } from '@/lib/actions/bookmarkServerActions';
+import { toggleBookmarkAction } from '@/lib/actions/shop/bookmarkServerActions';
 import useUserStore from '@/store/authStore';
 import { BookmarkType } from '@/types/bookmark.types';
 import { Bookmark } from 'lucide-react';
-import { useState, useTransition, useEffect } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import { toast } from 'sonner';
 
 /**

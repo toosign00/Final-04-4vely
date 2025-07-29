@@ -4,8 +4,8 @@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/AlertDialog';
 import BookmarkButton from '@/components/ui/BookmarkButton';
 import { Button } from '@/components/ui/Button';
-import { addToCartAction, checkLoginStatusAction } from '@/lib/actions/cartServerActions';
-import { checkOrderLoginStatusAction, createDirectPurchaseTempOrderAction } from '@/lib/actions/orderServerActions';
+import { addToCartAction, checkLoginStatusAction } from '@/lib/actions/cart/cartServerActions';
+import { checkOrderLoginStatusAction, createDirectPurchaseTempOrderAction } from '@/lib/actions/order/orderServerActions';
 import { AddToCartRequest } from '@/types/cart.types';
 import { DirectPurchaseItem } from '@/types/order.types';
 import { Product, getImageUrl, getProductCategories, getProductId, getProductPotColors, getProductTags, isNewProduct } from '@/types/product.types';

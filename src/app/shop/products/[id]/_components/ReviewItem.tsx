@@ -4,7 +4,7 @@
 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/AlertDialog';
 import { Button } from '@/components/ui/Button';
-import { deleteReplyAction, updateReplyAction } from '@/lib/actions/reviewServerActions';
+import { deleteReplyAction, updateReplyAction } from '@/lib/actions/shop/reviewServerActions';
 import { getImageUrl } from '@/types/product.types';
 import { ProductReply } from '@/types/review.types';
 import { Star } from 'lucide-react';

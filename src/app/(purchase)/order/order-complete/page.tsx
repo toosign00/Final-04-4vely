@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/Button';
-import { getOrderByIdAction } from '@/lib/actions/orderServerActions';
+import { getOrderByIdAction } from '@/lib/actions/order/orderServerActions';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';

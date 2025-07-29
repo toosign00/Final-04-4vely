@@ -3,7 +3,7 @@
 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/AlertDialog';
 import { Button } from '@/components/ui/Button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/Dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/Dialog';
 import { Label } from '@/components/ui/Label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/Select';
 import { createOrderAction, updateTempOrderAddressAction, updateTempOrderMemoAction } from '@/lib/actions/order/orderServerActions';
@@ -56,16 +56,25 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
       zipCode: '03706',
       isDefault: true,
     },
+    {
+      id: '2',
+      name: '김철수',
+      phone: '010-9876-5432',
+      address: '서울특별시 강남구 테헤란로 427',
+      detailAddress: '강남파이낸스센터 15층',
+      zipCode: '06159',
+      isDefault: false,
+    },
   ]);
   const [selectedAddressId, setSelectedAddressId] = useState<string>('1');
 
   // 배송 정보 폼 상태
   const [addressForm, setAddressForm] = useState({
-    name: orderData.address?.name || '',
-    phone: orderData.address?.phone || '',
-    address: orderData.address?.address || '',
-    detailAddress: orderData.address?.detailAddress || '',
-    zipCode: orderData.address?.zipCode || '',
+    name: '',
+    phone: '',
+    address: '',
+    detailAddress: '',
+    zipCode: '',
   });
 
   const [deliveryMemo, setDeliveryMemo] = useState(orderData.memo || '');
@@ -76,6 +85,37 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
   const totalProductAmount = orderData.totalAmount;
   const shippingFee = orderData.shippingFee;
   const finalAmount = totalProductAmount + shippingFee;
+
+  // 초기 로드 시 기본 배송지 설정
+  useEffect(() => {
+    const initializeDefaultAddress = async () => {
+      if (!orderData.address && savedAddresses.length > 0) {
+        const defaultAddress = savedAddresses.find((addr) => addr.isDefault) || savedAddresses[0];
+        const success = await updateTempOrderAddressAction({
+          name: defaultAddress.name,
+          phone: defaultAddress.phone,
+          address: defaultAddress.address,
+          detailAddress: defaultAddress.detailAddress || '',
+          zipCode: defaultAddress.zipCode || '',
+        });
+
+        if (success) {
+          setOrderData((prev) => ({
+            ...prev,
+            address: {
+              name: defaultAddress.name,
+              phone: defaultAddress.phone,
+              address: defaultAddress.address,
+              detailAddress: defaultAddress.detailAddress || '',
+              zipCode: defaultAddress.zipCode || '',
+            },
+          }));
+        }
+      }
+    };
+
+    initializeDefaultAddress();
+  }, []); // 빈 dependency 배열로 초기 로드 시에만 실행
 
   // Daum 우편번호 API 스크립트 로드
   useEffect(() => {
@@ -126,6 +166,9 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
       const success = await updateTempOrderAddressAction(address);
       if (success) {
         setOrderData((prev) => ({ ...prev, address }));
+        toast.success('배송지가 선택되었습니다.');
+      } else {
+        toast.error('배송지 선택에 실패했습니다.');
       }
     }
   };
@@ -344,8 +387,21 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
 
           {/* 배송지 정보 */}
           <section className='mt-7 rounded-2xl bg-white p-6 shadow-md'>
-            <h2 className='mb-7 text-xl font-semibold'>배송지 정보</h2>
-            <div className='text-sm lg:flex lg:items-end lg:justify-between'>
+            <div className='mb-7 flex items-center justify-between'>
+              <h2 className='text-xl font-semibold'>배송지 정보</h2>
+              <Button
+                className='font-bold'
+                variant='primary'
+                size='lg'
+                onClick={() => {
+                  setActiveTab('select'); // 다이얼로그 열 때 항상 선택 탭으로
+                  setDialogOpen(true);
+                }}
+              >
+                변경
+              </Button>
+            </div>
+            <div className='text-sm'>
               {/* 현재 배송지 */}
               <div className='space-y-4'>
                 {orderData.address ? (
@@ -366,6 +422,12 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
                         {orderData.address.detailAddress && ` ${orderData.address.detailAddress}`}
                       </span>
                     </div>
+                    {orderData.memo && (
+                      <div className='flex items-start justify-between lg:justify-start lg:gap-4'>
+                        <span className='w-24 shrink-0 lg:w-48'>배송 메모</span>
+                        <span className='break-words text-gray-600'>{orderData.memo}</span>
+                      </div>
+                    )}
                   </>
                 ) : (
                   <p className='text-gray-500'>배송지를 입력해주세요.</p>
@@ -373,137 +435,148 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
               </div>
 
               {/* 변경 버튼 클릭시 배송정보 모달창 */}
-              <div className='mt-4 text-right lg:mt-0'>
-                <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button className='font-bold' variant='primary' size='lg'>
-                      변경
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className='max-w-2xl'>
-                    <div className='w-full overflow-auto bg-white'>
-                      <DialogHeader>
-                        <DialogTitle className='text-lg font-semibold'>배송지 설정</DialogTitle>
-                      </DialogHeader>
+              <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                <DialogContent className='max-w-2xl'>
+                  <div className='w-full overflow-auto bg-white'>
+                    <DialogHeader>
+                      <DialogTitle className='text-lg font-semibold'>배송지 설정</DialogTitle>
+                    </DialogHeader>
 
-                      {/* 탭 네비게이션 */}
-                      <div className='mt-4 flex w-full'>
-                        <Button variant='ghost' onClick={() => setActiveTab('select')} className={`flex-1 py-3 transition-colors ${activeTab === 'select' ? 'bg-[#c1d72f] text-black' : 'bg-white'}`}>
-                          배송지 선택
-                        </Button>
-                        <Button variant='ghost' onClick={() => setActiveTab('new')} className={`flex-1 py-3 transition-colors ${activeTab === 'new' ? 'bg-[#c1d72f] text-black' : 'bg-white'}`}>
-                          신규 입력
-                        </Button>
-                      </div>
+                    {/* 탭 네비게이션 */}
+                    <div className='mt-4 flex w-full'>
+                      <Button variant='ghost' onClick={() => setActiveTab('select')} className={`flex-1 py-3 transition-colors ${activeTab === 'select' ? 'bg-[#c1d72f] text-black' : 'bg-white'}`}>
+                        배송지 선택
+                      </Button>
+                      <Button variant='ghost' onClick={() => setActiveTab('new')} className={`flex-1 py-3 transition-colors ${activeTab === 'new' ? 'bg-[#c1d72f] text-black' : 'bg-white'}`}>
+                        신규 입력
+                      </Button>
+                    </div>
 
-                      {/* 탭 컨텐츠 */}
-                      {activeTab === 'select' ? (
-                        <div className='mt-10 h-[350px] space-y-10 overflow-y-auto'>
-                          {savedAddresses.map((addr) => (
-                            <label key={addr.id} className='flex items-start gap-3'>
-                              <input type='radio' name='address' className='mt-1' checked={selectedAddressId === addr.id} onChange={() => handleSelectAddress(addr.id)} />
-                              <div className='flex-1'>
-                                <p className='font-medium'>{addr.name}</p>
-                                <p className='text-sm'>{addr.phone}</p>
-                                <p className='text-sm'>
-                                  {addr.zipCode && `(${addr.zipCode}) `}
-                                  {addr.address}
-                                  {addr.detailAddress && ` ${addr.detailAddress}`}
-                                </p>
-                              </div>
-                              <div className='flex flex-col gap-2'>
-                                <Button
-                                  variant='default'
-                                  size='sm'
-                                  onClick={() => {
-                                    setAddressForm({
-                                      name: addr.name,
-                                      phone: addr.phone,
-                                      address: addr.address,
-                                      detailAddress: addr.detailAddress || '',
-                                      zipCode: addr.zipCode || '',
-                                    });
-                                    setActiveTab('new');
-                                  }}
-                                >
-                                  수정
-                                </Button>
-                                <Button variant='destructive' size='sm' onClick={() => handleDeleteAddress(addr.id)}>
-                                  삭제
-                                </Button>
-                              </div>
-                            </label>
+                    {/* 탭 컨텐츠 */}
+                    {activeTab === 'select' ? (
+                      <div className='mt-10 h-[350px] overflow-y-auto'>
+                        <div className='space-y-4'>
+                          {savedAddresses.map((addr, index) => (
+                            <div key={addr.id}>
+                              <label className='flex items-start gap-3 py-4'>
+                                <input type='radio' name='address' className='mt-1' checked={selectedAddressId === addr.id} onChange={() => handleSelectAddress(addr.id)} />
+                                <div className='flex-1'>
+                                  <p className='font-medium'>{addr.name}</p>
+                                  <p className='text-sm'>{addr.phone}</p>
+                                  <p className='text-sm'>
+                                    {addr.zipCode && `(${addr.zipCode}) `}
+                                    {addr.address}
+                                    {addr.detailAddress && ` ${addr.detailAddress}`}
+                                  </p>
+                                </div>
+                                <div className='flex flex-col gap-2'>
+                                  <Button
+                                    variant='default'
+                                    size='sm'
+                                    onClick={() => {
+                                      setAddressForm({
+                                        name: addr.name,
+                                        phone: addr.phone,
+                                        address: addr.address,
+                                        detailAddress: addr.detailAddress || '',
+                                        zipCode: addr.zipCode || '',
+                                      });
+                                      setActiveTab('new');
+                                    }}
+                                  >
+                                    수정
+                                  </Button>
+                                  <Button variant='destructive' size='sm' onClick={() => handleDeleteAddress(addr.id)}>
+                                    삭제
+                                  </Button>
+                                </div>
+                              </label>
+                              {index < savedAddresses.length - 1 && <hr className='border-gray-200' />}
+                            </div>
                           ))}
 
-                          {savedAddresses.length === 0 && <p className='text-center text-gray-500'>저장된 배송지가 없습니다.</p>}
+                          {savedAddresses.length === 0 && <p className='py-4 text-center text-gray-500'>저장된 배송지가 없습니다.</p>}
 
                           {/* 배송 메모 select */}
-                          <div className='mt-4 space-y-2'>
-                            <Label htmlFor='deliveryNote'>배송 메모</Label>
-                            <Select value={deliveryMemo} onValueChange={handleSaveMemo}>
-                              <SelectTrigger id='deliveryNote' className='w-full'>
-                                <SelectValue placeholder='배송 메모를 선택해 주세요.' />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectGroup>
-                                  <SelectLabel>추천 메모</SelectLabel>
-                                  <SelectItem value='부재 시 경비실에 맡겨주세요.'>부재 시 경비실에 맡겨주세요.</SelectItem>
-                                  <SelectItem value='배송 전 연락 바랍니다.'>배송 전 연락 바랍니다.</SelectItem>
-                                  <SelectItem value='문 앞에 보관해주세요.'>문 앞에 보관해주세요.</SelectItem>
-                                  <SelectItem value='파손 위험이 있으니 조심히 다뤄주세요.'>파손 위험이 있으니 조심히 다뤄주세요.</SelectItem>
-                                  <SelectItem value='부재시 택배함에 넣어주세요.'>부재시 택배함에 넣어주세요.</SelectItem>
-                                </SelectGroup>
-                              </SelectContent>
-                            </Select>
-                          </div>
+                          {savedAddresses.length > 0 && (
+                            <>
+                              <hr className='my-4 border-gray-200' />
+                              <div className='space-y-2 py-4'>
+                                <Label htmlFor='deliveryNote' className='font-semibold'>
+                                  배송 메모
+                                </Label>
+                                <Select value={deliveryMemo} onValueChange={handleSaveMemo}>
+                                  <SelectTrigger id='deliveryNote' className='w-full'>
+                                    <SelectValue placeholder='배송 메모를 선택해 주세요.' />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectGroup>
+                                      <SelectLabel>배송 메모를 선택해 주세요.</SelectLabel>
+                                      <SelectItem value='부재 시 경비실에 맡겨주세요.'>부재 시 경비실에 맡겨주세요.</SelectItem>
+                                      <SelectItem value='배송 전 연락 바랍니다.'>배송 전 연락 바랍니다.</SelectItem>
+                                      <SelectItem value='문 앞에 보관해주세요.'>문 앞에 보관해주세요.</SelectItem>
+                                      <SelectItem value='파손 위험이 있으니 조심히 다뤄주세요.'>파손 위험이 있으니 조심히 다뤄주세요.</SelectItem>
+                                      <SelectItem value='부재시 택배함에 넣어주세요.'>부재시 택배함에 넣어주세요.</SelectItem>
+                                    </SelectGroup>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </>
+                          )}
                         </div>
-                      ) : (
-                        <div className='mt-4 grid gap-4'>
-                          <div>
-                            <label className='block text-sm font-medium'>이름</label>
-                            <input type='text' className='mt-1 w-full rounded border p-2' placeholder='받는 분 이름' value={addressForm.name} onChange={(e) => setAddressForm((prev) => ({ ...prev, name: e.target.value }))} />
-                          </div>
-                          <div>
-                            <label className='block text-sm font-medium'>전화번호</label>
-                            <input type='text' className='mt-1 w-full rounded border p-2' placeholder='010-1234-5678' value={addressForm.phone} onChange={(e) => setAddressForm((prev) => ({ ...prev, phone: e.target.value }))} />
-                          </div>
-                          <div>
-                            <label className='block text-sm font-medium'>우편번호</label>
-                            <input type='text' className='mt-1 w-full rounded border p-2' placeholder='03706' value={addressForm.zipCode} onChange={(e) => setAddressForm((prev) => ({ ...prev, zipCode: e.target.value }))} readOnly />
-                          </div>
-                          <div className='mt-4'>
-                            <label className='block text-sm font-medium'>도로명 주소</label>
-                            <div className='mt-1 flex gap-2'>
-                              <input
-                                type='text'
-                                className='flex-1 rounded border p-2'
-                                placeholder='서울특별시 서대문구 성산로7길 89-8(연희동)'
-                                value={addressForm.address}
-                                onChange={(e) => setAddressForm((prev) => ({ ...prev, address: e.target.value }))}
-                                readOnly
-                              />
-                              <Button size='lg' variant='default' onClick={handleAddressSearch}>
-                                주소 찾기
-                              </Button>
-                            </div>
-                          </div>
-                          <div>
-                            <label className='block text-sm font-medium'>상세 주소</label>
-                            <input type='text' className='mt-1 w-full rounded border p-2' placeholder='1층 아임웹' value={addressForm.detailAddress} onChange={(e) => setAddressForm((prev) => ({ ...prev, detailAddress: e.target.value }))} />
-                          </div>
-                        </div>
-                      )}
-
-                      {/* 적용 버튼 */}
-                      <div className='mt-6 flex justify-end'>
-                        <Button variant='primary' onClick={handleSaveAddress}>
-                          적용하기
-                        </Button>
                       </div>
+                    ) : (
+                      <div className='mt-4 grid gap-4'>
+                        <div>
+                          <label className='block text-sm font-medium'>이름</label>
+                          <input type='text' className='mt-1 w-full rounded border p-2' placeholder='받는 분 이름' value={addressForm.name} onChange={(e) => setAddressForm((prev) => ({ ...prev, name: e.target.value }))} />
+                        </div>
+                        <div>
+                          <label className='block text-sm font-medium'>전화번호</label>
+                          <input type='text' className='mt-1 w-full rounded border p-2' placeholder='010-1234-5678' value={addressForm.phone} onChange={(e) => setAddressForm((prev) => ({ ...prev, phone: e.target.value }))} />
+                        </div>
+                        <div>
+                          <label className='block text-sm font-medium'>우편번호</label>
+                          <input type='text' className='mt-1 w-full rounded border p-2' placeholder='주소를 찾아주세요!' value={addressForm.zipCode} onChange={(e) => setAddressForm((prev) => ({ ...prev, zipCode: e.target.value }))} readOnly />
+                        </div>
+                        <div className='mt-4'>
+                          <label className='block text-sm font-medium'>도로명 주소</label>
+                          <div className='mt-1 flex gap-2'>
+                            <input type='text' className='flex-1 rounded border p-2' placeholder='주소를 찾아주세요!' value={addressForm.address} onChange={(e) => setAddressForm((prev) => ({ ...prev, address: e.target.value }))} readOnly />
+                            <Button size='lg' variant='default' onClick={handleAddressSearch}>
+                              주소 찾기
+                            </Button>
+                          </div>
+                        </div>
+                        <div>
+                          <label className='block text-sm font-medium'>상세 주소</label>
+                          <input type='text' className='mt-1 w-full rounded border p-2' placeholder='1층 아임웹' value={addressForm.detailAddress} onChange={(e) => setAddressForm((prev) => ({ ...prev, detailAddress: e.target.value }))} />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 적용 버튼 */}
+                    <div className='mt-6 flex justify-end'>
+                      <Button
+                        variant='primary'
+                        onClick={() => {
+                          if (activeTab === 'select') {
+                            // 이미 선택된 주소가 있으면 다이얼로그 닫기
+                            if (selectedAddressId) {
+                              setDialogOpen(false);
+                            }
+                          } else {
+                            // 신규 입력인 경우 기존 로직 실행
+                            handleSaveAddress();
+                          }
+                        }}
+                      >
+                        적용하기
+                      </Button>
                     </div>
-                  </DialogContent>
-                </Dialog>
-              </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           </section>
 

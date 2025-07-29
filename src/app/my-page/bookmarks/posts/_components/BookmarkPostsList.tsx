@@ -8,6 +8,7 @@
 
 import PaginationWrapper from '@/components/ui/PaginationWrapper';
 import { TransformedBookmarkItem } from '@/lib/functions/mypage/bookmarkFunctions';
+import { BookOpen } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import PostCard from './PostCard';
@@ -101,12 +102,29 @@ export default function BookmarkPostsList({ bookmarks: initialBookmarks }: Bookm
   // 북마크된 게시글이 없을 경우, 사용자에게 친절한 안내 메시지를 표시합니다.
   if (!paginationData.hasItems) {
     return (
-      <div className='grid gap-6 p-4 md:p-5 lg:p-6'>
-        <div className='py-8 text-center text-gray-500'>
-          <p className='text-lg font-medium'>북마크한 게시글이 없습니다.</p>
-          <p className='mt-2 text-sm'>관심 있는 게시글을 북마크해보세요!</p>
+      <section className='flex min-h-[25rem] flex-col items-center justify-center px-4 text-center' aria-labelledby='empty-posts-title' role='region'>
+        {/* 일러스트레이션 아이콘 */}
+        <div className='mb-6' aria-hidden='true'>
+          <BookOpen className='mx-auto h-16 w-16 text-gray-300' />
         </div>
-      </div>
+
+        {/* 메인 메시지 */}
+        <div className='mb-8 max-w-md'>
+          <h3 id='empty-posts-title' className='t-h3 text-secondary mb-3 font-bold'>
+            아직 북마크한 게시글이 없습니다
+          </h3>
+          <p className='t-body text-muted leading-relaxed'>
+            유용한 정보나 흥미로운 게시글을 발견하면 북마크해보세요!
+            <br />
+            나중에 쉽게 찾아볼 수 있어요.
+          </p>
+        </div>
+
+        {/* 추가 안내 메시지 */}
+        <div className='text-center'>
+          <p className='t-small text-muted/80'>💡 게시글에서 북마크 버튼을 눌러 저장할 수 있어요</p>
+        </div>
+      </section>
     );
   }
 

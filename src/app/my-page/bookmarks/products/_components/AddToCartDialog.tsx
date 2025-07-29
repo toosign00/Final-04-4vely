@@ -16,6 +16,7 @@ import { Minus, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import CartConfirmDialog from './CartConfirmDialog';
 
 /**
  * 장바구니 추가 다이얼로그 컴포넌트의 Props 타입 정의
@@ -55,6 +56,8 @@ export default function AddToCartDialog({ productId, isOpen, onClose, onSuccess 
   const [isLoading, setIsLoading] = useState(false); // 장바구니 추가 로딩 상태
   const [product, setProduct] = useState<Product | null>(null); // 상품 정보
   const [isProductLoading, setIsProductLoading] = useState(false); // 상품 정보 로딩 상태
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false); // 장바구니 추가 확인 다이얼로그 상태
+  const [confirmProductName, setConfirmProductName] = useState<string>(''); // 확인 다이얼로그에 표시할 상품명
 
   /**
    * 다이얼로그가 열릴 때 상품 정보를 로드하는 Effect
@@ -104,6 +107,8 @@ export default function AddToCartDialog({ productId, isOpen, onClose, onSuccess 
     setSelectedColor('');
     setSelectedColorIndex(0);
     setProduct(null);
+    setShowConfirmDialog(false);
+    setConfirmProductName('');
   }, [onClose]);
 
   /**
@@ -209,12 +214,21 @@ export default function AddToCartDialog({ productId, isOpen, onClose, onSuccess 
       });
 
       if (result.success) {
-        // 성공 시 콜백 실행 및 다이얼로그 닫기
+        // 성공 시 상품명 저장 후 원래 다이얼로그를 닫고 확인 다이얼로그 표시
+        setConfirmProductName(product?.name || '');
         onSuccess?.();
-        handleDialogClose();
+        // 상태 초기화 (원래 다이얼로그 닫기용)
+        setQuantity(QUANTITY_LIMITS.MIN);
+        setSelectedColor('');
+        setSelectedColorIndex(0);
+        setProduct(null);
+        // 원래 다이얼로그 닫기
+        onClose();
+        // 확인 다이얼로그 표시
+        setShowConfirmDialog(true);
       } else {
         // 실패 시 에러 메시지 표시
-        alert(result.message || '장바구니 추가에 실패했습니다.');
+        toast.error(result.message || '장바구니 추가에 실패했습니다.');
       }
     } catch (error) {
       // 예외 발생 시 에러 로깅 및 사용자 알림
@@ -223,7 +237,7 @@ export default function AddToCartDialog({ productId, isOpen, onClose, onSuccess 
     } finally {
       setIsLoading(false);
     }
-  }, [product, productId, quantity, selectedColor, onSuccess, handleDialogClose]);
+  }, [product, productId, quantity, selectedColor, onSuccess, onClose]);
 
   // 상품의 색상 옵션 목록 (메모이제이션으로 성능 최적화)
   const colors = useMemo(() => (product ? getProductPotColors(product) : []), [product]);
@@ -275,120 +289,130 @@ export default function AddToCartDialog({ productId, isOpen, onClose, onSuccess 
   }, [product, colors.length, selectedColor]);
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && handleDialogClose()}>
-      <DialogContent className='w-[95vw] max-w-sm sm:max-w-md md:max-w-lg'>
-        <DialogHeader className='pb-2 text-center'>
-          <DialogTitle className='text-lg font-semibold'>장바구니에 추가</DialogTitle>
-          <DialogDescription className='text-sm text-gray-500'>옵션과 수량을 선택해주세요.</DialogDescription>
-        </DialogHeader>
+    <>
+      <Dialog open={isOpen} onOpenChange={(open) => !open && handleDialogClose()}>
+        <DialogContent className='w-[95vw] max-w-sm sm:max-w-md md:max-w-lg' showCloseButton={false}>
+          <DialogHeader className='pb-2 text-center'>
+            <DialogTitle className='text-lg font-semibold'>장바구니에 추가</DialogTitle>
+            <DialogDescription className='text-sm text-gray-500'>옵션과 수량을 선택해주세요.</DialogDescription>
+          </DialogHeader>
 
-        {isProductLoading ? (
-          <div className='flex items-center justify-center py-6'>
-            <div className='flex flex-col items-center text-center'>
-              <div className='border-primary mb-3 h-6 w-6 animate-spin rounded-full border-2 border-t-transparent' />
-              <p className='text-xs text-gray-600'>상품 정보를 불러오는 중...</p>
-            </div>
-          </div>
-        ) : product ? (
-          <div className='space-y-3 sm:space-y-6'>
-            {/* 상품 정보 */}
-            <div className='flex gap-3 sm:flex-row sm:gap-6'>
-              <div className='relative h-40 w-40 flex-shrink-0 sm:h-51 sm:w-51'>
-                <Image src={currentImageUrl} alt={product.name} fill sizes='(max-width: 640px) 100px, (max-width: 768px) 160px, 192px' className='rounded-lg object-cover' />
+          {isProductLoading ? (
+            <div className='flex items-center justify-center py-6'>
+              <div className='flex flex-col items-center text-center'>
+                <div className='border-primary mb-3 h-6 w-6 animate-spin rounded-full border-2 border-t-transparent' />
+                <p className='text-xs text-gray-600'>상품 정보를 불러오는 중...</p>
               </div>
-              <div className='min-w-0 flex-1 space-y-2 sm:space-y-4'>
-                <div>
-                  <h3 className='text-sm font-semibold text-gray-900 sm:text-base'>{product.name}</h3>
-                  <p className='mt-1 text-base font-bold text-gray-900 sm:text-xl'>{product.price.toLocaleString()}원</p>
+            </div>
+          ) : product ? (
+            <div className='space-y-3 sm:space-y-6'>
+              {/* 상품 정보 */}
+              <div className='flex gap-3 sm:flex-row sm:gap-6'>
+                <div className='relative h-40 w-40 flex-shrink-0 sm:h-51 sm:w-51'>
+                  <Image src={currentImageUrl} alt={product.name} fill sizes='(max-width: 640px) 100px, (max-width: 768px) 160px, 192px' className='rounded-lg object-cover' />
                 </div>
+                <div className='min-w-0 flex-1 space-y-2 sm:space-y-4'>
+                  <div>
+                    <h3 className='text-sm font-semibold text-gray-900 sm:text-base'>{product.name}</h3>
+                    <p className='mt-1 text-base font-bold text-gray-900 sm:text-xl'>{product.price.toLocaleString()}원</p>
+                  </div>
 
-                {/* 색상 선택 */}
-                {colors.length > 0 && (
+                  {/* 색상 선택 */}
+                  {colors.length > 0 && (
+                    <div className='space-y-1'>
+                      <label className='block text-xs font-semibold text-gray-900 sm:text-sm'>색상</label>
+                      <div className='flex flex-wrap gap-1.5'>
+                        {colors.map((color, index) => (
+                          <button
+                            type='button'
+                            key={color}
+                            onClick={() => handleColorSelect(color, index)}
+                            className={`cursor-pointer rounded border px-2 py-1 text-xs font-medium transition-all duration-200 sm:px-3 sm:py-1.5 sm:text-sm ${
+                              selectedColor === color ? 'border-gray-900 bg-gray-900 text-white' : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400 hover:bg-gray-50'
+                            }`}
+                            aria-pressed={selectedColor === color}
+                            aria-label={`${color} 색상 선택`}
+                          >
+                            {color}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 수량 선택 */}
                   <div className='space-y-1'>
-                    <label className='block text-xs font-semibold text-gray-900 sm:text-sm'>색상</label>
-                    <div className='flex flex-wrap gap-1.5'>
-                      {colors.map((color, index) => (
-                        <button
-                          type='button'
-                          key={color}
-                          onClick={() => handleColorSelect(color, index)}
-                          className={`cursor-pointer rounded border px-2 py-1 text-xs font-medium transition-all duration-200 sm:px-3 sm:py-1.5 sm:text-sm ${
-                            selectedColor === color ? 'border-gray-900 bg-gray-900 text-white' : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400 hover:bg-gray-50'
-                          }`}
-                          aria-pressed={selectedColor === color}
-                          aria-label={`${color} 색상 선택`}
-                        >
-                          {color}
-                        </button>
-                      ))}
+                    <label className='block text-xs font-semibold text-gray-900 sm:text-sm'>수량</label>
+                    <div className='flex w-fit items-center gap-0 overflow-hidden rounded border border-gray-200'>
+                      <Button
+                        variant='ghost'
+                        size='sm'
+                        onClick={() => handleQuantityChange(-1)}
+                        disabled={(typeof quantity === 'string' ? parseInt(quantity, 10) || QUANTITY_LIMITS.MIN : quantity) <= QUANTITY_LIMITS.MIN}
+                        className='h-7 w-7 p-0 hover:bg-gray-100 disabled:opacity-30 sm:h-8 sm:w-8'
+                        aria-label='수량 감소'
+                      >
+                        <Minus className='size-3' />
+                      </Button>
+                      <input
+                        type='number'
+                        min={QUANTITY_LIMITS.MIN}
+                        max={QUANTITY_LIMITS.MAX}
+                        value={quantity}
+                        onChange={handleQuantityInputChange}
+                        onKeyDown={handleQuantityKeyDown}
+                        onBlur={handleQuantityInputBlur}
+                        className='h-7 w-8 [appearance:textfield] border-x border-gray-200 bg-white text-center text-xs font-medium focus:ring-0 focus:outline-none sm:h-8 sm:w-10 sm:text-sm [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none'
+                        aria-label='수량 입력'
+                      />
+                      <Button
+                        variant='ghost'
+                        size='sm'
+                        onClick={() => handleQuantityChange(1)}
+                        disabled={(typeof quantity === 'string' ? parseInt(quantity, 10) || QUANTITY_LIMITS.MIN : quantity) >= QUANTITY_LIMITS.MAX}
+                        className='h-7 w-7 p-0 hover:bg-gray-100 disabled:opacity-30 sm:h-8 sm:w-8'
+                        aria-label='수량 증가'
+                      >
+                        <Plus className='size-3' />
+                      </Button>
                     </div>
                   </div>
-                )}
+                </div>
+              </div>
 
-                {/* 수량 선택 */}
-                <div className='space-y-1'>
-                  <label className='block text-xs font-semibold text-gray-900 sm:text-sm'>수량</label>
-                  <div className='flex w-fit items-center gap-0 overflow-hidden rounded border border-gray-200'>
-                    <Button
-                      variant='ghost'
-                      size='sm'
-                      onClick={() => handleQuantityChange(-1)}
-                      disabled={(typeof quantity === 'string' ? parseInt(quantity, 10) || QUANTITY_LIMITS.MIN : quantity) <= QUANTITY_LIMITS.MIN}
-                      className='h-7 w-7 p-0 hover:bg-gray-100 disabled:opacity-30 sm:h-8 sm:w-8'
-                      aria-label='수량 감소'
-                    >
-                      <Minus className='size-3' />
-                    </Button>
-                    <input
-                      type='number'
-                      min={QUANTITY_LIMITS.MIN}
-                      max={QUANTITY_LIMITS.MAX}
-                      value={quantity}
-                      onChange={handleQuantityInputChange}
-                      onKeyDown={handleQuantityKeyDown}
-                      onBlur={handleQuantityInputBlur}
-                      className='h-7 w-8 [appearance:textfield] border-x border-gray-200 bg-white text-center text-xs font-medium focus:ring-0 focus:outline-none sm:h-8 sm:w-10 sm:text-sm [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none'
-                      aria-label='수량 입력'
-                    />
-                    <Button
-                      variant='ghost'
-                      size='sm'
-                      onClick={() => handleQuantityChange(1)}
-                      disabled={(typeof quantity === 'string' ? parseInt(quantity, 10) || QUANTITY_LIMITS.MIN : quantity) >= QUANTITY_LIMITS.MAX}
-                      className='h-7 w-7 p-0 hover:bg-gray-100 disabled:opacity-30 sm:h-8 sm:w-8'
-                      aria-label='수량 증가'
-                    >
-                      <Plus className='size-3' />
-                    </Button>
+              {/* 총 가격 */}
+              <div className='border-t border-gray-200 pt-3 sm:pt-4'>
+                <div className='flex items-center justify-between'>
+                  <span className='text-xs text-gray-600 sm:text-sm'>총 {typeof quantity === 'string' ? parseInt(quantity, 10) || QUANTITY_LIMITS.MIN : quantity}개</span>
+                  <div className='text-right'>
+                    <div className='text-xs text-gray-500'>
+                      {product.price.toLocaleString()}원 × {typeof quantity === 'string' ? parseInt(quantity, 10) || QUANTITY_LIMITS.MIN : quantity}개
+                    </div>
+                    <div className='text-lg font-bold text-gray-900 sm:text-xl'>{totalPrice.toLocaleString()}원</div>
                   </div>
                 </div>
               </div>
             </div>
+          ) : null}
 
-            {/* 총 가격 */}
-            <div className='border-t border-gray-200 pt-3 sm:pt-4'>
-              <div className='flex items-center justify-between'>
-                <span className='text-xs text-gray-600 sm:text-sm'>총 {typeof quantity === 'string' ? parseInt(quantity, 10) || QUANTITY_LIMITS.MIN : quantity}개</span>
-                <div className='text-right'>
-                  <div className='text-xs text-gray-500'>
-                    {product.price.toLocaleString()}원 × {typeof quantity === 'string' ? parseInt(quantity, 10) || QUANTITY_LIMITS.MIN : quantity}개
-                  </div>
-                  <div className='text-lg font-bold text-gray-900 sm:text-xl'>{totalPrice.toLocaleString()}원</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : null}
+          <DialogFooter className='flex flex-col gap-2 pt-3 sm:flex-row sm:gap-3 sm:pt-4'>
+            <Button variant='default' onClick={handleDialogClose} className='order-2 w-full text-sm sm:order-1 sm:w-auto sm:flex-1'>
+              취소
+            </Button>
+            <Button variant='primary' onClick={handleAddToCart} loading={isLoading} loadingText='추가 중...' disabled={isAddButtonDisabled} className='order-1 sm:order-2 sm:flex-1' fullWidth aria-label='선택한 상품을 장바구니에 추가'>
+              장바구니에 추가
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-        <DialogFooter className='flex flex-col gap-2 pt-3 sm:flex-row sm:gap-3 sm:pt-4'>
-          <Button variant='default' onClick={handleDialogClose} className='order-2 w-full text-sm sm:order-1 sm:w-auto sm:flex-1'>
-            취소
-          </Button>
-          <Button variant='primary' onClick={handleAddToCart} loading={isLoading} loadingText='추가 중...' disabled={isAddButtonDisabled} className='order-1 sm:order-2 sm:flex-1' fullWidth aria-label='선택한 상품을 장바구니에 추가'>
-            장바구니에 추가
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      <CartConfirmDialog
+        isOpen={showConfirmDialog}
+        onClose={() => {
+          setShowConfirmDialog(false);
+        }}
+        productName={confirmProductName}
+      />
+    </>
   );
 }

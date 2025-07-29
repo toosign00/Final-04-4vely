@@ -9,8 +9,7 @@ import { Plant } from './PlantCard';
 import PlantList from './PlantList';
 import PlantRegisterModal from './PlantRegisterModal';
 import PlantSortSelect, { SortOption } from './PlantSortSelect';
-import { Button } from '@/components/ui/Button';
-import { AlertCircle } from 'lucide-react';
+import ErrorDisplay from '../../_components/ErrorDisplay';
 
 interface MyPlantsClientProps {
   initialPlants: Plant[];
@@ -75,22 +74,7 @@ export default function MyPlantsClient({ initialPlants, initialError, initialLat
   const displayItems = allItems.slice(startIdx, startIdx + ITEMS_PER_PAGE);
 
   if (error) {
-    return (
-      <div className='flex items-center justify-center'>
-        <div className='flex w-full max-w-md flex-col items-center gap-6 px-8 py-12'>
-          <AlertCircle className='text-error mb-2 size-12' />
-          <div className='t-h3 text-secondary mb-1'>프로필 정보를 불러오지 못했습니다</div>
-          <div className='t-desc text-secondary/70 mb-4 text-center'>
-            일시적인 오류가 발생했어요.
-            <br />
-            잠시 후 다시 시도해 주세요.
-          </div>
-          <Button variant='secondary' onClick={() => window.location.reload()}>
-            새로고침
-          </Button>
-        </div>
-      </div>
-    );
+    return <ErrorDisplay title='나의 식물을 불러오지 못했습니다' message='일시적인 오류가 발생했어요.' />;
   }
 
   return (

@@ -1,7 +1,7 @@
 export interface ProductDetail {
   id: number;
   name: string;
-  imageUrl: string;
+  image: string;
   option: string;
   quantity: number;
   price: number;
@@ -10,7 +10,7 @@ export interface ProductDetail {
 export interface OrderHistoryCardProps {
   order: {
     id: number;
-    imageUrl: string;
+    image: string;
     name: string;
     option: string;
     quantity: number;
@@ -33,7 +33,7 @@ export interface OrderHistoryCardProps {
 
 export interface OrderCardData {
   id: number;
-  imageUrl: string;
+  image: string;
   name: string;
   option: string;
   quantity: number;

@@ -1,4 +1,5 @@
 // src/lib/functions/community.ts
+import type { CommunityComment } from '@/types/commnunity.types';
 import { Post } from '@/types/commnunity.types';
 
 export const API_BASE_URL = process.env.API_SERVER || 'https://fesp-api.koyeb.app/market';
@@ -20,7 +21,7 @@ export interface CreatePostData {
   title: string;
   content: string;
   image: string;
-  extra: { contents: PostContentPayload[] };
+  extra: { contents: PostContentPayload[]; name?: string; nickname?: string; species?: string };
   tag?: string;
 }
 
@@ -48,12 +49,13 @@ interface RawPost {
   title: string;
   content: string;
   image: string;
-  extra?: { contents: RawContent[] };
+  views?: number;
+  extra?: { contents: RawContent[]; name: string; nickname: string; species: string };
   createdAt: string;
   updatedAt: string;
   repliesCount?: number;
-  bookmarks?: number;
   myBookmarkId?: number | null;
+  isBookmarked: boolean;
 }
 
 // ------------------------------
@@ -68,40 +70,47 @@ function makeHeaders(token?: string): Record<string, string> {
   return headers;
 }
 
+export const resolveUrl = (path: string): string => {
+  if (!path) return '';
+  if (path.startsWith('http')) return path;
+
+  if (path.startsWith('/')) return `${API_BASE_URL}${path}`;
+  return `${API_BASE_URL}/${path}`;
+};
+
 function mapRawPost(item: RawPost): Post {
   return {
     id: String(item._id),
     title: item.title,
     description: item.content,
-    coverImage: `${API_BASE_URL}${item.image}`,
+    coverImage: resolveUrl(item.image),
     contents:
       item.extra?.contents.map((c) => ({
         id: c.id,
         title: c.title,
         content: c.content,
-        postImage: `${API_BASE_URL}${c.postImage}`,
-        thumbnailImage: `${API_BASE_URL}${c.thumbnailImage}`,
+        postImage: resolveUrl(c.postImage),
+        thumbnailImage: resolveUrl(c.thumbnailImage),
       })) || [],
     author: {
       id: String(item.user._id),
       username: item.user.name,
-      avatar: item.user.avatar ? `${API_BASE_URL}/${item.user.avatar}` : '',
+      avatar: item.user.avatar ? resolveUrl(item.user.avatar) : '',
     },
     stats: {
       likes: 0,
       comments: item.repliesCount ?? 0,
-      views: 0,
-      bookmarks: item.bookmarks,
+      views: item.views ?? 0,
     },
     repliesCount: item.repliesCount,
     type: item.type,
     myBookmarkId: item.myBookmarkId ?? null,
-    product_id: item.product_id ?? undefined,
-    seller_id: item.seller_id ?? undefined,
-    product: undefined,
-    isBookmarked: Boolean(item.myBookmarkId),
+    isBookmarked: item.isBookmarked ?? !!item.myBookmarkId,
     createdAt: item.createdAt,
     updatedAt: item.updatedAt,
+    name: item.extra?.name ?? '',
+    nickname: item.extra?.nickname ?? '',
+    species: item.extra?.species ?? '',
   };
 }
 
@@ -169,13 +178,15 @@ export async function createPost(
 /**
  * 게시글 목록 조회
  */
-export async function fetchPosts(page = 1, limit = 8, type = 'community'): Promise<{ posts: Post[]; pagination: Pagination }> {
+export async function fetchPosts(page = 1, limit = 8, type = 'community', token?: string): Promise<{ posts: Post[]; pagination: Pagination }> {
   const url = new URL(`${API_BASE_URL}/posts`);
   url.searchParams.set('type', type);
   url.searchParams.set('page', String(page));
   url.searchParams.set('limit', String(limit));
 
-  const res = await fetch(url.toString(), { headers: makeHeaders() });
+  const headers = makeHeaders(token);
+
+  const res = await fetch(url.toString(), { headers });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
   const { item, pagination } = (await res.json()) as {
@@ -264,6 +275,9 @@ export async function updatePostById(
     coverImage?: string;
     extra: {
       contents: { id: string; content?: string; postImage?: string }[];
+      name?: string;
+      nickname?: string;
+      species?: string;
     };
   },
   token: string,
@@ -283,10 +297,9 @@ export async function updatePostById(
 
   try {
     const json = await res.json();
-    console.log('[update 응답 결과]', json); // ⚠️ 디버깅용
+    console.log('[update 응답 결과]', json);
 
     if (!json || !json.item) {
-      console.warn('⚠️ 서버 응답에 item이 없습니다. fetchPostById로 fallback.');
       return await fetchPostById(id); // 서버가 item 안 줄 경우 재조회
     }
 
@@ -295,5 +308,57 @@ export async function updatePostById(
     console.error('[updatePostById JSON 파싱 실패]', err);
     // fallback 처리: 상세 조회로 대체
     return await fetchPostById(id);
+  }
+}
+
+// 댓글 목록
+export async function fetchComments(postId: string): Promise<CommunityComment[]> {
+  const res = await fetch(`${API_BASE_URL}/posts/${postId}/replies`, {
+    headers: makeHeaders(),
+  });
+  if (!res.ok) throw new Error(`댓글 조회 실패: HTTP ${res.status}`);
+  const { item } = await res.json();
+  return item;
+}
+
+// 댓글 생성
+export async function createComment(postId: string, content: string, token: string): Promise<CommunityComment> {
+  const res = await fetch(`${API_BASE_URL}/posts/${postId}/replies`, {
+    method: 'POST',
+    headers: makeHeaders(token),
+    body: JSON.stringify({ content }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || `댓글 작성 실패: HTTP ${res.status}`);
+  }
+  const { item } = await res.json();
+  return item as CommunityComment;
+}
+
+// 댓글 수정
+export async function updateComment(postId: string, replyId: string, content: string, token: string): Promise<CommunityComment> {
+  const res = await fetch(`${API_BASE_URL}/posts/${postId}/replies/${replyId}`, {
+    method: 'PATCH',
+    headers: makeHeaders(token),
+    body: JSON.stringify({ content }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || `댓글 수정 실패: HTTP ${res.status}`);
+  }
+  const { item } = await res.json();
+  return item as CommunityComment;
+}
+
+// 댓글 삭제
+export async function deleteComment(postId: string, replyId: string, token: string): Promise<void> {
+  const res = await fetch(`${API_BASE_URL}/posts/${postId}/replies/${replyId}`, {
+    method: 'DELETE',
+    headers: makeHeaders(token),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || `댓글 삭제 실패: HTTP ${res.status}`);
   }
 }

@@ -1,7 +1,8 @@
 'use client';
 
 import { Button } from '@/components/ui/Button';
-import { deletePostById } from '@/lib/functions/community';
+import { deletePostById } from '@/lib/functions/communityFunctions';
+
 import useUserStore from '@/store/authStore';
 import { Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';

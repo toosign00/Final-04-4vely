@@ -6,7 +6,22 @@ export interface PostContent {
   thumbnailImage: string;
 }
 
+export interface CommunityComment {
+  _id: string;
+  content: string;
+  user: {
+    _id: string;
+    name: string;
+    avatar?: string;
+  };
+  createdAt: string;
+  updatedAt?: string;
+}
+
 export interface Post {
+  name: string;
+  nickname: string;
+  species: string;
   id: string;
   title: string;
   description: string;
@@ -21,22 +36,12 @@ export interface Post {
     likes: number;
     comments: number;
     views: number;
-    bookmarks?: number;
   };
   type?: string;
   myBookmarkId?: number | null;
-  product_id?: number | string;
-  seller_id?: number | string;
-  product?: {
-    name: string;
-    image: {
-      url: string;
-      fileName: string;
-      orgName: string;
-    };
-  };
-  repliesCount?: number;
   isBookmarked?: boolean;
+  repliesCount?: number;
   createdAt: string;
   updatedAt?: string;
+  replies?: CommunityComment[];
 }

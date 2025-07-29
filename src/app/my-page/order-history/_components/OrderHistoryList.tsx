@@ -2,42 +2,8 @@
 
 import PaginationWrapper from '@/components/ui/PaginationWrapper';
 import { useState } from 'react';
+import { OrderHistoryListProps } from '../_types';
 import OrderHistoryCard from './OrderHistoryCard';
-
-interface ProductDetail {
-  id: number;
-  name: string;
-  imageUrl: string;
-  option: string;
-  quantity: number;
-  price: number;
-}
-
-interface OrderCardData {
-  id: number;
-  imageUrl: string;
-  name: string;
-  option: string;
-  quantity: number;
-  orderDate: string;
-  totalPrice: string;
-  deliveryStatus: 'preparing' | 'shipping' | 'completed';
-  products?: ProductDetail[];
-  hasMultipleProducts?: boolean;
-  cost?: {
-    products: number;
-    shippingFees: number;
-    discount: {
-      products: number;
-      shippingFees: number;
-    };
-    total: number;
-  };
-}
-
-interface OrderHistoryListProps {
-  orders: OrderCardData[];
-}
 
 export default function OrderHistoryList({ orders }: OrderHistoryListProps) {
   // 한 페이지에 보여줄 아이템 개수

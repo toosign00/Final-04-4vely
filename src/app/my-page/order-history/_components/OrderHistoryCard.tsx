@@ -3,98 +3,49 @@
 import { Button } from '@/components/ui/Button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/Dialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/Tooltip';
+import { useOrderDeliveryStatus } from '@/app/my-page/order-history/_hooks/useOrderDeliveryStatus';
+import { getOrderReviewStatusAction } from '@/lib/actions/orderReviewServerActions';
 import { ChevronDownIcon, ChevronUpIcon, PlusIcon } from 'lucide-react';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import { OrderHistoryCardProps, ProductDetail } from '../_types';
 import ReviewForm from './ReviewForm';
 import ReviewModal from './ReviewModal';
-
-interface ProductDetail {
-  id: number;
-  name: string;
-  imageUrl: string;
-  option: string;
-  quantity: number;
-  price: number;
-}
-
-interface OrderHistoryCardProps {
-  order: {
-    id: number;
-    imageUrl: string;
-    name: string;
-    option: string;
-    quantity: number;
-    orderDate: string;
-    totalPrice: string;
-    deliveryStatus: 'preparing' | 'shipping' | 'completed';
-    products?: ProductDetail[];
-    hasMultipleProducts?: boolean;
-    cost?: {
-      products: number;
-      shippingFees: number;
-      discount: {
-        products: number;
-        shippingFees: number;
-      };
-      total: number;
-    };
-  };
-}
 
 export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
   const [isReviewOpen, setReviewOpen] = useState(false);
   const [showAllProducts, setShowAllProducts] = useState(false);
   const [isExchangeDialogOpen, setExchangeDialogOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<ProductDetail | null>(null);
+  const [reviewedProductIds, setReviewedProductIds] = useState<number[]>([]);
+  const [isLoadingReviewStatus, setIsLoadingReviewStatus] = useState(false);
 
   const hasMultipleProducts = order.hasMultipleProducts && order.products && order.products.length > 1;
 
-  // 배송 상태에 따른 프로그레스 계산
-  const getProgressStep = (status: string) => {
-    switch (status) {
-      case 'preparing':
-        return 1;
-      case 'shipping':
-        return 2;
-      case 'completed':
-        return 3;
-      default:
-        return 1;
-    }
-  };
-
-  // 각 단계별 색상 반환
-  const getStepColor = (step: number, currentStep: number) => {
-    if (currentStep >= step) {
-      switch (step) {
-        case 1:
-          return 'bg-orange-500';
-        case 2:
-          return 'bg-blue-500';
-        case 3:
-          return 'bg-green-500';
-        default:
-          return 'bg-gray-300';
+  // 서버에서 리뷰 상태 확인
+  useEffect(() => {
+    const fetchReviewStatus = async () => {
+      if (order.deliveryStatus === 'completed') {
+        setIsLoadingReviewStatus(true);
+        try {
+          const result = await getOrderReviewStatusAction(order.id);
+          if (result.success) {
+            setReviewedProductIds(result.reviewedProductIds);
+          }
+        } finally {
+          setIsLoadingReviewStatus(false);
+        }
       }
-    }
-    return 'bg-gray-300';
-  };
+    };
 
-  // 현재 상태에 따른 툴팁 텍스트 반환
-  const getCurrentStatusText = (status: string) => {
-    switch (status) {
-      case 'preparing':
-        return '준비 중';
-      case 'shipping':
-        return '배송 중';
-      case 'completed':
-        return '배송 완료';
-      default:
-        return '준비 중';
-    }
-  };
+    fetchReviewStatus();
+  }, [order.id, order.deliveryStatus]);
 
-  const currentStep = getProgressStep(order.deliveryStatus);
+  // 리뷰 작성 가능한 상품이 있는지 확인
+  const hasReviewableProducts = order.products?.some((product) => !reviewedProductIds.includes(product.id)) ?? false;
+
+  const { currentStep, statusText, getStepColor } = useOrderDeliveryStatus(order.deliveryStatus);
 
   return (
     <TooltipProvider>
@@ -123,7 +74,7 @@ export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
               </div>
             </TooltipTrigger>
             <TooltipContent>
-              <p>{getCurrentStatusText(order.deliveryStatus)}</p>
+              <p>{statusText}</p>
             </TooltipContent>
           </Tooltip>
         </div>
@@ -292,8 +243,37 @@ export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
                 <Button variant='default' size='sm' onClick={() => setExchangeDialogOpen(true)}>
                   교환/환불
                 </Button>
-                <Button variant='primary' size='sm' disabled={order.deliveryStatus !== 'completed'} onClick={() => setReviewOpen(true)}>
-                  리뷰 작성
+                <Button
+                  variant='primary'
+                  size='sm'
+                  disabled={order.deliveryStatus !== 'completed' || !hasReviewableProducts || isLoadingReviewStatus}
+                  onClick={() => {
+                    // 단일 상품인 경우에만 자동 선택 (리뷰 가능한 상품만)
+                    if (!hasMultipleProducts) {
+                      const product = order.products?.[0];
+                      if (product && !reviewedProductIds.includes(product.id)) {
+                        setSelectedProduct(product);
+                      } else {
+                        const productToReview = {
+                          id: 0,
+                          name: order.name,
+                          imageUrl: order.imageUrl,
+                          option: order.option,
+                          quantity: order.quantity,
+                          price: 0,
+                        };
+                        if (!reviewedProductIds.includes(productToReview.id)) {
+                          setSelectedProduct(productToReview);
+                        }
+                      }
+                    } else {
+                      // 다중 상품인 경우 선택하지 않고 모달만 열기
+                      setSelectedProduct(null);
+                    }
+                    setReviewOpen(true);
+                  }}
+                >
+                  {isLoadingReviewStatus ? '확인 중...' : hasReviewableProducts ? '리뷰 작성' : '리뷰 완료'}
                 </Button>
               </div>
             </div>
@@ -302,7 +282,77 @@ export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
 
         {/* 리뷰 모달 */}
         <ReviewModal open={isReviewOpen} onOpenChange={setReviewOpen}>
-          <ReviewForm onSuccess={() => setReviewOpen(false)} />
+          <div className='space-y-4'>
+            {/* 단일 상품 정보 */}
+            {!hasMultipleProducts && selectedProduct && (
+              <div className='flex items-center gap-3 border-b border-gray-200 pb-4'>
+                <div className='h-12 w-12 overflow-hidden rounded-lg border border-gray-200 bg-gray-100'>
+                  <Image src={selectedProduct.imageUrl} alt={selectedProduct.name} width={48} height={48} className='h-full w-full object-cover' />
+                </div>
+                <div className='flex-1'>
+                  <h4 className='text-secondary t-body line-clamp-1 font-medium'>{selectedProduct.name}</h4>
+                  <p className='text-muted t-small'>{selectedProduct.option}</p>
+                </div>
+              </div>
+            )}
+
+            {/* 다중 상품 - 통합된 리뷰 폼 */}
+            {hasMultipleProducts && order.products && (
+              <div className='space-y-4'>
+                <h3 className='text-secondary t-h4 font-medium'>상품 리뷰 작성</h3>
+
+                <ReviewForm
+                  productId={selectedProduct?.id || 0}
+                  orderId={order.id}
+                  products={order.products}
+                  reviewedProductIds={reviewedProductIds}
+                  selectedProduct={selectedProduct}
+                  onProductSelect={setSelectedProduct}
+                  onSuccess={async (productId) => {
+                    // 즉시 UI 업데이트
+                    setReviewedProductIds((prev) => [...prev, productId]);
+                    setReviewOpen(false);
+                    setSelectedProduct(null);
+
+                    // 백그라운드에서 서버 상태 동기화
+                    try {
+                      const result = await getOrderReviewStatusAction(order.id);
+                      if (result.success) {
+                        setReviewedProductIds(result.reviewedProductIds);
+                      }
+                    } catch (error) {
+                      toast.error('리뷰 작성 후 서버 상태 동기화에 실패했습니다.');
+                      console.error('서버 상태 동기화 오류:', error);
+                    }
+                  }}
+                />
+              </div>
+            )}
+
+            {/* 단일 상품 리뷰 폼 */}
+            {!hasMultipleProducts && selectedProduct && (
+              <ReviewForm
+                productId={selectedProduct.id}
+                orderId={order.id}
+                onSuccess={async (productId) => {
+                  // 즉시 UI 업데이트 (낙관적 업데이트)
+                  setReviewedProductIds((prev) => [...prev, productId]);
+                  setReviewOpen(false);
+                  setSelectedProduct(null);
+
+                  // 백그라운드에서 서버 상태 동기화
+                  try {
+                    const result = await getOrderReviewStatusAction(order.id);
+                    if (result.success) {
+                      setReviewedProductIds(result.reviewedProductIds);
+                    }
+                  } catch (error) {
+                    console.error('서버 상태 동기화 오류:', error);
+                  }
+                }}
+              />
+            )}
+          </div>
         </ReviewModal>
 
         {/* 교환/환불 다이얼로그 */}

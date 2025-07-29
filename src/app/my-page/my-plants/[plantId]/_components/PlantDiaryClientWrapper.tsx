@@ -174,13 +174,9 @@ const PlantDiaryClientWrapper = React.memo<PlantDiaryClientWrapperProps>(({ plan
   // 로딩 상태 UI
   if (isLoading) {
     return (
-      <div className='bg-surface min-h-screen'>
-        <div className='flex min-h-[25rem] items-center justify-center'>
-          <div className='flex flex-col items-center text-center'>
-            <div className='border-primary mb-4 h-8 w-8 animate-spin rounded-full border-4 border-t-transparent' />
-            <p className='t-body text-secondary/70'>식물 정보를 불러오는 중...</p>
-          </div>
-        </div>
+      <div className='bg-surface flex h-screen flex-col items-center justify-center'>
+        <div className='border-primary mb-3 h-9 w-9 animate-spin rounded-full border-2 border-t-transparent' />
+        <p className='t-h4 text-secondary pl-2.5'>식물 정보를 불러오는 중...</p>
       </div>
     );
   }

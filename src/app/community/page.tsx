@@ -25,11 +25,6 @@ const CardData = Array.from({ length: 12 }).map((_, i) => ({
 }));
 
 export default function CommunityPage() {
-  // 페이지 레벨에서 북마크된 ID 리스트 관리
-  const [bookmarkedIds, setBookmarkedIds] = useState<string[]>([]);
-  const toggleBookmark = (id: string, bookmarked: boolean) => {
-    setBookmarkedIds((prev) => (bookmarked ? [...prev, id] : prev.filter((x) => x !== id)));
-  };
   // — 좋아요(하트) 상태 관리
   const [likedIds, setLikedIds] = useState<string[]>([]);
   const toggleLike = (id: string) => {
@@ -90,13 +85,12 @@ export default function CommunityPage() {
       {/* 카드 그리드 */}
       <div className='grid grid-cols-1 justify-items-center gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
         {postsToShow.map((post) => {
-          const isBookmarked = bookmarkedIds.includes(String(post.id));
           const isLiked = likedIds.includes(String(post.id));
           return (
             <Link key={post.id} href={`/community/${post.id}`}>
               <Card className='relative cursor-pointer'>
                 <div className='relative'>
-                  <BookmarkButton productId={String(post.id)} initialBookmarked={isBookmarked} variant='default' className='absolute top-2 right-2 z-10 sm:top-3 sm:right-3 md:top-4 md:right-4' onToggle={toggleBookmark} />
+                  <BookmarkButton targetId={post.id} type='post' className='absolute top-2 right-2 z-10 sm:top-3 sm:right-3 md:top-4 md:right-4' />
                   <CardImage src={post.image} alt={post.title} />
                 </div>
                 <CardContent>

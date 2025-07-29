@@ -171,6 +171,7 @@ const PlantRegisterModal = memo(function PlantRegisterModal({ open, onClose, onS
         formData.append('name', data.name.trim());
         formData.append('species', data.species.trim());
         formData.append('location', data.location.trim());
+        formData.append('date', data.date);
         formData.append('memoTitle', data.memoTitle.trim());
         formData.append('memo', data.memo.trim());
 
@@ -243,42 +244,41 @@ const PlantRegisterModal = memo(function PlantRegisterModal({ open, onClose, onS
             <div className='grid grid-cols-1 gap-6 lg:grid-cols-5 lg:items-center'>
               {/* 이미지 업로드 */}
               <div className='lg:col-span-2'>
-                <div className='flex flex-col items-center space-y-3'>
+                <div className='flex flex-col items-center'>
                   <div className='flex w-full flex-col'>
                     <div className='flex justify-center'>
-                      <div className='flex w-55 flex-col'>
+                      <div className='flex w-56 flex-col'>
                         <label className='t-small mb-2 font-medium'>식물 사진 *</label>
-                        <div onClick={handleImageAreaClick} className={`relative transition-all ${loading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:opacity-80'}`}>
-                          {previewUrl ? (
-                            <div className='relative'>
-                              <Image src={previewUrl} alt='식물 미리보기' width={160} height={160} className='h-40 w-40 rounded-2xl border-2 border-gray-200 object-cover shadow-lg' />
-                              <button
-                                type='button'
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleImageRemove();
-                                }}
-                                className='absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-sm text-white shadow-lg transition-colors hover:bg-red-600'
-                              >
-                                ×
-                              </button>
-                            </div>
-                          ) : (
-                            <div className={`flex h-55 w-55 flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 transition-colors ${loading ? 'opacity-50' : 'hover:bg-gray-100'}`}>
-                              <Plus className='mb-2 h-8 w-8 text-gray-400' />
-                              <span className='t-desc text-center text-sm font-medium text-gray-500'>사진 추가</span>
-                            </div>
-                          )}
+                        {/* 고정 크기 컨테이너로 레이아웃 안정화 */}
+                        <div className='relative h-56 w-56'>
+                          <div onClick={handleImageAreaClick} className={`absolute inset-0 transition-all ${loading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:opacity-80'}`}>
+                            {previewUrl ? (
+                              <div className='relative h-full w-full'>
+                                <Image src={previewUrl} alt='식물 미리보기' fill className='rounded-2xl border-2 border-gray-200 object-cover shadow-lg' />
+                                <button
+                                  type='button'
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleImageRemove();
+                                  }}
+                                  className='absolute -top-2 -right-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-sm text-white shadow-lg transition-colors hover:bg-red-600'
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            ) : (
+                              <div className={`flex h-full w-full flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 transition-colors ${loading ? 'opacity-50' : 'hover:bg-gray-100'}`}>
+                                <Plus className='mb-2 h-8 w-8 text-gray-400' />
+                                <span className='t-desc text-center text-sm font-medium text-gray-500'>사진 추가</span>
+                              </div>
+                            )}
+                          </div>
                         </div>
+                        {/* 에러 메시지 고정 높이 영역 */}
+                        <div className='mt-2 h-5 w-full'>{imageError && <p className='text-error px-2 text-xs leading-5'>{imageError}</p>}</div>
                       </div>
                     </div>
                     <input ref={fileInputRef} type='file' accept='image/*' onChange={handleImageChange} disabled={loading} className='hidden' />
-                    <div className='flex justify-center'>
-                      <div className='w-55'>
-                        {imageError && <p className='text-error min-h-[1rem] px-2 text-xs leading-4'>{imageError}</p>}
-                        {!imageError && <div className='min-h-[1rem]' />}
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -302,12 +302,14 @@ const PlantRegisterModal = memo(function PlantRegisterModal({ open, onClose, onS
                       },
                     }}
                     render={({ field }) => (
-                      <FormItem className='min-h-20'>
+                      <FormItem className='min-h-[5.25rem]'>
                         <FormLabel className='t-small font-medium'>식물 별명 *</FormLabel>
                         <FormControl>
                           <Input placeholder='예: 초록이' disabled={loading} className='h-11' maxLength={20} {...field} />
                         </FormControl>
-                        <FormMessage className='text-error mt-1 min-h-[1rem] text-xs leading-4' />
+                        <div className='mt-1 h-5'>
+                          <FormMessage className='text-error text-xs leading-5' />
+                        </div>
                       </FormItem>
                     )}
                   />
@@ -327,12 +329,14 @@ const PlantRegisterModal = memo(function PlantRegisterModal({ open, onClose, onS
                       },
                     }}
                     render={({ field }) => (
-                      <FormItem className='min-h-20'>
+                      <FormItem className='min-h-[5.25rem]'>
                         <FormLabel className='t-small font-medium'>식물명 *</FormLabel>
                         <FormControl>
                           <Input placeholder='예: 몬스테라' disabled={loading} className='h-11' maxLength={30} {...field} />
                         </FormControl>
-                        <FormMessage className='text-error mt-1 min-h-[1rem] text-xs leading-4' />
+                        <div className='mt-1 h-5'>
+                          <FormMessage className='text-error text-xs leading-5' />
+                        </div>
                       </FormItem>
                     )}
                   />
@@ -355,12 +359,14 @@ const PlantRegisterModal = memo(function PlantRegisterModal({ open, onClose, onS
                       },
                     }}
                     render={({ field }) => (
-                      <FormItem className='min-h-20'>
+                      <FormItem className='min-h-[5.25rem]'>
                         <FormLabel className='t-small font-medium'>식물 위치 *</FormLabel>
                         <FormControl>
                           <Input placeholder='예: 거실' disabled={loading} className='h-11' maxLength={20} {...field} />
                         </FormControl>
-                        <FormMessage className='text-error mt-1 min-h-[1rem] text-xs leading-4' />
+                        <div className='mt-1 h-5'>
+                          <FormMessage className='text-error text-xs leading-5' />
+                        </div>
                       </FormItem>
                     )}
                   />
@@ -372,12 +378,14 @@ const PlantRegisterModal = memo(function PlantRegisterModal({ open, onClose, onS
                       required: '분양일을 선택해주세요.',
                     }}
                     render={({ field }) => (
-                      <FormItem className='min-h-20'>
+                      <FormItem className='min-h-[5.25rem]'>
                         <FormLabel className='t-small font-medium'>분양일 *</FormLabel>
                         <FormControl>
                           <Input type='date' disabled={loading} className='h-11' {...field} />
                         </FormControl>
-                        <FormMessage className='text-error mt-1 min-h-[1rem] text-xs leading-4' />
+                        <div className='mt-1 h-5'>
+                          <FormMessage className='text-error text-xs leading-5' />
+                        </div>
                       </FormItem>
                     )}
                   />
@@ -403,12 +411,14 @@ const PlantRegisterModal = memo(function PlantRegisterModal({ open, onClose, onS
                   },
                 }}
                 render={({ field }) => (
-                  <FormItem className='min-h-20'>
+                  <FormItem className='min-h-[5.25rem]'>
                     <FormLabel className='t-small font-medium'>메모 제목 *</FormLabel>
                     <FormControl>
                       <Input placeholder='예: 처음 만난 우리 식물' disabled={loading} className='h-11' maxLength={50} {...field} />
                     </FormControl>
-                    <FormMessage className='text-error mt-1 min-h-[1rem] text-xs leading-4' />
+                    <div className='mt-1 h-5'>
+                      <FormMessage className='text-error text-xs leading-5' />
+                    </div>
                   </FormItem>
                 )}
               />
@@ -429,12 +439,14 @@ const PlantRegisterModal = memo(function PlantRegisterModal({ open, onClose, onS
                   },
                 }}
                 render={({ field }) => (
-                  <FormItem className='min-h-20'>
+                  <FormItem className='min-h-[5.25rem]'>
                     <FormLabel className='t-small font-medium'>메모 *</FormLabel>
                     <FormControl>
                       <Input placeholder='식물에 대한 간단한 메모를 작성해주세요' disabled={loading} className='h-11' maxLength={200} {...field} />
                     </FormControl>
-                    <FormMessage className='text-error mt-1 min-h-[1rem] text-xs leading-4' />
+                    <div className='mt-1 h-5'>
+                      <FormMessage className='text-error text-xs leading-5' />
+                    </div>
                   </FormItem>
                 )}
               />

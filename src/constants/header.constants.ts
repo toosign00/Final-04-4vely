@@ -5,7 +5,7 @@ export const MOBILE_MENU_LINK = 't-body rounded-lg px-4 py-2 text-center text-se
 
 // 메뉴 항목 배열
 export const menuLinks = [
-  { name: 'Green Magazine', href: '/green-magazine', showOn: ['desktop', 'mobile'] },
+  { name: 'Green Magazine', href: '/green-magazine?page=1', showOn: ['desktop', 'mobile'] },
   { name: '쇼핑하기', href: '/shop', showOn: ['desktop', 'mobile'] },
   { name: '커뮤니티', href: '/community', showOn: ['desktop', 'mobile'] },
   { name: 'FAQ', href: '/faq', showOn: ['desktop', 'mobile'] },

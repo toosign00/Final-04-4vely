@@ -26,10 +26,11 @@ export default function ClientWrite() {
   const [cover, setCover] = useState<File | null>(null);
   const [postForms, setPostForms] = useState<PostForm[]>([{ id: '1', title: '', content: '', postImage: null, thumbnailImage: null }]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // 추가된 정보 필드
   const [name, setName] = useState<string>('');
   const [nickname, setNickname] = useState<string>('');
   const [species, setSpecies] = useState<string>('');
+  //에러 상태들 식물이름, 제목, 이미지
+  const [nameError, setNameError] = useState(false);
 
   const handleCoverChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
@@ -108,7 +109,7 @@ export default function ClientWrite() {
   return (
     <main className='flex flex-col items-center space-y-12 pb-8'>
       {/* 대문 이미지 */}
-      <section className='w-full bg-white text-gray-500'>
+      <section className='w-full text-gray-500'>
         <label htmlFor='cover-upload' className='block w-full cursor-pointer'>
           <div className='relative flex h-64 w-full items-center justify-center overflow-hidden bg-white'>
             {cover ? (
@@ -128,32 +129,68 @@ export default function ClientWrite() {
       <h1 className='w-full max-w-4xl px-4 text-2xl font-bold'>글쓰기</h1>
 
       {/* 정보 입력 테이블 */}
-      <section className='w-full max-w-4xl overflow-hidden rounded-3xl p-6'>
+      <section className='w-full max-w-4xl overflow-hidden rounded-3xl bg-amber-50 p-6'>
         <h3 className='mb-4 text-lg font-semibold'>정보</h3>
         <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+          {/* 식물이름 (필수) */}
           <div className='flex flex-col'>
-            <label htmlFor='name' className='text-sm font-medium'>
-              이름
+            <label htmlFor='name' className={`flex items-center text-sm font-medium ${nameError ? 'text-red-500' : ''}`}>
+              식물이름<span className='ml-1 text-red-500'>*</span>
             </label>
-            <input id='name' type='text' value={name} onChange={(e) => setName(e.target.value)} placeholder='이름을 입력하세요' className='mt-1 h-10 w-full rounded border border-gray-300 px-3 text-sm' disabled={isSubmitting} />
+            <input
+              id='name'
+              type='text'
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+                if (nameError) setNameError(false);
+              }}
+              onBlur={() => {
+                if (!name.trim()) setNameError(true);
+              }}
+              placeholder='예: 안스리움'
+              disabled={isSubmitting}
+              className={`mt-1 h-10 w-full rounded border border-gray-300 px-3 text-sm focus:outline-none ${nameError ? 'border-red-500 focus:border-red-500' : ''} `}
+            />
+            {nameError && <p className='mt-1 text-xs text-red-500'>식물 이름을 입력해주세요.</p>}
           </div>
+
+          {/* 애칭 (선택) */}
           <div className='flex flex-col'>
             <label htmlFor='nickname' className='text-sm font-medium'>
               애칭
             </label>
-            <input id='nickname' type='text' value={nickname} onChange={(e) => setNickname(e.target.value)} placeholder='애칭을 입력하세요 (선택)' className='mt-1 h-10 w-full rounded border border-gray-300 px-3 text-sm' disabled={isSubmitting} />
+            <input
+              id='nickname'
+              type='text'
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              placeholder='애칭을 입력하세요'
+              disabled={isSubmitting}
+              className='mt-1 h-10 w-full rounded border border-gray-300 px-3 text-sm focus:outline-none'
+            />
           </div>
+
+          {/* 종류 (선택) */}
           <div className='flex flex-col sm:col-span-2'>
             <label htmlFor='species' className='text-sm font-medium'>
               종류
             </label>
-            <input id='species' type='text' value={species} onChange={(e) => setSpecies(e.target.value)} placeholder='종류를 입력하세요 (선택)' className='mt-1 h-10 w-full rounded border border-gray-300 px-3 text-sm' disabled={isSubmitting} />
+            <input
+              id='species'
+              type='text'
+              value={species}
+              onChange={(e) => setSpecies(e.target.value)}
+              placeholder='종류를 입력하세요'
+              disabled={isSubmitting}
+              className='mt-1 h-10 w-full rounded border border-gray-300 px-3 text-sm focus:outline-none'
+            />
           </div>
         </div>
       </section>
 
       <div className='flex w-full max-w-4xl flex-col gap-6 md:flex-row'>
-        {/* 썸네일 섹션 (md 이상) */}
+        {/* 썸네일 섹션  */}
         <div className='mt-2 ml-4 hidden flex-col items-end gap-4 md:flex'>
           {postForms.map((form) => (
             <div key={form.id}>
@@ -177,7 +214,15 @@ export default function ClientWrite() {
               {/* 첫 번째 폼: 제목 + 삭제 */}
               {idx === 0 ? (
                 <div className='mb-6 flex items-center gap-4'>
-                  <input type='text' placeholder='제목을 입력해주세요.' value={form.title} onChange={(e) => updatePostForm(form.id, 'title', e.target.value)} className='h-12 flex-1 rounded-lg border border-gray-300 px-4' disabled={isSubmitting} />
+                  <input
+                    type='text'
+                    placeholder='제목을 입력해주세요.'
+                    maxLength={80}
+                    value={form.title}
+                    onChange={(e) => updatePostForm(form.id, 'title', e.target.value)}
+                    className='h-12 flex-1 rounded-lg border border-gray-300 px-4'
+                    disabled={isSubmitting}
+                  />
                   <Button variant='destructive' onClick={() => removePostForm(form.id)} disabled={isSubmitting || postForms.length === 1}>
                     삭제
                   </Button>

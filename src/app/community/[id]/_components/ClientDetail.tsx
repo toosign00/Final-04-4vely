@@ -69,12 +69,12 @@ export default function ClientDetail({ post }: { post: Post }) {
   return (
     <div className='overflow-x-hidden'>
       {/* 대표 이미지 */}
-      <div className='relative left-1/2 mb-10 h-64 -translate-x-1/2 overflow-hidden'>{coverImage && <Image src={resolveUrl(coverImage)} alt='대표 이미지' fill sizes='(max-width: 640px) 100vw, 640px' priority className='object-cover' />}</div>
+      <div className='relative h-50 w-full md:h-60'>{coverImage && <Image src={resolveUrl(coverImage)} alt='대표 이미지' fill sizes='(max-width: 640px) 100vw, 640px' priority className='object-cover' />}</div>
 
-      <main className='mx-auto w-full max-w-2xl px-4 pb-20'>
+      <main className='mx-auto w-full max-w-4xl px-4 py-10 md:p-6 lg:p-8'>
         {/* 제목 및 메타 영역 */}
         <section className='mb-10'>
-          <h1 className='text-4xl leading-snug font-semibold whitespace-pre-wrap'>{title}</h1>
+          <h1 className='mb-4 text-xl font-semibold md:text-2xl'>{title}</h1>
 
           <div className='mt-4 flex items-center justify-between'>
             <div className='flex items-center gap-2 text-sm'>
@@ -91,6 +91,7 @@ export default function ClientDetail({ post }: { post: Post }) {
             </div>
           </div>
         </section>
+        <hr className='mb-10 border-gray-300' />
 
         {/* 정보테이블 */}
         <section className='mb-10 rounded-3xl'>
@@ -116,13 +117,13 @@ export default function ClientDetail({ post }: { post: Post }) {
 
         {/* 콘텐츠 블록들 */}
         {contents.map((block) => (
-          <section key={block.id} className='mb-10'>
+          <section key={block.id} className='mx-auto mb-10 max-w-[50rem] px-5 text-center'>
             {block.postImage && (
-              <div className='relative mx-auto aspect-[3/4] w-2/3 overflow-hidden rounded-lg sm:w-1/2 md:w-[360px]'>
-                <Image src={resolveUrl(block.postImage)} alt={block.title || '첨부 이미지'} fill sizes='(max-width: 640px) 100vw, 640px' priority className='object-cover' />
+              <div className='relative mx-auto mb-10 aspect-[3/4] max-w-[30rem] overflow-hidden rounded-xl border'>
+                <Image src={resolveUrl(block.postImage)} alt={block.title || '첨부 이미지'} fill priority className='object-cover' />
               </div>
             )}
-            {block.content && <p className='mt-2 text-sm leading-relaxed whitespace-pre-wrap'>{block.content}</p>}
+            {block.content && <p className='mt-6 lg:text-lg'>{block.content}</p>}
           </section>
         ))}
 

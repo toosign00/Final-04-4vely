@@ -186,7 +186,7 @@ export async function fetchPosts(page = 1, limit = 8, type = 'community', token?
 
   const headers = makeHeaders(token);
 
-  const res = await fetch(url.toString(), { headers });
+  const res = await fetch(url.toString(), { headers, cache: 'no-store' });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
   const { item, pagination } = (await res.json()) as {
@@ -235,7 +235,7 @@ export async function fetchPostsByUserId(userId: string, page = 1, limit = 8, to
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const res = await fetch(url.toString(), { headers });
+  const res = await fetch(url.toString(), { headers, cache: 'no-store' });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
   const { item, pagination } = (await res.json()) as {

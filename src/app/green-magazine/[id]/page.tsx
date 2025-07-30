@@ -4,11 +4,10 @@ import { fetchMagazineDetail } from '@/lib/functions/greenmagazine/fetchMagazine
 
 interface MagazineDetail {
   params: Promise<{ id: string }>;
-  myBookmarkId: number;
 }
 
 // Green Magazine의 상세 페이지
-export default async function GreenMagazineDetailPage({ params, myBookmarkId }: MagazineDetail) {
+export default async function GreenMagazineDetailPage({ params }: MagazineDetail) {
   const { id } = await params;
 
   // id 숫자로 변환

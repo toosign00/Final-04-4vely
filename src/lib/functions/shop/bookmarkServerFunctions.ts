@@ -207,3 +207,5 @@ export async function isBookmarked(targetId: number, type: BookmarkType): Promis
   const bookmark = await getBookmarkByTarget(targetId, type);
   return !!bookmark;
 }
+
+export { getServerAccessToken };

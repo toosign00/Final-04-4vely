@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/Dialog';
 import { Label } from '@/components/ui/Label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/Select';
-import { createOrderAction, updateTempOrderAddressAction, updateTempOrderMemoAction } from '@/lib/actions/order/orderServerActions';
+import { createOrderAction, getUserAddressAction, updateTempOrderAddressAction, updateTempOrderMemoAction } from '@/lib/actions/order/orderServerActions';
 import { CreateOrderRequest, OrderPageData } from '@/types/order.types';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -54,28 +54,8 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
   const [isProcessingOrder, setIsProcessingOrder] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
 
-  // 저장된 배송지 목록 (로컬스토리지 대신 상태로 관리)
-  const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([
-    {
-      id: '1',
-      name: '홍길동',
-      phone: '010-1234-5678',
-      address: '서울특별시 서대문구 성산로7길 89-8',
-      detailAddress: '연희동',
-      zipCode: '03706',
-      isDefault: true,
-    },
-    {
-      id: '2',
-      name: '김철수',
-      phone: '010-9876-5432',
-      address: '서울특별시 강남구 테헤란로 427',
-      detailAddress: '강남파이낸스센터 15층',
-      zipCode: '06159',
-      isDefault: false,
-    },
-  ]);
-  const [selectedAddressId, setSelectedAddressId] = useState<string>('1');
+  const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
+  const [selectedAddressId, setSelectedAddressId] = useState<string>('');
 
   // 배송 정보 폼 상태
   const [addressForm, setAddressForm] = useState({
@@ -283,6 +263,82 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
     };
   }, []);
 
+  // 사용자 주소 가져오기
+  useEffect(() => {
+    const fetchUserAddress = async () => {
+      try {
+        if (hasSetInitialAddress.current) return;
+
+        console.log('[OrderClient] 사용자 주소 조회 시작');
+        const result = await getUserAddressAction();
+        console.log('[OrderClient] getUserAddressAction 결과:', result);
+
+        const { address, name, phone, userId } = result;
+
+        console.log('[OrderClient] 분해된 결과:', { address, name, phone, userId });
+
+        if (address && userId) {
+          // 주소에서 우편번호 분리
+          let finalAddress = address;
+          let zipCode = '';
+
+          const addressMatch = address.match(/^(.+?)\s+(\d{3,5})$/);
+          if (addressMatch) {
+            finalAddress = addressMatch[1].trim();
+            zipCode = addressMatch[2];
+            console.log('[OrderClient] 주소 파싱:', { 원본: address, 주소: finalAddress, 우편번호: zipCode });
+          }
+
+          // 전화번호 포맷팅
+          const formatPhone = (phone: string) => {
+            const cleaned = phone.replace(/\D/g, '');
+            if (cleaned.length === 10) {
+              return cleaned.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+            } else if (cleaned.length === 11) {
+              return cleaned.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
+            }
+            return phone;
+          };
+
+          const userAddress: SavedAddress = {
+            id: '1',
+            name: name || '사용자',
+            phone: phone ? formatPhone(phone) : '010-0000-0000',
+            address: finalAddress,
+            detailAddress: '',
+            zipCode: zipCode,
+            isDefault: true,
+          };
+
+          console.log('[OrderClient] 배송지 설정:', userAddress);
+          setSavedAddresses([userAddress]);
+          setSelectedAddressId('1');
+          hasSetInitialAddress.current = true;
+
+          // 초기 주소를 orderData에도 설정
+          const addressData = {
+            name: userAddress.name,
+            phone: userAddress.phone,
+            address: userAddress.address,
+            detailAddress: userAddress.detailAddress || '',
+            zipCode: userAddress.zipCode || '',
+          };
+
+          const success = await updateTempOrderAddressAction(addressData);
+          if (success) {
+            setOrderData((prev) => ({ ...prev, address: addressData }));
+          }
+        } else {
+          console.log('[OrderClient] 사용자 주소 없음');
+        }
+      } catch (error) {
+        console.error('[OrderClient] 에러 발생:', error);
+      }
+    };
+
+    fetchUserAddress();
+  }, []);
+
   // 주소 찾기 핸들러
   const handleAddressSearch = () => {
     if (!window.daum || !window.daum.Postcode) {
@@ -461,6 +517,9 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
       // 주문 생성 API 호출
       const result = await createOrderAction(createOrderData);
 
+      // 디버깅 로그
+      console.log('[결제 처리] createOrderAction 결과:', result);
+
       if (!result.success) {
         console.error('[결제 처리] 주문 생성 실패:', result.message);
         toast.error('주문 생성 실패', {
@@ -470,10 +529,33 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
         return;
       }
 
-      console.log('[결제 처리] 주문 생성 성공');
+      // 디버깅 로그
+      console.log('[결제 처리] 주문 생성 성공:', result.data);
 
-      // 주문 데이터 임시 저장 (결제 완료 페이지에서 사용)
+      // 주문 데이터 임시 저장
       sessionStorage.setItem('lastOrderData', JSON.stringify(orderData));
+
+      // redirectUrl 확인 로그
+      const redirectUrl = result.data?.redirectUrl;
+      console.log('[결제 처리] redirectUrl:', redirectUrl);
+
+      // fallback 처리 개선
+      if (!redirectUrl) {
+        console.error('[결제 처리] redirectUrl이 없습니다');
+        // redirectUrl이 없어도 orderId가 있으면 수동으로 생성
+        if (result.data?.orderId) {
+          const manualRedirectUrl = `/order/order-complete?orderId=${result.data.orderId}`;
+          console.log('[결제 처리] 수동 생성 redirectUrl:', manualRedirectUrl);
+
+          toast.success('주문이 완료되었습니다!', {
+            description: '주문 완료 페이지로 이동합니다.',
+            duration: 2000,
+          });
+
+          await router.push(manualRedirectUrl);
+          return;
+        }
+      }
 
       // 성공 알림
       toast.success('주문이 완료되었습니다!', {
@@ -481,11 +563,13 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
         duration: 2000,
       });
 
-      // 주문 완료 페이지로 이동
-      if (result.data?.redirectUrl) {
-        setTimeout(() => {
-          router.push(result.data?.redirectUrl || '/');
-        }, 1000);
+      // 페이지 이동
+      if (redirectUrl) {
+        console.log('[결제 처리] 페이지 이동:', redirectUrl);
+        await router.push(redirectUrl);
+      } else {
+        console.error('[결제 처리] 페이지 이동 실패: redirectUrl 없음');
+        await router.push('/shop');
       }
     } catch (error) {
       console.error('[결제 처리] 예상치 못한 오류:', error);
@@ -494,6 +578,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
         duration: 4000,
       });
     } finally {
+      // finally 블록으로 이동
       setIsProcessingOrder(false);
     }
   };

@@ -14,10 +14,15 @@ import { cookies } from 'next/headers';
 const API_URL = process.env.API_URL || 'https://fesp-api.koyeb.app/market';
 const CLIENT_ID = process.env.CLIENT_ID || 'febc13-final04-emjf';
 
+interface ToggleBookmarkOptions {
+  revalidate?: boolean;
+}
+
 /**
  * 북마크를 토글합니다 (추가/제거)
  * @param {number} targetId - 북마크 대상 ID (상품 ID, 게시글 ID 등)
  * @param {BookmarkType} type - 북마크 타입 ('product' | 'post' | 'user')
+ * @param options 추가 옵션 - revalidatePath 여부 등
  * @returns {Promise<BookmarkActionApiResponse>} 처리 결과 (action: 'added' | 'removed')
  * @example
  * // 상품 북마크 토글
@@ -26,7 +31,7 @@ const CLIENT_ID = process.env.CLIENT_ID || 'febc13-final04-emjf';
  * // 게시글 북마크 토글
  * const result = await toggleBookmarkAction(456, 'post');
  */
-export async function toggleBookmarkAction(targetId: number, type: BookmarkType = 'product'): Promise<BookmarkActionApiResponse> {
+export async function toggleBookmarkAction(targetId: number, type: BookmarkType = 'product', options: ToggleBookmarkOptions = { revalidate: true }): Promise<BookmarkActionApiResponse> {
   try {
     // 1. 인증 토큰 확인
     const cookieStore = await cookies();
@@ -60,8 +65,10 @@ export async function toggleBookmarkAction(targetId: number, type: BookmarkType 
       const deleteResult = await removeBookmark(existingBookmark._id, accessToken);
 
       if (deleteResult.ok) {
-        // 관련 페이지 재검증
-        revalidateBookmarkPages(targetId, type);
+        if (options.revalidate) {
+          // 관련 페이지 재검증
+          revalidateBookmarkPages(targetId, type);
+        }
 
         return {
           ok: 1,
@@ -79,8 +86,10 @@ export async function toggleBookmarkAction(targetId: number, type: BookmarkType 
       const addResult = await addBookmark(targetId, type, accessToken);
 
       if (addResult.ok) {
-        // 관련 페이지 재검증
-        revalidateBookmarkPages(targetId, type);
+        if (options.revalidate) {
+          // 관련 페이지 재검증
+          revalidateBookmarkPages(targetId, type);
+        }
 
         return {
           ok: 1,
@@ -274,6 +283,6 @@ function revalidateBookmarkPages(targetId: number, type: BookmarkType) {
  * @param {number} productId - 상품 ID
  * @returns {Promise<BookmarkActionApiResponse>} 처리 결과
  */
-export async function toggleProductBookmarkAction(productId: number): Promise<BookmarkActionApiResponse> {
-  return toggleBookmarkAction(productId, 'product');
+export async function toggleProductBookmarkAction(productId: number, options?: ToggleBookmarkOptions): Promise<BookmarkActionApiResponse> {
+  return toggleBookmarkAction(productId, 'product', options);
 }

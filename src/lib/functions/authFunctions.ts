@@ -1,7 +1,8 @@
 'use server';
 
+import { EmailCheckResult, NicknameCheckResult, SignUpRequestData, SignUpResult } from '@/app/(auth)/sign-up/_types';
 import { ApiRes } from '@/types/api.types';
-import { EmailCheckResult, LoginCredentials, LoginResult, NicknameCheckResult, SignUpRequestData, SignUpResult } from '@/types/auth.types';
+import { LoginCredentials, LoginResult } from '@/types/auth.types';
 import { User } from '@/types/user.types';
 import { cookies } from 'next/headers';
 

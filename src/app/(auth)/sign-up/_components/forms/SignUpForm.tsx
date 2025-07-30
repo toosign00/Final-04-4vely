@@ -3,13 +3,13 @@
 import { Button } from '@/components/ui/Button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/Dialog';
 import { Input } from '@/components/ui/Input';
-import { Eye, EyeOff, Loader2, ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import DaumPostcode from 'react-daum-postcode';
+import { UseFormReturn } from 'react-hook-form';
 import ImageUpload from './ImageUpload';
 import PasswordStrengthIndicator from './PasswordStrengthIndicator';
-import { UseFormReturn } from 'react-hook-form';
 
 interface FormErrors {
   [key: string]: { message?: string } | undefined;
@@ -20,7 +20,6 @@ interface SignUpFormProps {
   form: UseFormReturn<any>;
   showPassword: boolean;
   showConfirmPassword: boolean;
-  showSuccessModal: boolean;
   isLoading: boolean;
   error: string | null;
   fieldErrors?: FormErrors;
@@ -31,7 +30,6 @@ interface SignUpFormProps {
   togglePasswordVisibility: () => void;
   toggleConfirmPasswordVisibility: () => void;
   clearErrors: () => void;
-  handleSuccessModalConfirm: () => void;
   checkEmailAvailability: (email: string) => void;
   checkNicknameAvailability: (nickname: string) => void;
   onSubmit: (e?: React.BaseSyntheticEvent) => Promise<void>;
@@ -50,7 +48,6 @@ export default function SignUpForm({
   form,
   showPassword,
   showConfirmPassword,
-  showSuccessModal,
   isLoading,
   error,
   isEmailChecking,
@@ -60,7 +57,6 @@ export default function SignUpForm({
   togglePasswordVisibility,
   toggleConfirmPasswordVisibility,
   clearErrors,
-  handleSuccessModalConfirm,
   checkEmailAvailability,
   checkNicknameAvailability,
   onSubmit,
@@ -74,7 +70,6 @@ export default function SignUpForm({
   showBackButton = false,
   onBack,
 }: SignUpFormProps) {
-
   const [isPostcodeOpen, setIsPostcodeOpen] = useState(false);
 
   const password = form.watch('password') as string;
@@ -103,29 +98,23 @@ export default function SignUpForm({
 
   return (
     <div className='w-full'>
-      <form 
-        onSubmit={onSubmit} 
-        className='flex w-full flex-col justify-center space-y-6 sm:space-y-8' 
-        noValidate
-        role='form'
-        aria-label='회원가입 양식'
-      >
+      <form onSubmit={onSubmit} className='flex w-full flex-col justify-center space-y-6 sm:space-y-8' noValidate role='form' aria-label='회원가입 양식'>
         {/* API 에러 메시지 표시 */}
         {error && (
-          <div 
-            role='alert' 
-            aria-live='polite' 
+          <div
+            role='alert'
+            aria-live='polite'
             aria-atomic='true'
-            className='rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 flex items-start gap-3 focus-within:ring-2 focus-within:ring-red-500 focus-within:ring-opacity-50'
+            className='focus-within:ring-opacity-50 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 focus-within:ring-2 focus-within:ring-red-500'
             tabIndex={-1}
           >
-            <div className='w-5 h-5 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0 mt-0.5' aria-hidden='true'>
-              <svg className='w-3 h-3 text-red-600' fill='currentColor' viewBox='0 0 20 20'>
+            <div className='mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-red-100' aria-hidden='true'>
+              <svg className='h-3 w-3 text-red-600' fill='currentColor' viewBox='0 0 20 20'>
                 <path fillRule='evenodd' d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z' clipRule='evenodd' />
               </svg>
             </div>
             <div className='flex-1'>
-              <strong className='block font-medium mb-1'>오류가 발생했습니다</strong>
+              <strong className='mb-1 block font-medium'>오류가 발생했습니다</strong>
               {error}
             </div>
           </div>
@@ -133,10 +122,10 @@ export default function SignUpForm({
 
         {/* 프로필 이미지 업로드 */}
         <div className='space-y-3'>
-          <div className='flex items-center justify-center w-full'>
+          <div className='flex w-full items-center justify-center'>
             <div className='text-center'>
-              <h3 className='text-lg font-semibold text-gray-900 mb-2'>프로필 설정</h3>
-              <p className='text-sm text-gray-600 mb-4'>선택사항입니다</p>
+              <h3 className='mb-2 text-lg font-semibold text-gray-900'>프로필 설정</h3>
+              <p className='mb-4 text-sm text-gray-600'>선택사항입니다</p>
             </div>
           </div>
           <ImageUpload onChange={(value) => form.setValue('image', value)} disabled={isLoading} error={formErrors.image?.message as string} />
@@ -170,23 +159,23 @@ export default function SignUpForm({
               }}
               aria-invalid={!!formErrors.name}
               aria-describedby={formErrors.name ? 'name-error' : 'name-status'}
-              className={`sm:flex-1 transition-all duration-200 ${formErrors.name ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'focus:border-accent focus:ring-accent/20'}`}
+              className={`transition-all duration-200 sm:flex-1 ${formErrors.name ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'focus:border-accent focus:ring-accent/20'}`}
             />
-            <Button 
-              type='button' 
-              onClick={() => checkNicknameAvailability((form.watch('name') as string) || '')} 
-              disabled={isNicknameChecking || !(form.watch('name') as string)} 
-              className='w-full sm:w-auto sm:whitespace-nowrap transition-all duration-200 hover:shadow-md'
+            <Button
+              type='button'
+              onClick={() => checkNicknameAvailability((form.watch('name') as string) || '')}
+              disabled={isNicknameChecking || !(form.watch('name') as string)}
+              className='w-full transition-all duration-200 hover:shadow-md sm:w-auto sm:whitespace-nowrap'
               variant={isNicknameChecking ? 'secondary' : 'outline'}
             >
               {isNicknameChecking ? (
                 <>
-                  <Loader2 className='h-4 w-4 animate-spin mr-2' />
+                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                   확인 중...
                 </>
               ) : (
                 <>
-                  <svg className='w-4 h-4 mr-2' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                  <svg className='mr-2 h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                     <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' />
                   </svg>
                   중복 확인
@@ -196,27 +185,29 @@ export default function SignUpForm({
           </div>
           <div className='mt-2 flex min-h-[1.5rem] items-start'>
             {!isNicknameChecking && nicknameAvailable === true && (
-              <div className='flex items-center gap-2 text-sm text-green-700 bg-green-50 px-3 py-2 rounded-lg border border-green-200'>
-                <svg className='w-4 h-4 text-green-600' fill='currentColor' viewBox='0 0 20 20'>
+              <div className='flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700'>
+                <svg className='h-4 w-4 text-green-600' fill='currentColor' viewBox='0 0 20 20'>
                   <path fillRule='evenodd' d='M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z' clipRule='evenodd' />
                 </svg>
                 <span id='name-status'>사용 가능한 닉네임입니다.</span>
               </div>
             )}
             {!isNicknameChecking && nicknameAvailable === false && (
-              <div className='flex items-center gap-2 text-sm text-red-700 bg-red-50 px-3 py-2 rounded-lg border border-red-200'>
-                <svg className='w-4 h-4 text-red-600' fill='currentColor' viewBox='0 0 20 20'>
+              <div className='flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700'>
+                <svg className='h-4 w-4 text-red-600' fill='currentColor' viewBox='0 0 20 20'>
                   <path fillRule='evenodd' d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z' clipRule='evenodd' />
                 </svg>
                 <span id='name-status'>이미 사용 중인 닉네임입니다.</span>
               </div>
             )}
             {formErrors.name && (
-              <div className='flex items-center gap-2 text-sm text-red-700 bg-red-50 px-3 py-2 rounded-lg border border-red-200'>
-                <svg className='w-4 h-4 text-red-600' fill='currentColor' viewBox='0 0 20 20'>
+              <div className='flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700'>
+                <svg className='h-4 w-4 text-red-600' fill='currentColor' viewBox='0 0 20 20'>
                   <path fillRule='evenodd' d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z' clipRule='evenodd' />
                 </svg>
-                <span id='name-error' role='alert'>{String(formErrors.name?.message || '')}</span>
+                <span id='name-error' role='alert'>
+                  {String(formErrors.name?.message || '')}
+                </span>
               </div>
             )}
           </div>
@@ -244,23 +235,23 @@ export default function SignUpForm({
               }}
               aria-invalid={!!formErrors.email}
               aria-describedby={formErrors.email ? 'email-error' : 'email-status'}
-              className={`sm:flex-1 transition-all duration-200 ${formErrors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'focus:border-accent focus:ring-accent/20'}`}
+              className={`transition-all duration-200 sm:flex-1 ${formErrors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'focus:border-accent focus:ring-accent/20'}`}
             />
-            <Button 
-              type='button' 
-              onClick={() => checkEmailAvailability((form.watch('email') as string) || '')} 
-              disabled={isEmailChecking || !(form.watch('email') as string)} 
-              className='w-full sm:w-auto sm:whitespace-nowrap transition-all duration-200 hover:shadow-md'
+            <Button
+              type='button'
+              onClick={() => checkEmailAvailability((form.watch('email') as string) || '')}
+              disabled={isEmailChecking || !(form.watch('email') as string)}
+              className='w-full transition-all duration-200 hover:shadow-md sm:w-auto sm:whitespace-nowrap'
               variant={isEmailChecking ? 'secondary' : 'outline'}
             >
               {isEmailChecking ? (
                 <>
-                  <Loader2 className='h-4 w-4 animate-spin mr-2' />
+                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                   확인 중...
                 </>
               ) : (
                 <>
-                  <svg className='w-4 h-4 mr-2' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                  <svg className='mr-2 h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                     <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' />
                   </svg>
                   중복 확인
@@ -270,27 +261,29 @@ export default function SignUpForm({
           </div>
           <div className='mt-2 flex min-h-[1.5rem] items-start'>
             {!isEmailChecking && emailAvailable === true && (
-              <div className='flex items-center gap-2 text-sm text-green-700 bg-green-50 px-3 py-2 rounded-lg border border-green-200'>
-                <svg className='w-4 h-4 text-green-600' fill='currentColor' viewBox='0 0 20 20'>
+              <div className='flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700'>
+                <svg className='h-4 w-4 text-green-600' fill='currentColor' viewBox='0 0 20 20'>
                   <path fillRule='evenodd' d='M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z' clipRule='evenodd' />
                 </svg>
                 <span id='email-status'>사용 가능한 이메일입니다.</span>
               </div>
             )}
             {!isEmailChecking && emailAvailable === false && (
-              <div className='flex items-center gap-2 text-sm text-red-700 bg-red-50 px-3 py-2 rounded-lg border border-red-200'>
-                <svg className='w-4 h-4 text-red-600' fill='currentColor' viewBox='0 0 20 20'>
+              <div className='flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700'>
+                <svg className='h-4 w-4 text-red-600' fill='currentColor' viewBox='0 0 20 20'>
                   <path fillRule='evenodd' d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z' clipRule='evenodd' />
                 </svg>
                 <span id='email-status'>이미 사용 중인 이메일입니다.</span>
               </div>
             )}
             {formErrors.email && (
-              <div className='flex items-center gap-2 text-sm text-red-700 bg-red-50 px-3 py-2 rounded-lg border border-red-200'>
-                <svg className='w-4 h-4 text-red-600' fill='currentColor' viewBox='0 0 20 20'>
+              <div className='flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700'>
+                <svg className='h-4 w-4 text-red-600' fill='currentColor' viewBox='0 0 20 20'>
                   <path fillRule='evenodd' d='M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z' clipRule='evenodd' />
                 </svg>
-                <span id='email-error' role='alert'>{String(formErrors.email?.message || '')}</span>
+                <span id='email-error' role='alert'>
+                  {String(formErrors.email?.message || '')}
+                </span>
               </div>
             )}
           </div>
@@ -324,7 +317,7 @@ export default function SignUpForm({
               type='button'
               variant='ghost'
               size='icon'
-              className='absolute top-1/2 right-2 h-10 w-10 -translate-y-1/2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200 flex items-center justify-center'
+              className='absolute top-1/2 right-2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-lg text-gray-400 transition-all duration-200 hover:bg-gray-100 hover:text-gray-600'
               onClick={togglePasswordVisibility}
               disabled={isLoading}
               aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 보이기'}
@@ -344,7 +337,7 @@ export default function SignUpForm({
 
         {/* 비밀번호 확인 */}
         <div>
-          <label htmlFor='confirmPassword' className='block text-sm font-semibold text-gray-900 mb-2'>
+          <label htmlFor='confirmPassword' className='mb-2 block text-sm font-semibold text-gray-900'>
             비밀번호 확인 <span className='text-red-500'>*</span>
           </label>
           <div className='relative'>
@@ -367,7 +360,7 @@ export default function SignUpForm({
               type='button'
               variant='ghost'
               size='icon'
-              className='absolute top-1/2 right-2 h-10 w-10 -translate-y-1/2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all duration-200 flex items-center justify-center'
+              className='absolute top-1/2 right-2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-lg text-gray-400 transition-all duration-200 hover:bg-gray-100 hover:text-gray-600'
               onClick={toggleConfirmPasswordVisibility}
               disabled={isLoading}
               aria-label={showConfirmPassword ? '비밀번호 확인 숨기기' : '비밀번호 확인 보이기'}
@@ -386,7 +379,7 @@ export default function SignUpForm({
 
         {/* 휴대폰 번호 입력 */}
         <div>
-          <div className='space-y-1 mb-2'>
+          <div className='mb-2 space-y-1'>
             <label htmlFor='phone' className='block text-sm font-semibold text-gray-900'>
               휴대폰 번호 <span className='text-red-500'>*</span>
             </label>
@@ -435,7 +428,7 @@ export default function SignUpForm({
                   readOnly
                   aria-invalid={!!formErrors.zipcode}
                   aria-describedby={formErrors.zipcode ? 'zipcode-error' : undefined}
-                  className={`w-20 sm:w-24 transition-all duration-200 ${formErrors.zipcode ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'focus:border-accent focus:ring-accent/20'}`}
+                  className={`w-20 transition-all duration-200 sm:w-24 ${formErrors.zipcode ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'focus:border-accent focus:ring-accent/20'}`}
                 />
                 <Input
                   id='address'
@@ -449,13 +442,8 @@ export default function SignUpForm({
                 />
               </div>
               <DialogTrigger asChild>
-                <Button 
-                  type='button' 
-                  disabled={isLoading} 
-                  className='w-full sm:w-auto sm:whitespace-nowrap transition-all duration-200 hover:shadow-md'
-                  variant='outline'
-                >
-                  <svg className='w-4 h-4 mr-2' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <Button type='button' disabled={isLoading} className='w-full transition-all duration-200 hover:shadow-md sm:w-auto sm:whitespace-nowrap' variant='outline'>
+                  <svg className='mr-2 h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                     <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
                   </svg>
                   주소 검색
@@ -470,7 +458,7 @@ export default function SignUpForm({
               )}
             </div>
 
-            <label htmlFor='addressDetail' className='block text-sm font-semibold text-gray-900 mb-2'>
+            <label htmlFor='addressDetail' className='mb-2 block text-sm font-semibold text-gray-900'>
               상세주소 <span className='text-red-500'>*</span>
             </label>
             <Input
@@ -502,30 +490,22 @@ export default function SignUpForm({
           </DialogContent>
         </Dialog>
 
-
         {/* 버튼 영역 */}
-        <div className='pt-4 space-y-4'>
+        <div className='space-y-4 pt-4'>
           <div className='flex gap-4'>
             {showBackButton && onBack && (
-              <Button 
-                type='button'
-                variant='outline'
-                size='lg'
-                onClick={onBack}
-                disabled={isLoading}
-                className='px-6'
-              >
+              <Button type='button' variant='outline' size='lg' onClick={onBack} disabled={isLoading} className='px-6'>
                 <ArrowLeft className='mr-2 h-4 w-4' />
                 이전
               </Button>
             )}
-            <Button 
-              type='submit' 
-              fullWidth 
-              variant='secondary' 
-              size='lg' 
-              className='h-12 text-base font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]' 
-              disabled={isLoading} 
+            <Button
+              type='submit'
+              fullWidth
+              variant='secondary'
+              size='lg'
+              className='h-12 transform rounded-xl text-base font-semibold shadow-lg transition-all duration-200 hover:scale-[1.02] hover:shadow-xl'
+              disabled={isLoading}
               aria-describedby={isLoading ? 'submit-status' : 'form-instructions'}
             >
               {isLoading ? (
@@ -535,9 +515,11 @@ export default function SignUpForm({
                 </>
               ) : (
                 <>
-                  <span id='form-instructions' className='sr-only'>모든 필수 정보를 입력한 후 이 버튼을 누르세요</span>
+                  <span id='form-instructions' className='sr-only'>
+                    모든 필수 정보를 입력한 후 이 버튼을 누르세요
+                  </span>
                   <span>회원가입 완료</span>
-                  <svg className='ml-2 w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                  <svg className='ml-2 h-5 w-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                     <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M13 7l5 5m0 0l-5 5m5-5H6' />
                   </svg>
                 </>
@@ -547,42 +529,16 @@ export default function SignUpForm({
         </div>
 
         {/* 로그인 링크 */}
-        <div className='text-center pt-2'>
-          <p className='text-sm text-gray-600'>
-            이미 계정이 있으신가요?
-          </p>
-          <Link 
-            href='/login' 
-            className='inline-flex items-center gap-1 mt-2 px-4 py-2 text-sm font-medium text-accent hover:text-accent/80 hover:bg-accent/5 rounded-lg transition-all duration-200'
-          >
+        <div className='pt-2 text-center'>
+          <p className='text-sm text-gray-600'>이미 계정이 있으신가요?</p>
+          <Link href='/login' className='text-accent hover:text-accent/80 hover:bg-accent/5 mt-2 inline-flex items-center gap-1 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200'>
             로그인하기
-            <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+            <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
               <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1' />
             </svg>
           </Link>
         </div>
       </form>
-
-      {/* 회원가입 성공 모달 */}
-      <Dialog open={showSuccessModal} onOpenChange={(open) => !open && handleSuccessModalConfirm()}>
-        <DialogContent className='max-w-md' showCloseButton={false}>
-          <DialogHeader>
-            <DialogTitle className='text-secondary text-center text-lg font-semibold'>회원가입 완료!</DialogTitle>
-          </DialogHeader>
-          <div className='py-4 text-center'>
-            <p className='text-secondary t-base'>
-              회원가입이 성공적으로 완료되었습니다.
-              <br />
-              이제 로그인하여 서비스를 이용해보세요!
-            </p>
-          </div>
-          <div className='flex justify-center'>
-            <Button onClick={handleSuccessModalConfirm} className='w-full' size='lg'>
-              로그인 페이지로 이동
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

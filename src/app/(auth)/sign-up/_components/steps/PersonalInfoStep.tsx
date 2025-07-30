@@ -3,88 +3,41 @@
 import { Button } from '@/components/ui/Button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/Dialog';
 import { Input } from '@/components/ui/Input';
+import { useSignUpStore } from '@/store/signUpStore';
 import { ArrowLeft, ArrowRight, Check, Eye, EyeOff, Loader2, Search } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
 import DaumPostcode from 'react-daum-postcode';
 import { z } from 'zod';
-import { FieldError } from '../ErrorDisplay';
-import PasswordStrengthIndicator from '../PasswordStrengthIndicator';
+import { useSignUpForm } from '../../_hooks/useSignUpForm';
+import { step2Schema } from '../../_schemas';
+import type { PersonalInfoData } from '../../_types';
+import { FieldError } from '../common/ErrorDisplay';
+import PasswordStrengthIndicator from '../forms/PasswordStrengthIndicator';
 
-// Step2 데이터 타입 정의
-export interface Step2Data {
-  name: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  phone: string;
-  zipcode: string;
-  address: string;
-  addressDetail: string;
-}
+export default function PersonalInfoStep() {
+  const router = useRouter();
 
-// Props 인터페이스
-interface Step2RequiredInfoProps {
-  onNext: (data: Step2Data) => void;
-  onPrevious: () => void;
-  initialData?: Partial<Step2Data>;
-  isLoading?: boolean;
-  checkEmailAvailability: (email: string) => Promise<void>;
-  checkNicknameAvailability: (nickname: string) => Promise<void>;
-  isEmailChecking?: boolean;
-  isNicknameChecking?: boolean;
-  emailAvailable?: boolean | null;
-  nicknameAvailable?: boolean | null;
-}
+  // Zustand 스토어에서 상태 가져오기
+  const { step2Data, setStep2Data, setStepValid, isLoading, isEmailChecking, isNicknameChecking, emailAvailable, nicknameAvailable } = useSignUpStore();
 
-// 검증 스키마
-const step2Schema = z
-  .object({
-    name: z.string().min(2, '이름은 2자 이상이어야 합니다.').max(50, '이름은 50자 이하여야 합니다.'),
-    email: z.string().email('올바른 이메일 형식을 입력해주세요.'),
-    password: z
-      .string()
-      .min(8, '비밀번호는 8자 이상이어야 합니다.')
-      .regex(/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/, '비밀번호는 영문, 숫자, 특수문자를 모두 포함해야 합니다.'),
-    confirmPassword: z.string(),
-    phone: z.string().regex(/^010\d{8}$/, '휴대폰 번호는 01012345678 형식으로 입력해주세요.'),
-    zipcode: z.string().min(1, '우편번호를 선택해주세요.'),
-    address: z.string().min(1, '주소를 선택해주세요.'),
-    addressDetail: z
-      .string()
-      .min(1, '상세주소를 입력해주세요.')
-      .refine((val) => val.trim().length >= 5, '상세주소는 5자 이상 입력해주세요.'),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: '비밀번호가 일치하지 않습니다.',
-    path: ['confirmPassword'],
-  });
+  // useSignUpForm 훅에서 중복 확인 함수들 가져오기
+  const { checkEmailAvailability, checkNicknameAvailability } = useSignUpForm();
 
-export default function Step2RequiredInfo({
-  onNext,
-  onPrevious,
-  initialData = {},
-  isLoading = false,
-  checkEmailAvailability,
-  checkNicknameAvailability,
-  isEmailChecking = false,
-  isNicknameChecking = false,
-  emailAvailable = null,
-  nicknameAvailable = null,
-}: Step2RequiredInfoProps) {
   // 폼 데이터 상태
-  const [formData, setFormData] = useState<Step2Data>({
-    name: initialData.name || '',
-    email: initialData.email || '',
-    password: initialData.password || '',
-    confirmPassword: initialData.confirmPassword || '',
-    phone: initialData.phone || '',
-    zipcode: initialData.zipcode || '',
-    address: initialData.address || '',
-    addressDetail: initialData.addressDetail || '',
+  const [formData, setFormData] = useState<PersonalInfoData>({
+    name: step2Data.name || '',
+    email: step2Data.email || '',
+    password: step2Data.password || '',
+    confirmPassword: step2Data.confirmPassword || '',
+    phone: step2Data.phone || '',
+    postalCode: step2Data.postalCode || '',
+    address: step2Data.address || '',
+    addressDetail: step2Data.addressDetail || '',
   });
 
   // 유효성 검증 에러
-  const [errors, setErrors] = useState<Partial<Record<keyof Step2Data, string>>>({});
+  const [errors, setErrors] = useState<Partial<Record<keyof PersonalInfoData, string>>>({});
 
   // UI 상태
   const [showPassword, setShowPassword] = useState(false);
@@ -114,10 +67,30 @@ export default function Step2RequiredInfo({
     return levels[score] || levels[0];
   }, []);
 
+  // 컴포넌트 마운트 시 스토어 데이터로 폼 초기화
+  useEffect(() => {
+    if (step2Data && Object.keys(step2Data).length > 0) {
+      setFormData({
+        name: step2Data.name || '',
+        email: step2Data.email || '',
+        password: step2Data.password || '',
+        confirmPassword: step2Data.confirmPassword || '',
+        phone: step2Data.phone || '',
+        postalCode: step2Data.postalCode || '',
+        address: step2Data.address || '',
+        addressDetail: step2Data.addressDetail || '',
+      });
+    }
+  }, [step2Data]);
+
   // 필드 변경 핸들러
   const handleFieldChange = useCallback(
-    (field: keyof Step2Data, value: string) => {
-      setFormData((prev) => ({ ...prev, [field]: value }));
+    (field: keyof PersonalInfoData, value: string) => {
+      const newFormData = { ...formData, [field]: value };
+      setFormData(newFormData);
+
+      // Zustand 스토어에도 업데이트
+      setStep2Data(newFormData);
 
       // 에러 초기화
       if (errors[field]) {
@@ -129,7 +102,7 @@ export default function Step2RequiredInfo({
         setErrors((prev) => ({ ...prev, confirmPassword: undefined }));
       }
     },
-    [errors, formData.confirmPassword],
+    [errors, formData, setStep2Data],
   );
 
   // 휴대폰 번호 형식 지정
@@ -142,30 +115,36 @@ export default function Step2RequiredInfo({
   );
 
   // 주소 검색 완료 핸들러
-  const handleCompletePostcode = useCallback((data: { address: string; addressType: string; bname: string; buildingName: string; zonecode: string }) => {
-    let fullAddress = data.address;
-    let extraAddress = '';
+  const handleCompletePostcode = useCallback(
+    (data: { address: string; addressType: string; bname: string; buildingName: string; zonecode: string }) => {
+      let fullAddress = data.address;
+      let extraAddress = '';
 
-    if (data.addressType === 'R') {
-      if (data.bname !== '') {
-        extraAddress += data.bname;
+      if (data.addressType === 'R') {
+        if (data.bname !== '') {
+          extraAddress += data.bname;
+        }
+        if (data.buildingName !== '') {
+          extraAddress += extraAddress !== '' ? `, ${data.buildingName}` : data.buildingName;
+        }
+        fullAddress += extraAddress !== '' ? ` (${extraAddress})` : '';
       }
-      if (data.buildingName !== '') {
-        extraAddress += extraAddress !== '' ? `, ${data.buildingName}` : data.buildingName;
-      }
-      fullAddress += extraAddress !== '' ? ` (${extraAddress})` : '';
-    }
 
-    setFormData((prev) => ({
-      ...prev,
-      zipcode: data.zonecode,
-      address: fullAddress,
-    }));
+      const newFormData = {
+        ...formData,
+        postalCode: data.zonecode,
+        address: fullAddress,
+      };
 
-    // 주소 관련 에러 초기화
-    setErrors((prev) => ({ ...prev, zipcode: undefined, address: undefined }));
-    setIsPostcodeOpen(false);
-  }, []);
+      setFormData(newFormData);
+      setStep2Data(newFormData);
+
+      // 주소 관련 에러 초기화
+      setErrors((prev) => ({ ...prev, postalCode: undefined, address: undefined }));
+      setIsPostcodeOpen(false);
+    },
+    [formData, setStep2Data],
+  );
 
   // 중복 확인 핸들러
   const handleEmailCheck = useCallback(async () => {
@@ -190,10 +169,10 @@ export default function Step2RequiredInfo({
       return true;
     } catch (error) {
       if (error instanceof z.ZodError) {
-        const newErrors: Partial<Record<keyof Step2Data, string>> = {};
+        const newErrors: Partial<Record<keyof PersonalInfoData, string>> = {};
         error.errors.forEach((err) => {
           if (err.path[0]) {
-            newErrors[err.path[0] as keyof Step2Data] = err.message;
+            newErrors[err.path[0] as keyof PersonalInfoData] = err.message;
           }
         });
         setErrors(newErrors);
@@ -219,19 +198,30 @@ export default function Step2RequiredInfo({
       return;
     }
 
-    onNext(formData);
-  }, [validateForm, emailAvailable, nicknameAvailable, formData, onNext]);
+    // 스토어에 데이터 저장 및 단계 유효성 설정
+    setStep2Data(formData);
+    setStepValid(2, true);
+
+    // 다음 단계로 라우터 네비게이션
+    router.push('/sign-up/step-3');
+  }, [validateForm, emailAvailable, nicknameAvailable, formData, setStep2Data, setStepValid, router]);
 
   const passwordStrength = getPasswordStrength(formData.password);
 
   return (
-    <div className='mx-auto w-full max-w-2xl'>
+    <div className='w-full'>
       <div className='mb-8 text-center'>
         <h2 className='mb-2 text-2xl font-bold text-gray-900'>필수 정보 입력</h2>
         <p className='text-gray-600'>회원가입을 위한 기본 정보를 입력해주세요</p>
       </div>
 
-      <div className='space-y-6'>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleNext();
+        }}
+        className='space-y-6 rounded-lg border border-gray-100 bg-white p-6 shadow-sm'
+      >
         {/* 이름 입력 */}
         <div>
           <div className='mb-3 space-y-1'>
@@ -428,10 +418,10 @@ export default function Step2RequiredInfo({
                   id='zipcode'
                   placeholder='우편번호'
                   disabled={isLoading}
-                  value={formData.zipcode}
+                  value={formData.postalCode}
                   readOnly
-                  aria-invalid={!!errors.zipcode}
-                  className={`w-20 transition-all duration-200 sm:w-24 ${errors.zipcode ? 'border-error focus:border-error focus:ring-error' : 'focus:border-accent focus:ring-accent/20'}`}
+                  aria-invalid={!!errors.postalCode}
+                  className={`w-20 transition-all duration-200 sm:w-24 ${errors.postalCode ? 'border-error focus:border-error focus:ring-error' : 'focus:border-accent focus:ring-accent/20'}`}
                 />
                 <Input
                   id='address'
@@ -450,7 +440,7 @@ export default function Step2RequiredInfo({
                 </Button>
               </DialogTrigger>
             </div>
-            <FieldError error={errors.zipcode || errors.address} />
+            <FieldError error={errors.postalCode || errors.address} />
 
             <label htmlFor='addressDetail' className='block text-sm font-semibold text-gray-900'>
               상세주소 <span className='text-error'>*</span>
@@ -478,7 +468,7 @@ export default function Step2RequiredInfo({
         {/* 버튼 영역 */}
         <div className='space-y-4 pt-6'>
           <div className='flex gap-4'>
-            <Button type='button' variant='outline' size='lg' onClick={onPrevious} disabled={isLoading}>
+            <Button type='button' variant='outline' size='lg' onClick={() => router.push('/sign-up/step-1')} disabled={isLoading}>
               <ArrowLeft className='size-4' />
               이전
             </Button>
@@ -497,7 +487,7 @@ export default function Step2RequiredInfo({
             </Button>
           </div>
         </div>
-      </div>
+      </form>
     </div>
   );
 }

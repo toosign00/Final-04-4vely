@@ -16,7 +16,7 @@ export const step2Schema = z
       .regex(/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/, '비밀번호는 영문, 숫자, 특수문자를 모두 포함해야 합니다.'),
     confirmPassword: z.string(),
     phone: z.string().regex(/^010\d{8}$/, '휴대폰 번호는 01012345678 형식으로 입력해주세요.'),
-    zipcode: z.string().min(1, '우편번호를 선택해주세요.'),
+    postalCode: z.string().min(1, '우편번호를 선택해주세요.'),
     address: z.string().min(1, '주소를 선택해주세요.'),
     addressDetail: z
       .string()

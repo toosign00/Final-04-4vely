@@ -173,7 +173,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
               </div>
               <div>
                 <p className='mb-8 text-xl font-semibold'>{item.productName}</p>
-                {item.selectedColor && <p className='text-muted-foreground mb-1'>옵션: {item.selectedColor.colorName}</p>}
+                {item.selectedColor && <span className='text-muted-foreground text-sm'>({item.selectedColor.colorName})</span>}
                 <p>수량: {item.quantity}개</p>
                 <p className='text-lg font-medium'>₩ {(item.price * item.quantity).toLocaleString()}</p>
               </div>
@@ -189,7 +189,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
                 </div>
                 <div>
                   <p className='mb-2 text-xl font-semibold'>{item.productName}</p>
-                  {item.selectedColor && <p className='text-muted-foreground mb-1'>옵션: {item.selectedColor.colorName}</p>}
+                  {item.selectedColor && <span className='text-muted-foreground text-sm'>({item.selectedColor.colorName})</span>}
                   <p>수량: {item.quantity}개</p>
                   <p className='text-lg font-medium'>₩ {(item.price * item.quantity).toLocaleString()}</p>
                 </div>
@@ -229,7 +229,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
               </DialogHeader>
 
               <div className='space-y-6 p-6'>
-                <div className='grid gap-4'>
+                <div className='grid gap-8'>
                   <div>
                     <Label htmlFor='name'>받는 사람</Label>
                     <input id='name' type='text' className='mt-1 w-full rounded-lg border p-2' value={addressForm.name} onChange={(e) => setAddressForm((prev) => ({ ...prev, name: e.target.value }))} placeholder='이름을 입력하세요' />

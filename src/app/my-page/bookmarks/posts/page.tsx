@@ -5,8 +5,8 @@
  *              이 페이지는 서버 컴포넌트로 동작하여 초기 로딩 성능을 최적화합니다.
  */
 import { getBookmarksFromServer } from '@/lib/functions/mypage/bookmarkFunctions';
+import ErrorDisplay from '../../_components/ErrorDisplay';
 import BookmarkPostsList from './_components/BookmarkPostsList';
-import ErrorDisplay from './_components/ErrorDisplay';
 
 /**
  * @function PostsPage

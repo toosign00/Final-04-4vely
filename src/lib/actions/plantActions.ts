@@ -23,6 +23,8 @@ export interface PlantPost extends Post {
     location?: string;
     /** 식물 메모 제목 */
     memoTitle?: string;
+    /** 사용자 지정 분양일 */
+    date?: string;
   };
   /** 식물 이미지 파일의 상대 경로 */
   image?: string;
@@ -206,11 +208,12 @@ export async function createPlant(formData: FormData): Promise<ApiRes<PlantPost>
   const name = formData.get('name') as string;
   const species = formData.get('species') as string;
   const location = formData.get('location') as string;
+  const date = formData.get('date') as string;
   const memo = formData.get('memo') as string;
   const memoTitle = formData.get('memoTitle') as string;
 
   // 필수 필드 검증
-  if (!name?.trim() || !species?.trim() || !location?.trim() || !memo?.trim() || !memoTitle?.trim()) {
+  if (!name?.trim() || !species?.trim() || !location?.trim() || !date?.trim() || !memo?.trim() || !memoTitle?.trim()) {
     return {
       ok: 0,
       message: '모든 필수 정보를 입력해주세요.',
@@ -258,6 +261,7 @@ export async function createPlant(formData: FormData): Promise<ApiRes<PlantPost>
           species: species.trim(),
           location: location.trim(),
           memoTitle: memoTitle.trim(),
+          date: date.trim(),
         },
         ...(image ? { image } : {}),
       }),

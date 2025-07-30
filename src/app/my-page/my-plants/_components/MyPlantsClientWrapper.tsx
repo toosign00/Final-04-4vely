@@ -6,7 +6,6 @@ import { Plant } from './PlantCard';
 
 const MyPlantsClient = dynamic(() => import('./MyPlantsClient'), {
   ssr: false,
-  loading: () => <div className='flex min-h-[25rem] items-center justify-center'>로딩 중...</div>,
 });
 
 interface MyPlantsClientWrapperProps {

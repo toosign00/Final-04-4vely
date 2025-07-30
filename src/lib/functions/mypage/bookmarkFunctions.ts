@@ -2,6 +2,8 @@
  * @fileoverview 북마크 관리를 위한 메인 함수들을 제공하는 모듈
  */
 
+'use server';
+
 import { BookmarkItem, TransformedBookmarkItem } from '@/types/mypageBookmark.types';
 import { getBookmarks } from './bookmarkApi';
 import { transformCommunityBookmarks, transformProductBookmarks } from './bookmarkTransformers';

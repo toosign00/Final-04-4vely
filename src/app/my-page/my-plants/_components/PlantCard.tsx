@@ -69,8 +69,8 @@ export default function PlantCard({ plant, latestDiary, onDelete, isDeleting = f
         </div>
         {/* 메모/일지 영역 */}
         <div className='rounded-lg border border-gray-300 bg-gray-50 p-3'>
-          <h4 className='text-secondary mb-1 min-h-[1.5rem] truncate text-sm font-semibold'>{displayTitle}</h4>
-          <p className='text-sm leading-relaxed text-gray-700'>{displayMemo}</p>
+          <h4 className='text-secondary tu mb-1 line-clamp-1 min-h-[1.5rem] truncate text-sm font-semibold'>{displayTitle}</h4>
+          <p className='line-clamp-1 text-sm leading-relaxed text-gray-700'>{displayMemo}</p>
         </div>
         {/* 액션 버튼들 */}
         <div className='flex gap-2'>

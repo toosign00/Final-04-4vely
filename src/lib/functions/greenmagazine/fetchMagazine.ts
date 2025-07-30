@@ -45,7 +45,7 @@ export async function fetchMagazine(type: string, page: number, limit: number): 
       ...data,
       item: updatedItems,
     };
-  } catch (error) {
+  } catch {
     throw new Error('일시적인 네트워크 오류로 매거진 데이터를 불러올 수 없습니다.');
   }
 }

@@ -16,7 +16,7 @@ export async function fetchMagazineDetail(id: number): ApiResPromise<MagazinePos
     });
 
     return res.json();
-  } catch (error) {
+  } catch {
     throw new Error('일시적인 네트워크 오류로 매거진 상세 데이터를 불러올 수 없습니다.');
   }
 }

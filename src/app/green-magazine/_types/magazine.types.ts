@@ -5,7 +5,7 @@ import { Post } from '@/types/post.types';
  */
 export type MagazinePostData = Pick<Post, '_id' | 'type' | 'title' | 'content' | 'createdAt' | 'updatedAt' | 'views' | 'user'> & {
   bookmarks: number;
-  myBookmarkId: number | null;
+  myBookmarkId?: number | null;
   image: string;
   extra?: {
     contents: {
@@ -14,3 +14,19 @@ export type MagazinePostData = Pick<Post, '_id' | 'type' | 'title' | 'content' |
     }[];
   };
 };
+
+/*
+ * 매거진 데이터 서버에서 자르기 위한 타입
+ */
+export interface MagazinePagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+export interface GreenMagazineRes {
+  ok: 1;
+  item: MagazinePostData[];
+  pagination: MagazinePagination;
+}

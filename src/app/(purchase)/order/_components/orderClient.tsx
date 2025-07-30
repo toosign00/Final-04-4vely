@@ -35,6 +35,14 @@ declare global {
   }
 }
 
+// 폼 에러 타입
+interface FormErrors {
+  name?: string;
+  phone?: string;
+  address?: string;
+  detailAddress?: string;
+}
+
 export default function OrderClientSection({ initialOrderData }: OrderClientSectionProps) {
   const router = useRouter();
   const hasSetInitialAddress = useRef(false);
@@ -78,6 +86,15 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
     zipCode: '',
   });
 
+  // 폼 에러 상태
+  const [formErrors, setFormErrors] = useState<FormErrors>({});
+  const [touched, setTouched] = useState({
+    name: false,
+    phone: false,
+    address: false,
+    detailAddress: false,
+  });
+
   const [deliveryMemo, setDeliveryMemo] = useState(orderData.memo || '');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -86,6 +103,148 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
   const totalProductAmount = orderData.totalAmount;
   const shippingFee = orderData.shippingFee;
   const finalAmount = totalProductAmount + shippingFee;
+
+  // 유효성 검사 함수들
+  const validateName = (name: string): string | undefined => {
+    if (!name.trim()) {
+      return '이름을 입력해주세요.';
+    }
+    if (name.trim().length < 2) {
+      return '이름은 2자 이상 입력해주세요.';
+    }
+    if (name.trim().length > 20) {
+      return '이름은 20자 이하로 입력해주세요.';
+    }
+    if (!/^[가-힣a-zA-Z\s]+$/.test(name)) {
+      return '이름은 한글, 영문, 공백만 입력 가능합니다.';
+    }
+    return undefined;
+  };
+
+  const validatePhone = (phone: string): string | undefined => {
+    if (!phone.trim()) {
+      return '전화번호를 입력해주세요.';
+    }
+    // 숫자만 추출
+    const phoneNumbers = phone.replace(/[^0-9]/g, '');
+
+    if (phoneNumbers.length < 10 || phoneNumbers.length > 11) {
+      return '올바른 전화번호를 입력해주세요.';
+    }
+
+    // 휴대폰 번호 패턴 체크 (010, 011, 016, 017, 018, 019)
+    if (!phoneNumbers.startsWith('01')) {
+      return '올바른 휴대폰 번호를 입력해주세요.';
+    }
+
+    return undefined;
+  };
+
+  const validateAddress = (address: string): string | undefined => {
+    if (!address.trim()) {
+      return '주소를 입력해주세요.';
+    }
+    return undefined;
+  };
+
+  const formatPhoneNumber = (value: string): string => {
+    // 숫자만 추출
+    const numbers = value.replace(/[^0-9]/g, '');
+
+    // 11자리 휴대폰 번호 포맷팅
+    if (numbers.length <= 3) {
+      return numbers;
+    } else if (numbers.length <= 7) {
+      return `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
+    } else if (numbers.length <= 11) {
+      return `${numbers.slice(0, 3)}-${numbers.slice(3, 7)}-${numbers.slice(7, 11)}`;
+    }
+
+    // 11자리 초과시 11자리까지만 표시
+    return `${numbers.slice(0, 3)}-${numbers.slice(3, 7)}-${numbers.slice(7, 11)}`;
+  };
+
+  // 실시간 유효성 검사
+  const validateField = (field: keyof typeof addressForm, value: string) => {
+    let error: string | undefined;
+
+    switch (field) {
+      case 'name':
+        error = validateName(value);
+        break;
+      case 'phone':
+        error = validatePhone(value);
+        break;
+      case 'address':
+        error = validateAddress(value);
+        break;
+      default:
+        break;
+    }
+
+    setFormErrors((prev) => ({
+      ...prev,
+      [field]: error,
+    }));
+
+    return !error;
+  };
+
+  // 입력 핸들러
+  const handleInputChange = (field: keyof typeof addressForm, value: string) => {
+    let formattedValue = value;
+
+    // 전화번호 포맷팅
+    if (field === 'phone') {
+      formattedValue = formatPhoneNumber(value);
+    }
+
+    setAddressForm((prev) => ({
+      ...prev,
+      [field]: formattedValue,
+    }));
+
+    // touched 상태가 true인 경우에만 실시간 검증
+    if (touched[field as keyof typeof touched]) {
+      validateField(field, formattedValue);
+    }
+  };
+
+  // blur 핸들러
+  const handleInputBlur = (field: keyof typeof touched) => {
+    setTouched((prev) => ({
+      ...prev,
+      [field]: true,
+    }));
+
+    validateField(field, addressForm[field]);
+  };
+
+  // 전체 폼 유효성 검사
+  const validateForm = (): boolean => {
+    const errors: FormErrors = {};
+
+    const nameError = validateName(addressForm.name);
+    if (nameError) errors.name = nameError;
+
+    const phoneError = validatePhone(addressForm.phone);
+    if (phoneError) errors.phone = phoneError;
+
+    const addressError = validateAddress(addressForm.address);
+    if (addressError) errors.address = addressError;
+
+    setFormErrors(errors);
+
+    // 모든 필드를 touched로 설정
+    setTouched({
+      name: true,
+      phone: true,
+      address: true,
+      detailAddress: true,
+    });
+
+    return Object.keys(errors).length === 0;
+  };
 
   // 초기 주소 설정 - useRef로 한 번만 실행되도록 보장
   useEffect(() => {
@@ -141,6 +300,12 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
           zipCode: data.zonecode,
           address: fullAddress,
         }));
+
+        // 주소가 입력되면 에러 제거
+        setFormErrors((prev) => ({
+          ...prev,
+          address: undefined,
+        }));
       },
     }).open();
   };
@@ -171,17 +336,17 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
   // 배송지 저장 (신규/수정)
   const handleSaveAddress = async () => {
     try {
-      // 필수 필드 검증
-      if (!addressForm.name || !addressForm.phone || !addressForm.address) {
-        toast.error('필수 정보를 모두 입력해주세요.');
+      // 폼 유효성 검사
+      if (!validateForm()) {
+        toast.error('입력 정보를 확인해주세요.');
         return;
       }
 
       const address = {
-        name: addressForm.name,
+        name: addressForm.name.trim(),
         phone: addressForm.phone,
         address: addressForm.address,
-        detailAddress: addressForm.detailAddress,
+        detailAddress: addressForm.detailAddress.trim(),
         zipCode: addressForm.zipCode,
       };
 
@@ -202,6 +367,22 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
 
         toast.success('배송지 정보가 저장되었습니다.');
         setDialogOpen(false);
+
+        // 폼 초기화
+        setAddressForm({
+          name: '',
+          phone: '',
+          address: '',
+          detailAddress: '',
+          zipCode: '',
+        });
+        setFormErrors({});
+        setTouched({
+          name: false,
+          phone: false,
+          address: false,
+          detailAddress: false,
+        });
       } else {
         toast.error('배송지 정보 저장에 실패했습니다.');
       }
@@ -317,6 +498,29 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
     }
   };
 
+  // 다이얼로그 닫기 핸들러
+  const handleDialogClose = (open: boolean) => {
+    setDialogOpen(open);
+
+    // 다이얼로그가 닫힐 때 폼 초기화
+    if (!open) {
+      setAddressForm({
+        name: '',
+        phone: '',
+        address: '',
+        detailAddress: '',
+        zipCode: '',
+      });
+      setFormErrors({});
+      setTouched({
+        name: false,
+        phone: false,
+        address: false,
+        detailAddress: false,
+      });
+    }
+  };
+
   return (
     <div className='bg-surface min-h-screen w-full p-4 sm:p-6 lg:p-8'>
       {/* 전체 컨테이너 */}
@@ -426,7 +630,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
                     {orderData.memo && (
                       <div className='flex items-start justify-between lg:justify-start lg:gap-4'>
                         <span className='w-24 shrink-0 lg:w-48'>배송 메모</span>
-                        <span className='break-words text-secondary'>{orderData.memo}</span>
+                        <span className='text-secondary break-words'>{orderData.memo}</span>
                       </div>
                     )}
                   </>
@@ -436,7 +640,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
               </div>
 
               {/* 변경 버튼 클릭시 배송정보 모달창 */}
-              <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+              <Dialog open={dialogOpen} onOpenChange={handleDialogClose}>
                 <DialogContent className='max-w-2xl'>
                   <div className='w-full overflow-auto bg-white'>
                     <DialogHeader>
@@ -529,35 +733,59 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
                     ) : (
                       <div className='mt-4 grid gap-4'>
                         <div>
-                          <label className='block text-sm font-medium'>이름</label>
-                          <input type='text' className='mt-1 w-full rounded border p-2' placeholder='받는 분 성함' value={addressForm.name} onChange={(e) => setAddressForm((prev) => ({ ...prev, name: e.target.value }))} />
+                          <label className='block text-sm font-medium'>
+                            이름 <span className='text-red-500'>*</span>
+                          </label>
+                          <input
+                            type='text'
+                            className={`mt-1 w-full rounded border p-2 ${formErrors.name && touched.name ? 'border-red-500' : ''}`}
+                            placeholder='받는 분 성함'
+                            value={addressForm.name}
+                            onChange={(e) => handleInputChange('name', e.target.value)}
+                            onBlur={() => handleInputBlur('name')}
+                            maxLength={20}
+                          />
+                          {formErrors.name && touched.name && <p className='mt-1 text-xs text-red-500'>{formErrors.name}</p>}
                         </div>
                         <div>
-                          <label className='block text-sm font-medium'>전화번호</label>
-                          <input type='text' className='mt-1 w-full rounded border p-2' placeholder='010-1234-5678' value={addressForm.phone} onChange={(e) => setAddressForm((prev) => ({ ...prev, phone: e.target.value }))} />
+                          <label className='block text-sm font-medium'>
+                            전화번호 <span className='text-red-500'>*</span>
+                          </label>
+                          <input
+                            type='tel'
+                            className={`mt-1 w-full rounded border p-2 ${formErrors.phone && touched.phone ? 'border-red-500' : ''}`}
+                            placeholder='010-1234-5678'
+                            value={addressForm.phone}
+                            onChange={(e) => handleInputChange('phone', e.target.value)}
+                            onBlur={() => handleInputBlur('phone')}
+                            maxLength={13}
+                          />
+                          {formErrors.phone && touched.phone && <p className='mt-1 text-xs text-red-500'>{formErrors.phone}</p>}
                         </div>
                         <div>
-                          <label className='block text-sm font-medium'>우편번호</label>
-                          <input type='text' className='mt-1 w-full rounded border p-2' placeholder='주소를 찾아주세요' value={addressForm.zipCode} onChange={(e) => setAddressForm((prev) => ({ ...prev, zipCode: e.target.value }))} readOnly />
+                          <label className='block text-sm font-medium'>
+                            우편번호 <span className='text-red-500'>*</span>
+                          </label>
+                          <input type='text' className='mt-1 w-full rounded border bg-gray-50 p-2' placeholder='주소를 찾아주세요' value={addressForm.zipCode} readOnly />
                         </div>
                         <div className='mt-4'>
-                          <label className='block text-sm font-medium'>도로명 주소</label>
+                          <label className='block text-sm font-medium'>
+                            도로명 주소 <span className='text-red-500'>*</span>
+                          </label>
                           <div className='mt-1 flex gap-2'>
-                            <input type='text' className='w-[150px] flex-1 rounded border p-2' placeholder='주소를 찾아주세요' value={addressForm.address} onChange={(e) => setAddressForm((prev) => ({ ...prev, address: e.target.value }))} readOnly />
+                            <input type='text' className={`w-[150px] flex-1 rounded border bg-gray-50 p-2 ${formErrors.address && touched.address ? 'border-red-500' : ''}`} placeholder='주소를 찾아주세요' value={addressForm.address} readOnly />
                             <Button size='lg' variant='default' onClick={handleAddressSearch}>
                               주소 찾기
                             </Button>
                           </div>
+                          {formErrors.address && touched.address && <p className='mt-1 text-xs text-red-500'>{formErrors.address}</p>}
                         </div>
                         <div>
                           <label className='block text-sm font-medium'>상세 주소</label>
-                          <input
-                            type='text'
-                            className='mt-1 w-full rounded border p-2'
-                            placeholder='상세 주소를 입력해주세요'
-                            value={addressForm.detailAddress}
-                            onChange={(e) => setAddressForm((prev) => ({ ...prev, detailAddress: e.target.value }))}
-                          />
+                          <input type='text' className='mt-1 w-full rounded border p-2' placeholder='상세 주소를 입력해주세요' value={addressForm.detailAddress} onChange={(e) => handleInputChange('detailAddress', e.target.value)} maxLength={50} />
+                        </div>
+                        <div className='mt-2 text-xs text-gray-500'>
+                          <span className='text-red-500'>*</span> 표시는 필수 입력 항목입니다.
                         </div>
                       </div>
                     )}

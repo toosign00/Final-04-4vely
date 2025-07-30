@@ -424,6 +424,90 @@ export async function getOrderByIdAction(orderId: number): Promise<PurchaseActio
 }
 
 /**
+ * 현재 로그인한 사용자의 주소 정보를 가져오는 서버 액션
+ * @returns {Promise<{address: string | null, name: string | null, phone: string | null, userId: number | null}>} 사용자 정보
+ */
+export async function getUserAddressAction(): Promise<{
+  address: string | null;
+  name: string | null;
+  phone: string | null;
+  userId: number | null;
+}> {
+  try {
+    const cookieStore = await cookies();
+    const userAuthCookie = cookieStore.get('user-auth')?.value;
+
+    if (!userAuthCookie) {
+      console.log('[getUserAddressAction] 로그인되지 않은 사용자');
+      return { address: null, name: null, phone: null, userId: null };
+    }
+
+    const userData = JSON.parse(userAuthCookie);
+    const userId = userData?.state?.user?._id;
+    const accessToken = userData?.state?.user?.token?.accessToken;
+
+    console.log('[getUserAddressAction] 사용자 정보:', {
+      userId,
+      hasToken: !!accessToken,
+    });
+
+    if (!userId || !accessToken) {
+      console.log('[getUserAddressAction] 사용자 정보 불완전');
+      return { address: null, name: null, phone: null, userId: null };
+    }
+
+    // API 요청
+    const apiUrl = `${API_URL}/users/${userId}`;
+    console.log('[getUserAddressAction] API 호출:', apiUrl);
+
+    const res = await fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'client-id': CLIENT_ID,
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    const responseText = await res.text();
+    console.log('[getUserAddressAction] API 응답 상태:', res.status);
+    console.log('[getUserAddressAction] API 응답 텍스트:', responseText);
+
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (e) {
+      console.error('[getUserAddressAction] JSON 파싱 오류:', e);
+      return { address: null, name: null, phone: null, userId: null };
+    }
+
+    if (!res.ok || data.ok === 0) {
+      console.error('[getUserAddressAction] API 오류:', data.message || 'Unknown error');
+      return { address: null, name: null, phone: null, userId: null };
+    }
+
+    // API 응답에서 사용자 정보 추출
+    const userInfo = data.item;
+    console.log('[getUserAddressAction] 사용자 정보 조회 성공:', {
+      name: userInfo?.name,
+      phone: userInfo?.phone,
+      address: userInfo?.address,
+      hasAddress: !!userInfo?.address
+    });
+
+    return { 
+      address: userInfo?.address || null,
+      name: userInfo?.name || null,
+      phone: userInfo?.phone || null,
+      userId: userId
+    };
+  } catch (error) {
+    console.error('[getUserAddressAction] 예외 발생:', error);
+    return { address: null, name: null, phone: null, userId: null };
+  }
+}
+
+/**
  * 사용자의 로그인 상태를 확인하는 서버 액션
  * @returns {Promise<boolean>} 로그인 여부
  */

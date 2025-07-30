@@ -28,10 +28,44 @@ interface SavedAddress {
   isDefault?: boolean;
 }
 
+// Daum 우편번호 API 응답 타입 정의
+interface DaumPostcodeData {
+  roadAddress?: string; // 도로명 주소
+  jibunAddress?: string; // 지번 주소
+  zonecode: string; // 우편번호
+  address: string; // 기본 주소
+  addressType: string; // 주소 타입 ('R': 도로명, 'J': 지번)
+  userSelectedType: string; // 사용자가 선택한 주소 타입
+  noSelected: string; // 연관 주소에서 선택 안함 (Y/N)
+  userLanguageType: string; // 사용자가 선택한 언어 타입
+  roadAddressEnglish?: string; // 영문 도로명 주소
+  jibunAddressEnglish?: string; // 영문 지번 주소
+  autoRoadAddress?: string; // 자동 완성된 도로명 주소
+  autoJibunAddress?: string; // 자동 완성된 지번 주소
+  buildingCode: string; // 건물관리번호
+  buildingName: string; // 건물명
+  apartment: string; // 공동주택 여부 (Y/N)
+  sido: string; // 시/도
+  sigungu: string; // 시/군/구
+  sigunguCode: string; // 시/군/구 코드
+  roadnameCode: string; // 도로명 코드
+  bcode: string; // 법정동코드
+  roadname: string; // 도로명
+  bname: string; // 법정동/법정리 이름
+  bname1: string; // 법정리의 읍/면 이름
+  bname2: string; // 법정리의 동/리 이름
+  hname: string; // 행정동 이름
+  query: string; // 사용자가 입력한 검색어
+}
+
 // Daum 우편번호 타입
 declare global {
   interface Window {
-    daum: any;
+    daum: {
+      Postcode: new (config: { oncomplete: (data: DaumPostcodeData) => void; onclose?: () => void; width?: number; height?: number }) => {
+        open: () => void;
+      };
+    };
   }
 }
 
@@ -347,9 +381,9 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
     }
 
     new window.daum.Postcode({
-      oncomplete: function (data: any) {
+      oncomplete: function (data: DaumPostcodeData) {
         // 도로명 주소 우선, 없으면 지번 주소 사용
-        const fullAddress = data.roadAddress || data.jibunAddress;
+        const fullAddress = data.roadAddress || data.jibunAddress || '';
 
         setAddressForm((prev) => ({
           ...prev,

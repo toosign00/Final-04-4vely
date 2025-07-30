@@ -40,7 +40,12 @@ export default function OrderComplete() {
             _id: parseInt(orderId),
             user_id: 1,
             state: 'paid',
-            products: parsedData.items.map((item: any) => ({
+            products: parsedData.items.map((item: { 
+              productId: number;
+              quantity: number;
+              price: number;
+              selectedColor?: { colorName: string };
+            }) => ({
               _id: Date.now() + Math.random(),
               product_id: item.productId,
               quantity: item.quantity,

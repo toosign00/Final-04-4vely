@@ -1,6 +1,7 @@
 // src/components/ui/BookmarkButton.tsx
 'use client';
 
+import { Button } from '@/components/ui/Button';
 /**
  * 북마크 버튼 컴포넌트
  * @description 상품, 게시글, 사용자 등 다양한 타입의 북마크를 지원하는 범용 북마크 버튼
@@ -8,10 +9,11 @@
  */
 
 import { toggleBookmarkAction } from '@/lib/actions/bookmarkServerActions';
+import { cn } from '@/lib/utils';
 import useUserStore from '@/store/authStore';
 import { BookmarkType } from '@/types/bookmark.types';
 import { Bookmark } from 'lucide-react';
-import { useState, useTransition, useEffect } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import { toast } from 'sonner';
 
 /**
@@ -26,12 +28,14 @@ interface BookmarkButtonProps {
   productId?: number;
   /** 서버에서 전달받은 북마크 ID (북마크된 경우에만 존재) */
   myBookmarkId?: number;
-  /** 버튼 크기 */
-  size?: number;
   /** 추가 CSS 클래스 */
   className?: string;
   /** 북마크 변경 시 콜백 */
   onBookmarkChange?: (isBookmarked: boolean, bookmarkId?: number) => void;
+  /** 북마크 후 revalidate 여부 (기본: true) */
+  revalidate?: boolean;
+  /** 북마크 종류 */
+  variant?: 'icon' | 'text';
 }
 
 /**
@@ -54,7 +58,7 @@ interface BookmarkButtonProps {
  *   className="custom-class"
  * />
  */
-export default function BookmarkButton({ targetId: propTargetId, type = 'product', productId, myBookmarkId, size = 32, className = '', onBookmarkChange }: BookmarkButtonProps) {
+export default function BookmarkButton({ targetId: propTargetId, type = 'product', productId, myBookmarkId, revalidate = true, variant = 'icon', className = '', onBookmarkChange }: BookmarkButtonProps) {
   // 모든 Hook을 최상위에서 호출 (조건문 이전)
   const [isPending, startTransition] = useTransition();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -115,7 +119,7 @@ export default function BookmarkButton({ targetId: propTargetId, type = 'product
     // 서버 액션 호출
     startTransition(async () => {
       try {
-        const result = await toggleBookmarkAction(targetId, type);
+        const result = await toggleBookmarkAction(targetId, type, { revalidate });
 
         if (result.ok) {
           const action = result.item?.action;
@@ -167,9 +171,28 @@ export default function BookmarkButton({ targetId: propTargetId, type = 'product
     });
   };
 
+  // 게시글 상세 페이지에서 이용하는 북마크 버튼 (text)
+  if (variant === 'text') {
+    return (
+      <Button
+        type='button'
+        onClick={handleClick}
+        disabled={isProcessing || isPending}
+        variant='outline'
+        size='sm'
+        aria-label={isBookmarked ? '북마크 제거' : '북마크 추가'}
+        aria-pressed={isBookmarked}
+        className={cn('border-[0.5px] border-gray-300 text-xs transition-all duration-200 md:py-4 md:text-sm lg:py-5 lg:text-base', isBookmarked ? 'bg-amber-500 text-white hover:bg-amber-600' : 'hover:bg-amber-500', className)}
+      >
+        <Bookmark className='size-4' />
+        북마크
+      </Button>
+    );
+  }
+
   // 버튼 스타일
   const baseButtonClass = `
-    relative flex items-center justify-center transition-all duration-200
+    relative flex items-center justify-center transition-all duration-200 w-6 h-6 md:w-7 md:h-7 lg:w-8 lg:8
     ${isBookmarked ? 'text-amber-500 hover:text-amber-600' : 'text-gray-400 hover:text-gray-600'}
     ${isProcessing || isPending ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
     ${className}
@@ -177,7 +200,7 @@ export default function BookmarkButton({ targetId: propTargetId, type = 'product
 
   return (
     <button type='button' onClick={handleClick} className={baseButtonClass} disabled={isProcessing || isPending} aria-label={isBookmarked ? '북마크 제거' : '북마크 추가'} aria-pressed={isBookmarked}>
-      <Bookmark size={size} className={`transition-all duration-200 ${isBookmarked ? 'fill-current' : ''}`} />
+      <Bookmark className={cn('transition-all duration-200', isBookmarked ? 'fill-current' : '', 'h-6 w-6 md:h-7 md:w-7 lg:h-8 lg:w-8')} aria-hidden='true' focusable='false' />
 
       {/* 로딩 중 표시 */}
       {(isProcessing || isPending) && (

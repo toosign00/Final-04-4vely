@@ -103,7 +103,7 @@ export const initData = async (clientId, nextSeq) => {
         shippingFees: 3000, // 배송비
         show: true, // 상품 표시 여부
         active: true, // 상품 활성화 여부
-        quantity: 50, // 상품 재고
+        quantity: 9999, // 상품 재고
         buyQuantity: 12, // 판매된 수량
         mainImages: [`files/${clientId}/hoya_heart_black.webp`, `files/${clientId}/hoya_heart_brown.webp`], // 상품 메인 이미지
         content: `
@@ -144,7 +144,7 @@ export const initData = async (clientId, nextSeq) => {
         shippingFees: 3000, // 배송비
         show: true, // 상품 표시 여부
         active: true, // 상품 활성화 여부
-        quantity: 60, // 상품 재고
+        quantity: 9999, // 상품 재고
         buyQuantity: 15, // 판매된 수량
         mainImages: [`files/${clientId}/Spathiphyllum_black.webp`, `files/${clientId}/Spathiphyllum_brown.webp`, `files/${clientId}/Spathiphyllum_gray.webp`], // 상품 메인 이미지
         content: `
@@ -184,7 +184,7 @@ export const initData = async (clientId, nextSeq) => {
         shippingFees: 3000, // 배송비
         show: true, // 상품 표시 여부
         active: true, // 상품 활성화 여부
-        quantity: 30, // 상품 재고
+        quantity: 9999, // 상품 재고
         buyQuantity: 10, // 판매된 수량
         mainImages: [`files/${clientId}/monstera_adansonii_black.webp`], // 상품 메인 이미지
         content: `
@@ -223,7 +223,7 @@ export const initData = async (clientId, nextSeq) => {
         shippingFees: 3000, // 배송비
         show: true, // 상품 표시 여부
         active: true, // 상품 활성화 여부
-        quantity: 35, // 상품 재고
+        quantity: 9999, // 상품 재고
         buyQuantity: 11, // 판매된 수량
         mainImages: [`files/${clientId}/ocjamhwa_brown.webp`, `files/${clientId}/ocjamhwa_gray.webp`], // 상품 메인 이미지
         content: `
@@ -264,7 +264,7 @@ export const initData = async (clientId, nextSeq) => {
         shippingFees: 3000, // 배송비
         show: true, // 상품 표시 여부
         active: true, // 상품 활성화 여부
-        quantity: 50, // 상품 재고
+        quantity: 9999, // 상품 재고
         buyQuantity: 13, // 판매된 수량
         mainImages: [`files/${clientId}/nabiran_black.webp`, `files/${clientId}/nabiran_brown.webp`, `files/${clientId}/nabiran_gray.webp`], // 상품 메인 이미지
         content: `
@@ -308,7 +308,7 @@ export const initData = async (clientId, nextSeq) => {
         shippingFees: 3000, // 배송비
         show: true, // 상품 표시 여부
         active: true, // 상품 활성화 여부
-        quantity: 50, // 상품 재고
+        quantity: 9999, // 상품 재고
         buyQuantity: 20, // 판매된 수량
         mainImages: [`files/${clientId}/parlor_palm_black.webp`, `files/${clientId}/parlor_palm_brown.webp`, `files/${clientId}/parlor_palm_gray.webp`], // 상품 메인 이미지
         content: `
@@ -351,7 +351,7 @@ export const initData = async (clientId, nextSeq) => {
         shippingFees: 3000, // 배송비
         show: true, // 상품 표시 여부
         active: true, // 상품 활성화 여부
-        quantity: 40, // 상품 재고
+        quantity: 9999, // 상품 재고
         buyQuantity: 19, // 판매된 수량
         mainImages: [`files/${clientId}/dracaena_black.webp`, `files/${clientId}/dracaena_brown.webp`, `files/${clientId}/dracaena_white.webp`, `files/${clientId}/dracaena_blue.webp`], // 상품 메인 이미지
         content: `
@@ -394,7 +394,7 @@ export const initData = async (clientId, nextSeq) => {
         shippingFees: 3000, // 배송비
         show: true, // 상품 표시 여부
         active: true, // 상품 활성화 여부
-        quantity: 30, // 상품 재고
+        quantity: 9999, // 상품 재고
         buyQuantity: 25, // 판매된 수량
         mainImages: [`files/${clientId}/bromeliad_black.webp`, `files/${clientId}/bromeliad_brown.webp`, `files/${clientId}/bromeliad_white.webp`, `files/${clientId}/bromeliad_gray.webp`], // 상품 메인 이미지
         content: `
@@ -438,7 +438,7 @@ export const initData = async (clientId, nextSeq) => {
         shippingFees: 3000, // 배송비
         show: true, // 상품 표시 여부
         active: true, // 상품 활성화 여부
-        quantity: 20, // 상품 재고
+        quantity: 9999, // 상품 재고
         buyQuantity: 11, // 판매된 수량
         mainImages: [`files/${clientId}/philodendron_birkin_black.webp`, `files/${clientId}/philodendron_birkin_brown.webp`, `files/${clientId}/philodendron_birkin_gray.webp`], // 상품 메인 이미지
         content: `
@@ -482,7 +482,7 @@ export const initData = async (clientId, nextSeq) => {
         shippingFees: 3000, // 배송비
         show: true, // 상품 표시 여부
         active: true, // 상품 활성화 여부
-        quantity: 40, // 상품 재고
+        quantity: 9999, // 상품 재고
         buyQuantity: 35, // 판매된 수량
         mainImages: [`files/${clientId}/philodendron_moonlight_black.webp`, `files/${clientId}/philodendron_moonlight_white.webp`, `files/${clientId}/philodendron_moonlight_gray.webp`], // 상품 메인 이미지
         content: `
@@ -524,7 +524,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 40, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 18, // 판매된 수량
       //   mainImages: [`/files/${clientId}/alocasia_polly_black.webp`, `/files/${clientId}/alocasia_polly_brown.webp`, `/files/${clientId}/alocasia_polly_gray.webp`], // 상품 메인 이미지
       //   content: `
@@ -563,7 +563,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 55, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 16, // 판매된 수량
       //   mainImages: [`/files/${clientId}/calathea_freddie_brown.webp`, `/files/${clientId}/calathea_freddie_gray.webp`, `/files/${clientId}/calathea_freddie_blue.webp`], // 상품 메인 이미지
       //   content: `
@@ -604,7 +604,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 80, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 32, // 판매된 수량
       //   mainImages: [`/files/${clientId}/golden_pothos_black.webp`, `/files/${clientId}/golden_pothos_brown.webp`], // 상품 메인 이미지
       //   content: `
@@ -646,7 +646,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 50, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 28, // 판매된 수량
       //   mainImages: [`/files/${clientId}/burgundy_rubber_tree_black.webp`, `/files/${clientId}/burgundy_rubber_tree_brown.webp`, `/files/${clientId}/burgundy_rubber_tree_white.webp`, `/files/${clientId}/burgundy_rubber_tree_blue.webp`], // 상품 메인 이미지
       //   content: `
@@ -688,7 +688,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 40, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 25, // 판매된 수량
       //   mainImages: [`/files/${clientId}/ficus_tineke_black.webp`, `/files/${clientId}/ficus_tineke_brown.webp`, `/files/${clientId}/ficus_tineke_gray.webp`], // 상품 메인 이미지
       //   content: `
@@ -728,7 +728,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 30, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 14, // 판매된 수량
       //   mainImages: [`/files/${clientId}/philodendron_congo_rojo_black.webp`, `/files/${clientId}/philodendron_congo_rojo_white.webp`, `/files/${clientId}/philodendron_congo_rojo_gray.webp`], // 상품 메인 이미지
       //   content: `
@@ -773,7 +773,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 30, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 17, // 판매된 수량
       //   mainImages: [`/files/${clientId}/kangaroo_fern_black.webp`, `/files/${clientId}/kangaroo_fern_brown.webp`, `/files/${clientId}/kangaroo_fern_gray.webp`], // 상품 메인 이미지
       //   content: `
@@ -813,7 +813,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 50, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 25, // 판매된 수량
       //   mainImages: [`/files/${clientId}/ponytail_palm_black.webp`], // 상품 메인 이미지
       //   content: `
@@ -854,7 +854,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 50, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 35, // 판매된 수량
       //   mainImages: [`/files/${clientId}/variegated_schefflera_black.webp`, `/files/${clientId}/variegated_schefflera_brown.webp`, `/files/${clientId}/variegated_schefflera_white.webp`, `/files/${clientId}/variegated_schefflera_blue.webp`], // 상품 메인 이미지
       //   content: `
@@ -898,7 +898,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 20, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 14, // 판매된 수량
       //   mainImages: [`/files/${clientId}/baltic_blue_pothos_black.webp`], // 상품 메인 이미지
       //   content: `
@@ -938,7 +938,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 40, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 32, // 판매된 수량
       //   mainImages: [`/files/${clientId}/geokrak_black.webp`, `/files/${clientId}/geokrak_brown.webp`, `/files/${clientId}/geokrak_white.webp`, `/files/${clientId}/geokrak_gray.webp`, `/files/${clientId}/geokrak_blue.webp`], // 상품 메인 이미지
       //   content: `
@@ -983,7 +983,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 50, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 27, // 판매된 수량
       //   mainImages: [`/files/${clientId}/philodendron_sun_red_black.webp`, `/files/${clientId}/philodendron_sun_red_white.webp`, `/files/${clientId}/philodendron_sun_red_gray.webp`], // 상품 메인 이미지
       //   content: `
@@ -1026,7 +1026,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 30, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 16, // 판매된 수량
       //   mainImages: [`/files/${clientId}/olive_tree_black.webp`, `/files/${clientId}/olive_tree_brown.webp`, `/files/${clientId}/olive_tree_gray.webp`], // 상품 메인 이미지
       //   content: `
@@ -1067,7 +1067,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 40, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 33, // 판매된 수량
       //   mainImages: [`/files/${clientId}/white_orchid_black.webp`, `/files/${clientId}/white_orchid_brown.webp`, `/files/${clientId}/white_orchid_white.webp`], // 상품 메인 이미지
       //   content: `
@@ -1109,7 +1109,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 60, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 37, // 판매된 수량
       //   mainImages: [`/files/${clientId}/money_tree_black.webp`, `/files/${clientId}/money_tree_brown.webp`, `/files/${clientId}/money_tree_gray.webp`], // 상품 메인 이미지
       //   content: `
@@ -1152,7 +1152,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 40, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 18, // 판매된 수량
       //   mainImages: [`/files/${clientId}/silver_pothos_brown.webp`, `/files/${clientId}/silver_pothos_gray.webp`], // 상품 메인 이미지
       //   content: `
@@ -1196,7 +1196,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 20, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 15, // 판매된 수량
       //   mainImages: [`/files/${clientId}/eureka_lemon_tree_black.webp`, `/files/${clientId}/eureka_lemon_tree_white.webp`], // 상품 메인 이미지
       //   content: `
@@ -1237,7 +1237,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 40, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 25, // 판매된 수량
       //   mainImages: [`/files/${clientId}/sansevieria_moonshine_black.webp`, `/files/${clientId}/sansevieria_moonshine_brown.webp`, `/files/${clientId}/sansevieria_moonshine_gray.webp`], // 상품 메인 이미지
       //   content: `
@@ -1283,7 +1283,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 40, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 20, // 판매된 수량
       //   mainImages: [`/files/${clientId}/african_violet_black.webp`, `/files/${clientId}/african_violet_brown.webp`, `/files/${clientId}/african_violet_gray.webp`], // 상품 메인 이미지
       //   content: `
@@ -1325,7 +1325,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 50, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 25, // 판매된 수량
       //   mainImages: [`/files/${clientId}/bromeliad_guzmania_black.webp`, `/files/${clientId}/bromeliad_guzmania_brown.webp`, `/files/${clientId}/bromeliad_guzmania_gray.webp`], // 상품 메인 이미지
       //   content: `
@@ -1365,7 +1365,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 60, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 34, // 판매된 수량
       //   mainImages: [`/files/${clientId}/cat_palm_black.webp`, `/files/${clientId}/cat_palm_brown.webp`, `/files/${clientId}/cat_palm_white.webp`, `/files/${clientId}/cat_palm_gray.webp`, `/files/${clientId}/cat_palm_blue.webp`], // 상품 메인 이미지
       //   content: `
@@ -1405,7 +1405,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 30, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 11, // 판매된 수량
       //   mainImages: [`/files/${clientId}/variegated_pink_lemon_tree_black.webp`, `/files/${clientId}/variegated_pink_lemon_tree_white.webp`], // 상품 메인 이미지
       //   content: `
@@ -1446,7 +1446,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 40, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 23, // 판매된 수량
       //   mainImages: [`/files/${clientId}/coffee_plant_black.webp`, `/files/${clientId}/coffee_plant_brown.webp`, `/files/${clientId}/coffee_plant_gray.webp`], // 상품 메인 이미지
       //   content: `
@@ -1487,7 +1487,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 60, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 25, // 판매된 수량
       //   mainImages: [`/files/${clientId}/hibiscus_white.webp`, `/files/${clientId}/hibiscus_gray.webp`], // 상품 메인 이미지
       //   content: `
@@ -1525,7 +1525,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 60, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 35, // 판매된 수량
       //   mainImages: [`/files/${clientId}/sansevieria_black.webp`, `/files/${clientId}/sansevieria_brown.webp`], // 상품 메인 이미지
       //   content: `
@@ -1570,7 +1570,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 25, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 18, // 판매된 수량
       //   mainImages: [`/files/${clientId}/aglaonema_siam_black.webp`, `/files/${clientId}/aglaonema_siam_brown.webp`, `/files/${clientId}/aglaonema_siam_gray.webp`], // 상품 메인 이미지
       //   content: `
@@ -1614,7 +1614,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 50, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 22, // 판매된 수량
       //   mainImages: [`/files/${clientId}/calathea_pinstripe_black.webp`, `/files/${clientId}/calathea_pinstripe_brown.webp`, `/files/${clientId}/calathea_pinstripe_gray.webp`], // 상품 메인 이미지
       //   content: `
@@ -1654,7 +1654,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 40, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 19, // 판매된 수량
       //   mainImages: [
       //     `/files/${clientId}/dracaena_marginata_black.webp`,
@@ -1701,7 +1701,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 40, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 32, // 판매된 수량
       //   mainImages: [`/files/${clientId}/geumjeunsu_black.webp`, `/files/${clientId}/geumjeunsu_brown.webp`, `/files/${clientId}/geumjeunsu_white.webp`, `/files/${clientId}/geumjeunsu_gray.webp`, `/files/${clientId}/geumjeunsu_blue.webp`], // 상품 메인 이미지
       //   content: `
@@ -1746,7 +1746,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 60, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 27, // 판매된 수량
       //   mainImages: [`/files/${clientId}/red_anthurium_black.webp`, `/files/${clientId}/red_anthurium_brown.webp`, `/files/${clientId}/red_anthurium_white.webp`, `/files/${clientId}/red_anthurium_gray.webp`], // 상품 메인 이미지
       //   content: `
@@ -1788,7 +1788,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 50, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 25, // 판매된 수량
       //   mainImages: [`/files/${clientId}/insam_black.webp`, `/files/${clientId}/insam_brown.webp`, `/files/${clientId}/insam_gray.webp`], // 상품 메인 이미지
       //   content: `
@@ -1829,7 +1829,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 60, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 21, // 판매된 수량
       //   mainImages: [`/files/${clientId}/monstera_deliciosa_black.webp`, `/files/${clientId}/monstera_deliciosa_brown.webp`, `/files/${clientId}/monstera_deliciosa_white.webp`, `/files/${clientId}/monstera_deliciosa_blue.webp`], // 상품 메인 이미지
       //   content: `
@@ -1867,7 +1867,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 30, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 18, // 판매된 수량
       //   mainImages: [`/files/${clientId}/variegated_croton_black.webp`, `/files/${clientId}/variegated_croton_brown.webp`, `/files/${clientId}/variegated_croton_white.webp`, `/files/${clientId}/variegated_croton_blue.webp`], // 상품 메인 이미지
       //   content: `
@@ -1909,7 +1909,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 50, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 31, // 판매된 수량
       //   mainImages: [`/files/${clientId}/mini_money_tree_black.webp`, `/files/${clientId}/mini_money_tree_brown.webp`, `/files/${clientId}/mini_money_tree_gray.webp`], // 상품 메인 이미지
       //   content: `
@@ -1951,7 +1951,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 60, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 15, // 판매된 수량
       //   mainImages: [`/files/${clientId}/flamingo_flower.webp`], // 상품 메인 이미지
       //   content: `
@@ -1994,7 +1994,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 40, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 25, // 판매된 수량
       //   mainImages: [`/files/${clientId}/watermelon_peperomia.webp`], // 상품 메인 이미지
       //   content: `
@@ -2035,7 +2035,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 50, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 16, // 판매된 수량
       //   mainImages: [`/files/${clientId}/maranta_leuconeura.webp`], // 상품 메인 이미지
       //   content: `
@@ -2077,7 +2077,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 30, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 13, // 판매된 수량
       //   mainImages: [`/files/${clientId}/calathea_lancifolia.webp`], // 상품 메인 이미지
       //   content: `
@@ -2119,7 +2119,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 50, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 22, // 판매된 수량
       //   mainImages: [`/files/${clientId}/monstera_thai_constellation.webp`], // 상품 메인 이미지
       //   content: `
@@ -2160,7 +2160,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 60, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 15, // 판매된 수량
       //   mainImages: [`/files/${clientId}/crashula_obata.webp`], // 상품 메인 이미지
       //   content: `
@@ -2203,7 +2203,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 50, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 17, // 판매된 수량
       //   mainImages: [`/files/${clientId}/princess_philodendron_pink.webp`], // 상품 메인 이미지
       //   content: `
@@ -2244,7 +2244,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 60, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 35, // 판매된 수량
       //   mainImages: [`/files/${clientId}/philodendron_genie(mini monstera).webp`], // 상품 메인 이미지
       //   content: `
@@ -2287,7 +2287,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 60, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 31, // 판매된 수량
       //   mainImages: [`/files/${clientId}/nokyong.webp`], // 상품 메인 이미지
       //   content: `
@@ -2326,7 +2326,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 30, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 16, // 판매된 수량
       //   mainImages: [`/files/${clientId}/pink_palenopsis_orchid.webp`], // 상품 메인 이미지
       //   content: `
@@ -2366,7 +2366,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 40, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 12, // 판매된 수량
       //   mainImages: [`/files/${clientId}/nephropis_scotch.webp`], // 상품 메인 이미지
       //   content: `
@@ -2405,7 +2405,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 60, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 21, // 판매된 수량
       //   mainImages: [`/files/${clientId}/purple_palenopsis_orchid.webp`], // 상품 메인 이미지
       //   content: `
@@ -2446,7 +2446,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 30, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 22, // 판매된 수량
       //   mainImages: [`/files/${clientId}/philodendron_vine_lemon-lime.webp`], // 상품 메인 이미지
       //   content: `
@@ -2486,7 +2486,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 60, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 11, // 판매된 수량
       //   mainImages: [`/files/${clientId}/Lemon-Button.webp`], // 상품 메인 이미지
       //   content: `
@@ -2527,7 +2527,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 60, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 31, // 판매된 수량
       //   mainImages: [`/files/${clientId}/hippoesthes_philostakia.webp`], // 상품 메인 이미지
       //   content: `
@@ -2571,7 +2571,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 30, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 16, // 판매된 수량
       //   mainImages: [`/files/${clientId}/Yublan.webp`], // 상품 메인 이미지
       //   content: `
@@ -2613,7 +2613,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 50, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 32, // 판매된 수량
       //   mainImages: [`/files/${clientId}/acadia_palenopsis_orchid.webp`], // 상품 메인 이미지
       //   content: `
@@ -2653,7 +2653,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 40, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 27, // 판매된 수량
       //   mainImages: [`/files/${clientId}/gogzak_tree.webp`], // 상품 메인 이미지
       //   content: `
@@ -2694,7 +2694,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 80, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 61, // 판매된 수량
       //   mainImages: [`/files/${clientId}/marvel_queen_photos.webp`], // 상품 메인 이미지
       //   content: `
@@ -2737,7 +2737,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 30, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 22, // 판매된 수량
       //   mainImages: [`/files/${clientId}/english_ivy.webp`], // 상품 메인 이미지
       //   content: `
@@ -2778,7 +2778,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 40, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 29, // 판매된 수량
       //   mainImages: [`/files/${clientId}/philodendron_fire.webp`], // 상품 메인 이미지
       //   content: `
@@ -2819,7 +2819,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 50, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 28, // 판매된 수량
       //   mainImages: [`/files/${clientId}/eco_pot_10_black.webp`, `/files/${clientId}/eco_pot_10_brown.webp`, `/files/${clientId}/eco_pot_10_white.webp`, `/files/${clientId}/eco_pot_10_blue.webp`], // 상품 메인 이미지
       //   content: `
@@ -2852,7 +2852,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 50, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 38, // 판매된 수량
       //   mainImages: [`/files/${clientId}/eco_pot_6_black.webp`, `/files/${clientId}/eco_pot_6_brown.webp`, `/files/${clientId}/eco_pot_6_gray.webp`], // 상품 메인 이미지
       //   content: `
@@ -2885,7 +2885,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 50, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 18, // 판매된 수량
       //   mainImages: [`/files/${clientId}/eco_pot_12_black.webp`, `/files/${clientId}/eco_pot_12_brown.webp`, `/files/${clientId}/eco_pot_12_white.webp`, `/files/${clientId}/eco_pot_12_gray.webp`, `/files/${clientId}/eco_pot_12_blue.webp`], // 상품 메인 이미지
       //   content: `
@@ -2918,7 +2918,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 80, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 48, // 판매된 수량
       //   mainImages: [`/files/${clientId}/dirt.webp`], // 상품 메인 이미지
       //   content: `
@@ -2951,7 +2951,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 50, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 38, // 판매된 수량
       //   mainImages: [`/files/${clientId}/202020_fertilizer.webp`], // 상품 메인 이미지
       //   content: `
@@ -2982,7 +2982,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 40, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 28, // 판매된 수량
       //   mainImages: [`/files/${clientId}/cutting_tool.webp`], // 상품 메인 이미지
       //   content: `
@@ -3014,7 +3014,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 40, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 31, // 판매된 수량
       //   mainImages: [`/files/${clientId}/hand_trowel.webp`], // 상품 메인 이미지
       //   content: `
@@ -3046,7 +3046,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 30, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 15, // 판매된 수량
       //   mainImages: [`/files/${clientId}/sowvital_set.webp`], // 상품 메인 이미지
       //   content: `
@@ -3077,7 +3077,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 50, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 38, // 판매된 수량
       //   mainImages: [`/files/${clientId}/watering_can.webp`], // 상품 메인 이미지
       //   content: `
@@ -3109,7 +3109,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 50, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 22, // 판매된 수량
       //   mainImages: [`/files/${clientId}/moss_pole.webp`], // 상품 메인 이미지
       //   content: `
@@ -3141,7 +3141,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 60, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 48, // 판매된 수량
       //   mainImages: [`/files/${clientId}/little_light_white.webp`], // 상품 메인 이미지
       //   content: `
@@ -3172,7 +3172,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 60, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 48, // 판매된 수량
       //   mainImages: [`/files/${clientId}/little_light_black.webp`], // 상품 메인 이미지
       //   content: `
@@ -3203,7 +3203,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 50, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 25, // 판매된 수량
       //   mainImages: [`/files/${clientId}/middle_light_white.webp`], // 상품 메인 이미지
       //   content: `
@@ -3234,7 +3234,7 @@ export const initData = async (clientId, nextSeq) => {
       //   shippingFees: 3000, // 배송비
       //   show: true, // 상품 표시 여부
       //   active: true, // 상품 활성화 여부
-      //   quantity: 50, // 상품 재고
+      //   quantity: 9999, // 상품 재고
       //   buyQuantity: 25, // 판매된 수량
       //   mainImages: [`/files/${clientId}/middle_light_black.webp`], // 상품 메인 이미지
       //   content: `

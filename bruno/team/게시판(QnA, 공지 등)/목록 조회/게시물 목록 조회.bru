@@ -5,13 +5,15 @@ meta {
 }
 
 get {
-  url: {{url}}/posts?type=magazine
+  url: {{url}}/posts?type=magazine&page=1&limit=4
   body: none
   auth: inherit
 }
 
 params:query {
   type: magazine
+  page: 1
+  limit: 4
   ~type: plant
   ~type: community
 }

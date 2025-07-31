@@ -291,22 +291,157 @@ export async function getBestProducts(limit: number = 4): ApiResPromise<Product[
 }
 
 /**
- * 서버에서 모든 상품을 조회합니다.
+ * 서버에서 필터링과 페이지네이션이 적용된 상품 목록을 조회합니다.
  * 로그인된 사용자의 경우 myBookmarkId가 포함된 상태로 반환됩니다.
  */
-export async function searchAllProducts(): Promise<Product[]> {
+export async function getFilteredProductsWithPagination(params: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  sort?: string;
+  category?: string;
+  filters?: {
+    size?: string[];
+    difficulty?: string[];
+    light?: string[];
+    space?: string[];
+    season?: string[];
+    suppliesCategory?: string[];
+  };
+}): Promise<{
+  products: Product[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}> {
   try {
-    const response = await getServerAllProducts({ limit: 12 });
+    const page = params.page || 1;
+    const limit = params.limit || 12;
 
-    if (!response.ok) {
-      console.error('상품 로딩 실패:', response.message);
-      return [];
+    console.log('[서버 필터링 상품 조회] 시작:', {
+      page,
+      limit,
+      search: params.search,
+      sort: params.sort,
+      category: params.category,
+      filters: params.filters,
+    });
+
+    // 먼저 전체 상품을 가져온 후 필터링 (API가 필터 기능을 제공하지 않는 경우)
+    // 실제로는 API에서 필터링된 결과를 받아야 함
+    const allProductsResponse = await getServerAllProducts({
+      limit: 1000, // 임시로 많은 수 설정
+    });
+
+    if (!allProductsResponse.ok) {
+      console.error('상품 로딩 실패:', allProductsResponse.message);
+      return {
+        products: [],
+        pagination: {
+          page: 1,
+          limit: 12,
+          total: 0,
+          totalPages: 0,
+        },
+      };
     }
 
-    return (response.item || response.item || []) as Product[];
+    let filteredProducts = (allProductsResponse.item || []) as Product[];
+
+    // 카테고리 필터링
+    if (params.category === 'new') {
+      filteredProducts = filteredProducts.filter((product) => product.extra?.isNew);
+    } else if (params.category === 'supplies') {
+      filteredProducts = filteredProducts.filter((product) => {
+        const categories = product.extra?.category || [];
+        return categories.includes('원예 용품') || categories.includes('화분') || categories.includes('도구') || categories.includes('조명');
+      });
+    } else if (params.category === 'plant') {
+      filteredProducts = filteredProducts.filter((product) => {
+        const categories = product.extra?.category || [];
+        return !categories.includes('원예 용품') && !categories.includes('화분') && !categories.includes('도구') && !categories.includes('조명');
+      });
+    }
+
+    // 검색어 필터링
+    if (params.search) {
+      const searchLower = params.search.toLowerCase();
+      filteredProducts = filteredProducts.filter((product) => {
+        const categories = product.extra?.category || [];
+        return product.name.toLowerCase().includes(searchLower) || categories.some((cat) => cat.toLowerCase().includes(searchLower));
+      });
+    }
+
+    // 세부 필터 적용
+    if (params.filters) {
+      Object.entries(params.filters).forEach(([key, values]) => {
+        if (values && values.length > 0) {
+          filteredProducts = filteredProducts.filter((product) => {
+            const productCategories = product.extra?.category || [];
+            return values.some((value) => productCategories.includes(value));
+          });
+        }
+      });
+    }
+
+    // 정렬 적용
+    if (params.sort) {
+      switch (params.sort) {
+        case 'price-low':
+          filteredProducts.sort((a, b) => a.price - b.price);
+          break;
+        case 'price-high':
+          filteredProducts.sort((a, b) => b.price - a.price);
+          break;
+        case 'new':
+          filteredProducts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+          break;
+        case 'old':
+          filteredProducts.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+          break;
+        case 'name':
+          filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
+          break;
+      }
+    }
+
+    // 페이지네이션 적용
+    const total = filteredProducts.length;
+    const totalPages = Math.ceil(total / limit);
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
+
+    console.log('[서버 필터링 상품 조회] 완료:', {
+      전체상품수: total,
+      현재페이지상품수: paginatedProducts.length,
+      현재페이지: page,
+      전체페이지: totalPages,
+    });
+
+    return {
+      products: paginatedProducts,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+      },
+    };
   } catch (error) {
-    console.error('상품 로딩 실패:', error);
-    return [];
+    console.error('필터링된 상품 로딩 실패:', error);
+    return {
+      products: [],
+      pagination: {
+        page: 1,
+        limit: 12,
+        total: 0,
+        totalPages: 0,
+      },
+    };
   }
 }
 

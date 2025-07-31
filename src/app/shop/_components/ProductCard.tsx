@@ -81,7 +81,7 @@ export default function ProductCard({ product, onClick, isMobile = false }: Prod
           </div>
 
           {/* NEW 태그 */}
-          {isNew && <div className='bg-secondary absolute top-0 left-0 z-1 rounded-ss-2xl rounded-ee-xl px-3 py-1.5 text-xs font-semibold text-white'>NEW</div>}
+          {isNew && <div className='bg-secondary absolute top-0 left-0 rounded-ss-2xl rounded-ee-xl px-3 py-1.5 text-xs font-semibold text-white'>NEW</div>}
 
           {/* 북마크 버튼 */}
           <div className='absolute top-3 right-3'>

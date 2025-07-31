@@ -7,7 +7,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Label } from '@/components/ui/Label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/Select';
 import { createOrderAction, getUserAddressAction, updateTempOrderAddressAction, updateTempOrderMemoAction } from '@/lib/actions/order/orderServerActions';
+import { verifyPaymentAndCompleteOrderAction } from '@/lib/actions/order/paymentServerActions';
 import { CreateOrderRequest, OrderPageData } from '@/types/order.types';
+import PortOne from '@portone/browser-sdk/v2';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
@@ -511,24 +513,26 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
     }
   };
 
-  // 결제 처리 함수
+  // orderClient.tsx의 handlePayment 함수 - 결제 취소 시 쿠키 삭제 추가
+
   const handlePayment = async () => {
     try {
       setIsProcessingOrder(true);
       console.log('[결제 처리] 시작');
 
+      // 🔧 결제 진행 상태 쿠키 설정 (OrderPage 리다이렉트 방지)
+      document.cookie = 'payment-in-progress=true; path=/; max-age=3600'; // 1시간
+
       // 배송지 정보 확인
       if (!orderData.address || !orderData.address.name || !orderData.address.phone || !orderData.address.address) {
         toast.error('배송지 정보를 입력해주세요');
-        setIsProcessingOrder(false);
-        return;
+        return; // 페이지 이동 없이 현재 페이지 유지
       }
 
       // 결제 방법 확인
       if (!selectedPaymentMethod) {
         toast.error('결제 방법을 선택해주세요');
-        setIsProcessingOrder(false);
-        return;
+        return; // 페이지 이동 없이 현재 페이지 유지
       }
 
       // 주문 생성 요청 데이터 준비 - API 형식에 맞게 변환
@@ -551,7 +555,6 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
       // 주문 생성 API 호출
       const result = await createOrderAction(createOrderData);
 
-      // 디버깅 로그
       console.log('[결제 처리] createOrderAction 결과:', result);
 
       if (!result.success) {
@@ -560,60 +563,231 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
           description: result.message,
           duration: 4000,
         });
-        return;
+        return; // 페이지 이동 없이 현재 페이지 유지
       }
 
-      // 디버깅 로그
       console.log('[결제 처리] 주문 생성 성공:', result.data);
 
       // 주문 데이터 임시 저장
       sessionStorage.setItem('lastOrderData', JSON.stringify(orderData));
 
+      // orderId 확인
+      const orderId = result.data?.orderId;
+      if (!orderId) {
+        console.error('[결제 처리] orderId가 없습니다');
+        toast.error('주문 ID를 가져올 수 없습니다');
+        return; // 페이지 이동 없이 현재 페이지 유지
+      }
+
+      console.log('[결제 처리] orderId 확인:', orderId);
+
+      // ==================== PortOne 결제 시작 ====================
+      console.log('[결제 처리] PortOne 결제 시작');
+
+      // 환경변수 확인
+      const storeId = process.env.NEXT_PUBLIC_PORTONE_STORE_ID;
+      const channelKey = process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY;
+
+      if (!storeId || !channelKey) {
+        console.error('[결제 처리] PortOne 환경변수 없음:', { storeId, channelKey });
+        toast.error('결제 설정 오류', {
+          description: '환경변수를 확인해주세요. (.env.local 파일)',
+          duration: 6000,
+        });
+        return; // 페이지 이동 없이 현재 페이지 유지
+      }
+
+      // 결제 ID 생성
+      const paymentId = `payment-${crypto.randomUUID()}`;
+
+      // 주문명 생성
+      const orderName = orderData.items.length === 1 ? orderData.items[0].productName : `${orderData.items[0].productName} 외 ${orderData.items.length - 1}건`;
+
+      // 총 결제 금액 (finalAmount 변수 사용)
+      const totalAmount = finalAmount;
+
+      console.log('[결제 처리] PortOne 결제 정보:', {
+        paymentId,
+        orderName,
+        totalAmount,
+        orderId,
+        storeId,
+        channelKey,
+      });
+
+      // PortOne 결제창 호출 (기존 설정 그대로 유지)
+      const response = await PortOne.requestPayment({
+        storeId: storeId,
+        channelKey: channelKey,
+        paymentId: paymentId,
+        orderName: orderName,
+        totalAmount: totalAmount,
+        currency: 'CURRENCY_KRW',
+        payMethod: 'CARD',
+        customer: {
+          fullName: orderData.address.name,
+          phoneNumber: orderData.address.phone,
+        },
+        customData: {
+          orderId: orderId,
+        },
+      });
+
+      console.log('[결제 처리] PortOne 응답:', response);
+
+      // 🔧 결제 실패/취소 처리 - 즉시 쿠키 삭제
+      if (response?.code) {
+        console.error('[결제 처리] PortOne 결제 실패/취소:', response);
+
+        // 🎯 중요: 결제 취소/실패 시 즉시 쿠키 삭제
+        document.cookie = 'payment-in-progress=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+
+        // 취소인지 실패인지 구분하여 메시지 표시
+        if (response.code === 'FAILURE_TYPE_CANCEL' || response.message?.includes('취소')) {
+          toast.info('결제가 취소되었습니다', {
+            description: '다시 결제하시려면 결제하기 버튼을 클릭해주세요.',
+            duration: 3000,
+          });
+        } else {
+          toast.error('결제 실패', {
+            description: response.message || '결제 중 오류가 발생했습니다.',
+            duration: 4000,
+          });
+        }
+
+        // 🔧 임시 주문 데이터 복원 (다시 결제할 수 있도록)
+        try {
+          const { saveTempOrderAction } = await import('@/lib/actions/order/orderServerActions');
+          await saveTempOrderAction(orderData);
+          console.log('[결제 처리] 임시 주문 데이터 복원 완료');
+        } catch (error) {
+          console.error('[결제 처리] 임시 주문 데이터 복원 실패:', error);
+        }
+
+        return; // 페이지 이동 없이 현재 페이지 유지
+      }
+
+      // 결제 성공 확인
+      if (!response?.paymentId) {
+        console.error('[결제 처리] paymentId 없음:', response);
+
+        // 🎯 중요: 이 경우에도 쿠키 삭제
+        document.cookie = 'payment-in-progress=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+
+        toast.error('결제 정보를 가져올 수 없습니다');
+        return; // 페이지 이동 없이 현재 페이지 유지
+      }
+
+      console.log('[결제 처리] 결제 성공, paymentId:', response.paymentId);
+
+      // 결제 성공 - 서버에서 검증
+      console.log('[결제 처리] 결제 성공, 검증 시작');
+
+      // 검증 중 토스트 (수동으로 관리)
+      const verifyingToastId = toast.loading('결제 검증 중...', {
+        duration: Infinity, // 수동으로 닫을 때까지 유지
+      });
+
+      const verificationResult = await verifyPaymentAndCompleteOrderAction(response.paymentId!, String(orderId));
+
+      // 검증 토스트 즉시 닫기
+      toast.dismiss(verifyingToastId);
+
+      if (!verificationResult.success) {
+        console.error('[결제 처리] 결제 검증 실패:', verificationResult.message);
+
+        // 🎯 중요: 검증 실패 시에도 쿠키 삭제
+        document.cookie = 'payment-in-progress=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+
+        toast.error('결제 검증 실패', {
+          description: verificationResult.message,
+          duration: 4000,
+        });
+        return; // 페이지 이동 없이 현재 페이지 유지
+      }
+
+      // 결제 완료 처리
+      console.log('[결제 처리] 결제 검증 성공');
+
+      // 🔧 결제 완료 시 쿠키 삭제
+      document.cookie = 'payment-in-progress=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+
+      // ==================== 성공 시에만 페이지 이동 ====================
+
       // redirectUrl 확인 로그
-      const redirectUrl = result.data?.redirectUrl;
+      const redirectUrl = verificationResult.data?.redirectUrl || result.data?.redirectUrl;
       console.log('[결제 처리] redirectUrl:', redirectUrl);
 
+      // 🎯 중요: 결제 검증 성공한 경우에만 페이지 이동
       // fallback 처리 개선
       if (!redirectUrl) {
         console.error('[결제 처리] redirectUrl이 없습니다');
-        // redirectUrl이 없어도 orderId가 있으면 수동으로 생성
-        if (result.data?.orderId) {
-          const manualRedirectUrl = `/order/order-complete?orderId=${result.data.orderId}`;
+        if (orderId) {
+          const manualRedirectUrl = `/order/order-complete?orderId=${orderId}`;
           console.log('[결제 처리] 수동 생성 redirectUrl:', manualRedirectUrl);
 
-          toast.success('주문이 완료되었습니다!', {
+          toast.success('결제가 완료되었습니다!', {
             description: '주문 완료 페이지로 이동합니다.',
             duration: 2000,
           });
 
-          await router.push(manualRedirectUrl);
+          // 성공한 경우에만 페이지 이동
+          setTimeout(() => {
+            router.push(manualRedirectUrl);
+          }, 1000);
           return;
         }
       }
 
       // 성공 알림
-      toast.success('주문이 완료되었습니다!', {
+      toast.success('결제가 완료되었습니다!', {
         description: '주문 완료 페이지로 이동합니다.',
         duration: 2000,
       });
 
-      // 페이지 이동
+      // 성공한 경우에만 페이지 이동
       if (redirectUrl) {
         console.log('[결제 처리] 페이지 이동:', redirectUrl);
-        await router.push(redirectUrl);
+        setTimeout(() => {
+          router.push(redirectUrl);
+        }, 1000);
       } else {
-        console.error('[결제 처리] 페이지 이동 실패: redirectUrl 없음');
-        await router.push('/shop');
+        // redirectUrl이 없어도 페이지 이동하지 않고 현재 페이지 유지
+        console.log('[결제 처리] redirectUrl 없음 - 현재 페이지 유지');
+        toast.info('주문이 완료되었습니다', {
+          description: '주문 내역은 마이페이지에서 확인할 수 있습니다.',
+          duration: 4000,
+        });
       }
     } catch (error) {
       console.error('[결제 처리] 예상치 못한 오류:', error);
-      toast.error('결제 처리 중 오류가 발생했습니다', {
-        description: '잠시 후 다시 시도해주세요.',
-        duration: 4000,
-      });
+
+      // 🎯 중요: catch 블록에서도 쿠키 삭제
+      document.cookie = 'payment-in-progress=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+
+      // 🔥 핵심: catch 블록에서는 절대 페이지 이동하지 않음
+      if (error instanceof Error && error.message.includes('NEXT_PUBLIC_PORTONE')) {
+        toast.error('결제 설정 오류', {
+          description: '환경변수를 확인해주세요. (.env.local 파일)',
+          duration: 6000,
+        });
+      } else {
+        toast.error('결제 처리 중 오류가 발생했습니다', {
+          description: '잠시 후 다시 시도해주세요.',
+          duration: 4000,
+        });
+      }
+
+      // 🎯 중요: 오류 발생 시 현재 페이지에 머무르기 (페이지 이동 절대 금지)
+      console.log('[결제 처리] 오류 발생 - 현재 페이지 유지');
     } finally {
-      // finally 블록으로 이동
+      // 🎯 중요: finally에서도 페이지 이동 없이 로딩 상태만 해제
       setIsProcessingOrder(false);
+
+      // 🔧 finally에서도 결제 진행 쿠키 정리 (모든 경우에 대한 안전장치)
+      document.cookie = 'payment-in-progress=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+
+      console.log('[결제 처리] finally: 처리 완료, 현재 페이지 유지');
     }
   };
 

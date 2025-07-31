@@ -36,7 +36,7 @@ export default function ProductDetailCard({ product, onClick }: ProductDetailCar
 
           {/* 북마크 버튼 */}
           <div className='absolute top-1 right-1'>
-            <BookmarkButton productId={productId} myBookmarkId={product.myBookmarkId} size={32} />
+            <BookmarkButton targetId={productId} type='product' myBookmarkId={product.myBookmarkId} revalidate={false} variant='icon' />
           </div>
         </div>
       </Card>

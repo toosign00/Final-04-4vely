@@ -26,19 +26,6 @@ export default function ProductCard({ product, onClick, isMobile = false }: Prod
 
   // 북마크 상태 정보 (서버)
   const myBookmarkId = product.myBookmarkId;
-  const isCurrentlyBookmarked = !!myBookmarkId;
-
-  console.log(`[ProductCard] 상품 ${productId} 렌더링:`, {
-    상품명: product.name,
-    myBookmarkId,
-    isCurrentlyBookmarked,
-    전체상품데이터: {
-      _id: product._id,
-      name: product.name,
-      myBookmarkId: product.myBookmarkId,
-      isBookmarked: product.isBookmarked,
-    },
-  });
 
   // 모바일 레이아웃
   if (isMobile) {
@@ -56,7 +43,7 @@ export default function ProductCard({ product, onClick, isMobile = false }: Prod
 
             {/* 북마크 버튼 */}
             <div className='absolute top-1 right-1'>
-              <BookmarkButton productId={productId} myBookmarkId={myBookmarkId} size={32} />
+              <BookmarkButton targetId={productId} type='product' myBookmarkId={myBookmarkId} revalidate={false} variant='icon' />
             </div>
           </div>
         </Card>
@@ -85,7 +72,7 @@ export default function ProductCard({ product, onClick, isMobile = false }: Prod
 
           {/* 북마크 버튼 */}
           <div className='absolute top-3 right-3'>
-            <BookmarkButton productId={productId} myBookmarkId={myBookmarkId} size={32} />
+            <BookmarkButton targetId={productId} type='product' myBookmarkId={myBookmarkId} revalidate={false} variant='icon' />
           </div>
         </div>
       </Card>

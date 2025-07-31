@@ -141,7 +141,7 @@ export async function createCartPurchaseTempOrderAction(selectedCartIds: number[
     }
 
     // 장바구니 아이템 정보 가져오기
-    const { getCartItemsActionOptimized } = await import('@/lib/actions/cart/cartServerActions');
+    const { getCartItemsActionOptimized } = await import('@/lib/actions/cartServerActions');
     const cartItems = await getCartItemsActionOptimized();
 
     // 선택된 아이템만 필터링
@@ -323,7 +323,7 @@ export async function createOrderAction(orderData: CreateOrderRequest): Promise<
       console.log('[Order 서버 액션] 장바구니 아이템 삭제 시작');
 
       // removeFromCartAction 임포트해서 사용
-      const { removeFromCartAction } = await import('@/lib/actions/cart/cartServerActions');
+      const { removeFromCartAction } = await import('@/lib/actions/cartServerActions');
 
       // 모든 장바구니 아이템 삭제 (병렬 처리)
       const deletePromises = cartItemIds.map((cartId) =>
@@ -492,14 +492,14 @@ export async function getUserAddressAction(): Promise<{
       name: userInfo?.name,
       phone: userInfo?.phone,
       address: userInfo?.address,
-      hasAddress: !!userInfo?.address
+      hasAddress: !!userInfo?.address,
     });
 
-    return { 
+    return {
       address: userInfo?.address || null,
       name: userInfo?.name || null,
       phone: userInfo?.phone || null,
-      userId: userId
+      userId: userId,
     };
   } catch (error) {
     console.error('[getUserAddressAction] 예외 발생:', error);

@@ -1,5 +1,5 @@
 // src/app/(purchase)/cart/page.tsx (서버 컴포넌트)
-import { getCartItemsActionOptimized } from '@/lib/actions/cart/cartServerActions';
+import { getCartItemsActionOptimized } from '@/lib/actions/cartServerActions';
 import CartClientSection from './_components/CartClient';
 
 export default async function CartPage() {

@@ -6,12 +6,14 @@ import { Input } from '@/components/ui/Input';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/Pagination';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/Sheet';
-import { CategoryFilter, Product, ProductCategory, SortOption } from '@/types/product.types';
+import { CategoryFilter, Product, SortOption } from '@/types/product.types';
 import { Filter, Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState, useTransition } from 'react';
 import CategoryFilterSidebar from './CategoryFilter';
 import ProductCard from './ProductCard';
+
+type ProductCategory = 'new' | 'plant' | 'supplies';
 
 interface ShopClientContentProps {
   initialProducts: Product[];
@@ -38,18 +40,19 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  // 상태 관리 - URL 파라미터로부터 초기화
+  // 상태 관리
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [currentPage, setCurrentPage] = useState(pagination.page);
   const [totalPages, setTotalPages] = useState(pagination.totalPages);
   const [totalProducts, setTotalProducts] = useState(pagination.total);
-
-  const [searchTerm, setSearchTerm] = useState(urlParams.search);
-  const [sortBy, setSortBy] = useState(urlParams.sort);
-  const [selectedCategory, setSelectedCategory] = useState<ProductCategory>(urlParams.category as ProductCategory);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  // 필터 초기화
+  // 필터 및 검색 상태
+  const [searchTerm, setSearchTerm] = useState(urlParams.search);
+  const [sortBy, setSortBy] = useState(urlParams.sort || 'recommend');
+  const [selectedCategory, setSelectedCategory] = useState<ProductCategory>((urlParams.category as ProductCategory) || 'plant');
+
+  // 필터 상태 초기화
   const [filters, setFilters] = useState<CategoryFilter>({
     size: urlParams.size ? urlParams.size.split(',').filter(Boolean) : [],
     difficulty: urlParams.difficulty ? urlParams.difficulty.split(',').filter(Boolean) : [],
@@ -74,47 +77,58 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
     (newPage?: number) => {
       const params = new URLSearchParams();
 
-      // 페이지 파라미터 (1페이지도 표시)
-      params.set('page', (newPage || currentPage).toString());
+      // 페이지 파라미터 설정
+      const pageToUse = newPage || currentPage;
+      if (pageToUse > 1) {
+        params.set('page', pageToUse.toString());
+      }
 
+      // 카테고리 파라미터 설정 (기본값이 아닌 경우만)
       if (selectedCategory !== 'plant') {
         params.set('category', selectedCategory);
       }
-      if (searchTerm.trim()) {
+
+      // 검색어 파라미터
+      if (searchTerm && searchTerm.trim()) {
         params.set('search', searchTerm.trim());
       }
+
+      // 정렬 파라미터 (기본값이 아닌 경우만)
       if (sortBy !== 'recommend') {
         params.set('sort', sortBy);
       }
 
-      // 필터 파라미터
-      Object.entries(filters).forEach(([key, values]) => {
-        if (values.length > 0) {
-          if (key === 'category') {
-            params.set('suppliesCategory', values.join(','));
-          } else {
-            params.set(key, values.join(','));
-          }
-        }
-      });
+      // 필터 파라미터들
+      if (filters.size.length > 0) {
+        params.set('size', filters.size.join(','));
+      }
+      if (filters.difficulty.length > 0) {
+        params.set('difficulty', filters.difficulty.join(','));
+      }
+      if (filters.light.length > 0) {
+        params.set('light', filters.light.join(','));
+      }
+      if (filters.space.length > 0) {
+        params.set('space', filters.space.join(','));
+      }
+      if (filters.season.length > 0) {
+        params.set('season', filters.season.join(','));
+      }
+      if (filters.category.length > 0) {
+        params.set('suppliesCategory', filters.category.join(','));
+      }
 
-      const newURL = `/shop?${params.toString()}`;
+      const newURL = `/shop${params.toString() ? `?${params.toString()}` : ''}`;
+
+      console.log('[URL 업데이트]:', newURL);
 
       // 페이지 이동 시 스크롤 최상단으로
       startTransition(() => {
         router.push(newURL, { scroll: true });
       });
     },
-    [selectedCategory, searchTerm, sortBy, filters, router],
+    [selectedCategory, searchTerm, sortBy, filters, currentPage, router],
   );
-
-  // 초기 로드 시 URL 업데이트 (page=1이 없는 경우 추가)
-  useEffect(() => {
-    const urlSearchParams = new URLSearchParams(window.location.search);
-    if (!urlSearchParams.has('page')) {
-      updateURLAndNavigate(1);
-    }
-  }, []);
 
   // props 변경 시 상태 업데이트
   useEffect(() => {
@@ -126,37 +140,54 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
 
   // 필터, 정렬, 카테고리 변경 시 1페이지로 이동
   useEffect(() => {
+    if (currentPage !== 1) {
+      setCurrentPage(1);
+    }
     updateURLAndNavigate(1);
-  }, [filters, sortBy, selectedCategory]);
+  }, [filters, sortBy, selectedCategory, currentPage, updateURLAndNavigate]);
 
   // 검색어 변경 시 처리 (디바운싱)
   useEffect(() => {
     const timer = setTimeout(() => {
       if (searchTerm !== urlParams.search) {
+        if (currentPage !== 1) {
+          setCurrentPage(1);
+        }
         updateURLAndNavigate(1);
       }
     }, 500); // 500ms 디바운싱
 
     return () => clearTimeout(timer);
-  }, [searchTerm]);
+  }, [searchTerm, urlParams.search, currentPage, updateURLAndNavigate]);
 
   // 페이지 변경 핸들러
   const handlePageChange = (page: number) => {
-    if (page < 1 || page > totalPages) return;
+    if (page < 1 || page > totalPages || isPending) return;
+
+    console.log('[페이지 변경]:', { from: currentPage, to: page });
     setCurrentPage(page);
     updateURLAndNavigate(page);
   };
 
   // 필터 변경 핸들러
   const handleFilterChange = (category: keyof CategoryFilter, value: string) => {
-    setFilters((prev) => ({
-      ...prev,
-      [category]: prev[category].includes(value) ? prev[category].filter((item) => item !== value) : [...prev[category], value],
-    }));
+    console.log('[필터 변경]:', { category, value });
+
+    setFilters((prev) => {
+      const currentValues = prev[category];
+      const newValues = currentValues.includes(value) ? currentValues.filter((item) => item !== value) : [...currentValues, value];
+
+      return {
+        ...prev,
+        [category]: newValues,
+      };
+    });
   };
 
   // 카테고리 변경 핸들러
   const handleCategoryChange = (category: ProductCategory) => {
+    console.log('[카테고리 변경]:', { from: selectedCategory, to: category });
+
     setSelectedCategory(category);
 
     // 카테고리 변경 시 관련 없는 필터 초기화
@@ -195,6 +226,8 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
 
   // 필터 초기화 핸들러
   const handleResetFilters = () => {
+    console.log('[필터 초기화]');
+
     setSearchTerm('');
     setSelectedCategory('plant');
     setSortBy('recommend');
@@ -207,11 +240,17 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
       category: [],
     });
     setCurrentPage(1);
+
+    // URL도 초기화
+    startTransition(() => {
+      router.push('/shop');
+    });
   };
 
   // 검색 핸들러
   const handleSearch = useCallback(
     (value: string) => {
+      console.log('[검색어 변경]:', value);
       setSearchTerm(value);
       if (currentPage !== 1) {
         setCurrentPage(1);
@@ -226,6 +265,8 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
       handleSearch(searchTerm);
     }
   };
+
+  // 페이지네이션 렌더링 함수
   const renderPaginationItems = () => {
     const items = [];
     const maxVisiblePages = 5;
@@ -240,7 +281,7 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
     for (let i = startPage; i <= endPage; i++) {
       items.push(
         <PaginationItem key={i}>
-          <PaginationLink onClick={() => handlePageChange(i)} isActive={i === currentPage} className={`cursor-pointer ${isPending ? 'opacity-50' : ''}`} disabled={isPending}>
+          <PaginationLink onClick={() => handlePageChange(i)} isActive={i === currentPage} className={`cursor-pointer ${isPending ? 'pointer-events-none opacity-50' : ''}`} disabled={isPending}>
             {i}
           </PaginationLink>
         </PaginationItem>,
@@ -275,10 +316,18 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
               <div className='flex-1 overflow-y-auto'>
                 <CategoryFilterSidebar filters={filters} onFilterChange={handleFilterChange} isMobile={true} selectedCategory={selectedCategory} onCategoryChange={handleCategoryChange} />
               </div>
+              <div className='mt-4 flex gap-2'>
+                <Button onClick={handleResetFilters} variant='outline' className='flex-1'>
+                  초기화
+                </Button>
+                <Button onClick={() => setIsFilterOpen(false)} className='flex-1'>
+                  적용
+                </Button>
+              </div>
             </SheetContent>
           </Sheet>
 
-          <span className='text-secondary mr-1 ml-auto text-[10px] sm:text-sm md:text-base'>{totalProducts} products</span>
+          <span className='text-secondary mr-1 ml-auto text-[10px] sm:text-sm md:text-base'>{totalProducts.toLocaleString()} products</span>
 
           <Select value={sortBy} onValueChange={setSortBy}>
             <SelectTrigger className='h-8 w-[95px] text-xs sm:h-9 sm:w-[115px] sm:text-sm md:w-[135px]'>
@@ -303,12 +352,15 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
         <div className='my-6'>
           {isPending ? (
             <div className='flex min-h-[40vh] items-center justify-center'>
-              <p className='text-gray-500'>상품을 불러오는 중...</p>
+              <div className='text-center'>
+                <div className='border-primary mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-t-transparent' />
+                <p className='text-gray-500'>상품을 불러오는 중...</p>
+              </div>
             </div>
           ) : products.length === 0 ? (
-            <div className='flex flex-col items-center py-16 text-center'>
-              <p className='text-secondary mb-4 text-lg'>검색 결과가 없습니다.</p>
-              <Button onClick={handleResetFilters} variant='outline' size='sm'>
+            <div className='flex min-h-[40vh] flex-col items-center justify-center'>
+              <p className='mb-4 text-xl text-gray-600'>조건에 맞는 상품이 없습니다.</p>
+              <Button onClick={handleResetFilters} variant='outline'>
                 필터 초기화
               </Button>
             </div>
@@ -321,8 +373,8 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
           )}
         </div>
 
-        {/* 페이지네이션 */}
-        {totalPages > 1 && (
+        {/* 모바일 페이지네이션 */}
+        {totalPages > 1 && !isPending && (
           <Pagination className='mt-8'>
             <PaginationContent>
               <PaginationItem>
@@ -339,7 +391,7 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
 
       {/* 데스크톱 레이아웃 */}
       <div className='hidden p-4 lg:flex'>
-        <div className='w-64'>
+        <div className='w-64 flex-shrink-0'>
           <div className='mx-auto flex w-full max-w-6xl flex-col items-start px-4'>
             <div className='text-secondary t-small font-medium'>| Products</div>
             <h2 className='text-secondary t-h2 mt-2 font-light'>Our Plants</h2>
@@ -350,7 +402,7 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
         <div className='flex-1'>
           <div className='mb-8 flex items-center justify-between px-16'>
             <div className='flex items-center gap-4'>
-              <span className='text-secondary text-lg'>{totalProducts} products</span>
+              <span className='text-secondary text-lg'>{totalProducts.toLocaleString()} products</span>
             </div>
             <div className='flex items-center space-x-4'>
               <Select value={sortBy} onValueChange={setSortBy}>
@@ -376,12 +428,15 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
           <div className='mb-8 px-16'>
             {isPending ? (
               <div className='flex min-h-[40vh] items-center justify-center'>
-                <p className='text-gray-500'>상품을 불러오는 중...</p>
+                <div className='text-center'>
+                  <div className='border-primary mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-4 border-t-transparent' />
+                  <p className='text-lg text-gray-500'>상품을 불러오는 중...</p>
+                </div>
               </div>
             ) : products.length === 0 ? (
-              <div className='flex flex-col items-center py-16 text-center'>
-                <p className='text-secondary mb-4 text-lg'>검색 결과가 없습니다.</p>
-                <Button onClick={handleResetFilters} variant='outline'>
+              <div className='flex min-h-[40vh] flex-col items-center justify-center'>
+                <p className='mb-6 text-2xl text-gray-600'>조건에 맞는 상품이 없습니다.</p>
+                <Button onClick={handleResetFilters} variant='outline' size='lg'>
                   필터 초기화
                 </Button>
               </div>
@@ -394,19 +449,21 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
             )}
           </div>
 
-          {/* 페이지네이션 */}
-          {totalPages > 1 && (
-            <Pagination className='mt-12'>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious onClick={() => handlePageChange(currentPage - 1)} className={`cursor-pointer ${currentPage === 1 || isPending ? 'pointer-events-none opacity-50' : ''}`} />
-                </PaginationItem>
-                {renderPaginationItems()}
-                <PaginationItem>
-                  <PaginationNext onClick={() => handlePageChange(currentPage + 1)} className={`cursor-pointer ${currentPage === totalPages || isPending ? 'pointer-events-none opacity-50' : ''}`} />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
+          {/* 데스크톱 페이지네이션 */}
+          {totalPages > 1 && !isPending && (
+            <div className='flex justify-center px-16'>
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious onClick={() => handlePageChange(currentPage - 1)} className={`cursor-pointer ${currentPage === 1 || isPending ? 'pointer-events-none opacity-50' : ''}`} />
+                  </PaginationItem>
+                  {renderPaginationItems()}
+                  <PaginationItem>
+                    <PaginationNext onClick={() => handlePageChange(currentPage + 1)} className={`cursor-pointer ${currentPage === totalPages || isPending ? 'pointer-events-none opacity-50' : ''}`} />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
           )}
         </div>
       </div>

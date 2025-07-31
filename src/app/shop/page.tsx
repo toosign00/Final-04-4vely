@@ -21,14 +21,15 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   const params = await searchParams;
 
   // URL 파라미터에서 페이지 번호 추출 (기본값: 1)
-  const currentPage = params.page ? parseInt(params.page) : 1;
-  const itemsPerPage = 12; // 페이지당 아이템 수 고정
+  const currentPage = Number(params.page) || 1;
+  const itemsPerPage = 12;
 
   console.log('[ShopPage] 페이지 로드 시작:', {
     페이지: currentPage,
     검색어: params.search,
     정렬: params.sort,
-    카테고리: params.category,
+    카테고리: params.category || 'plant',
+    전체파라미터: params,
   });
 
   // 필터 파라미터 파싱
@@ -41,13 +42,13 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     suppliesCategory: params.suppliesCategory?.split(',').filter(Boolean) || [],
   };
 
-  // 서버에서 필터링된 현재 페이지의 데이터만 가져오기
+  // 서버에서 필터링된 현재 페이지의 데이터 가져오기
   const { products, pagination } = await getFilteredProductsWithPagination({
     page: currentPage,
     limit: itemsPerPage,
     search: params.search,
     sort: params.sort,
-    category: params.category,
+    category: params.category || 'plant',
     filters,
   });
 
@@ -56,10 +57,14 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     현재페이지: pagination.page,
     전체페이지수: pagination.totalPages,
     현재페이지상품수: products.length,
-    북마크된상품수: products.filter((p) => p.myBookmarkId !== undefined).length,
   });
 
-  // URL 파라미터 전달 (클라이언트 컴포넌트에서 필터링용)
+  // 에러 처리
+  if (products.length === 0 && pagination.total === 0) {
+    console.warn('[ShopPage] 상품이 없습니다.');
+  }
+
+  // URL 파라미터 전달
   const urlParams = {
     search: params.search || '',
     sort: params.sort || 'recommend',

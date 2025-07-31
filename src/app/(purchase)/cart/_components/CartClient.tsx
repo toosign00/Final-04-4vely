@@ -5,7 +5,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Button } from '@/components/ui/Button';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/Dialog';
-import { removeFromCartAction, updateCartOptionAction, updateCartQuantityAction } from '@/lib/actions/cart/cartServerActions';
+import { removeFromCartAction, updateCartOptionAction, updateCartQuantityAction } from '@/lib/actions/cartServerActions';
 import { createCartPurchaseTempOrderAction } from '@/lib/actions/order/orderServerActions';
 import { CartItem } from '@/types/cart.types';
 import { getImageUrl } from '@/types/product.types';

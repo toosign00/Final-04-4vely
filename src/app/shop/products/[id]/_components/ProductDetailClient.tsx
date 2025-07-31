@@ -4,7 +4,7 @@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/AlertDialog';
 import BookmarkButton from '@/components/ui/BookmarkButton';
 import { Button } from '@/components/ui/Button';
-import { addToCartAction, checkLoginStatusAction } from '@/lib/actions/cart/cartServerActions';
+import { addToCartAction, checkLoginStatusAction } from '@/lib/actions/cartServerActions';
 import { checkOrderLoginStatusAction, createDirectPurchaseTempOrderAction } from '@/lib/actions/order/orderServerActions';
 import { AddToCartRequest } from '@/types/cart.types';
 import { DirectPurchaseItem } from '@/types/order.types';
@@ -372,7 +372,7 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
 
           {/* 북마크 버튼 */}
           <div className='absolute top-3 right-3 sm:top-4 sm:right-4'>
-            <BookmarkButton productId={getProductId(productData)} myBookmarkId={productData.myBookmarkId} size={32} className='sm:scale-110 md:scale-125' />
+            <BookmarkButton targetId={getProductId(productData)} type='product' myBookmarkId={productData.myBookmarkId} revalidate={false} variant='icon' />
           </div>
         </div>
 
@@ -497,7 +497,7 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
 
               {/* 북마크 버튼 */}
               <div className='absolute top-4 right-4'>
-                <BookmarkButton productId={getProductId(productData)} myBookmarkId={productData.myBookmarkId} size={48} />
+                <BookmarkButton targetId={getProductId(productData)} type='product' myBookmarkId={productData.myBookmarkId} revalidate={false} variant='icon' />
               </div>
             </div>
 

@@ -402,7 +402,7 @@ export default function PersonalInfoStep() {
             <label htmlFor='phone' className='block text-sm font-semibold text-gray-900'>
               휴대폰 번호 <span className='text-error'>*</span>
             </label>
-            <p className='text-xs text-gray-600'>&apos;-&apos; 없이 숫자만 입력해주세요 (010XXXXXXXX)</p>
+            <p className='text-xs text-gray-600'>&apos;-&apos; 없이 숫자만 입력해주세요 (예: 01012345678)</p>
           </div>
           <Input
             id='phone'

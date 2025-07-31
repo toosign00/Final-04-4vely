@@ -39,10 +39,10 @@ export default function CommunityPop({ popularPosts }: Props) {
   };
 
   return (
-    <section className='bg-[#fdfcf8] py-14'>
+    <section className='bg-[#fdfcf8] py-8 lg:py-12'>
       <div className='mx-auto w-full max-w-screen-xl md:px-4'>
         <h2 className='mb-2 text-center text-2xl font-bold md:text-3xl lg:text-4xl'>이번 주 인기 반려 식물</h2>
-        <p className='text-muted mb-7 text-center text-sm md:text-lg'>커뮤니티에서 가장 많은 사랑을 받은 식물 이야기들</p>
+        <p className='text-muted mb-7 text-center text-sm md:text-lg lg:mb-9'>커뮤니티에서 가장 많은 사랑을 받은 식물 이야기들</p>
 
         <Carousel
           opts={{
@@ -61,7 +61,7 @@ export default function CommunityPop({ popularPosts }: Props) {
                     {/* 콘텐츠 - 제목 & 본문 */}
                     <CardContent>
                       <CardTitle title={`[ 제목 ] ${post.title}`} className='text-secondary text-base font-semibold sm:line-clamp-1 md:text-lg' />
-                      <CardDescription description={`[ 본문 내용 ] ${post.description}`} className='text-muted mr-3 text-sm md:mr-0 md:text-base' />
+                      <CardDescription description={`[ 본문 내용 ] ${post.description}`} className='text-muted mr-3 line-clamp-2 text-sm md:mr-0 md:text-base' />
                     </CardContent>
                   </Link>
                   {/* 아바타 이미지 & 닉네임 */}

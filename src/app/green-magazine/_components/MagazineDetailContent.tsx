@@ -15,14 +15,14 @@ export default function MagazineDetailContent({ post, myBookmarkId }: DetailCont
   return (
     <div className='text-secondary w-full'>
       {/* 대표 이미지 */}
-      <div className='relative h-50 w-full md:h-60'>
-        <Image src={`${API_URL}/${post.image}`} alt='대표 이미지' fill className='object-cover' priority />
+      <div className='relative h-[15rem] w-full md:h-[18rem] lg:h-[23rem]'>
+        <Image src={`${API_URL}/${post.image}`} alt='게시글 대표 이미지' fill className='object-cover' priority />
       </div>
 
-      <main className='mx-auto w-full max-w-4xl px-4 py-10 md:p-6 lg:p-8'>
+      <main className='mx-auto w-full max-w-4xl px-4 py-10 md:p-6 lg:px-8 lg:py-12'>
         {/* 제목 & 작성자 & 작성일 & 조회 수 */}
         <section className='mb-8 border-b-2 pb-6'>
-          <h1 className='mb-4 text-xl font-semibold md:text-2xl'>{post.title}</h1>
+          <h1 className='mb-4 text-xl font-semibold md:text-2xl lg:text-3xl'>{post.title}</h1>
           <div className='flex items-center justify-between text-sm text-gray-500 md:text-base'>
             <div className='flex items-center gap-2'>
               <Avatar className='border-muted h-8 w-8 rounded-3xl border'>

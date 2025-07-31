@@ -23,10 +23,10 @@ interface ReviewCarouselProps {
 // 리뷰 슬라이드
 export default function ReviewCarousel({ reviews }: ReviewCarouselProps) {
   return (
-    <section className='bg-[#f2f0eb] py-14'>
+    <section className='bg-[#f2f0eb] py-8 lg:py-12'>
       <div className='mb-15 flex w-full flex-col justify-items-center px-4'>
         <h2 className='mb-2 text-center text-2xl font-bold md:text-3xl lg:text-4xl'>사용자 리얼 후기</h2>
-        <p className='text-muted mb-7 text-center text-sm md:text-lg'>실제 식물 집사들의 생생한 키우기 경험담</p>
+        <p className='text-muted mb-7 text-center text-sm md:text-lg lg:mb-9'>실제 식물 집사들의 생생한 키우기 경험담</p>
 
         <div className='relative w-full max-w-[63rem] self-center'>
           <Carousel
@@ -61,7 +61,7 @@ function ReviewSlide({ review }: { review: Review }) {
 
   return (
     <CarouselItem className='mb-3 flex basis-full place-content-center md:px-6'>
-      <div className='flex w-full max-w-[60rem] items-start gap-6 rounded-xl bg-white shadow-lg transition-all duration-300 hover:shadow-xl md:gap-8 lg:h-[20rem]'>
+      <div className='flex w-full max-w-[60rem] items-start gap-6 rounded-xl bg-white shadow-md transition-all duration-300 hover:shadow-lg md:gap-8 lg:h-[20rem]'>
         {/* 왼쪽 이미지 */}
         <div className='relative h-full w-[80%] overflow-hidden rounded-l-xl'>
           {!imageError ? (
@@ -76,8 +76,8 @@ function ReviewSlide({ review }: { review: Review }) {
         {/* 오른쪽 텍스트 */}
         <div className='flex w-full flex-col justify-between gap-6 py-4 pr-4'>
           <div className='border-b pr-5 pb-4'>
-            <h3 className='mb-2 text-lg font-semibold lg:text-2xl'>{review.productName}</h3>
-            <p className='text-muted mb-4 line-clamp-4 text-sm leading-relaxed md:text-base lg:text-lg'>{review.content}</p>
+            <h3 className='mb-2 text-lg font-semibold lg:text-2xl'>[ 제목 ] {review.productName}</h3>
+            <p className='text-muted mb-4 line-clamp-4 text-sm leading-relaxed md:text-base lg:text-lg'>[ 본문 내용 ] {review.content}</p>
           </div>
 
           {/* 사용자 정보 */}

@@ -1,15 +1,16 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
 import PaginationWrapper from '@/components/ui/PaginationWrapper';
 import { deletePlant } from '@/lib/actions/plantActions';
+import { useRouter } from 'next/navigation';
+import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import ErrorDisplay from '../../_components/ErrorDisplay';
 import { Diary } from '../_types/diary.types';
 import { Plant } from './PlantCard';
 import PlantList from './PlantList';
 import PlantRegisterModal from './PlantRegisterModal';
 import PlantSortSelect, { SortOption } from './PlantSortSelect';
-import ErrorDisplay from '../../_components/ErrorDisplay';
 
 interface MyPlantsClientProps {
   initialPlants: Plant[];
@@ -22,14 +23,21 @@ const ITEMS_PER_PAGE = 4;
 const TOTAL_PAGES = 5;
 
 export default function MyPlantsClient({ initialPlants, initialError, initialLatestDiaries }: MyPlantsClientProps) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState<SortOption>('latest');
-  const plants = initialPlants;
   const error = initialError || null;
   const [deletingId, setDeletingId] = useState<number | null>(null);
-  const [plantsState, setPlantsState] = useState<Plant[]>(plants);
+
+  // 상태 관리
+  const [plantsState, setPlantsState] = useState<Plant[]>(initialPlants);
   const [latestDiariesState, setLatestDiariesState] = useState<{ [plantId: number]: Diary | undefined }>(initialLatestDiaries);
+
+  const handlePlantRegistered = () => {
+    setOpen(false);
+    router.refresh();
+  };
 
   // 삭제 핸들러
   const handleDelete = async (plantId: number) => {
@@ -90,7 +98,7 @@ export default function MyPlantsClient({ initialPlants, initialError, initialLat
       <div className='mt-8 flex justify-center'>
         <PaginationWrapper currentPage={currentPage} totalPages={TOTAL_PAGES} setCurrentPage={setCurrentPage} />
       </div>
-      <PlantRegisterModal open={open} onClose={() => setOpen(false)} onSuccess={() => window.location.reload()} />
+      <PlantRegisterModal open={open} onClose={() => setOpen(false)} onSuccess={handlePlantRegistered} />
     </>
   );
 }

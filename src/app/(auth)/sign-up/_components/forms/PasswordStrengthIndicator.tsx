@@ -79,7 +79,7 @@ export default function PasswordStrengthIndicator({ password, strength }: Passwo
           </div>
           <div className={`flex items-center gap-1 ${/[A-Z]/.test(password) ? 'text-green-600' : 'text-gray-400'}`}>
             <div className={`h-1.5 w-1.5 rounded-full ${/[A-Z]/.test(password) ? 'bg-green-500' : 'bg-gray-300'}`} />
-            영문 대문자
+            영문 대문자 (A-Z)
           </div>
           <div className={`flex items-center gap-1 ${/\d/.test(password) ? 'text-green-600' : 'text-gray-400'}`}>
             <div className={`h-1.5 w-1.5 rounded-full ${/\d/.test(password) ? 'bg-green-500' : 'bg-gray-300'}`} />

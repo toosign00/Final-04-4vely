@@ -1,26 +1,22 @@
 'use client';
 
+import { MagazinePostData } from '@/app/green-magazine/_types/magazine.types';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/Carousel';
 import Image from 'next/image';
 import Link from 'next/link';
 
-interface GreenMagazineItem {
-  title: string;
-  content: string;
-  image: string;
-  href: string;
+const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
+
+interface HomeMagazineProps {
+  greenMagazineItems: MagazinePostData[];
 }
 
-interface Props {
-  greenMagazineItems: GreenMagazineItem[];
-}
-
-// 매거진 소개글
-export function GreenMagazineCarousel({ greenMagazineItems }: Props) {
+// 매거진 슬라이드
+export function GreenMagazineCarousel({ greenMagazineItems }: HomeMagazineProps) {
   return (
-    <section className='bg-[#f8f7f3] py-14'>
+    <section className='bg-[#f8f7f3] py-8 lg:py-12'>
       <div className='mx-auto w-full max-w-screen-xl px-4'>
-        <h2 className='mb-7 text-center text-2xl font-bold md:text-3xl lg:text-5xl'>Green Magazine</h2>
+        <h2 className='mb-7 text-center text-2xl font-bold md:text-3xl lg:mb-9 lg:text-5xl'>Green Magazine</h2>
 
         <div className='relative w-full'>
           <Carousel
@@ -33,16 +29,16 @@ export function GreenMagazineCarousel({ greenMagazineItems }: Props) {
             <CarouselContent>
               {greenMagazineItems.map((item, index) => (
                 <CarouselItem key={index} className='mb-4 px-4'>
-                  <Link href={item.href} className='group h-full'>
+                  <Link href={`/green-magazine/${item._id}`} className='group h-full'>
                     {/* 슬라이드 카드 - 콘텐츠 부분 */}
                     <article className='relative aspect-square w-full overflow-hidden rounded-2xl shadow-md transition-transform duration-300 group-hover:scale-105 group-hover:shadow-lg'>
                       {/* 이미지 */}
-                      <Image src={item.image} alt={item.title} fill sizes='(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw' className='object-cover' />
+                      <Image src={`${API_URL}/${item.image}`} alt={item.title} fill sizes='(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw' className='object-cover' />
 
                       {/* 글 제목 & 내용 */}
                       <div className='absolute bottom-0 left-0 flex w-full flex-col justify-center bg-white/80 px-4 py-3'>
-                        <h3 className='text-secondary mb-2 line-clamp-1 text-base font-semibold md:text-lg'>{item.title}</h3>
-                        <p className='text-muted line-clamp-2 text-sm md:text-base'>{item.content}</p>
+                        <h3 className='text-secondary mb-2 line-clamp-1 text-base font-semibold md:text-lg'>[ 제목 ] {item.title}</h3>
+                        <p className='text-muted line-clamp-2 text-sm md:text-base'>[ 본문 내용 ] {item.extra?.contents?.[0].content ?? item.content}</p>
                       </div>
                     </article>
                   </Link>

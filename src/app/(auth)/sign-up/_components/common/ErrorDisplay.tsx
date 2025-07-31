@@ -38,11 +38,11 @@ export function ValidationError({ message, className }: { message?: string; clas
 }
 
 export function SuccessMessage({ message, className }: { message?: string; className?: string }) {
-  return <ErrorDisplay message={message} className={className} />;
+  return <ErrorDisplay message={message} type='success' className={className} />;
 }
 
 export function WarningMessage({ message, className }: { message?: string; className?: string }) {
-  return <ErrorDisplay message={message} className={className} />;
+  return <ErrorDisplay message={message} type='warning' className={className} />;
 }
 
 // 입력 필드 전용 에러 표시

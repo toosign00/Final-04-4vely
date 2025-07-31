@@ -1,9 +1,9 @@
 'use client';
 
 import { useSignUpStore } from '@/store/signUpStore';
+import { Loader2 } from 'lucide-react';
 import { notFound, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { Loader2 } from 'lucide-react';
 import WizardProgress from '../_components/common/WizardProgress';
 import PersonalInfoStep from '../_components/steps/PersonalInfoStep';
 import ProfileSetupStep from '../_components/steps/ProfileSetupStep';
@@ -33,16 +33,13 @@ export default function SignUpStepClient({ stepNumber }: SignUpStepClientProps) 
 
     // 스토어가 완전히 초기화될 때까지 대기
     if (!store || !isStepUnlocked || typeof isStepUnlocked !== 'function') {
-      console.log('스토어 초기화 대기 중...', { isStepUnlocked: typeof isStepUnlocked, storeKeys: Object.keys(store || {}) });
       return;
     }
 
     const isUnlocked = isStepUnlocked(stepNumber);
-    console.log(`Step ${stepNumber} 잠금 해제 여부:`, isUnlocked);
 
     if (!isUnlocked) {
       // 잠긴 단계 접근 시 step-1로 리디렉션
-      console.log(`Step ${stepNumber}이 잠겨있음, step-1로 리디렉션`);
       router.replace('/sign-up/step-1');
       return;
     }

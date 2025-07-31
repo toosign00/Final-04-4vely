@@ -73,9 +73,13 @@ export default function PasswordStrengthIndicator({ password, strength }: Passwo
       </div>
       <div className='mt-2 text-xs text-gray-600'>
         <div className='grid grid-cols-2 gap-1'>
-          <div className={`flex items-center gap-1 ${/[a-zA-Z]/.test(password) ? 'text-green-600' : 'text-gray-400'}`}>
-            <div className={`h-1.5 w-1.5 rounded-full ${/[a-zA-Z]/.test(password) ? 'bg-green-500' : 'bg-gray-300'}`} />
-            영문 포함
+          <div className={`flex items-center gap-1 ${/[a-z]/.test(password) ? 'text-green-600' : 'text-gray-400'}`}>
+            <div className={`h-1.5 w-1.5 rounded-full ${/[a-z]/.test(password) ? 'bg-green-500' : 'bg-gray-300'}`} />
+            영문 소문자
+          </div>
+          <div className={`flex items-center gap-1 ${/[A-Z]/.test(password) ? 'text-green-600' : 'text-gray-400'}`}>
+            <div className={`h-1.5 w-1.5 rounded-full ${/[A-Z]/.test(password) ? 'bg-green-500' : 'bg-gray-300'}`} />
+            영문 대문자
           </div>
           <div className={`flex items-center gap-1 ${/\d/.test(password) ? 'text-green-600' : 'text-gray-400'}`}>
             <div className={`h-1.5 w-1.5 rounded-full ${/\d/.test(password) ? 'bg-green-500' : 'bg-gray-300'}`} />

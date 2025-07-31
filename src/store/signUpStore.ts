@@ -112,18 +112,14 @@ export const useSignUpStore = create<SignUpStore>()(
 
       // Redirection actions
       startRedirection: (target) => {
-        console.log('리디렉션 시작:', target);
         set({ isRedirecting: true, redirectionTarget: target });
       },
       finishRedirection: () => {
-        console.log('리디렉션 완료');
         set({ isRedirecting: false, redirectionTarget: null });
       },
 
       // Utility actions
       reset: () => {
-        console.log('reset 함수 호출됨');
-
         // 메모리 상태 초기화 (리디렉션 상태는 유지)
         set((state) => ({
           ...initialWizardState,

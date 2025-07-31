@@ -21,8 +21,8 @@ export default function PersonalInfoStep() {
   // Zustand 스토어에서 상태 가져오기
   const { step2Data, setStep2Data, setStepValid, isLoading, isEmailChecking, isNicknameChecking, emailAvailable, nicknameAvailable } = useSignUpStore();
 
-  // useSignUpForm 훅에서 중복 확인 함수들 가져오기
-  const { checkEmailAvailability, checkNicknameAvailability } = useSignUpForm();
+  // useSignUpForm 훅에서 검증 및 중복 확인 함수들 가져오기
+  const { validateField, checkEmailAvailability, checkNicknameAvailability } = useSignUpForm();
 
   // 폼 데이터 상태
   const [formData, setFormData] = useState<PersonalInfoData>({
@@ -83,7 +83,7 @@ export default function PersonalInfoStep() {
     }
   }, [step2Data]);
 
-  // 필드 변경 핸들러
+  // 필드 변경 핸들러 (실시간 검증 포함)
   const handleFieldChange = useCallback(
     (field: keyof PersonalInfoData, value: string) => {
       const newFormData = { ...formData, [field]: value };
@@ -92,17 +92,32 @@ export default function PersonalInfoStep() {
       // Zustand 스토어에도 업데이트
       setStep2Data(newFormData);
 
-      // 에러 초기화
-      if (errors[field]) {
+      // 실시간 검증 (빈 값이 아닐 때만)
+      if (value.trim()) {
+        const error = validateField(field, value, newFormData);
+        setErrors((prev) => ({ ...prev, [field]: error || undefined }));
+      } else {
+        // 빈 값일 때는 에러 초기화
         setErrors((prev) => ({ ...prev, [field]: undefined }));
       }
 
       // 비밀번호 변경 시 확인 비밀번호도 재검증
-      if (field === 'password' && formData.confirmPassword) {
-        setErrors((prev) => ({ ...prev, confirmPassword: undefined }));
+      if (field === 'password' && newFormData.confirmPassword) {
+        const confirmError = validateField('confirmPassword', newFormData.confirmPassword, newFormData);
+        setErrors((prev) => ({ ...prev, confirmPassword: confirmError || undefined }));
       }
     },
-    [errors, formData, setStep2Data],
+    [formData, setStep2Data, validateField],
+  );
+
+  // 필드 블러 핸들러
+  const handleFieldBlur = useCallback(
+    (field: keyof PersonalInfoData, value: string) => {
+      // 블러 시에는 빈 값이어도 검증 (필수 필드 확인)
+      const error = validateField(field, value, formData);
+      setErrors((prev) => ({ ...prev, [field]: error || undefined }));
+    },
+    [validateField, formData],
   );
 
   // 휴대폰 번호 형식 지정
@@ -166,7 +181,7 @@ export default function PersonalInfoStep() {
     try {
       step2Schema.parse(formData);
       setErrors({});
-      return true;
+      return { isValid: true, errors: {} };
     } catch (error) {
       if (error instanceof z.ZodError) {
         const newErrors: Partial<Record<keyof PersonalInfoData, string>> = {};
@@ -176,25 +191,51 @@ export default function PersonalInfoStep() {
           }
         });
         setErrors(newErrors);
+        return { isValid: false, errors: newErrors };
       }
-      return false;
+      return { isValid: false, errors: {} };
     }
   }, [formData]);
 
+  // 첫 번째 오류 필드로 포커스 이동
+  const focusFirstErrorField = useCallback((errors: Partial<Record<keyof PersonalInfoData, string>>) => {
+    // 필드 순서 정의 (화면에 표시되는 순서대로)
+    const fieldOrder: (keyof PersonalInfoData)[] = ['name', 'email', 'password', 'confirmPassword', 'phone', 'postalCode', 'address', 'addressDetail'];
+
+    // 첫 번째 오류 필드 찾기
+    const firstErrorField = fieldOrder.find((field) => errors[field]);
+
+    if (firstErrorField) {
+      // 해당 필드로 포커스 이동
+      const element = document.getElementById(firstErrorField);
+      if (element) {
+        element.focus();
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }, []);
+
   // 다음 단계로 진행
   const handleNext = useCallback(() => {
-    if (!validateForm()) {
+    const validation = validateForm();
+    if (!validation.isValid) {
+      // 유효성 검사 실패 시 첫 번째 오류 필드로 포커스 이동
+      setTimeout(() => focusFirstErrorField(validation.errors), 100);
       return;
     }
 
     // 중복 확인 체크
     if (emailAvailable !== true) {
-      setErrors((prev) => ({ ...prev, email: '이메일 중복 확인을 완료해주세요.' }));
+      const emailError = { email: '이메일 중복 확인을 완료해주세요.' };
+      setErrors((prev) => ({ ...prev, ...emailError }));
+      setTimeout(() => focusFirstErrorField(emailError), 100);
       return;
     }
 
     if (nicknameAvailable !== true) {
-      setErrors((prev) => ({ ...prev, name: '닉네임 중복 확인을 완료해주세요.' }));
+      const nameError = { name: '닉네임 중복 확인을 완료해주세요.' };
+      setErrors((prev) => ({ ...prev, ...nameError }));
+      setTimeout(() => focusFirstErrorField(nameError), 100);
       return;
     }
 
@@ -204,7 +245,7 @@ export default function PersonalInfoStep() {
 
     // 다음 단계로 라우터 네비게이션
     router.push('/sign-up/step-3');
-  }, [validateForm, emailAvailable, nicknameAvailable, formData, setStep2Data, setStepValid, router]);
+  }, [validateForm, emailAvailable, nicknameAvailable, formData, setStep2Data, setStepValid, router, focusFirstErrorField]);
 
   const passwordStrength = getPasswordStrength(formData.password);
 
@@ -238,27 +279,13 @@ export default function PersonalInfoStep() {
               disabled={isLoading}
               value={formData.name}
               onChange={(e) => handleFieldChange('name', e.target.value)}
+              onBlur={(e) => handleFieldBlur('name', e.target.value)}
               aria-invalid={!!errors.name}
               className={`transition-all duration-200 sm:flex-1 ${errors.name ? 'border-error focus:border-error focus:ring-error' : 'focus:border-accent focus:ring-accent/20'}`}
             />
-            <Button
-              type='button'
-              onClick={handleNicknameCheck}
-              disabled={isNicknameChecking || !formData.name}
-              className='w-full transition-all duration-200 hover:shadow-md sm:w-auto sm:whitespace-nowrap'
-              variant={isNicknameChecking ? 'secondary' : 'outline'}
-            >
-              {isNicknameChecking ? (
-                <>
-                  <Loader2 className='size-4 animate-spin' />
-                  확인 중...
-                </>
-              ) : (
-                <>
-                  <Check className='size-4' />
-                  중복 확인
-                </>
-              )}
+            <Button type='button' onClick={handleNicknameCheck} disabled={!formData.name} loading={isNicknameChecking} loadingText='확인 중...' className='min-w-[7.5rem] transition-all duration-200' variant='default'>
+              <Check className='size-4' />
+              중복 확인
             </Button>
           </div>
           <FieldError
@@ -285,27 +312,13 @@ export default function PersonalInfoStep() {
               disabled={isLoading}
               value={formData.email}
               onChange={(e) => handleFieldChange('email', e.target.value)}
+              onBlur={(e) => handleFieldBlur('email', e.target.value)}
               aria-invalid={!!errors.email}
               className={`transition-all duration-200 sm:flex-1 ${errors.email ? 'border-error focus:border-error focus:ring-error' : 'focus:border-accent focus:ring-accent/20'}`}
             />
-            <Button
-              type='button'
-              onClick={handleEmailCheck}
-              disabled={isEmailChecking || !formData.email}
-              className='w-full transition-all duration-200 hover:shadow-md sm:w-auto sm:whitespace-nowrap'
-              variant={isEmailChecking ? 'secondary' : 'outline'}
-            >
-              {isEmailChecking ? (
-                <>
-                  <Loader2 className='size-4 animate-spin' />
-                  확인 중...
-                </>
-              ) : (
-                <>
-                  <Check className='size-4' />
-                  중복 확인
-                </>
-              )}
+            <Button type='button' onClick={handleEmailCheck} disabled={!formData.email} loading={isEmailChecking} loadingText='확인 중...' className='min-w-[7.5rem] transition-all duration-200' variant='default'>
+              <Check className='size-4' />
+              중복 확인
             </Button>
           </div>
           <FieldError error={errors.email} success={!isEmailChecking && emailAvailable === true ? '사용 가능한 이메일입니다.' : undefined} warning={!isEmailChecking && emailAvailable === false ? '이미 사용 중인 이메일입니다.' : undefined} />
@@ -328,6 +341,7 @@ export default function PersonalInfoStep() {
               disabled={isLoading}
               value={formData.password}
               onChange={(e) => handleFieldChange('password', e.target.value)}
+              onBlur={(e) => handleFieldBlur('password', e.target.value)}
               aria-invalid={!!errors.password}
               className={`transition-all duration-200 ${errors.password ? 'border-error focus:border-error focus:ring-error' : 'focus:border-accent focus:ring-accent/20'}`}
             />
@@ -363,6 +377,7 @@ export default function PersonalInfoStep() {
               autoComplete='new-password'
               value={formData.confirmPassword}
               onChange={(e) => handleFieldChange('confirmPassword', e.target.value)}
+              onBlur={(e) => handleFieldBlur('confirmPassword', e.target.value)}
               aria-invalid={!!errors.confirmPassword}
               className={`transition-all duration-200 ${errors.confirmPassword ? 'border-error focus:border-error focus:ring-error' : 'focus:border-accent focus:ring-accent/20'}`}
             />
@@ -397,6 +412,7 @@ export default function PersonalInfoStep() {
             autoComplete='tel'
             value={formData.phone}
             onChange={(e) => handlePhoneChange(e.target.value)}
+            onBlur={(e) => handleFieldBlur('phone', e.target.value)}
             aria-invalid={!!errors.phone}
             className={`transition-all duration-200 ${errors.phone ? 'border-error focus:border-error focus:ring-error' : 'focus:border-accent focus:ring-accent/20'}`}
           />
@@ -434,7 +450,7 @@ export default function PersonalInfoStep() {
                 />
               </div>
               <DialogTrigger asChild>
-                <Button type='button' disabled={isLoading} variant='outline'>
+                <Button type='button' disabled={isLoading} variant='default'>
                   <Search className='size-4' />
                   주소 검색
                 </Button>
@@ -451,6 +467,7 @@ export default function PersonalInfoStep() {
               disabled={isLoading}
               value={formData.addressDetail}
               onChange={(e) => handleFieldChange('addressDetail', e.target.value)}
+              onBlur={(e) => handleFieldBlur('addressDetail', e.target.value)}
               autoComplete='address-line2'
               aria-invalid={!!errors.addressDetail}
               className={`transition-all duration-200 ${errors.addressDetail ? 'border-error focus:border-error focus:ring-error' : 'focus:border-accent focus:ring-accent/20'}`}
@@ -468,7 +485,7 @@ export default function PersonalInfoStep() {
         {/* 버튼 영역 */}
         <div className='space-y-4 pt-6'>
           <div className='flex gap-4'>
-            <Button type='button' variant='outline' size='lg' onClick={() => router.push('/sign-up/step-1')} disabled={isLoading}>
+            <Button type='button' variant='default' size='lg' onClick={() => router.push('/sign-up/step-1')} disabled={isLoading}>
               <ArrowLeft className='size-4' />
               이전
             </Button>

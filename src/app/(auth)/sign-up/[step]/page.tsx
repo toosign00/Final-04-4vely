@@ -15,10 +15,10 @@ const STEP_MAP = {
 
 export default async function SignUpStepPage({ params }: SignUpStepPageProps) {
   const { step } = await params;
-  
+
   // URL step을 숫자로 변환
   const stepNumber = STEP_MAP[step as keyof typeof STEP_MAP];
-  
+
   // 유효하지 않은 step인 경우 404
   if (!stepNumber) {
     notFound();
@@ -26,4 +26,3 @@ export default async function SignUpStepPage({ params }: SignUpStepPageProps) {
 
   return <SignUpStepClient stepNumber={stepNumber} />;
 }
-

@@ -149,11 +149,14 @@ export function useSignUpForm() {
           password: allData.password || '',
           phone: allData.phone || '',
           address: `${allData.address || ''} ${allData.addressDetail || ''}`,
-          image: imageUrl,
-          extra: {
-            gender: step3Data.gender,
-            birthDate: step3Data.birthDate,
-          },
+          image: imageUrl || undefined,
+          extra:
+            step3Data.gender || step3Data.birthDate
+              ? {
+                  gender: step3Data.gender || undefined,
+                  birthDate: step3Data.birthDate || undefined,
+                }
+              : undefined,
         };
 
         // 서버 액션으로 회원가입 처리
@@ -183,6 +186,47 @@ export function useSignUpForm() {
     [form],
   );
 
+  // 개별 필드 실시간 검증
+  const validateField = useCallback((field: keyof PersonalInfoData, value: string, formData?: PersonalInfoData): string | null => {
+    try {
+      // 개별 필드 스키마 정의
+      const fieldSchemas = {
+        name: z.string().min(2, '이름은 2자 이상이어야 합니다.').max(50, '이름은 50자 이하여야 합니다.'),
+        email: z.string().email('올바른 이메일 형식을 입력해주세요.'),
+        password: z
+          .string()
+          .min(8, '비밀번호는 8자 이상이어야 합니다.')
+          .regex(/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/, '비밀번호는 영문, 숫자, 특수문자를 모두 포함해야 합니다.'),
+        confirmPassword: z.string().min(1, '비밀번호 확인을 입력해주세요.'),
+        phone: z.string().regex(/^010\d{8}$/, '휴대폰 번호는 01012345678 형식으로 입력해주세요.'),
+        postalCode: z.string().min(1, '우편번호를 선택해주세요.'),
+        address: z.string().min(1, '주소를 선택해주세요.'),
+        addressDetail: z
+          .string()
+          .min(5, '상세주소는 5자 이상 입력해주세요.')
+          .refine((val) => val.trim().length >= 5, '상세주소는 5자 이상 입력해주세요.'),
+      };
+
+      // 해당 필드 검증
+      const fieldSchema = fieldSchemas[field];
+      if (!fieldSchema) return null;
+
+      fieldSchema.parse(value);
+
+      // 비밀번호 확인의 경우 비밀번호와 일치하는지 추가 검증
+      if (field === 'confirmPassword' && formData?.password && value !== formData.password) {
+        return '비밀번호가 일치하지 않습니다.';
+      }
+
+      return null; // 에러 없음
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return error.errors[0]?.message || '유효하지 않은 값입니다.';
+      }
+      return '유효하지 않은 값입니다.';
+    }
+  }, []);
+
   // 에러 클리어
   const clearErrors = useCallback(() => {
     form.clearErrors();
@@ -204,6 +248,7 @@ export function useSignUpForm() {
 
     // 기능
     validateStep,
+    validateField, // 실시간 검증 함수 추가
     checkEmailAvailability,
     checkNicknameAvailability,
     handleSignUp,

@@ -46,7 +46,7 @@ export type LoginResult = import('@/types/api.types').ApiRes<LoginResponse, Logi
  * ===========================
  * 회원가입 관련 타입 정의
  * ===========================
- * 
+ *
  * 회원가입 관련 타입들은 @/app/(auth)/sign-up/_types로 이동되었습니다.
  * 로그인 관련 타입만 이 파일에 유지됩니다.
  */

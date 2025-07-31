@@ -21,7 +21,7 @@ const GENDER_SELECT_OPTIONS = [
 
 export default function ProfileSetupStep() {
   const router = useRouter();
-  const { step3Data, setStep3Data, setStepValid, isLoading, reset, startRedirection } = useSignUpStore();
+  const { step3Data, setStep3Data, setStepValid, isLoading, reset, startRedirection, finishRedirection } = useSignUpStore();
   const { handleSignUp } = useSignUpForm();
 
   // 폼 데이터 상태
@@ -29,7 +29,6 @@ export default function ProfileSetupStep() {
     image: step3Data.image,
     gender: step3Data.gender,
     birthDate: step3Data.birthDate || '',
-    interests: step3Data.interests || [],
   });
 
   // 성공 모달 상태
@@ -139,17 +138,22 @@ export default function ProfileSetupStep() {
   // 성공 모달 확인 버튼 핸들러
   const handleSuccessConfirm = useCallback(() => {
     setShowSuccessModal(false);
-    
+
     // 1단계: 리디렉션 시작 (접근 제어 로직 스킵용)
     const targetUrl = '/login?message=회원가입이 완료되었습니다. 로그인해주세요.';
     startRedirection(targetUrl);
-    
+
     // 2단계: 스토어 초기화 (리디렉션 상태는 유지)
     reset();
-    
+
     // 3단계: 리디렉션 실행
     router.replace(targetUrl);
-  }, [reset, router, startRedirection]);
+
+    // 4단계: 라우터 이동 완료 후 리디렉션 상태 초기화
+    setTimeout(() => {
+      finishRedirection();
+    }, 1000); // 1초 후 리디렉션 상태 정리
+  }, [reset, router, startRedirection, finishRedirection]);
 
   const getMaxBirthDate = () => {
     const today = new Date();
@@ -179,7 +183,7 @@ export default function ProfileSetupStep() {
           <div className='mb-8 flex flex-col items-center space-y-2'>
             <div className='group relative'>
               <div
-                className={`relative h-28 w-28 cursor-pointer rounded-full border-2 border-dashed transition-all duration-200 ${preview ? 'border-accent bg-accent/5' : 'hover:border-accent hover:bg-accent/5 border-gray-300 bg-gray-50'}`}
+                className={`relative h-28 w-28 cursor-pointer rounded-full border-2 border-dashed transition-all duration-200 ${preview ? 'border-transparent' : 'hover:border-accent hover:bg-accent/5 border-gray-300 bg-gray-50'}`}
                 onClick={handleImageClick}
               >
                 {preview ? (
@@ -187,8 +191,8 @@ export default function ProfileSetupStep() {
                 ) : (
                   <div className='flex h-full w-full items-center justify-center'>
                     <div className='text-center'>
-                      <ImageIcon className='group-hover:text-primary mx-auto mb-2 h-8 w-8 text-gray-400 transition-colors duration-200' />
-                      <p className='group-hover:text-primary text-xs text-gray-500 transition-colors duration-200'>사진 추가</p>
+                      <ImageIcon className='group-hover:text-accent mx-auto mb-2 h-8 w-8 text-gray-400 transition-colors duration-200' />
+                      <p className='group-hover:text-accent text-xs text-gray-500 transition-colors duration-200'>사진 추가</p>
                     </div>
                   </div>
                 )}
@@ -296,7 +300,7 @@ export default function ProfileSetupStep() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className='mt-6'>
-            <Button onClick={handleSuccessConfirm} className='w-full' size='lg'>
+            <Button onClick={handleSuccessConfirm} className='w-full' variant='primary' size='lg'>
               로그인하러 가기
             </Button>
           </DialogFooter>

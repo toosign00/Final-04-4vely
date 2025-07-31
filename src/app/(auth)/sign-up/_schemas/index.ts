@@ -32,5 +32,4 @@ export const step3Schema = z.object({
   image: z.any().optional(),
   gender: z.enum(['male', 'female', 'other']).optional(),
   birthDate: z.string().optional(),
-  interests: z.array(z.string()).optional(),
 });

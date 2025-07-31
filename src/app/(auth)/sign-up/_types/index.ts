@@ -27,7 +27,6 @@ export interface ProfileSetupData {
   image?: File;
   gender?: 'male' | 'female' | 'other';
   birthDate?: string;
-  interests?: string[];
 }
 
 /** 통합 회원가입 폼 데이터 */
@@ -50,7 +49,7 @@ export interface SignUpRequestData {
   password: string;
   phone: string;
   address: string;
-  image: string;
+  image?: string;
   extra?: {
     gender?: 'male' | 'female' | 'other';
     birthDate?: string;
@@ -75,14 +74,13 @@ export interface SignUpFormErrors {
   image?: string;
   gender?: string;
   birthDate?: string;
-  interests?: string;
 }
 
 /** 단계별 검증 에러 */
 export interface StepValidationErrors {
   termsAgreement?: Partial<Pick<SignUpFormErrors, 'agreeTerms' | 'agreePrivacy'>>;
   personalInfo?: Partial<Pick<SignUpFormErrors, 'name' | 'email' | 'password' | 'confirmPassword' | 'phone' | 'postalCode' | 'address' | 'addressDetail'>>;
-  profileSetup?: Partial<Pick<SignUpFormErrors, 'image' | 'gender' | 'birthDate' | 'interests'>>;
+  profileSetup?: Partial<Pick<SignUpFormErrors, 'image' | 'gender' | 'birthDate'>>;
 }
 
 // 기존 타입과의 호환성
@@ -90,7 +88,7 @@ export interface StepValidationErrors {
 export interface StepErrors {
   step1?: Partial<Pick<SignUpFormErrors, 'agreeTerms' | 'agreePrivacy'>>;
   step2?: Partial<Pick<SignUpFormErrors, 'name' | 'email' | 'password' | 'confirmPassword' | 'phone' | 'postalCode' | 'address' | 'addressDetail'>>;
-  step3?: Partial<Pick<SignUpFormErrors, 'image' | 'gender' | 'birthDate' | 'interests'>>;
+  step3?: Partial<Pick<SignUpFormErrors, 'image' | 'gender' | 'birthDate'>>;
 }
 
 /** 회원가입 상태 */

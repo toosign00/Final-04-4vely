@@ -15,7 +15,7 @@ export interface OrderProduct {
   product_id: number;
   quantity: number;
   price: number;
-  size?: string; // 화분 색상 등 옵션
+  color?: string; // 화분 색상 등 옵션 (새로운 필드)
   createdAt: string;
   updatedAt: string;
   product?: Product; // 상품 상세 정보 (populate된 경우)
@@ -39,9 +39,15 @@ export interface Order {
     detailAddress?: string; // 상세 주소
     zipCode?: string; // 우편번호
   };
-  memo?: string; // 배송 메모
+  memo?: OrderMemo; // 배송 메모 (객체)
   createdAt: string;
   updatedAt: string;
+}
+
+/** 주문 메모 객체 타입 */
+export interface OrderMemo {
+  selectedMemo: string; // 배송 메모
+  selectedImage?: string; // 선택한 옵션의 이미지 파일
 }
 
 /** 주문 생성 요청 타입 */
@@ -49,14 +55,14 @@ export interface CreateOrderRequest {
   products: Array<{
     _id: number;
     quantity: number;
-    size?: string;
+    color?: string; // color 필드로 변경
   }>;
   address?: {
     name: string;
     value: string; // 전체 주소를 하나의 문자열로
     phone: string;
   };
-  memo?: string;
+  memo?: OrderMemo; // 전체 주문 메모 (객체 형태)
 }
 
 /** 직접 구매 아이템 타입 */

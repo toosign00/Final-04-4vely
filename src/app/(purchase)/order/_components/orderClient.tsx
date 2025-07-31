@@ -13,6 +13,7 @@ import PortOne from '@portone/browser-sdk/v2';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import DaumPostcode from 'react-daum-postcode';
 import { toast } from 'sonner';
 
 interface OrderClientSectionProps {
@@ -30,45 +31,29 @@ interface SavedAddress {
   isDefault?: boolean;
 }
 
-// Daum 우편번호 API 응답 타입 정의
-interface DaumPostcodeData {
-  roadAddress?: string; // 도로명 주소
-  jibunAddress?: string; // 지번 주소
-  zonecode: string; // 우편번호
-  address: string; // 기본 주소
-  addressType: string; // 주소 타입 ('R': 도로명, 'J': 지번)
-  userSelectedType: string; // 사용자가 선택한 주소 타입
-  noSelected: string; // 연관 주소에서 선택 안함 (Y/N)
-  userLanguageType: string; // 사용자가 선택한 언어 타입
-  roadAddressEnglish?: string; // 영문 도로명 주소
-  jibunAddressEnglish?: string; // 영문 지번 주소
-  autoRoadAddress?: string; // 자동 완성된 도로명 주소
-  autoJibunAddress?: string; // 자동 완성된 지번 주소
-  buildingCode: string; // 건물관리번호
-  buildingName: string; // 건물명
-  apartment: string; // 공동주택 여부 (Y/N)
-  sido: string; // 시/도
-  sigungu: string; // 시/군/구
-  sigunguCode: string; // 시/군/구 코드
-  roadnameCode: string; // 도로명 코드
-  bcode: string; // 법정동코드
-  roadname: string; // 도로명
-  bname: string; // 법정동/법정리 이름
-  bname1: string; // 법정리의 읍/면 이름
-  bname2: string; // 법정리의 동/리 이름
-  hname: string; // 행정동 이름
-  query: string; // 사용자가 입력한 검색어
-}
-
-// Daum 우편번호 타입
-declare global {
-  interface Window {
-    daum: {
-      Postcode: new (config: { oncomplete: (data: DaumPostcodeData) => void; onclose?: () => void; width?: number; height?: number }) => {
-        open: () => void;
-      };
-    };
-  }
+// react-daum-postcode의 onComplete 타입 정의
+interface PostcodeData {
+  zonecode: string;
+  address: string;
+  addressType: string;
+  bname: string;
+  buildingName: string;
+  roadAddress: string;
+  jibunAddress: string;
+  sido: string;
+  sigungu: string;
+  sigunguCode: string;
+  roadnameCode: string;
+  bcode: string;
+  roadname: string;
+  bname1: string;
+  bname2: string;
+  hname: string;
+  query: string;
+  userSelectedType: string;
+  noSelected: string;
+  userLanguageType: string;
+  apartment: string;
 }
 
 // 폼 에러 타입
@@ -82,6 +67,9 @@ interface FormErrors {
 export default function OrderClientSection({ initialOrderData }: OrderClientSectionProps) {
   const router = useRouter();
   const hasSetInitialAddress = useRef(false);
+
+  // 주소 검색 표시 상태 (모달 내부에서 사용)
+  const [showPostcode, setShowPostcode] = useState(false);
 
   // 상태 관리
   const [orderData, setOrderData] = useState<OrderPageData>(initialOrderData);
@@ -122,68 +110,37 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
 
   // 유효성 검사 함수들
   const validateName = (name: string): string | undefined => {
-    if (!name.trim()) {
-      return '이름을 입력해주세요.';
-    }
-    if (name.trim().length < 2) {
-      return '이름은 2자 이상 입력해주세요.';
-    }
-    if (name.trim().length > 20) {
-      return '이름은 20자 이하로 입력해주세요.';
-    }
-    if (!/^[가-힣a-zA-Z\s]+$/.test(name)) {
-      return '이름은 한글, 영문, 공백만 입력 가능합니다.';
-    }
+    if (!name.trim()) return '이름을 입력해주세요.';
+    if (name.trim().length < 2) return '이름은 2자 이상 입력해주세요.';
+    if (name.trim().length > 20) return '이름은 20자 이하로 입력해주세요.';
+    if (!/^[가-힣a-zA-Z\s]+$/.test(name)) return '이름은 한글, 영문, 공백만 입력 가능합니다.';
     return undefined;
   };
 
   const validatePhone = (phone: string): string | undefined => {
-    if (!phone.trim()) {
-      return '전화번호를 입력해주세요.';
-    }
-    // 숫자만 추출
+    if (!phone.trim()) return '전화번호를 입력해주세요.';
     const phoneNumbers = phone.replace(/[^0-9]/g, '');
-
-    if (phoneNumbers.length < 10 || phoneNumbers.length > 11) {
-      return '올바른 전화번호를 입력해주세요.';
-    }
-
-    // 휴대폰 번호 패턴 체크 (010, 011, 016, 017, 018, 019)
-    if (!phoneNumbers.startsWith('01')) {
-      return '올바른 휴대폰 번호를 입력해주세요.';
-    }
-
+    if (phoneNumbers.length < 10 || phoneNumbers.length > 11) return '올바른 전화번호를 입력해주세요.';
+    if (!phoneNumbers.startsWith('01')) return '올바른 휴대폰 번호를 입력해주세요.';
     return undefined;
   };
 
   const validateAddress = (address: string): string | undefined => {
-    if (!address.trim()) {
-      return '주소를 입력해주세요.';
-    }
+    if (!address.trim()) return '주소를 입력해주세요.';
     return undefined;
   };
 
   const formatPhoneNumber = (value: string): string => {
-    // 숫자만 추출
     const numbers = value.replace(/[^0-9]/g, '');
-
-    // 11자리 휴대폰 번호 포맷팅
-    if (numbers.length <= 3) {
-      return numbers;
-    } else if (numbers.length <= 7) {
-      return `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
-    } else if (numbers.length <= 11) {
-      return `${numbers.slice(0, 3)}-${numbers.slice(3, 7)}-${numbers.slice(7, 11)}`;
-    }
-
-    // 11자리 초과시 11자리까지만 표시
+    if (numbers.length <= 3) return numbers;
+    else if (numbers.length <= 7) return `${numbers.slice(0, 3)}-${numbers.slice(3)}`;
+    else if (numbers.length <= 11) return `${numbers.slice(0, 3)}-${numbers.slice(3, 7)}-${numbers.slice(7, 11)}`;
     return `${numbers.slice(0, 3)}-${numbers.slice(3, 7)}-${numbers.slice(7, 11)}`;
   };
 
   // 실시간 유효성 검사
   const validateField = (field: keyof typeof addressForm, value: string) => {
     let error: string | undefined;
-
     switch (field) {
       case 'name':
         error = validateName(value);
@@ -197,30 +154,17 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
       default:
         break;
     }
-
-    setFormErrors((prev) => ({
-      ...prev,
-      [field]: error,
-    }));
-
+    setFormErrors((prev) => ({ ...prev, [field]: error }));
     return !error;
   };
 
   // 입력 핸들러
   const handleInputChange = (field: keyof typeof addressForm, value: string) => {
     let formattedValue = value;
-
-    // 전화번호 포맷팅
     if (field === 'phone') {
       formattedValue = formatPhoneNumber(value);
     }
-
-    setAddressForm((prev) => ({
-      ...prev,
-      [field]: formattedValue,
-    }));
-
-    // touched 상태가 true인 경우에만 실시간 검증
+    setAddressForm((prev) => ({ ...prev, [field]: formattedValue }));
     if (touched[field as keyof typeof touched]) {
       validateField(field, formattedValue);
     }
@@ -228,47 +172,30 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
 
   // blur 핸들러
   const handleInputBlur = (field: keyof typeof touched) => {
-    setTouched((prev) => ({
-      ...prev,
-      [field]: true,
-    }));
-
+    setTouched((prev) => ({ ...prev, [field]: true }));
     validateField(field, addressForm[field]);
   };
 
   // 전체 폼 유효성 검사
   const validateForm = (): boolean => {
     const errors: FormErrors = {};
-
     const nameError = validateName(addressForm.name);
     if (nameError) errors.name = nameError;
-
     const phoneError = validatePhone(addressForm.phone);
     if (phoneError) errors.phone = phoneError;
-
     const addressError = validateAddress(addressForm.address);
     if (addressError) errors.address = addressError;
 
     setFormErrors(errors);
-
-    // 모든 필드를 touched로 설정
-    setTouched({
-      name: true,
-      phone: true,
-      address: true,
-      detailAddress: true,
-    });
-
+    setTouched({ name: true, phone: true, address: true, detailAddress: true });
     return Object.keys(errors).length === 0;
   };
 
-  // 초기 주소 설정 - useRef로 한 번만 실행되도록 보장
+  // 초기 주소 설정
   useEffect(() => {
     if (!hasSetInitialAddress.current && !orderData.address && savedAddresses.length > 0) {
       hasSetInitialAddress.current = true;
-
       const defaultAddress = savedAddresses.find((addr) => addr.isDefault) || savedAddresses[0];
-
       if (defaultAddress) {
         const addressData = {
           name: defaultAddress.name,
@@ -277,9 +204,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
           detailAddress: defaultAddress.detailAddress || '',
           zipCode: defaultAddress.zipCode || '',
         };
-
         setOrderData((prev) => ({ ...prev, address: addressData }));
-
         updateTempOrderAddressAction(addressData).catch((error) => {
           console.error('[초기 주소 설정] 서버 업데이트 실패:', error);
         });
@@ -287,52 +212,27 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
     }
   }, [orderData.address, savedAddresses]);
 
-  // Daum 우편번호 API 스크립트 로드
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
-    script.async = true;
-    document.body.appendChild(script);
-
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
-
   // 사용자 주소 가져오기
   useEffect(() => {
     const fetchUserAddress = async () => {
       try {
         if (hasSetInitialAddress.current) return;
-
-        console.log('[OrderClient] 사용자 주소 조회 시작');
         const result = await getUserAddressAction();
-        console.log('[OrderClient] getUserAddressAction 결과:', result);
-
         const { address, name, phone, userId } = result;
 
-        console.log('[OrderClient] 분해된 결과:', { address, name, phone, userId });
-
         if (address && userId) {
-          // 주소에서 우편번호 분리
           let finalAddress = address;
           let zipCode = '';
-
           const addressMatch = address.match(/^(.+?)\s+(\d{3,5})$/);
           if (addressMatch) {
             finalAddress = addressMatch[1].trim();
             zipCode = addressMatch[2];
-            console.log('[OrderClient] 주소 파싱:', { 원본: address, 주소: finalAddress, 우편번호: zipCode });
           }
 
-          // 전화번호 포맷팅
           const formatPhone = (phone: string) => {
             const cleaned = phone.replace(/\D/g, '');
-            if (cleaned.length === 10) {
-              return cleaned.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
-            } else if (cleaned.length === 11) {
-              return cleaned.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
-            }
+            if (cleaned.length === 10) return cleaned.replace(/(\d{3})(\d{3})(\d{4})/, '$1-$2-$3');
+            else if (cleaned.length === 11) return cleaned.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
             return phone;
           };
 
@@ -346,12 +246,10 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
             isDefault: true,
           };
 
-          console.log('[OrderClient] 배송지 설정:', userAddress);
           setSavedAddresses([userAddress]);
           setSelectedAddressId('1');
           hasSetInitialAddress.current = true;
 
-          // 초기 주소를 orderData에도 설정
           const addressData = {
             name: userAddress.name,
             phone: userAddress.phone,
@@ -364,45 +262,32 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
           if (success) {
             setOrderData((prev) => ({ ...prev, address: addressData }));
           }
-        } else {
-          console.log('[OrderClient] 사용자 주소 없음');
         }
       } catch (error) {
         console.error('[OrderClient] 에러 발생:', error);
       }
     };
-
     fetchUserAddress();
   }, []);
 
-  // 주소 찾기 핸들러
-  const handleAddressSearch = () => {
-    if (!window.daum || !window.daum.Postcode) {
-      toast.error('주소 검색 서비스를 불러오는 중입니다. 잠시 후 다시 시도해주세요.');
-      return;
-    }
-
-    new window.daum.Postcode({
-      oncomplete: function (data: DaumPostcodeData) {
-        // 도로명 주소 우선, 없으면 지번 주소 사용
-        const fullAddress = data.roadAddress || data.jibunAddress || '';
-
-        setAddressForm((prev) => ({
-          ...prev,
-          zipCode: data.zonecode,
-          address: fullAddress,
-        }));
-
-        // 주소가 입력되면 에러 제거
-        setFormErrors((prev) => ({
-          ...prev,
-          address: undefined,
-        }));
-      },
-    }).open();
+  // 주소 완료 핸들러
+  const handlePostcodeComplete = (data: PostcodeData) => {
+    const fullAddress = data.roadAddress || data.jibunAddress || data.address;
+    setAddressForm((prev) => ({
+      ...prev,
+      zipCode: data.zonecode,
+      address: fullAddress,
+    }));
+    setFormErrors((prev) => ({ ...prev, address: undefined }));
+    setShowPostcode(false);
   };
 
-  // 배송지 선택 핸들러
+  // 🔧 주소 찾기 핸들러
+  const handleAddressSearch = () => {
+    setShowPostcode(true);
+  };
+
+  // 나머지 핸들러들 (기존과 동일)
   const handleSelectAddress = async (addressId: string) => {
     const selected = savedAddresses.find((addr) => addr.id === addressId);
     if (selected) {
@@ -414,7 +299,6 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
         detailAddress: selected.detailAddress || '',
         zipCode: selected.zipCode || '',
       };
-
       const success = await updateTempOrderAddressAction(address);
       if (success) {
         setOrderData((prev) => ({ ...prev, address }));
@@ -425,10 +309,8 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
     }
   };
 
-  // 배송지 저장 (신규/수정)
   const handleSaveAddress = async () => {
     try {
-      // 폼 유효성 검사
       if (!validateForm()) {
         toast.error('입력 정보를 확인해주세요.');
         return;
@@ -443,11 +325,8 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
       };
 
       const success = await updateTempOrderAddressAction(address);
-
       if (success) {
         setOrderData((prev) => ({ ...prev, address }));
-
-        // 신규 입력인 경우 저장된 주소 목록에 추가
         if (activeTab === 'new') {
           const newAddress: SavedAddress = {
             id: Date.now().toString(),
@@ -456,25 +335,12 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
           };
           setSavedAddresses((prev) => [...prev, newAddress]);
         }
-
         toast.success('배송지 정보가 저장되었습니다.');
         setDialogOpen(false);
-
-        // 폼 초기화
-        setAddressForm({
-          name: '',
-          phone: '',
-          address: '',
-          detailAddress: '',
-          zipCode: '',
-        });
+        setAddressForm({ name: '', phone: '', address: '', detailAddress: '', zipCode: '' });
         setFormErrors({});
-        setTouched({
-          name: false,
-          phone: false,
-          address: false,
-          detailAddress: false,
-        });
+        setTouched({ name: false, phone: false, address: false, detailAddress: false });
+        setShowPostcode(false); // 주소 검색 숨기기
       } else {
         toast.error('배송지 정보 저장에 실패했습니다.');
       }
@@ -484,7 +350,6 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
     }
   };
 
-  // 배송지 삭제
   const handleDeleteAddress = (addressId: string) => {
     setAddressToDelete(addressId);
     setDeleteConfirmOpen(true);
@@ -499,12 +364,10 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
     toast.success('배송지가 삭제되었습니다.');
   };
 
-  // 배송 메모 저장
   const handleSaveMemo = async (memo: string) => {
     try {
       setDeliveryMemo(memo);
       const success = await updateTempOrderMemoAction(memo);
-
       if (success) {
         setOrderData((prev) => ({ ...prev, memo }));
       }
@@ -513,14 +376,13 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
     }
   };
 
-  // orderClient.tsx의 handlePayment 함수 - 결제 취소 시 쿠키 삭제 추가
-
+  // handlePayment 함수
   const handlePayment = async () => {
     try {
       setIsProcessingOrder(true);
       console.log('[결제 처리] 시작');
 
-      // 🔧 결제 진행 상태 쿠키 설정 (OrderPage 리다이렉트 방지)
+      // 결제 진행 상태 쿠키 설정 (OrderPage 리다이렉트 방지)
       document.cookie = 'payment-in-progress=true; path=/; max-age=3600'; // 1시간
 
       // 배송지 정보 확인
@@ -535,19 +397,42 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
         return; // 페이지 이동 없이 현재 페이지 유지
       }
 
-      // 주문 생성 요청 데이터 준비 - API 형식에 맞게 변환
+      // 주문 생성 요청 데이터 준비
       const createOrderData: CreateOrderRequest = {
         products: orderData.items.map((item) => ({
           _id: item.productId,
           quantity: item.quantity,
-          size: item.selectedColor?.colorName,
+          color: item.selectedColor?.colorName, // color 필드 사용
+          memo: {
+            selectedMemo: orderData.memo || '', // 배송 메모
+            selectedImage: (() => {
+              // 첫 번째 상품의 이미지 경로 추출
+              const firstItemImage = orderData.items[0]?.productImage;
+              if (!firstItemImage) return '';
+
+              // URL에서 files/ 이후 경로만 추출
+              const match = firstItemImage.match(/files\/(.+)/);
+              return match ? `files/${match[1]}` : '';
+            })(),
+          },
         })),
         address: {
           name: orderData.address.name,
           value: `${orderData.address.zipCode || ''} ${orderData.address.address} ${orderData.address.detailAddress || ''}`.trim(),
           phone: orderData.address.phone,
         },
-        memo: orderData.memo,
+        memo: {
+          selectedMemo: orderData.memo || '', // 배송 메모
+          selectedImage: (() => {
+            // 첫 번째 상품의 이미지 경로 추출
+            const firstItemImage = orderData.items[0]?.productImage;
+            if (!firstItemImage) return '';
+
+            // URL에서 files/ 이후 경로만 추출
+            const match = firstItemImage.match(/files\/(.+)/);
+            return match ? `files/${match[1]}` : '';
+          })(),
+        },
       };
 
       console.log('[결제 처리] 주문 생성 요청:', createOrderData);
@@ -696,7 +581,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
       if (!verificationResult.success) {
         console.error('[결제 처리] 결제 검증 실패:', verificationResult.message);
 
-        // 🎯 중요: 검증 실패 시에도 쿠키 삭제
+        // 검증 실패 시에도 쿠키 삭제
         document.cookie = 'payment-in-progress=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
 
         toast.error('결제 검증 실패', {
@@ -709,7 +594,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
       // 결제 완료 처리
       console.log('[결제 처리] 결제 검증 성공');
 
-      // 🔧 결제 완료 시 쿠키 삭제
+      // 결제 완료 시 쿠키 삭제
       document.cookie = 'payment-in-progress=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
 
       // ==================== 성공 시에만 페이지 이동 ====================
@@ -718,7 +603,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
       const redirectUrl = verificationResult.data?.redirectUrl || result.data?.redirectUrl;
       console.log('[결제 처리] redirectUrl:', redirectUrl);
 
-      // 🎯 중요: 결제 검증 성공한 경우에만 페이지 이동
+      // 결제 검증 성공한 경우에만 페이지 이동
       // fallback 처리 개선
       if (!redirectUrl) {
         console.error('[결제 처리] redirectUrl이 없습니다');
@@ -762,10 +647,10 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
     } catch (error) {
       console.error('[결제 처리] 예상치 못한 오류:', error);
 
-      // 🎯 중요: catch 블록에서도 쿠키 삭제
+      // catch 블록에서도 쿠키 삭제
       document.cookie = 'payment-in-progress=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
 
-      // 🔥 핵심: catch 블록에서는 절대 페이지 이동하지 않음
+      // catch 블록에서는 페이지 이동하지 않음
       if (error instanceof Error && error.message.includes('NEXT_PUBLIC_PORTONE')) {
         toast.error('결제 설정 오류', {
           description: '환경변수를 확인해주세요. (.env.local 파일)',
@@ -778,39 +663,26 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
         });
       }
 
-      // 🎯 중요: 오류 발생 시 현재 페이지에 머무르기 (페이지 이동 절대 금지)
+      // 오류 발생 시 현재 페이지에 머무르기 (페이지 이동 절대 금지)
       console.log('[결제 처리] 오류 발생 - 현재 페이지 유지');
     } finally {
-      // 🎯 중요: finally에서도 페이지 이동 없이 로딩 상태만 해제
+      // finally에서도 페이지 이동 없이 로딩 상태만 해제
       setIsProcessingOrder(false);
 
-      // 🔧 finally에서도 결제 진행 쿠키 정리 (모든 경우에 대한 안전장치)
+      // finally에서도 결제 진행 쿠키 정리 (안전 장치...)
       document.cookie = 'payment-in-progress=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
 
       console.log('[결제 처리] finally: 처리 완료, 현재 페이지 유지');
     }
   };
 
-  // 다이얼로그 닫기 핸들러
   const handleDialogClose = (open: boolean) => {
     setDialogOpen(open);
-
-    // 다이얼로그가 닫힐 때 폼 초기화
     if (!open) {
-      setAddressForm({
-        name: '',
-        phone: '',
-        address: '',
-        detailAddress: '',
-        zipCode: '',
-      });
+      setAddressForm({ name: '', phone: '', address: '', detailAddress: '', zipCode: '' });
       setFormErrors({});
-      setTouched({
-        name: false,
-        phone: false,
-        address: false,
-        detailAddress: false,
-      });
+      setTouched({ name: false, phone: false, address: false, detailAddress: false });
+      setShowPostcode(false);
     }
   };
 
@@ -892,7 +764,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
                 variant='primary'
                 size='lg'
                 onClick={() => {
-                  setActiveTab('select'); // 다이얼로그 열 때 항상 선택 탭으로
+                  setActiveTab('select');
                   setDialogOpen(true);
                 }}
               >
@@ -900,7 +772,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
               </Button>
             </div>
             <div className='text-sm'>
-              {/* 현재 배송지 */}
+              {/* 현재 배송지 표시 */}
               <div className='space-y-4'>
                 {orderData.address ? (
                   <>
@@ -932,27 +804,41 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
                 )}
               </div>
 
-              {/* 변경 버튼 클릭시 배송정보 모달창 */}
+              {/* 🔧 배송지 설정 모달 - 개선된 버전 */}
               <Dialog open={dialogOpen} onOpenChange={handleDialogClose}>
-                <DialogContent className='max-w-2xl'>
-                  <div className='w-full overflow-auto bg-white'>
+                <DialogContent className='max-h-[90vh] max-w-4xl overflow-y-auto'>
+                  <div className='w-full bg-white'>
                     <DialogHeader>
                       <DialogTitle className='text-lg font-semibold'>배송지 설정</DialogTitle>
                     </DialogHeader>
 
                     {/* 탭 네비게이션 */}
                     <div className='mt-4 flex w-full'>
-                      <Button variant='ghost' onClick={() => setActiveTab('select')} className={`flex-1 py-3 transition-colors ${activeTab === 'select' ? 'bg-[#c1d72f] text-black' : 'bg-white'}`}>
+                      <Button
+                        variant='ghost'
+                        onClick={() => {
+                          setActiveTab('select');
+                          setShowPostcode(false);
+                        }}
+                        className={`flex-1 py-3 transition-colors ${activeTab === 'select' ? 'bg-[#c1d72f] text-black' : 'bg-white'}`}
+                      >
                         배송지 선택
                       </Button>
-                      <Button variant='ghost' onClick={() => setActiveTab('new')} className={`flex-1 py-3 transition-colors ${activeTab === 'new' ? 'bg-[#c1d72f] text-black' : 'bg-white'}`}>
+                      <Button
+                        variant='ghost'
+                        onClick={() => {
+                          setActiveTab('new');
+                          setShowPostcode(false);
+                        }}
+                        className={`flex-1 py-3 transition-colors ${activeTab === 'new' ? 'bg-[#c1d72f] text-black' : 'bg-white'}`}
+                      >
                         신규 입력
                       </Button>
                     </div>
 
                     {/* 탭 컨텐츠 */}
                     {activeTab === 'select' ? (
-                      <div className='mt-10 h-[350px] overflow-y-auto'>
+                      <div className='mt-6 max-h-[350px] overflow-y-auto'>
                         <div className='space-y-4'>
                           {savedAddresses.map((addr, index) => (
                             <div key={addr.id}>
@@ -1024,84 +910,109 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
                         </div>
                       </div>
                     ) : (
-                      <div className='mt-4 grid gap-4'>
-                        <div>
-                          <label className='block text-sm font-medium'>
-                            이름 <span className='text-red-500'>*</span>
-                          </label>
-                          <input
-                            type='text'
-                            className={`mt-1 w-full rounded border p-2 ${formErrors.name && touched.name ? 'border-red-500' : ''}`}
-                            placeholder='받는 분 성함'
-                            value={addressForm.name}
-                            onChange={(e) => handleInputChange('name', e.target.value)}
-                            onBlur={() => handleInputBlur('name')}
-                            maxLength={20}
-                          />
-                          {formErrors.name && touched.name && <p className='mt-1 text-xs text-red-500'>{formErrors.name}</p>}
-                        </div>
-                        <div>
-                          <label className='block text-sm font-medium'>
-                            전화번호 <span className='text-red-500'>*</span>
-                          </label>
-                          <input
-                            type='tel'
-                            className={`mt-1 w-full rounded border p-2 ${formErrors.phone && touched.phone ? 'border-red-500' : ''}`}
-                            placeholder='010-1234-5678'
-                            value={addressForm.phone}
-                            onChange={(e) => handleInputChange('phone', e.target.value)}
-                            onBlur={() => handleInputBlur('phone')}
-                            maxLength={13}
-                          />
-                          {formErrors.phone && touched.phone && <p className='mt-1 text-xs text-red-500'>{formErrors.phone}</p>}
-                        </div>
-                        <div>
-                          <label className='block text-sm font-medium'>
-                            우편번호 <span className='text-red-500'>*</span>
-                          </label>
-                          <input type='text' className='mt-1 w-full rounded border bg-gray-50 p-2' placeholder='주소를 찾아주세요' value={addressForm.zipCode} readOnly />
-                        </div>
-                        <div className='mt-4'>
-                          <label className='block text-sm font-medium'>
-                            도로명 주소 <span className='text-red-500'>*</span>
-                          </label>
-                          <div className='mt-1 flex gap-2'>
-                            <input type='text' className={`w-[150px] flex-1 rounded border bg-gray-50 p-2 ${formErrors.address && touched.address ? 'border-red-500' : ''}`} placeholder='주소를 찾아주세요' value={addressForm.address} readOnly />
-                            <Button size='lg' variant='default' onClick={handleAddressSearch}>
-                              주소 찾기
-                            </Button>
+                      <div className='mt-4'>
+                        {/* 주소 검색이 표시중일 때 */}
+                        {showPostcode ? (
+                          <div className='space-y-4'>
+                            <div className='flex items-center justify-between'>
+                              <h3 className='text-lg font-semibold'>주소 검색</h3>
+                              <Button variant='ghost' size='sm' onClick={() => setShowPostcode(false)} className='text-gray-500 hover:text-gray-700'>
+                                뒤로가기
+                              </Button>
+                            </div>
+                            <div className='overflow-hidden rounded-lg border'>
+                              <DaumPostcode onComplete={handlePostcodeComplete} style={{ width: '100%', height: '400px' }} />
+                            </div>
                           </div>
-                          {formErrors.address && touched.address && <p className='mt-1 text-xs text-red-500'>{formErrors.address}</p>}
-                        </div>
-                        <div>
-                          <label className='block text-sm font-medium'>상세 주소</label>
-                          <input type='text' className='mt-1 w-full rounded border p-2' placeholder='상세 주소를 입력해주세요' value={addressForm.detailAddress} onChange={(e) => handleInputChange('detailAddress', e.target.value)} maxLength={50} />
-                        </div>
-                        <div className='mt-2 text-xs text-gray-500'>
-                          <span className='text-red-500'>*</span> 표시는 필수 입력 항목입니다.
-                        </div>
+                        ) : (
+                          /* 일반 주소 입력 폼 */
+                          <div className='grid gap-4'>
+                            <div>
+                              <label className='block text-sm font-medium'>
+                                이름 <span className='text-red-500'>*</span>
+                              </label>
+                              <input
+                                type='text'
+                                className={`mt-1 w-full rounded border p-2 ${formErrors.name && touched.name ? 'border-red-500' : ''}`}
+                                placeholder='받는 분 성함'
+                                value={addressForm.name}
+                                onChange={(e) => handleInputChange('name', e.target.value)}
+                                onBlur={() => handleInputBlur('name')}
+                                maxLength={20}
+                              />
+                              {formErrors.name && touched.name && <p className='mt-1 text-xs text-red-500'>{formErrors.name}</p>}
+                            </div>
+                            <div>
+                              <label className='block text-sm font-medium'>
+                                전화번호 <span className='text-red-500'>*</span>
+                              </label>
+                              <input
+                                type='tel'
+                                className={`mt-1 w-full rounded border p-2 ${formErrors.phone && touched.phone ? 'border-red-500' : ''}`}
+                                placeholder='010-1234-5678'
+                                value={addressForm.phone}
+                                onChange={(e) => handleInputChange('phone', e.target.value)}
+                                onBlur={() => handleInputBlur('phone')}
+                                maxLength={13}
+                              />
+                              {formErrors.phone && touched.phone && <p className='mt-1 text-xs text-red-500'>{formErrors.phone}</p>}
+                            </div>
+                            <div>
+                              <label className='block text-sm font-medium'>
+                                우편번호 <span className='text-red-500'>*</span>
+                              </label>
+                              <input type='text' className='mt-1 w-full rounded border bg-gray-50 p-2' placeholder='주소를 찾아주세요' value={addressForm.zipCode} readOnly />
+                            </div>
+                            <div>
+                              <label className='block text-sm font-medium'>
+                                도로명 주소 <span className='text-red-500'>*</span>
+                              </label>
+                              <div className='mt-1 flex gap-2'>
+                                <input type='text' className={`flex-1 rounded border bg-gray-50 p-2 ${formErrors.address && touched.address ? 'border-red-500' : ''}`} placeholder='주소를 찾아주세요' value={addressForm.address} readOnly />
+                                <Button size='lg' variant='default' onClick={handleAddressSearch}>
+                                  주소 찾기
+                                </Button>
+                              </div>
+                              {formErrors.address && touched.address && <p className='mt-1 text-xs text-red-500'>{formErrors.address}</p>}
+                            </div>
+                            <div>
+                              <label className='block text-sm font-medium'>상세 주소</label>
+                              <input
+                                type='text'
+                                className='mt-1 w-full rounded border p-2'
+                                placeholder='상세 주소를 입력해주세요'
+                                value={addressForm.detailAddress}
+                                onChange={(e) => handleInputChange('detailAddress', e.target.value)}
+                                maxLength={50}
+                              />
+                            </div>
+                            <div className='mt-2 text-xs text-gray-500'>
+                              <span className='text-red-500'>*</span> 표시는 필수 입력 항목입니다.
+                            </div>
+                          </div>
+                        )}
                       </div>
                     )}
 
                     {/* 적용 버튼 */}
-                    <div className='mt-6 flex justify-end'>
-                      <Button
-                        variant='primary'
-                        onClick={() => {
-                          if (activeTab === 'select') {
-                            // 이미 선택된 주소가 있으면 다이얼로그 닫기
-                            if (selectedAddressId) {
-                              setDialogOpen(false);
+                    {!showPostcode && (
+                      <div className='mt-6 flex justify-end'>
+                        <Button
+                          variant='primary'
+                          onClick={() => {
+                            if (activeTab === 'select') {
+                              if (selectedAddressId) {
+                                setDialogOpen(false);
+                              }
+                            } else {
+                              handleSaveAddress();
                             }
-                          } else {
-                            // 신규 입력인 경우 기존 로직 실행
-                            handleSaveAddress();
-                          }
-                        }}
-                      >
-                        적용하기
-                      </Button>
-                    </div>
+                          }}
+                        >
+                          적용하기
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </DialogContent>
               </Dialog>

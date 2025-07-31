@@ -172,10 +172,10 @@ export async function createCartPurchaseTempOrderAction(selectedCartIds: number[
         productImage: imageUrl,
         price: item.product.price,
         quantity: item.quantity,
-        selectedColor: item.size
+        selectedColor: item.color
           ? {
               colorIndex: 0,
-              colorName: item.size,
+              colorName: item.color, // color 필드 사용
             }
           : undefined,
       };

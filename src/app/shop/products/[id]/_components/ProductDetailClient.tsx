@@ -217,11 +217,11 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
         return;
       }
 
-      // 2. 서버 API 호출 데이터 준비 - size 필드 사용
+      // 2. 서버 API 호출 데이터 준비 - color 필드 사용
       const cartData: AddToCartRequest = {
         product_id: productData._id,
         quantity,
-        size: hasColorOptions ? colorOptions[selectedColorIndex]?.label : undefined,
+        color: hasColorOptions ? colorOptions[selectedColorIndex]?.label : undefined,
       };
 
       console.log('[장바구니 추가] 서버 요청 데이터:', cartData);

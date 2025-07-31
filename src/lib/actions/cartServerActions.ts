@@ -64,8 +64,8 @@ export async function getCartItemsActionOptimized(): Promise<CartItem[]> {
     // 색상이 선택된 상품들만 상세 정보 조회
     const enrichedCartItems = await Promise.all(
       cartItems.map(async (item) => {
-        // 색상이 선택되지 않은 경우 그대로 반환
-        if (!item.size) {
+        // 색상이 선택되지 않은 경우 그대로 반환 (color 체크)
+        if (!item.color) {
           return item;
         }
 
@@ -87,7 +87,9 @@ export async function getCartItemsActionOptimized(): Promise<CartItem[]> {
               const potColors = productData.item.extra?.potColors || [];
 
               if (potColors.length > 0 && mainImages.length > 0) {
-                const colorIndex = potColors.findIndex((color: string) => color === item.size);
+                // color 필드를 사용
+                const selectedColor = item.color;
+                const colorIndex = potColors.findIndex((color: string) => color === selectedColor);
                 const selectedImage = mainImages[colorIndex] || mainImages[0] || item.product.image;
 
                 item.product = {
@@ -122,7 +124,7 @@ export async function getCartItemsActionOptimized(): Promise<CartItem[]> {
  * const result = await addToCartAction({
  *   product_id: 1,
  *   quantity: 2,
- *   size: '흑색'  // 화분 색상 옵션
+ *   color: '흑색'  // 화분 색상 옵션
  * });
  */
 export async function addToCartAction(cartData: AddToCartRequest): Promise<CartActionResult> {
@@ -150,7 +152,7 @@ export async function addToCartAction(cartData: AddToCartRequest): Promise<CartA
       body: JSON.stringify({
         product_id: cartData.product_id,
         quantity: cartData.quantity,
-        size: cartData.size, // 화분 색상을 size로 전송
+        color: cartData.color, // 화분 색상을 color로 전송
       }),
     });
 
@@ -299,16 +301,16 @@ export async function updateCartQuantityAction(cartId: number, quantity: number)
 
 /**
  * 장바구니 옵션(색상)을 업데이트하는 서버 액션
- * API가 size 필드 업데이트를 지원하지 않으므로, 삭제 후 재추가 방식으로 구현
+ * API가 color 필드 업데이트를 지원하지 않으므로, 삭제 후 재추가 방식으로 구현
  * @param {number} cartId - 장바구니 아이템 ID
  * @param {number} productId - 상품 ID
  * @param {number} quantity - 수량
- * @param {string} size - 새로운 색상
+ * @param {string} color - 새로운 색상
  * @returns {Promise<CartActionResult>} 업데이트 결과
  */
-export async function updateCartOptionAction(cartId: number, productId: number, quantity: number, size: string): Promise<CartActionResult> {
+export async function updateCartOptionAction(cartId: number, productId: number, quantity: number, color: string): Promise<CartActionResult> {
   try {
-    console.log('[Cart 서버 액션] 옵션 업데이트 시작:', { cartId, productId, quantity, size });
+    console.log('[Cart 서버 액션] 옵션 업데이트 시작:', { cartId, productId, quantity, color });
 
     // 액세스 토큰 확인
     const accessToken = await getServerAccessToken();
@@ -351,7 +353,7 @@ export async function updateCartOptionAction(cartId: number, productId: number, 
       body: JSON.stringify({
         product_id: productId,
         quantity: quantity,
-        size: size, // 새로운 색상
+        color: color, // 새로운 색상
       }),
     });
 
@@ -386,15 +388,10 @@ export async function updateCartOptionAction(cartId: number, productId: number, 
 }
 
 /**
- * 사용자의 로그인 상태를 확인하는 서버 액션
+ * 로그인 상태를 확인하는 서버 액션
  * @returns {Promise<boolean>} 로그인 여부
  */
 export async function checkLoginStatusAction(): Promise<boolean> {
-  try {
-    const accessToken = await getServerAccessToken();
-    return !!accessToken;
-  } catch (error) {
-    console.error('[Cart 서버 액션] 로그인 상태 확인 오류:', error);
-    return false;
-  }
+  const accessToken = await getServerAccessToken();
+  return !!accessToken;
 }

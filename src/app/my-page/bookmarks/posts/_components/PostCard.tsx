@@ -13,9 +13,10 @@ interface PostCardProps {
     author: string;
     viewCount: number;
     commentCount: number;
+    type: 'community' | 'magazine';
   };
   bookmarkId: number;
-  onDetailClick?: (postId: number) => void;
+  onDetailClick?: (postId: number, postType: 'community' | 'magazine') => void;
   onDelete?: () => void;
 }
 
@@ -43,7 +44,7 @@ export default function PostCard({ post, bookmarkId, onDetailClick, onDelete }: 
 
   const handleDetailClick = () => {
     if (onDetailClick) {
-      onDetailClick(post.id);
+      onDetailClick(post.id, post.type);
     }
   };
 
@@ -59,16 +60,24 @@ export default function PostCard({ post, bookmarkId, onDetailClick, onDelete }: 
       <div className='grid grid-cols-1 items-center gap-4 md:grid-cols-[auto_1fr_auto] md:gap-6'>
         {/* 게시글 이미지 */}
         <div className='grid place-items-center'>
-          <div className='aspect-square w-[12.5rem]'>
+          <div className='relative aspect-square w-[12.5rem]'>
+            {/* 타입 뱃지 - 이미지 상단 좌측에 위치 */}
+            <div className='absolute top-1 left-1 z-1'>
+              <span
+                className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold shadow-sm ${post.type === 'magazine' ? 'border border-emerald-200 bg-emerald-50 text-emerald-700' : 'border border-blue-200 bg-blue-50 text-blue-700'}`}
+              >
+                {post.type === 'magazine' ? '매거진' : '커뮤니티'}
+              </span>
+            </div>
             <Image src={post.imageUrl} alt='post-image' width={200} height={200} className='h-full w-full rounded-xl border bg-gray-100 object-cover' sizes='(max-width: 640px) 110px, 170px' priority />
           </div>
         </div>
         {/* 게시글 정보 */}
-        <div className='flex h-full flex-col justify-between gap-3'>
+        <div className='flex h-full flex-col justify-between gap-3 pt-8 md:pt-3'>
           {/* 게시글 제목 */}
           <div className='grid justify-items-start'>
             <span className='t-desc text-secondary/70'>제목</span>
-            <h3 className='text-secondary text-lg font-bold'>{post.title}</h3>
+            <h3 className='text-secondary text-lg leading-tight font-bold'>{post.title}</h3>
           </div>
 
           {/* 게시글 내용 */}

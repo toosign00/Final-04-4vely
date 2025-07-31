@@ -185,8 +185,9 @@ const PlantRegisterModal = memo(function PlantRegisterModal({ open, onClose, onS
 
         if (result.ok) {
           toast.success('식물이 성공적으로 등록되었습니다!', {
-            duration: 3000,
+            description: '1페이지에서 확인하세요!',
           });
+
           // 폼과 이미지 상태 초기화
           form.reset();
           handleImageRemove();

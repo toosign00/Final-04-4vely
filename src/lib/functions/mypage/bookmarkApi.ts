@@ -29,17 +29,14 @@ async function apiRequest<T>(endpoint: string, headers: Record<string, string> =
 }
 
 /**
- * 사용자의 북마크 목록 조회 (클라이언트용)
+ * 사용자의 북마크 목록 조회
  */
-export async function getBookmarks(type: 'product' | 'community' | 'post', accessToken?: string): Promise<{ ok: number; item?: BookmarkItem[]; message?: string }> {
+export async function getBookmarks(type: 'product' | 'post', accessToken?: string): Promise<{ ok: number; item?: BookmarkItem[]; message?: string }> {
   if (!accessToken) {
     return { ok: 0, message: '로그인이 필요합니다.' };
   }
 
-  // community 타입은 API에서 'post'로 요청
-  const apiType = type === 'community' ? 'post' : type;
-
-  const result = await apiRequest<{ ok: number; item: BookmarkItem[] }>(`/bookmarks/${apiType}`, { Authorization: `Bearer ${accessToken}` });
+  const result = await apiRequest<{ ok: number; item: BookmarkItem[] }>(`/bookmarks/${type}`, { Authorization: `Bearer ${accessToken}` });
 
   return result || { ok: 0, message: '일시적인 네트워크 문제로 북마크 목록 조회에 실패했습니다.' };
 }
@@ -53,7 +50,7 @@ export async function getProductDetail(productId: number): Promise<ProductDetail
 }
 
 /**
- * 개별 커뮤니티 게시글의 상세 정보 조회
+ * 개별 게시글의 상세 정보 조회
  */
 export async function getPostDetail(postId: number): Promise<PostDetail | null> {
   const result = await apiRequest<{ ok: number; item: PostDetail }>(`/posts/${postId}`);

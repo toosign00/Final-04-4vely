@@ -72,11 +72,34 @@ export interface OrderState {
 }
 
 /**
+ * 주문 목록 응답 타입 (페이지네이션 포함)
+ */
+export interface OrdersResponse {
+  orders: Order[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+/**
+ * 페이지네이션 파라미터 타입
+ */
+export interface PaginationParams {
+  page?: number; // 페이지 번호 (기본값: 1)
+  limit?: number; // 한 페이지당 항목 수 (기본값: 10)
+  sort?: string; // 정렬 (내림차순: -1, 오름차순: 1)
+}
+
+/**
  * 주문 목록을 조회합니다.
  * @param userId - 특정 사용자의 주문만 조회할 경우 사용자 ID (선택사항)
+ * @param paginationParams - 페이지네이션 파라미터 (선택사항)
  * @returns 주문 목록과 성공 여부를 포함한 API 응답
  */
-export async function getOrders(userId?: number): Promise<ApiRes<Order[]>> {
+export async function getOrders(userId?: number, paginationParams?: PaginationParams): Promise<ApiRes<OrdersResponse>> {
   try {
     // 인증 정보 확인
     const authInfo = await getAuthInfo();
@@ -84,8 +107,22 @@ export async function getOrders(userId?: number): Promise<ApiRes<Order[]>> {
       return { ok: 0, message: '인증 정보가 없습니다.' };
     }
 
-    // API 요청 URL 구성 (userId가 있으면 쿼리 파라미터로 추가)
-    const url = userId ? `${API_URL}/orders?userId=${userId}` : `${API_URL}/orders`;
+    // Build API request URL with query parameters
+    const queryParams = new URLSearchParams();
+
+    if (userId) {
+      queryParams.append('userId', userId.toString());
+    }
+
+    if (paginationParams) {
+      const { page, limit, sort } = paginationParams;
+      if (page) queryParams.append('page', page.toString());
+      if (limit) queryParams.append('limit', limit.toString());
+      if (sort) queryParams.append('sort', sort);
+    }
+
+    const queryString = queryParams.toString();
+    const url = `${API_URL}/orders${queryString ? `?${queryString}` : ''}`;
 
     // 인증된 주문 목록 요청
     const response = await fetch(url, {
@@ -105,20 +142,41 @@ export async function getOrders(userId?: number): Promise<ApiRes<Order[]>> {
 
     const data = await response.json();
 
-    // API 응답 구조에 따른 주문 데이터 추출
-    // 다양한 응답 형태에 대응하여 주문 목록 파싱
-    let orders: Order[] = [];
-    if (data.item) {
+    const defaultPagination = {
+      page: 1,
+      limit: 10,
+      total: 0,
+      totalPages: 0,
+    };
+
+    let orders: Order[];
+    let pagination;
+
+    if (data.item && data.pagination) {
+      // Response with pagination
       orders = data.item;
-    } else if (data.orders) {
-      orders = data.orders;
+      pagination = data.pagination;
+    } else if (data.item) {
+      // Legacy response format (backward compatibility)
+      orders = data.item;
+      pagination = {
+        ...defaultPagination,
+        total: orders.length,
+        totalPages: 1,
+      };
     } else if (Array.isArray(data)) {
       orders = data;
+      pagination = {
+        ...defaultPagination,
+        total: orders.length,
+        totalPages: 1,
+      };
     } else {
       orders = [];
+      pagination = defaultPagination;
     }
 
-    return { ok: 1, item: orders };
+    return { ok: 1, item: { orders, pagination } };
   } catch (error) {
     // 예외 발생 시 에러 메시지 반환
     return { ok: 0, message: error instanceof Error ? error.message : 'Unknown error occurred' };

@@ -9,6 +9,13 @@ import { BookmarkItem, TransformedBookmarkItem } from '@/types/mypageBookmark.ty
 import { getPostDetailsBatch, getProductDetailsBatch } from './bookmarkApi';
 import { extractImagePath, stripHtmlTags } from './bookmarkUtils';
 
+/**
+ * API에서 받은 type 값을 안전한 타입으로 변환
+ */
+function normalizePostType(type: string | undefined): 'community' | 'magazine' {
+  return type === 'magazine' ? 'magazine' : 'community';
+}
+
 // 기본 플레이스홀더 이미지 URL (캐싱)
 let cachedPlaceholderUrl: string | null = null;
 
@@ -106,7 +113,7 @@ export async function transformCommunityBookmarks(bookmarks: BookmarkItem[]): Pr
       views: 0,
       author: '작성자 없음',
       repliesCount: 0,
-      type: 'community',
+      type: normalizePostType(post?.type),
       createdAt: bookmark.createdAt,
     };
 
@@ -132,7 +139,7 @@ export async function transformCommunityBookmarks(bookmarks: BookmarkItem[]): Pr
       views: postDetail.views,
       author: postDetail.user?.name || defaultItem.author,
       repliesCount: postDetail.replies?.length || 0,
-      type: 'community',
+      type: normalizePostType(postDetail.type),
       createdAt: bookmark.createdAt,
     };
   });

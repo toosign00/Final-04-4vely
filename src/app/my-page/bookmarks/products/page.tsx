@@ -8,12 +8,26 @@ import BookmarkProductsList from './_components/BookmarkProductsList';
 import ErrorDisplay from './_components/ErrorDisplay';
 
 /**
+ * 북마크 상품 페이지 컴포넌트의 props 타입 정의
+ */
+interface ProductsPageProps {
+  searchParams: Promise<{
+    page?: string; // URL 쿼리 파라미터로부터 받는 페이지 번호
+  }>;
+}
+
+/**
  * @function ProductsPage
  * @description 북마크된 상품 목록을 표시하는 페이지 컴포넌트입니다.
  *              서버 사이드에서 비동기적으로 상품 데이터를 가져와 클라이언트 컴포넌트로 전달합니다.
+ * @param searchParams - URL 쿼리 파라미터 (페이지 번호 포함)
  * @returns 서버에서 렌더링된 페이지 컴포넌트를 반환합니다.
  */
-export default async function ProductsPage() {
+export default async function ProductsPage({ searchParams }: ProductsPageProps) {
+  // Promise 형태의 searchParams 를 해결하여 실제 값 추출
+  const resolvedSearchParams = await searchParams;
+  // 현재 페이지 번호 파싱 (기본값: 1)
+  const currentPage = parseInt(resolvedSearchParams.page || '1', 10);
   // 서버로부터 'product' 타입의 북마크 데이터를 비동기적으로 가져옵니다.
   const result = await getBookmarksFromServer('product');
 
@@ -33,16 +47,7 @@ export default async function ProductsPage() {
     );
   }
 
-  // 데이터 로딩에 성공했을 경우, `BookmarkProductsList` 컴포넌트에 데이터를 전달하여 렌더링합니다.
+  // 데이터 로딩에 성공했을 경우, `BookmarkProductsList` 컴포넌트에 데이터와 현재 페이지를 전달하여 렌더링합니다.
   // `result.data`가 `undefined`일 경우를 대비하여 빈 배열(`[]`)을 기본값으로 전달하여 안정성을 높입니다.
-  return <BookmarkProductsList bookmarks={result.data || []} />;
+  return <BookmarkProductsList bookmarks={result.data || []} initialPage={currentPage} />;
 }
-
-/**
- * 페이지 메타데이터 (선택사항)
- * Next.js App Router에서 사용할 수 있는 메타데이터 설정
- */
-export const metadata = {
-  title: '내 북마크 - 상품',
-  description: '북마크한 상품 목록을 확인하고 관리하세요',
-};

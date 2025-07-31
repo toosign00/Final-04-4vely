@@ -17,7 +17,7 @@ interface PostForm {
   thumbnailImage: File | string | null;
 }
 
-interface ClientEditProps {
+export interface ClientEditProps {
   postId: string;
 }
 
@@ -121,7 +121,7 @@ export default function ClientEdit({ postId }: ClientEditProps) {
 
   return (
     <main className='flex flex-col items-center space-y-12 pb-8'>
-      {/* Cover Image Section */}
+      {/* 대문이미지 */}
       <section className='w-full bg-white text-gray-500'>
         <label htmlFor='cover-upload' className='block w-full cursor-pointer'>
           <div className='relative flex h-64 w-full items-center justify-center overflow-hidden bg-white'>
@@ -181,7 +181,7 @@ export default function ClientEdit({ postId }: ClientEditProps) {
       </section>
 
       <div className='flex w-full max-w-4xl flex-col gap-6 md:flex-row'>
-        {/* Thumbnail Preview */}
+        {/* 썸네일 섹션 */}
         <div className='mt-2 ml-4 hidden flex-col items-end gap-4 md:flex'>
           {postForms.map((form) => (
             <div key={form.id}>
@@ -198,7 +198,7 @@ export default function ClientEdit({ postId }: ClientEditProps) {
           ))}
         </div>
 
-        {/* Form Sections */}
+        {/* 글쓰기 폼 */}
         <div className='flex-1 space-y-6'>
           {postForms.map((form) => (
             <section key={form.id} className='rounded-lg border p-4'>
@@ -218,7 +218,7 @@ export default function ClientEdit({ postId }: ClientEditProps) {
               </div>
 
               <div className='grid grid-cols-1 gap-6 md:grid-cols-2'>
-                {/* Image Upload */}
+                {/* 이미지 업로드 */}
                 <div className='relative min-h-[200px] overflow-hidden rounded-lg border border-gray-300 bg-gray-100'>
                   <label htmlFor={`post-upload-${form.id}`} className='absolute inset-0 flex cursor-pointer items-center justify-center text-gray-400'>
                     {!form.postImage && (
@@ -258,7 +258,7 @@ export default function ClientEdit({ postId }: ClientEditProps) {
                   )}
                 </div>
 
-                {/* Content Textarea */}
+                {/* 내용 입력 */}
                 <textarea
                   placeholder='내용을 입력해주세요.'
                   value={form.content}
@@ -272,7 +272,7 @@ export default function ClientEdit({ postId }: ClientEditProps) {
         </div>
       </div>
 
-      {/* Action Buttons */}
+      {/* 하단 버튼 */}
       <div className='flex w-full max-w-4xl justify-between px-4 md:pl-33'>
         <Button onClick={addNewForm} disabled={isSubmitting || postForms.length >= MAX_FORMS}>
           추가하기

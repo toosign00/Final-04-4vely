@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 
 import UpdateButton from '@/app/community/[id]/_components/UpdateButton';
+import BookmarkButton from '@/components/ui/BookmarkButton';
 import { createComment, deleteComment, fetchComments, resolveUrl, updateComment } from '@/lib/functions/communityFunctions';
 import useUserStore from '@/store/authStore';
 import { CommunityComment, Post } from '@/types/commnunity.types';
@@ -143,7 +144,7 @@ export default function ClientDetail({ post }: { post: Post }) {
               <Eye size={14} />
               <span>{stats.views}</span>
             </span>
-            <Button className='ml-auto'>북마크</Button>
+            <BookmarkButton type='post' targetId={Number(post.id)} myBookmarkId={post.myBookmarkId ?? undefined} onBookmarkChange={() => {}} className='ml-auto' revalidate={false} variant='text' />
           </div>
         </section>
 

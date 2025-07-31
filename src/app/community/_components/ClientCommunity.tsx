@@ -1,5 +1,6 @@
 'use client';
 
+import { AvatarImage } from '@/components/ui/Avatar';
 import BookmarkButton from '@/components/ui/BookmarkButton';
 import { Button } from '@/components/ui/Button';
 import { Card, CardAvatar, CardContent, CardDescription, CardFooter, CardImage, CardTitle } from '@/components/ui/Card';
@@ -46,6 +47,11 @@ export default function ClientCommunity({ initialPosts, initialPagination }: Pro
     setLikedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   };
 
+  const handlePageChange = (page: number) => {
+    router.push(`/community?page=${page}`);
+    setPagination((p) => ({ ...p, page }));
+  };
+
   // 게시물 불러오기
   useEffect(() => {
     if (showMine && !token) return;
@@ -88,7 +94,7 @@ export default function ClientCommunity({ initialPosts, initialPagination }: Pro
           <h1 className='mt-2 mb-6 text-lg font-semibold md:text-2xl lg:text-3xl'>Community</h1>
         </div>
         <div className='flex w-full flex-col items-end gap-0 sm:w-auto'>
-          <div className='flex items-center gap-12'>
+          <div className='flex items-center gap-1'>
             <label className='flex h-8 items-center gap-2'>
               <span className='text-sm font-medium'>내가 쓴 글</span>
               <Switch
@@ -138,7 +144,7 @@ export default function ClientCommunity({ initialPosts, initialPagination }: Pro
                     <CardContent>
                       <CardTitle title={post.title} className='min-h-[45px]' />
                       <CardDescription description={post.description} className='min-h-[4.5rem]' />
-                      <CardAvatar fallback={post.author.username.charAt(0)}>{post.author.username}</CardAvatar>
+                      <CardAvatar fallback={post.author.username.charAt(0)}>{post.author.avatar && <AvatarImage src={post.author.avatar} alt={post.author.username} />}</CardAvatar>
                       {/* 푸터 영역(좋아요, view, 댓글수) */}
                       <div onClick={(e) => e.stopPropagation()}>
                         <CardFooter
@@ -158,7 +164,7 @@ export default function ClientCommunity({ initialPosts, initialPagination }: Pro
           )}
           {pagination.totalPages > 1 && (
             <div className='mt-8 flex justify-center'>
-              <PaginationWrapper currentPage={pagination.page} totalPages={pagination.totalPages} setCurrentPage={(page) => setPagination((p) => ({ ...p, page }))} />
+              <PaginationWrapper currentPage={pagination.page} totalPages={pagination.totalPages} setCurrentPage={handlePageChange} />
             </div>
           )}
         </>

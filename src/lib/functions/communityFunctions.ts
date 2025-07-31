@@ -59,7 +59,7 @@ interface RawPost {
 }
 
 // ------------------------------
-// 공통 유틸
+// 공통 헤더(토큰)
 // ------------------------------
 function makeHeaders(token?: string): Record<string, string> {
   const headers: Record<string, string> = {
@@ -179,14 +179,10 @@ export async function createPost(
  * 게시글 목록 조회
  */
 export async function fetchPosts(page = 1, limit = 8, type = 'community', token?: string): Promise<{ posts: Post[]; pagination: Pagination }> {
-  const url = new URL(`${API_BASE_URL}/posts`);
-  url.searchParams.set('type', type);
-  url.searchParams.set('page', String(page));
-  url.searchParams.set('limit', String(limit));
-
+  const url = `${API_BASE_URL}/posts?type=${type}&page=${page}&limit=${limit}`;
   const headers = makeHeaders(token);
 
-  const res = await fetch(url.toString(), { headers, cache: 'no-store' });
+  const res = await fetch(url, { headers, cache: 'no-store' });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
   const { item, pagination } = (await res.json()) as {
@@ -210,6 +206,7 @@ export async function fetchPostById(id: string): Promise<Post> {
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
   const { item } = (await res.json()) as { ok: number; item: RawPost };
+  console.log('서버에서 받은 item:', item);
   if (item.type !== 'community') throw new Error(`잘못된 타입: ${item.type}`);
   return mapRawPost(item);
 }
@@ -220,13 +217,8 @@ export async function fetchPostById(id: string): Promise<Post> {
  */
 
 export async function fetchPostsByUserId(userId: string, page = 1, limit = 8, token?: string): Promise<{ posts: Post[]; pagination: Pagination }> {
-  const url = new URL(`${API_BASE_URL}/posts/users/${userId}`);
-  url.searchParams.set('page', String(page));
-  url.searchParams.set('limit', String(limit));
-  // (선택) community 타입만 보고 싶으면 type 파라미터도 추가
-  url.searchParams.set('type', 'community');
+  const url = `${API_BASE_URL}/posts/users/${userId}?page=${page}&limit=${limit}&type=community`;
 
-  // 올바른 헤더 키는 'client-id' 입니다.
   const headers: Record<string, string> = {
     'client-id': CLIENT_ID,
     'Content-Type': 'application/json',
@@ -235,7 +227,7 @@ export async function fetchPostsByUserId(userId: string, page = 1, limit = 8, to
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const res = await fetch(url.toString(), { headers, cache: 'no-store' });
+  const res = await fetch(url, { headers, cache: 'no-store' });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
   const { item, pagination } = (await res.json()) as {
@@ -256,10 +248,7 @@ export async function fetchPostsByUserId(userId: string, page = 1, limit = 8, to
 export async function deletePostById(id: string, token: string): Promise<void> {
   const res = await fetch(`${API_BASE_URL}/posts/${id}`, {
     method: 'DELETE',
-    headers: {
-      'client-id': CLIENT_ID,
-      Authorization: `Bearer ${token}`,
-    },
+    headers: makeHeaders(token),
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
@@ -306,7 +295,7 @@ export async function updatePostById(
     return mapRawPost(json.item);
   } catch (err) {
     console.error('[updatePostById JSON 파싱 실패]', err);
-    // fallback 처리: 상세 조회로 대체
+
     return await fetchPostById(id);
   }
 }

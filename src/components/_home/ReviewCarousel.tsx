@@ -23,31 +23,33 @@ interface ReviewCarouselProps {
 // 리뷰 슬라이드
 export default function ReviewCarousel({ reviews }: ReviewCarouselProps) {
   return (
-    <section className='mb-15 flex w-full flex-col justify-items-center px-4'>
-      <h2 className='mb-2 text-center text-2xl font-bold md:text-3xl lg:text-4xl'>사용자 리얼 후기</h2>
-      <p className='text-muted mb-7 text-center text-sm md:text-lg'>실제 식물 집사들의 생생한 키우기 경험담</p>
+    <section className='bg-[#f2f0eb] py-14'>
+      <div className='mb-15 flex w-full flex-col justify-items-center px-4'>
+        <h2 className='mb-2 text-center text-2xl font-bold md:text-3xl lg:text-4xl'>사용자 리얼 후기</h2>
+        <p className='text-muted mb-7 text-center text-sm md:text-lg'>실제 식물 집사들의 생생한 키우기 경험담</p>
 
-      <div className='relative w-full max-w-[63rem] self-center'>
-        <Carousel
-          opts={{
-            loop: true,
-            align: 'start',
-            containScroll: 'trimSnaps',
-          }}
-        >
-          {/* 상품 상세 페이지로 연결 필요 */}
-          <Link href='/shop'>
-            <CarouselContent>
-              {reviews.map((review) => (
-                <ReviewSlide key={review.id} review={review} />
-              ))}
-            </CarouselContent>
-          </Link>
+        <div className='relative w-full max-w-[63rem] self-center'>
+          <Carousel
+            opts={{
+              loop: true,
+              align: 'start',
+              containScroll: 'trimSnaps',
+            }}
+          >
+            {/* 상품 상세 페이지로 연결 필요 */}
+            <Link href='/shop'>
+              <CarouselContent>
+                {reviews.map((review) => (
+                  <ReviewSlide key={review.id} review={review} />
+                ))}
+              </CarouselContent>
+            </Link>
 
-          {/* 슬라이드 좌우 버튼 */}
-          <CarouselPrevious className='left-[-5]' />
-          <CarouselNext className='right-[-15] md:right-[-5]' />
-        </Carousel>
+            {/* 슬라이드 좌우 버튼 */}
+            <CarouselPrevious className='left-[-5]' />
+            <CarouselNext className='right-[-15] md:right-[-5]' />
+          </Carousel>
+        </div>
       </div>
     </section>
   );

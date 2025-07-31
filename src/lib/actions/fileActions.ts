@@ -1,3 +1,5 @@
+'use server';
+
 import { ApiResPromise } from '@/types/api.types';
 import { type FileUpload } from '@/types/file.types';
 

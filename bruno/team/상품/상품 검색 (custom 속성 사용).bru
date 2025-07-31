@@ -5,13 +5,15 @@ meta {
 }
 
 get {
-  url: {{url}}/products?custom={"extra.tags":{"$in":["주 1회 물주기", "보통 습도", "따뜻함 선호"]}}
+  url: {{url}}/products
   body: none
   auth: inherit
 }
 
 params:query {
-  custom: {"extra.tags":{"$in":["주 1회 물주기", "보통 습도", "따뜻함 선호"]}}
+  ~custom: {"extra.isNew": true}
+  ~custom: {"extra.tags":{"$in":["주 1회 물주기", "보통 습도", "따뜻함 선호"]}}
+  ~custom: {"extra.isNew":true,"extra.category":{"$in":["조명"]}}
 }
 
 settings {

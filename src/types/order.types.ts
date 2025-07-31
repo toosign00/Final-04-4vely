@@ -47,7 +47,7 @@ export interface Order {
 /** 주문 메모 객체 타입 */
 export interface OrderMemo {
   selectedMemo: string; // 배송 메모
-  selectedImage?: string; // 선택한 옵션의 이미지 파일
+  selectedImage?: string | string[]; // 선택한 옵션의 이미지 파일(들)
 }
 
 /** 주문 생성 요청 타입 */

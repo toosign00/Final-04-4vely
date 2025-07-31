@@ -397,24 +397,12 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
         return; // 페이지 이동 없이 현재 페이지 유지
       }
 
-      // 주문 생성 요청 데이터 준비
+      // 주문 생성 요청 데이터 준비 - API 형식에 맞게 변환
       const createOrderData: CreateOrderRequest = {
         products: orderData.items.map((item) => ({
           _id: item.productId,
           quantity: item.quantity,
           color: item.selectedColor?.colorName, // color 필드 사용
-          memo: {
-            selectedMemo: orderData.memo || '', // 배송 메모
-            selectedImage: (() => {
-              // 첫 번째 상품의 이미지 경로 추출
-              const firstItemImage = orderData.items[0]?.productImage;
-              if (!firstItemImage) return '';
-
-              // URL에서 files/ 이후 경로만 추출
-              const match = firstItemImage.match(/files\/(.+)/);
-              return match ? `files/${match[1]}` : '';
-            })(),
-          },
         })),
         address: {
           name: orderData.address.name,
@@ -423,15 +411,16 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
         },
         memo: {
           selectedMemo: orderData.memo || '', // 배송 메모
-          selectedImage: (() => {
-            // 첫 번째 상품의 이미지 경로 추출
-            const firstItemImage = orderData.items[0]?.productImage;
-            if (!firstItemImage) return '';
+          selectedImage: orderData.items
+            .map((item) => {
+              // 각 상품의 이미지 경로 추출
+              if (!item.productImage) return '';
 
-            // URL에서 files/ 이후 경로만 추출
-            const match = firstItemImage.match(/files\/(.+)/);
-            return match ? `files/${match[1]}` : '';
-          })(),
+              // URL에서 files/ 이후 경로만 추출
+              const match = item.productImage.match(/files\/(.+)/);
+              return match ? `files/${match[1]}` : '';
+            })
+            .filter((img) => img !== ''), // 빈 문자열 제거
         },
       };
 

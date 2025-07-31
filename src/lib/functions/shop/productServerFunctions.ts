@@ -38,7 +38,16 @@ export async function getFilteredProductsWithPagination(params: {
     const page = params.page || 1;
     const limit = params.limit || 12;
 
-    // API 쿼리 파라미터
+    console.log('[서버 상품 조회] 시작:', {
+      page,
+      limit,
+      search: params.search,
+      sort: params.sort,
+      category: params.category,
+      filters: params.filters,
+    });
+
+    // API 쿼리 파라미터 구성
     const queryParams = new URLSearchParams();
 
     // 페이지네이션 파라미터
@@ -70,6 +79,7 @@ export async function getFilteredProductsWithPagination(params: {
           sortValue = '{"name": 1}';
           break;
         case 'recommend':
+          // extra.sort 필드로 정렬 (있다면)
           sortValue = '{"extra.sort": 1, "_id": 1}';
           break;
       }
@@ -80,7 +90,7 @@ export async function getFilteredProductsWithPagination(params: {
       }
     }
 
-    // custom 파라미터를 사용한 필터링
+    // custom 파라미터를 사용한 필터링 - API 문서 형식에 맞춰 수정
     let customFilterString = '';
     const category = params.category || 'plant';
 
@@ -177,7 +187,7 @@ export async function getFilteredProductsWithPagination(params: {
       전체페이지: data.pagination?.totalPages,
     });
 
-    // 추천순 정렬
+    // 추천순 정렬 보완 (클라이언트 사이드)
     if (!params.sort || params.sort === 'recommend') {
       products.sort((a: Product, b: Product) => {
         // 1. extra.sort 필드 우선
@@ -335,7 +345,7 @@ export async function getBestProducts(limit: number = 4): ApiResPromise<Product[
       const fallbackData = await fallbackRes.json();
       if (fallbackData.ok && fallbackData.item) {
         // 서버에서 받은 상품 중 베스트 표시된 것만 사용
-        // 현재 페이지에서만 필터링
+        // 더 많이 가져오지 않고 현재 페이지에서만 필터링
         const bestInPage = (fallbackData.item as Product[]).filter((product: Product) => product.extra?.isBest === true);
 
         data.ok = 1;
@@ -381,6 +391,18 @@ export async function getBestProducts(limit: number = 4): ApiResPromise<Product[
 }
 
 /**
+ * 배열을 랜덤하게 섞는 함수 (Fisher-Yates 알고리즘)
+ */
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+/**
  * 서버에서 상품 상세 정보를 관련 데이터와 함께 조회합니다.
  */
 export async function getProductDetailWithRecommendations(productId: string): Promise<{
@@ -398,20 +420,86 @@ export async function getProductDetailWithRecommendations(productId: string): Pr
     }
 
     const product = productResponse.item;
+    const recommendProducts: Product[] = [];
 
-    // 추천 상품 가져오기 - 같은 카테고리의 상품들
-    const category = product.extra?.category?.[0] || '식물';
-    const { products: recommendProducts } = await getFilteredProductsWithPagination({
-      limit: 4, // 필요한 개수만 요청
-      category: category === '식물' ? 'plant' : 'supplies',
-    });
+    // 현재 상품의 카테고리 확인
+    const productCategories = product.extra?.category || [];
+    const isPlant = productCategories.includes('식물');
 
-    // 현재 상품 제외
-    const filteredRecommendProducts = recommendProducts.filter((p: Product) => p._id !== product._id);
+    if (isPlant) {
+      // 식물 상품인 경우
 
+      // 1. 전체 원예용품 중에서 2개 가져오기
+      const { products: suppliesProducts } = await getFilteredProductsWithPagination({
+        limit: 12,
+        category: 'supplies',
+        sort: 'new', // 최신순으로 다양한 상품 가져오기
+      });
+
+      // 현재 상품 제외하고 랜덤하게 섞은 후 2개 선택
+      const filteredSupplies = shuffleArray(suppliesProducts.filter((p: Product) => p._id !== product._id)).slice(0, 2);
+      recommendProducts.push(...filteredSupplies);
+
+      // 2. 현재 상품의 태그와 일치하는 식물 2개 가져오기
+      // 태그 추출 (크기, 난이도, 빛, 공간, 계절 등)
+      const plantTags = productCategories.filter((cat) => cat !== '식물' && !['원예 용품', '화분', '도구', '조명'].includes(cat));
+
+      if (plantTags.length > 0) {
+        // 태그가 있으면 해당 태그로 필터링
+        const { products: taggedPlants } = await getFilteredProductsWithPagination({
+          limit: 12,
+          category: 'plant',
+          filters: {
+            size: plantTags.filter((tag) => ['소형', '중형', '대형'].includes(tag)),
+            difficulty: plantTags.filter((tag) => ['쉬움', '보통', '어려움'].includes(tag)),
+            light: plantTags.filter((tag) => ['낮은 빛', '중간 빛', '밝은 빛'].includes(tag)),
+            space: plantTags.filter((tag) => ['작은 공간', '중간 공간', '넓은 공간'].includes(tag)),
+            season: plantTags.filter((tag) => ['봄', '여름', '가을', '겨울'].includes(tag)),
+            suppliesCategory: [],
+          },
+        });
+
+        const filteredTaggedPlants = shuffleArray(taggedPlants.filter((p: Product) => p._id !== product._id)).slice(0, 2);
+        recommendProducts.push(...filteredTaggedPlants);
+      } else {
+        // 태그가 없으면 전체 식물 중에서
+        const { products: allPlants } = await getFilteredProductsWithPagination({
+          limit: 12,
+          category: 'plant',
+          sort: 'new', // 최신순으로 다양한 상품 가져오기
+        });
+
+        const filteredPlants = shuffleArray(allPlants.filter((p: Product) => p._id !== product._id)).slice(0, 2);
+        recommendProducts.push(...filteredPlants);
+      }
+    } else {
+      // 원예용품인 경우
+
+      // 1. 전체 식물 중에서 2개 가져오기
+      const { products: plantProducts } = await getFilteredProductsWithPagination({
+        limit: 12,
+        category: 'plant',
+        sort: 'new', // 최신순으로 다양한 상품 가져오기
+      });
+
+      const filteredPlants = shuffleArray(plantProducts.filter((p: Product) => p._id !== product._id)).slice(0, 2);
+      recommendProducts.push(...filteredPlants);
+
+      // 2. 전체 원예용품 중에서 2개 가져오기
+      const { products: suppliesProducts } = await getFilteredProductsWithPagination({
+        limit: 12,
+        category: 'supplies',
+        sort: 'new', // 최신순으로 다양한 상품 가져오기
+      });
+
+      const filteredSupplies = shuffleArray(suppliesProducts.filter((p: Product) => p._id !== product._id)).slice(0, 2);
+      recommendProducts.push(...filteredSupplies);
+    }
+
+    // 최종적으로 추천 상품 순서도 랜덤하게
     return {
       product,
-      recommendProducts: filteredRecommendProducts,
+      recommendProducts: shuffleArray(recommendProducts).slice(0, 4),
     };
   } catch (error) {
     console.error('상품 상세 정보 로딩 실패:', error);

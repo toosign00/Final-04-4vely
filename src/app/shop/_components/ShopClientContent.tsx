@@ -77,11 +77,9 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
     (newPage?: number) => {
       const params = new URLSearchParams();
 
-      // 페이지 파라미터 설정
+      // 페이지 파라미터 - 항상 포함 (page=1도 포함)
       const pageToUse = newPage || currentPage;
-      if (pageToUse > 1) {
-        params.set('page', pageToUse.toString());
-      }
+      params.set('page', pageToUse.toString());
 
       // 카테고리 파라미터 설정 (기본값이 아닌 경우만)
       if (selectedCategory !== 'plant') {
@@ -118,7 +116,7 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
         params.set('suppliesCategory', filters.category.join(','));
       }
 
-      const newURL = `/shop${params.toString() ? `?${params.toString()}` : ''}`;
+      const newURL = `/shop?${params.toString()}`; // params가 항상 있으므로 ? 사용
 
       console.log('[URL 업데이트]:', newURL);
 
@@ -243,7 +241,7 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
 
     // URL도 초기화
     startTransition(() => {
-      router.push('/shop');
+      router.push('/shop?page=1');
     });
   };
 

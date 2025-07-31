@@ -18,11 +18,6 @@ export default function Header() {
     await logout();
     toast.success('로그아웃 되었습니다.', {
       description: '다음에 또 만나요!',
-      duration: 2500,
-      style: {
-        backgroundColor: 'white',
-        color: 'var(--color-secondary)',
-      },
     });
   };
 

@@ -1,6 +1,6 @@
 import { getLatestDiariesBatch } from '@/lib/actions/diaryActions';
 import { getMyPlants, Plant } from '@/lib/actions/plantActions';
-import MyPlantsClientWrapper from './_components/MyPlantsClientWrapper';
+import MyPlantsClient from './_components/MyPlantsClient';
 import { Diary, mapDiaryReplyToDiary } from './_types/diary.types';
 import { mapPlantPostsToPlants } from './_utils/plantUtils';
 
@@ -30,5 +30,5 @@ export default async function MyPlantsPage() {
     error = '식물 목록을 불러오는 중 오류가 발생했습니다.';
   }
 
-  return <MyPlantsClientWrapper initialPlants={plants.slice(0, 20)} initialError={error} initialLatestDiaries={latestDiaries} />;
+  return <MyPlantsClient initialPlants={plants.slice(0, 20)} initialError={error} initialLatestDiaries={latestDiaries} />;
 }

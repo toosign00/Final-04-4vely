@@ -71,10 +71,7 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
     return cartItems.filter((item) => selectedItems.has(item._id)).reduce((sum, item) => sum + item.product.price * item.quantity, 0);
   }, [cartItems, selectedItems]);
 
-  // 배송비 계산
-  const calculateShippingFee = (totalAmount: number) => {
-    return totalAmount >= 50000 ? 0 : 3000;
-  };
+
 
   // 색상 매핑
   const getColorKoreanName = (color: string) => {
@@ -461,13 +458,13 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
 
                   <div className='flex justify-between'>
                     <span className='text-gray-600'>배송비</span>
-                    <span className='font-semibold'>{calculateShippingFee(calculateSelectedTotal()) === 0 ? '무료' : `₩ ${calculateShippingFee(calculateSelectedTotal()).toLocaleString()}`}</span>
+                    <span className='font-semibold'>₩ 3,000</span>
                   </div>
 
                   <div className='my-4 border-t pt-4'>
                     <div className='flex justify-between'>
                       <span className='text-lg font-bold lg:text-xl'>총 결제 금액</span>
-                      <span className='text-secondary text-lg font-bold lg:text-xl'>₩ {(calculateSelectedTotal() + calculateShippingFee(calculateSelectedTotal())).toLocaleString()}</span>
+                      <span className='text-secondary text-lg font-bold lg:text-xl'>₩ {(calculateSelectedTotal() + 3000).toLocaleString()}</span>
                     </div>
                   </div>
 

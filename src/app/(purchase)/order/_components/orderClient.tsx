@@ -76,7 +76,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
   const [showItems, setShowItems] = useState(false);
   const [activeTab, setActiveTab] = useState<'select' | 'new'>('select');
   const [isProcessingOrder, setIsProcessingOrder] = useState(false);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
+  // 결제 수단 선택 상태 제거 - PortOne 올인원 사용
 
   const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string>('');
@@ -105,7 +105,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
   const [addressToDelete, setAddressToDelete] = useState<string>('');
 
   const totalProductAmount = orderData.totalAmount;
-  const shippingFee = orderData.shippingFee;
+  const shippingFee = 3000; // 배송비 3000원 고정
   const finalAmount = totalProductAmount + shippingFee;
 
   // 유효성 검사 함수들
@@ -376,7 +376,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
     }
   };
 
-  // handlePayment 함수
+  // handlePayment 함수 - 결제 수단 확인 제거
   const handlePayment = async () => {
     try {
       setIsProcessingOrder(true);
@@ -391,11 +391,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
         return; // 페이지 이동 없이 현재 페이지 유지
       }
 
-      // 결제 방법 확인
-      if (!selectedPaymentMethod) {
-        toast.error('결제 방법을 선택해주세요');
-        return; // 페이지 이동 없이 현재 페이지 유지
-      }
+      // 결제 방법 확인 제거 - PortOne 올인원에서 선택
 
       // 주문 생성 요청 데이터 준비 - API 형식에 맞게 변환
       const createOrderData: CreateOrderRequest = {
@@ -489,7 +485,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
         channelKey,
       });
 
-      // PortOne 결제창 호출 (기존 설정 그대로 유지)
+      // PortOne 결제창 호출 (올인원 사용)
       const response = await PortOne.requestPayment({
         storeId: storeId,
         channelKey: channelKey,
@@ -497,7 +493,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
         orderName: orderName,
         totalAmount: totalAmount,
         currency: 'CURRENCY_KRW',
-        payMethod: 'CARD',
+        payMethod: 'CARD', // 올인원이므로 기본값 설정
         customer: {
           fullName: orderData.address.name,
           phoneNumber: orderData.address.phone,
@@ -1008,17 +1004,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
             </div>
           </section>
 
-          {/* 결제 방법 */}
-          <section className='mt-7 rounded-2xl bg-white p-6 shadow-md'>
-            <h2 className='mb-7 text-xl font-semibold'>결제 방법</h2>
-            <div className='grid grid-cols-3 gap-7 text-sm lg:w-[700px]'>
-              {['신용카드', '계좌이체', '무통장 입금', '휴대폰', '토스페이', '카카오페이'].map((method) => (
-                <Button key={method} size='lg' variant={selectedPaymentMethod === method ? 'primary' : 'outline'} className='rounded-full px-4 py-2' onClick={() => setSelectedPaymentMethod(method)}>
-                  {method}
-                </Button>
-              ))}
-            </div>
-          </section>
+          {/* 결제 방법 섹션 제거 */}
 
           {/* 총 결제 금액 */}
           <section className='mt-7 rounded-2xl bg-white p-6 text-sm shadow-md lg:flex lg:items-end lg:justify-between'>
@@ -1031,7 +1017,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
                 </div>
                 <div className='flex justify-between'>
                   <span className='text-secondary'>배송비</span>
-                  <span className='font-semibold'>{shippingFee === 0 ? '무료' : `₩ ${shippingFee.toLocaleString()}`}</span>
+                  <span className='font-semibold'>₩ 3,000</span>
                 </div>
                 <hr className='my-4' />
                 <div className='flex justify-between text-lg'>
@@ -1040,8 +1026,8 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
                 </div>
               </div>
             </div>
-            {/* 결제버튼 */}
-            <Button fullWidth variant='primary' size='lg' className='mt-6 rounded-lg px-6 py-3 font-bold lg:w-auto' onClick={handlePayment} disabled={isProcessingOrder || !orderData.address || !selectedPaymentMethod}>
+            {/* 결제버튼 - 배송지만 확인 */}
+            <Button fullWidth variant='primary' size='lg' className='mt-6 rounded-lg px-6 py-3 font-bold lg:w-auto' onClick={handlePayment} disabled={isProcessingOrder || !orderData.address}>
               {isProcessingOrder ? '처리 중...' : '결제하기'}
             </Button>
           </section>

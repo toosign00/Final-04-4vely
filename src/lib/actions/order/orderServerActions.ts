@@ -108,7 +108,7 @@ export async function clearTempOrderAction(): Promise<void> {
 export async function createDirectPurchaseTempOrderAction(item: DirectPurchaseItem): Promise<boolean> {
   try {
     const totalAmount = item.price * item.quantity;
-    const shippingFee = totalAmount >= 50000 ? 0 : 3000;
+    const shippingFee = 3000;
 
     const orderData: OrderPageData = {
       type: 'direct',
@@ -183,7 +183,7 @@ export async function createCartPurchaseTempOrderAction(selectedCartIds: number[
 
     // 총 금액 계산
     const totalAmount = purchaseItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const shippingFee = totalAmount >= 50000 ? 0 : 3000;
+    const shippingFee = 3000;
 
     // 임시 주문 데이터 생성
     const orderData: OrderPageData = {

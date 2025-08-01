@@ -1,4 +1,4 @@
-// src/lib/actions/replyServerActions.ts
+// src/lib/actions/shop/reviewServerActions.ts
 
 'use server';
 

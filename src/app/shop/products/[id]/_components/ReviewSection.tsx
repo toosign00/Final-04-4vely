@@ -1,7 +1,7 @@
 // src/app/shop/products/[id]/_components/ReviewSection.tsx
 
-import { getCurrentUserAction } from '@/lib/actions/reviewServerActions';
-import { getProductReplies } from '@/lib/functions/reviewServerFunctions';
+import { getCurrentUserAction } from '@/lib/actions/shop/reviewServerActions';
+import { getProductReplies } from '@/lib/functions/shop/reviewServerFunctions';
 import { Star } from 'lucide-react';
 import ReviewItem from './ReviewItem';
 

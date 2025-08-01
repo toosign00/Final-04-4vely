@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/Button';
  * @module BookmarkButton
  */
 
-import { toggleBookmarkAction } from '@/lib/actions/bookmarkServerActions';
+import { toggleBookmarkAction } from '@/lib/actions/shop/bookmarkServerActions';
 import { cn } from '@/lib/utils';
 import useUserStore from '@/store/authStore';
 import { BookmarkType } from '@/types/bookmark.types';

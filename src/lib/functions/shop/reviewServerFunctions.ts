@@ -1,4 +1,4 @@
-// src/lib/functions/replyServerFunctions.ts
+// src/lib/functions/shop/reviewServerFunctions.ts
 
 import { ApiResPromise } from '@/types/api.types';
 import { ProductReply } from '@/types/review.types';

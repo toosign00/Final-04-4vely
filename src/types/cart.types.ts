@@ -9,7 +9,7 @@ export interface CartItem {
   _id: number;
   product_id: number;
   quantity: number;
-  size?: string; // 화분 색상 등의 옵션 (API 문서에 따라)
+  color?: string; // 화분 색상 옵션 (color 필드 사용)
   createdAt: string;
   updatedAt: string;
   product: {
@@ -30,10 +30,6 @@ export interface CartItem {
       sort?: number;
     };
   };
-  // 장바구니 추가 시 클라이언트에서 사용하는 extra (size로 이동 예정)
-  extra?: {
-    potColor?: string;
-  };
 }
 
 /**
@@ -42,7 +38,7 @@ export interface CartItem {
 export interface AddToCartRequest {
   product_id: number;
   quantity: number;
-  size?: string; // 화분 색상을 size로 저장 (API 문서 준수)
+  color?: string; // 화분 색상을 color로 저장 (새로운 API 지원)
 }
 
 /**

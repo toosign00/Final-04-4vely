@@ -1,8 +1,8 @@
-// src/lib/actions/orderServerActions.ts
+// src/lib/actions/order/orderServerActions.ts
 
 'use server';
 
-import { CreateOrderApiResponse, CreateOrderRequest, DirectPurchaseItem, OrderPageData, PurchaseActionResult } from '@/types/order.types';
+import { CreateOrderApiResponse, CreateOrderRequest, DirectPurchaseItem, Order, OrderPageData, PurchaseActionResult } from '@/types/order.types';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 
@@ -108,7 +108,7 @@ export async function clearTempOrderAction(): Promise<void> {
 export async function createDirectPurchaseTempOrderAction(item: DirectPurchaseItem): Promise<boolean> {
   try {
     const totalAmount = item.price * item.quantity;
-    const shippingFee = totalAmount >= 50000 ? 0 : 3000;
+    const shippingFee = 3000;
 
     const orderData: OrderPageData = {
       type: 'direct',
@@ -126,22 +126,91 @@ export async function createDirectPurchaseTempOrderAction(item: DirectPurchaseIt
 
 /**
  * 장바구니 구매 임시 주문 생성
- * @param {DirectPurchaseItem[]} items - 구매할 상품들
+ * @param {number[]} selectedCartIds - 선택된 장바구니 아이템 ID들
  * @returns {Promise<boolean>} 생성 성공 여부
  */
-export async function createCartPurchaseTempOrderAction(items: DirectPurchaseItem[]): Promise<boolean> {
+export async function createCartPurchaseTempOrderAction(selectedCartIds: number[]): Promise<boolean> {
   try {
-    const totalAmount = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const shippingFee = totalAmount >= 50000 ? 0 : 3000;
+    console.log('[Order 서버 액션] 장바구니 구매 임시 주문 생성 시작:', selectedCartIds);
 
+    // 액세스 토큰 확인
+    const accessToken = await getServerAccessToken();
+    if (!accessToken) {
+      console.log('[Order 서버 액션] 로그인 필요');
+      return false;
+    }
+
+    // 장바구니 아이템 정보 가져오기
+    const { getCartItemsActionOptimized } = await import('@/lib/actions/cartServerActions');
+    const cartItems = await getCartItemsActionOptimized();
+
+    // 선택된 아이템만 필터링
+    const selectedItems = cartItems.filter((item) => selectedCartIds.includes(item._id));
+
+    if (selectedItems.length === 0) {
+      console.log('[Order 서버 액션] 선택된 장바구니 아이템이 없음');
+      return false;
+    }
+
+    // DirectPurchaseItem 형태로 변환
+    const purchaseItems: DirectPurchaseItem[] = selectedItems.map((item) => {
+      // 이미지 URL 처리
+      let imageUrl = '/images/placeholder-plant.jpg';
+      if (item.product.image) {
+        if (item.product.image.startsWith('http')) {
+          imageUrl = item.product.image;
+        } else {
+          const normalizedPath = item.product.image.startsWith('/') ? item.product.image : `/${item.product.image}`;
+          imageUrl = normalizedPath;
+        }
+      }
+
+      return {
+        productId: item.product._id,
+        productName: item.product.name,
+        productImage: imageUrl,
+        price: item.product.price,
+        quantity: item.quantity,
+        selectedColor: item.color
+          ? {
+              colorIndex: 0,
+              colorName: item.color, // color 필드 사용
+            }
+          : undefined,
+      };
+    });
+
+    // 총 금액 계산
+    const totalAmount = purchaseItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const shippingFee = 3000;
+
+    // 임시 주문 데이터 생성
     const orderData: OrderPageData = {
       type: 'cart',
-      items,
+      items: purchaseItems,
       totalAmount,
       shippingFee,
     };
 
-    return await saveTempOrderAction(orderData);
+    // 임시 주문 데이터 저장
+    const orderSaved = await saveTempOrderAction(orderData);
+    if (!orderSaved) {
+      console.log('[Order 서버 액션] 임시 주문 데이터 저장 실패');
+      return false;
+    }
+
+    // 선택된 장바구니 아이템 ID들을 별도로 저장
+    const cookieStore = await cookies();
+    cookieStore.set('temp-cart-ids', JSON.stringify(selectedCartIds), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 60 * 60, // 1시간
+      path: '/',
+    });
+
+    console.log('[Order 서버 액션] 장바구니 구매 임시 주문 생성 완료');
+    return true;
   } catch (error) {
     console.error('[Order 서버 액션] 장바구니 구매 임시 주문 생성 실패:', error);
     return false;
@@ -209,6 +278,21 @@ export async function createOrderAction(orderData: CreateOrderRequest): Promise<
       };
     }
 
+    // 임시 주문 타입 확인 (삭제 전에 먼저 확인)
+    const tempOrder = await getTempOrderAction();
+    const isCartOrder = tempOrder?.type === 'cart';
+
+    // 장바구니 아이템 ID들 가져오기
+    let cartItemIds: number[] = [];
+    if (isCartOrder) {
+      const cookieStore = await cookies();
+      const cartIdsCookie = cookieStore.get('temp-cart-ids')?.value;
+      if (cartIdsCookie) {
+        cartItemIds = JSON.parse(cartIdsCookie);
+        console.log('[Order 서버 액션] 삭제할 장바구니 아이템 IDs:', cartItemIds);
+      }
+    }
+
     // API 요청
     const res = await fetch(`${API_URL}/orders`, {
       method: 'POST',
@@ -233,12 +317,34 @@ export async function createOrderAction(orderData: CreateOrderRequest): Promise<
       };
     }
 
-    // 주문 생성 성공 시 임시 주문 데이터 삭제
+    // 주문 생성 성공 후 장바구니 아이템 삭제
+    if (isCartOrder && cartItemIds.length > 0) {
+      console.log('[Order 서버 액션] 장바구니 아이템 삭제 시작');
+
+      // removeFromCartAction 임포트해서 사용
+      const { removeFromCartAction } = await import('@/lib/actions/cartServerActions');
+
+      // 모든 장바구니 아이템 삭제 (병렬 처리)
+      const deletePromises = cartItemIds.map((cartId) =>
+        removeFromCartAction(cartId).catch((error) => {
+          console.error(`[Order 서버 액션] 장바구니 아이템 ${cartId} 삭제 실패:`, error);
+          return null;
+        }),
+      );
+
+      await Promise.all(deletePromises);
+      console.log('[Order 서버 액션] 장바구니 아이템 삭제 완료');
+
+      // temp-cart-ids 쿠키 삭제
+      const cookieStore = await cookies();
+      cookieStore.delete('temp-cart-ids');
+    }
+
+    // 임시 주문 데이터 삭제
     await clearTempOrderAction();
 
-    // 장바구니에서 구매한 경우 장바구니 페이지 재검증
-    const tempOrder = await getTempOrderAction();
-    if (tempOrder?.type === 'cart') {
+    // 장바구니 페이지 재검증
+    if (isCartOrder) {
       revalidatePath('/cart');
     }
 
@@ -265,7 +371,7 @@ export async function createOrderAction(orderData: CreateOrderRequest): Promise<
  * @param {number} orderId - 주문 ID
  * @returns {Promise<PurchaseActionResult>} 주문 조회 결과
  */
-export async function getOrderByIdAction(orderId: number): Promise<PurchaseActionResult> {
+export async function getOrderByIdAction(orderId: number): Promise<PurchaseActionResult & { orderData?: Order }> {
   try {
     console.log('[Order 서버 액션] 주문 조회 시작:', orderId);
 
@@ -279,8 +385,8 @@ export async function getOrderByIdAction(orderId: number): Promise<PurchaseActio
       };
     }
 
-    // API 요청
-    const res = await fetch(`${API_URL}/orders/${orderId}`, {
+    // API 요청 - populate 파라미터 추가하여 상품 정보도 함께 조회
+    const res = await fetch(`${API_URL}/orders/${orderId}?populate=products.product`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -299,6 +405,26 @@ export async function getOrderByIdAction(orderId: number): Promise<PurchaseActio
       };
     }
 
+    // 상품 정보가 없는 경우 별도로 조회
+    if (data.item && data.item.products) {
+      for (const product of data.item.products) {
+        if (!product.product && product.product_id) {
+          // 상품 정보 개별 조회
+          const productRes = await fetch(`${API_URL}/products/${product.product_id}`, {
+            headers: {
+              'Content-Type': 'application/json',
+              'client-id': CLIENT_ID,
+            },
+          });
+
+          if (productRes.ok) {
+            const productData = await productRes.json();
+            product.product = productData.item;
+          }
+        }
+      }
+    }
+
     console.log('[Order 서버 액션] 주문 조회 성공:', data.item);
     return {
       success: true,
@@ -306,6 +432,7 @@ export async function getOrderByIdAction(orderId: number): Promise<PurchaseActio
       data: {
         orderId: data.item?._id,
       },
+      orderData: data.item, // 전체 주문 데이터 반환
     };
   } catch (error) {
     console.error('[Order 서버 액션] 주문 조회 네트워크 오류:', error);
@@ -313,6 +440,90 @@ export async function getOrderByIdAction(orderId: number): Promise<PurchaseActio
       success: false,
       message: '일시적인 네트워크 문제로 주문 조회에 실패했습니다.',
     };
+  }
+}
+
+/**
+ * 현재 로그인한 사용자의 주소 정보를 가져오는 서버 액션
+ * @returns {Promise<{address: string | null, name: string | null, phone: string | null, userId: number | null}>} 사용자 정보
+ */
+export async function getUserAddressAction(): Promise<{
+  address: string | null;
+  name: string | null;
+  phone: string | null;
+  userId: number | null;
+}> {
+  try {
+    const cookieStore = await cookies();
+    const userAuthCookie = cookieStore.get('user-auth')?.value;
+
+    if (!userAuthCookie) {
+      console.log('[getUserAddressAction] 로그인되지 않은 사용자');
+      return { address: null, name: null, phone: null, userId: null };
+    }
+
+    const userData = JSON.parse(userAuthCookie);
+    const userId = userData?.state?.user?._id;
+    const accessToken = userData?.state?.user?.token?.accessToken;
+
+    console.log('[getUserAddressAction] 사용자 정보:', {
+      userId,
+      hasToken: !!accessToken,
+    });
+
+    if (!userId || !accessToken) {
+      console.log('[getUserAddressAction] 사용자 정보 불완전');
+      return { address: null, name: null, phone: null, userId: null };
+    }
+
+    // API 요청
+    const apiUrl = `${API_URL}/users/${userId}`;
+    console.log('[getUserAddressAction] API 호출:', apiUrl);
+
+    const res = await fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'client-id': CLIENT_ID,
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    const responseText = await res.text();
+    console.log('[getUserAddressAction] API 응답 상태:', res.status);
+    console.log('[getUserAddressAction] API 응답 텍스트:', responseText);
+
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (e) {
+      console.error('[getUserAddressAction] JSON 파싱 오류:', e);
+      return { address: null, name: null, phone: null, userId: null };
+    }
+
+    if (!res.ok || data.ok === 0) {
+      console.error('[getUserAddressAction] API 오류:', data.message || 'Unknown error');
+      return { address: null, name: null, phone: null, userId: null };
+    }
+
+    // API 응답에서 사용자 정보 추출
+    const userInfo = data.item;
+    console.log('[getUserAddressAction] 사용자 정보 조회 성공:', {
+      name: userInfo?.name,
+      phone: userInfo?.phone,
+      address: userInfo?.address,
+      hasAddress: !!userInfo?.address,
+    });
+
+    return {
+      address: userInfo?.address || null,
+      name: userInfo?.name || null,
+      phone: userInfo?.phone || null,
+      userId: userId,
+    };
+  } catch (error) {
+    console.error('[getUserAddressAction] 예외 발생:', error);
+    return { address: null, name: null, phone: null, userId: null };
   }
 }
 

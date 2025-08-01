@@ -5,14 +5,14 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import BookmarkButton from '@/components/ui/BookmarkButton';
 import { Button } from '@/components/ui/Button';
 import { addToCartAction, checkLoginStatusAction } from '@/lib/actions/cartServerActions';
-import { checkOrderLoginStatusAction, createDirectPurchaseTempOrderAction } from '@/lib/actions/orderServerActions';
+import { checkOrderLoginStatusAction, createDirectPurchaseTempOrderAction } from '@/lib/actions/order/orderServerActions';
 import { AddToCartRequest } from '@/types/cart.types';
 import { DirectPurchaseItem } from '@/types/order.types';
 import { Product, getImageUrl, getProductCategories, getProductId, getProductPotColors, getProductTags, isNewProduct } from '@/types/product.types';
 import { Minus, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { Badge } from './Badge';
 import ProductDetailCard from './ProductDetailCard';
@@ -58,6 +58,11 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
   const [quantity, setQuantity] = useState<number>(1);
   const [selectedColorIndex, setSelectedColorIndex] = useState<number>(0);
   const [showCartAlert, setShowCartAlert] = useState<boolean>(false);
+
+  // 접근성을 위한 refs
+  const colorOptionsRef = useRef<(HTMLButtonElement | null)[]>([]);
+  const quantityAnnouncementRef = useRef<HTMLDivElement>(null);
+  const colorAnnouncementRef = useRef<HTMLDivElement>(null);
 
   // 상품 정보 파싱
   const productCategories = useMemo(() => {
@@ -182,11 +187,34 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
     const newQuantity = quantity + change;
     if (newQuantity >= 1) {
       setQuantity(newQuantity);
+
+      // 접근성: 수량 변경 알림
+      if (quantityAnnouncementRef.current) {
+        quantityAnnouncementRef.current.textContent = `수량이 ${newQuantity}개로 변경되었습니다.`;
+      }
     }
   };
 
   const handleColorChange = (colorIndex: number) => {
     setSelectedColorIndex(colorIndex);
+
+    // 접근성: 색상 변경 알림
+    if (colorAnnouncementRef.current && colorOptions[colorIndex]) {
+      colorAnnouncementRef.current.textContent = `화분 색상이 ${colorOptions[colorIndex].label}로 변경되었습니다.`;
+    }
+  };
+
+  // 키보드 네비게이션을 위한 핸들러
+  const handleColorKeyDown = (event: React.KeyboardEvent, colorIndex: number) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleColorChange(colorIndex);
+    } else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+      event.preventDefault();
+      const direction = event.key === 'ArrowLeft' ? -1 : 1;
+      const nextIndex = (colorIndex + direction + colorOptions.length) % colorOptions.length;
+      colorOptionsRef.current[nextIndex]?.focus();
+    }
   };
 
   // 서버 액션만 사용한 장바구니 추가 기능
@@ -217,11 +245,11 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
         return;
       }
 
-      // 2. 서버 API 호출 데이터 준비 - size 필드 사용
+      // 2. 서버 API 호출 데이터 준비 - color 필드 사용
       const cartData: AddToCartRequest = {
         product_id: productData._id,
         quantity,
-        size: hasColorOptions ? colorOptions[selectedColorIndex]?.label : undefined,
+        color: hasColorOptions ? colorOptions[selectedColorIndex]?.label : undefined,
       };
 
       console.log('[장바구니 추가] 서버 요청 데이터:', cartData);
@@ -329,12 +357,22 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
 
   return (
     <>
+      {/* 접근성: 스크린 리더용 실시간 알림 영역 */}
+      <div aria-live='polite' aria-atomic='true' className='sr-only'>
+        <div ref={quantityAnnouncementRef} />
+        <div ref={colorAnnouncementRef} />
+      </div>
+
       {/* 장바구니 추가 알림 다이얼로그 */}
       <AlertDialog open={showCartAlert} onOpenChange={setShowCartAlert}>
-        <AlertDialogContent className='px-12 sm:max-w-md'>
+        <AlertDialogContent className='px-12 sm:max-w-md' role='alertdialog' aria-labelledby='cart-dialog-title' aria-describedby='cart-dialog-description'>
           <AlertDialogHeader>
-            <AlertDialogTitle className='t-h3 text-center'>상품을 장바구니에 담았습니다.</AlertDialogTitle>
-            <AlertDialogDescription className='text-center text-base'>장바구니로 이동하시겠습니까?</AlertDialogDescription>
+            <AlertDialogTitle id='cart-dialog-title' className='t-h3 text-center'>
+              상품을 장바구니에 담았습니다.
+            </AlertDialogTitle>
+            <AlertDialogDescription id='cart-dialog-description' className='text-center text-base'>
+              장바구니로 이동하시겠습니까?
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className='mt-6 gap-3 sm:justify-between'>
             <AlertDialogCancel onClick={() => setShowCartAlert(false)} className='text-secondary hover:bg-secondary border-[0.5px] border-gray-300 bg-white px-7 shadow-sm hover:text-white sm:order-1'>
@@ -353,26 +391,27 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
         <div className='relative mx-auto my-6 aspect-square w-auto max-w-[260px] min-w-[260px] rounded-2xl bg-white sm:my-6 sm:max-w-[400px] md:my-8 md:max-w-[500px]'>
           <Image
             src={currentImageUrl}
-            alt={`${productData.name}${hasColorOptions ? ` - ${colorOptions[selectedColorIndex]?.label}` : ''}`}
+            alt={`${productData.name}${hasColorOptions ? ` ${colorOptions[selectedColorIndex]?.label} 색상` : ''} 상품 이미지`}
             fill
             className='rounded-2xl object-cover'
             priority
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.src = '/images/placeholder-plant.jpg';
+              target.alt = '상품 이미지를 불러올 수 없습니다';
             }}
           />
 
           {/* NEW 태그 */}
           {isNew && (
-            <div className='absolute top-0 left-0 z-1'>
+            <div className='absolute top-0 left-0 z-1' aria-label='신상품'>
               <div className='bg-secondary t-h4 rounded-ss-2xl rounded-ee-2xl px-3 py-2 text-white sm:px-4 sm:py-2 md:px-5 md:py-3'>NEW</div>
             </div>
           )}
 
           {/* 북마크 버튼 */}
           <div className='absolute top-3 right-3 sm:top-4 sm:right-4'>
-            <BookmarkButton productId={getProductId(productData)} myBookmarkId={productData.myBookmarkId} size={32} className='sm:scale-110 md:scale-125' />
+            <BookmarkButton targetId={getProductId(productData)} type='product' myBookmarkId={productData.myBookmarkId} revalidate={false} variant='icon' />
           </div>
         </div>
 
@@ -380,14 +419,18 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
         <div className='mx-4 mt-6 w-auto sm:mx-6 sm:mt-8 md:mx-8'>
           {/* 카테고리 및 상품명 */}
           <div className='mb-4'>
-            <p className='mb-2 text-sm text-gray-500'>{getCategoryDisplayName()}</p>
-            <h1 className='text-secondary t-h1 mb-4'>{productData.name}</h1>
+            <p className='mb-2 text-sm text-gray-500' aria-label={`상품 카테고리: ${getCategoryDisplayName()}`}>
+              {getCategoryDisplayName()}
+            </p>
+            <h1 className='text-secondary t-h1 mb-4' role='heading' aria-level={1}>
+              {productData.name}
+            </h1>
           </div>
 
           {/* 태그 목록 */}
-          <div className='mb-12 flex flex-wrap gap-2 sm:mb-8 sm:gap-3'>
+          <div className='mb-12 flex flex-wrap gap-2 sm:mb-8 sm:gap-3' role='list' aria-label='상품 태그'>
             {productTags.map((tag) => (
-              <Badge key={tag} variant='default' className='t-desc md:t-body border-1 border-gray-300 px-3 py-1 sm:px-4 sm:py-1.5'>
+              <Badge key={tag} variant='default' className='t-desc md:t-body border-1 border-gray-300 px-3 py-1 sm:px-4 sm:py-1.5' role='listitem'>
                 {tag}
               </Badge>
             ))}
@@ -395,77 +438,126 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
 
           {/* 화분 색상 선택 (옵션이 있는 경우에만 표시) */}
           {hasColorOptions && colorOptions.length > 0 && (
-            <>
-              <h3 className='text-secondary t-h3 mb-3 sm:mb-4'>화분 색상</h3>
-              <div className='mb-12 flex gap-3 sm:gap-4'>
+            <div role='group' aria-labelledby='color-selection-title'>
+              <h3 id='color-selection-title' className='text-secondary t-h3 mb-3 sm:mb-4'>
+                화분 색상
+              </h3>
+              <div className='mb-12 flex gap-3 sm:gap-4' role='radiogroup' aria-labelledby='color-selection-title'>
                 {colorOptions.map((option, index) => (
                   <button
                     key={option.value}
+                    ref={(el) => {
+                      colorOptionsRef.current[index] = el;
+                    }}
                     type='button'
-                    aria-label={option.label}
+                    role='radio'
+                    aria-checked={selectedColorIndex === index}
+                    aria-label={`화분 색상 ${option.label} 선택${selectedColorIndex === index ? ', 현재 선택됨' : ''}`}
                     onClick={() => handleColorChange(index)}
-                    className={`h-8 w-8 rounded-full border-2 transition sm:h-9 sm:w-9 md:h-10 md:w-10 ${
+                    onKeyDown={(e) => handleColorKeyDown(e, index)}
+                    className={`focus-visible:ring-secondary h-8 w-8 rounded-full border-2 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 sm:h-9 sm:w-9 md:h-10 md:w-10 ${
                       selectedColorIndex === index ? 'border-secondary scale-110 border-3' : 'border-gray-300'
                     } ${option.value === 'white' ? 'ring-1 ring-gray-200' : ''}`}
                     style={{ backgroundColor: option.color }}
+                    tabIndex={selectedColorIndex === index ? 0 : -1}
                   />
                 ))}
               </div>
-            </>
+              <span className='sr-only'>방향키로 색상 옵션을 탐색할 수 있습니다. 엔터 또는 스페이스바로 선택하세요.</span>
+            </div>
           )}
 
           {/* 수량 선택 및 가격 */}
           <div className='mb-5 flex items-center justify-between'>
             {/* 수량 선택 */}
-            <div className='flex items-center gap-3 rounded-4xl border-1 border-gray-300 bg-white p-2 sm:gap-4'>
-              <Button variant='ghost' size='icon' disabled={quantity <= 1} onClick={() => handleQuantityChange(-1)} className='h-6 w-6 hover:bg-transparent active:bg-transparent sm:h-8 sm:w-8'>
-                <Minus size={18} className='sm:size-5' />
+            <div className='flex items-center gap-3 rounded-4xl border-1 border-gray-300 bg-white p-2 sm:gap-4' role='group' aria-labelledby='quantity-label'>
+              <span id='quantity-label' className='sr-only'>
+                수량 선택
+              </span>
+              <Button
+                variant='ghost'
+                size='icon'
+                disabled={quantity <= 1}
+                onClick={() => handleQuantityChange(-1)}
+                className='h-6 w-6 hover:bg-transparent active:bg-transparent sm:h-8 sm:w-8'
+                aria-label={`수량 1개 감소. 현재 수량 ${quantity}개`}
+                aria-describedby='current-quantity'
+              >
+                <Minus size={18} className='sm:size-5' aria-hidden='true' />
               </Button>
 
-              <span className='text-secondary t-h4 min-w-[50px] text-center sm:min-w-[60px] sm:text-base'>{quantity}</span>
+              <span id='current-quantity' className='text-secondary t-h4 min-w-[50px] text-center sm:min-w-[60px] sm:text-base' aria-label={`현재 수량 ${quantity}개`} role='status'>
+                {quantity}
+              </span>
 
-              <Button variant='ghost' size='icon' onClick={() => handleQuantityChange(1)} className='h-6 w-6 hover:bg-transparent active:bg-transparent sm:h-8 sm:w-8'>
-                <Plus size={18} className='sm:size-5' />
+              <Button
+                variant='ghost'
+                size='icon'
+                onClick={() => handleQuantityChange(1)}
+                className='h-6 w-6 hover:bg-transparent active:bg-transparent sm:h-8 sm:w-8'
+                aria-label={`수량 1개 증가. 현재 수량 ${quantity}개`}
+                aria-describedby='current-quantity'
+              >
+                <Plus size={18} className='sm:size-5' aria-hidden='true' />
               </Button>
             </div>
 
             {/* 총 가격 */}
-            <p className='text-secondary text-lg font-semibold sm:text-xl'>₩ {totalPrice.toLocaleString()}</p>
+            <p className='text-secondary text-lg font-semibold sm:text-xl' aria-label={`총 가격 ${totalPrice.toLocaleString()}원`}>
+              ₩ {totalPrice.toLocaleString()}
+            </p>
           </div>
 
           <div className='pb-6 text-right'>
-            <span className='t-desc'>배송비 : 3000원</span>
+            <span className='t-desc' aria-label='배송비 3000원'>
+              배송비 : 3000원
+            </span>
           </div>
 
           {/* 액션 버튼 */}
-          <div className='mb-10 flex gap-3 sm:mb-12 sm:gap-4'>
-            <Button onClick={handleAddToCart} variant='default' className='t-h4 sm:t-h3 h-10 flex-1 sm:h-12'>
+          <div className='mb-10 flex gap-3 sm:mb-12 sm:gap-4' role='group' aria-label='상품 구매 옵션'>
+            <Button onClick={handleAddToCart} variant='default' className='t-h4 sm:t-h3 h-10 flex-1 sm:h-12' aria-describedby='cart-button-description'>
               장바구니
             </Button>
-            <Button onClick={handlePurchase} variant='primary' className='t-h4 sm:t-h3 h-10 flex-1 sm:h-12'>
+            <span id='cart-button-description' className='sr-only'>
+              {productData.name} {quantity}개{hasColorOptions ? ` ${colorOptions[selectedColorIndex]?.label} 색상` : ''}를 장바구니에 추가합니다
+            </span>
+
+            <Button onClick={handlePurchase} variant='primary' className='t-h4 sm:t-h3 h-10 flex-1 sm:h-12' aria-describedby='purchase-button-description'>
               구매하기
             </Button>
+            <span id='purchase-button-description' className='sr-only'>
+              {productData.name} {quantity}개{hasColorOptions ? ` ${colorOptions[selectedColorIndex]?.label} 색상` : ''}를 바로 구매합니다
+            </span>
           </div>
 
           {/* 상품 설명 */}
-          <section className='mb-8 border-y border-gray-300 py-8 sm:mb-10 sm:py-10 md:mb-12 md:py-12'>
-            <h2 className='text-secondary t-h2 sm:t-h1 mb-4 sm:mb-5'>Description</h2>
-            <div className='text-secondary t-body space-y-3 sm:space-y-4'>{productData.content ? <div dangerouslySetInnerHTML={{ __html: productData.content }} /> : <p>상품 설명이 없습니다.</p>}</div>
+          <section className='mb-8 border-y border-gray-300 py-8 sm:mb-10 sm:py-10 md:mb-12 md:py-12' aria-labelledby='product-description-title'>
+            <h2 id='product-description-title' className='text-secondary t-h2 sm:t-h1 mb-4 sm:mb-5'>
+              Description
+            </h2>
+            <div className='text-secondary t-body space-y-3 sm:space-y-4' role='region' aria-labelledby='product-description-title'>
+              {productData.content ? <div dangerouslySetInnerHTML={{ __html: productData.content }} /> : <p>상품 설명이 없습니다.</p>}
+            </div>
           </section>
 
           {children}
 
           {/* 추천 상품 */}
-          <section className='border-t-1 border-gray-300 pt-8 pb-8 sm:pb-10 md:pb-12'>
-            <h2 className='text-secondary t-h2 sm:t-h1 mb-4 sm:mb-5'>Recommend</h2>
+          <section className='border-t-1 border-gray-300 pt-8 pb-8 sm:pb-10 md:pb-12' aria-labelledby='recommend-products-title'>
+            <h2 id='recommend-products-title' className='text-secondary t-h2 sm:t-h1 mb-4 sm:mb-5'>
+              Recommend
+            </h2>
             {!recommendProducts || recommendProducts.length === 0 ? (
-              <div className='py-8 text-center'>
+              <div className='py-8 text-center' role='status'>
                 <p className='text-gray-600'>추천 상품이 없습니다.</p>
               </div>
             ) : (
-              <div className='grid grid-cols-2 gap-3 sm:gap-4 md:gap-6'>
+              <div className='grid grid-cols-2 gap-3 sm:gap-4 md:gap-6' role='list' aria-label='추천 상품 목록'>
                 {recommendProducts.slice(0, 2).map((product) => (
-                  <ProductDetailCard key={getProductId(product)} product={product} onClick={handleProductClick} />
+                  <div key={getProductId(product)} role='listitem'>
+                    <ProductDetailCard product={product} onClick={handleProductClick} />
+                  </div>
                 ))}
               </div>
             )}
@@ -482,36 +574,45 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
             <div className='relative aspect-square w-full max-w-[800px] min-w-[280px] flex-1 lg:max-w-[350px] lg:min-w-[350px] xl:max-w-[800px] xl:min-w-[280px]'>
               <Image
                 src={currentImageUrl}
-                alt={`${productData.name}${hasColorOptions ? ` - ${colorOptions[selectedColorIndex]?.label}` : ''}`}
+                alt={`${productData.name}${hasColorOptions ? ` ${colorOptions[selectedColorIndex]?.label} 색상` : ''} 상품 이미지`}
                 fill
                 className='rounded-2xl object-cover'
                 priority
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
                   target.src = '/images/placeholder-plant.jpg';
+                  target.alt = '상품 이미지를 불러올 수 없습니다';
                 }}
               />
 
               {/* NEW 태그 */}
-              {isNew && <div className='bg-secondary t-h3 absolute top-0 left-0 z-1 rounded-ss-2xl rounded-ee-2xl px-6 py-3 text-white'>NEW</div>}
+              {isNew && (
+                <div className='bg-secondary t-h3 absolute top-0 left-0 z-1 rounded-ss-2xl rounded-ee-2xl px-6 py-3 text-white' aria-label='신상품'>
+                  NEW
+                </div>
+              )}
 
               {/* 북마크 버튼 */}
               <div className='absolute top-4 right-4'>
-                <BookmarkButton productId={getProductId(productData)} myBookmarkId={productData.myBookmarkId} size={48} />
+                <BookmarkButton targetId={getProductId(productData)} type='product' myBookmarkId={productData.myBookmarkId} revalidate={false} variant='icon' />
               </div>
             </div>
 
             {/* 상품 정보 */}
             <div className='w-full min-w-[280px] flex-1'>
               {/* 카테고리 */}
-              <p className='mb-2 text-lg text-gray-500'>{getCategoryDisplayName()}</p>
+              <p className='mb-2 text-lg text-gray-500' aria-label={`상품 카테고리: ${getCategoryDisplayName()}`}>
+                {getCategoryDisplayName()}
+              </p>
 
-              <h1 className='text-secondary mb-6 text-3xl font-bold xl:text-4xl 2xl:text-5xl'>{productData.name}</h1>
+              <h1 className='text-secondary mb-6 text-3xl font-bold xl:text-4xl 2xl:text-5xl' role='heading' aria-level={1}>
+                {productData.name}
+              </h1>
 
               {/* 태그 */}
-              <div className='mb-8 flex flex-wrap gap-3 xl:mb-10'>
+              <div className='mb-8 flex flex-wrap gap-3 xl:mb-10' role='list' aria-label='상품 태그'>
                 {productTags.map((tag) => (
-                  <Badge key={tag} variant='default' className='border-1 border-gray-300 px-3 py-1.5 text-sm xl:px-4 xl:py-2 xl:text-base'>
+                  <Badge key={tag} variant='default' className='border-1 border-gray-300 px-3 py-1.5 text-sm xl:px-4 xl:py-2 xl:text-base' role='listitem'>
                     {tag}
                   </Badge>
                 ))}
@@ -519,75 +620,124 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
 
               {/* 화분 색상 (옵션이 있는 경우에만 표시) */}
               {hasColorOptions && colorOptions.length > 0 && (
-                <>
-                  <h3 className='text-secondary t-h2 mb-3 xl:mb-4 xl:text-xl'>화분 색상</h3>
-                  <div className='mb-8 flex gap-3 xl:mb-10 xl:gap-4'>
+                <div role='group' aria-labelledby='desktop-color-selection-title'>
+                  <h3 id='desktop-color-selection-title' className='text-secondary t-h2 mb-3 xl:mb-4 xl:text-xl'>
+                    화분 색상
+                  </h3>
+                  <div className='mb-8 flex gap-3 xl:mb-10 xl:gap-4' role='radiogroup' aria-labelledby='desktop-color-selection-title'>
                     {colorOptions.map((option, index) => (
                       <button
                         key={option.value}
+                        ref={(el) => {
+                          colorOptionsRef.current[index] = el;
+                        }}
                         type='button'
-                        aria-label={option.label}
+                        role='radio'
+                        aria-checked={selectedColorIndex === index}
+                        aria-label={`화분 색상 ${option.label} 선택${selectedColorIndex === index ? ', 현재 선택됨' : ''}`}
                         onClick={() => handleColorChange(index)}
-                        className={`h-10 w-10 rounded-full border-2 transition xl:h-12 xl:w-12 ${selectedColorIndex === index ? 'border-secondary scale-110 border-4' : 'border-gray-300'} ${option.value === 'white' ? 'ring-1 ring-gray-200' : ''}`}
+                        onKeyDown={(e) => handleColorKeyDown(e, index)}
+                        className={`focus-visible:ring-secondary h-10 w-10 rounded-full border-2 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 xl:h-12 xl:w-12 ${selectedColorIndex === index ? 'border-secondary scale-110 border-4' : 'border-gray-300'} ${option.value === 'white' ? 'ring-1 ring-gray-200' : ''}`}
                         style={{ backgroundColor: option.color }}
+                        tabIndex={selectedColorIndex === index ? 0 : -1}
                       />
                     ))}
                   </div>
-                </>
+                  <span className='sr-only'>방향키로 색상 옵션을 탐색할 수 있습니다. 엔터 또는 스페이스바로 선택하세요.</span>
+                </div>
               )}
 
               {/* 수량 선택 */}
               <div className='mb-5 flex items-center justify-between'>
-                <div className='flex items-center gap-3 rounded-4xl border-1 border-gray-300 bg-white p-2 xl:gap-4'>
-                  <Button variant='ghost' size='icon' disabled={quantity <= 1} onClick={() => handleQuantityChange(-1)} className='hover:bg-transparent active:bg-transparent xl:h-10 xl:w-10'>
-                    <Minus size={18} className='xl:size-5' />
+                <div className='flex items-center gap-3 rounded-4xl border-1 border-gray-300 bg-white p-2 xl:gap-4' role='group' aria-labelledby='desktop-quantity-label'>
+                  <span id='desktop-quantity-label' className='sr-only'>
+                    수량 선택
+                  </span>
+                  <Button
+                    variant='ghost'
+                    size='icon'
+                    disabled={quantity <= 1}
+                    onClick={() => handleQuantityChange(-1)}
+                    className='hover:bg-transparent active:bg-transparent xl:h-10 xl:w-10'
+                    aria-label={`수량 1개 감소. 현재 수량 ${quantity}개`}
+                    aria-describedby='desktop-current-quantity'
+                  >
+                    <Minus size={18} className='xl:size-5' aria-hidden='true' />
                   </Button>
 
-                  <span className='text-secondary min-w-[50px] text-center text-lg font-medium xl:min-w-[60px] xl:text-xl'>{quantity}</span>
+                  <span id='desktop-current-quantity' className='text-secondary min-w-[50px] text-center text-lg font-medium xl:min-w-[60px] xl:text-xl' aria-label={`현재 수량 ${quantity}개`} role='status'>
+                    {quantity}
+                  </span>
 
-                  <Button variant='ghost' size='icon' onClick={() => handleQuantityChange(1)} className='hover:bg-transparent active:bg-transparent xl:h-10 xl:w-10'>
-                    <Plus size={18} className='xl:size-5' />
+                  <Button
+                    variant='ghost'
+                    size='icon'
+                    onClick={() => handleQuantityChange(1)}
+                    className='hover:bg-transparent active:bg-transparent xl:h-10 xl:w-10'
+                    aria-label={`수량 1개 증가. 현재 수량 ${quantity}개`}
+                    aria-describedby='desktop-current-quantity'
+                  >
+                    <Plus size={18} className='xl:size-5' aria-hidden='true' />
                   </Button>
                 </div>
 
-                <p className='text-secondary t-h2'>₩ {totalPrice.toLocaleString()}</p>
+                <p className='text-secondary t-h2' aria-label={`총 가격 ${totalPrice.toLocaleString()}원`}>
+                  ₩ {totalPrice.toLocaleString()}
+                </p>
               </div>
 
               <div className='pb-6 text-right'>
-                <span className='t-desc'>배송비 : 3000원</span>
+                <span className='t-desc' aria-label='배송비 3000원'>
+                  배송비 : 3000원
+                </span>
               </div>
 
               {/* 액션 버튼 */}
-              <div className='flex gap-4 xl:gap-6'>
-                <Button onClick={handleAddToCart} variant='default' size='lg' className='t-h3 flex-1 p-8'>
+              <div className='flex gap-4 xl:gap-6' role='group' aria-label='상품 구매 옵션'>
+                <Button onClick={handleAddToCart} variant='default' size='lg' className='t-h3 flex-1 p-8' aria-describedby='desktop-cart-button-description'>
                   장바구니
                 </Button>
-                <Button onClick={handlePurchase} variant='primary' size='lg' className='t-h3 flex-1 p-8'>
+                <span id='desktop-cart-button-description' className='sr-only'>
+                  {productData.name} {quantity}개{hasColorOptions ? ` ${colorOptions[selectedColorIndex]?.label} 색상` : ''}를 장바구니에 추가합니다
+                </span>
+
+                <Button onClick={handlePurchase} variant='primary' size='lg' className='t-h3 flex-1 p-8' aria-describedby='desktop-purchase-button-description'>
                   구매하기
                 </Button>
+                <span id='desktop-purchase-button-description' className='sr-only'>
+                  {productData.name} {quantity}개{hasColorOptions ? ` ${colorOptions[selectedColorIndex]?.label} 색상` : ''}를 바로 구매합니다
+                </span>
               </div>
             </div>
           </div>
 
           {/* 상품 설명 */}
-          <section className='mb-10 border-y border-gray-300 py-8 xl:py-10'>
-            <h2 className='text-secondary t-h1 mb-6 xl:mb-8 xl:text-3xl'>Description</h2>
-            <div className='text-secondary space-y-4 text-2xl xl:space-y-6'>{productData.content ? <div dangerouslySetInnerHTML={{ __html: productData.content }} /> : <p>상품 설명이 없습니다.</p>}</div>
+          <section className='mb-10 border-y border-gray-300 py-8 xl:py-10' aria-labelledby='desktop-product-description-title'>
+            <h2 id='desktop-product-description-title' className='text-secondary t-h1 mb-6 xl:mb-8 xl:text-3xl'>
+              Description
+            </h2>
+            <div className='text-secondary space-y-4 text-2xl xl:space-y-6' role='region' aria-labelledby='desktop-product-description-title'>
+              {productData.content ? <div dangerouslySetInnerHTML={{ __html: productData.content }} /> : <p>상품 설명이 없습니다.</p>}
+            </div>
           </section>
 
           {children}
 
           {/* 추천 상품 */}
-          <section className='border-t-1 border-gray-300 pt-8'>
-            <h2 className='text-secondary t-h1 mb-6 xl:mb-8'>Recommend</h2>
+          <section className='border-t-1 border-gray-300 pt-8' aria-labelledby='desktop-recommend-products-title'>
+            <h2 id='desktop-recommend-products-title' className='text-secondary t-h1 mb-6 xl:mb-8'>
+              Recommend
+            </h2>
             {!recommendProducts || recommendProducts.length === 0 ? (
-              <div className='py-8 text-center'>
+              <div className='py-8 text-center' role='status'>
                 <p className='text-gray-600'>추천 상품이 없습니다.</p>
               </div>
             ) : (
-              <div className='grid grid-cols-4 gap-6 xl:gap-8'>
+              <div className='grid grid-cols-4 gap-6 xl:gap-8' role='list' aria-label='추천 상품 목록'>
                 {recommendProducts.map((product) => (
-                  <ProductDetailCard key={getProductId(product)} product={product} onClick={handleProductClick} />
+                  <div key={getProductId(product)} role='listitem'>
+                    <ProductDetailCard product={product} onClick={handleProductClick} />
+                  </div>
                 ))}
               </div>
             )}

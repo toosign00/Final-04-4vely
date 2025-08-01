@@ -1,7 +1,7 @@
 'use client';
 
 import NewProductCard from '@/components/_home/new-product/NewProductCard';
-import { getNewProducts } from '@/lib/functions/productClientFunctions';
+import { getNewProducts } from '@/lib/functions/shop/productClientFunctions';
 import { NewProduct } from '@/types/newproduct.types';
 import { useEffect, useState } from 'react';
 

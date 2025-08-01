@@ -71,18 +71,15 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
     return cartItems.filter((item) => selectedItems.has(item._id)).reduce((sum, item) => sum + item.product.price * item.quantity, 0);
   }, [cartItems, selectedItems]);
 
-
-
   // 색상 매핑
   const getColorKoreanName = (color: string) => {
     const colorMap: Record<string, string> = {
-      흑색: '블랙',
-      갈색: '브라운',
-      백색: '화이트',
-      황색: '옐로우',
-      회색: '그레이',
-      흰색: '화이트',
-      남색: '블루',
+      흑색: '흑색',
+      갈색: '갈색',
+      백색: '흰색',
+      회색: '회색',
+      흰색: '흰색',
+      남색: '남색',
     };
     return colorMap[color] || color;
   };

@@ -880,7 +880,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
                                   </SelectTrigger>
                                   <SelectContent>
                                     <SelectGroup>
-                                      <SelectLabel>추천 메모</SelectLabel>
+                                      <SelectLabel>배송 메모 선택</SelectLabel>
                                       <SelectItem value='부재 시 경비실에 맡겨주세요.'>부재 시 경비실에 맡겨주세요.</SelectItem>
                                       <SelectItem value='배송 전 연락 바랍니다.'>배송 전 연락 바랍니다.</SelectItem>
                                       <SelectItem value='문 앞에 보관해주세요.'>문 앞에 보관해주세요.</SelectItem>

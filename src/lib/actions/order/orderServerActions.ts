@@ -2,7 +2,7 @@
 
 'use server';
 
-import { CreateOrderApiResponse, CreateOrderRequest, DirectPurchaseItem, OrderPageData, PurchaseActionResult } from '@/types/order.types';
+import { CreateOrderApiResponse, CreateOrderRequest, DirectPurchaseItem, Order, OrderPageData, PurchaseActionResult } from '@/types/order.types';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 
@@ -372,7 +372,7 @@ export async function createOrderAction(orderData: CreateOrderRequest): Promise<
  * @param {number} orderId - 주문 ID
  * @returns {Promise<PurchaseActionResult>} 주문 조회 결과
  */
-export async function getOrderByIdAction(orderId: number): Promise<PurchaseActionResult> {
+export async function getOrderByIdAction(orderId: number): Promise<PurchaseActionResult & { orderData?: Order }> {
   try {
     console.log('[Order 서버 액션] 주문 조회 시작:', orderId);
 
@@ -386,8 +386,8 @@ export async function getOrderByIdAction(orderId: number): Promise<PurchaseActio
       };
     }
 
-    // API 요청
-    const res = await fetch(`${API_URL}/orders/${orderId}`, {
+    // API 요청 - populate 파라미터 추가하여 상품 정보도 함께 조회
+    const res = await fetch(`${API_URL}/orders/${orderId}?populate=products.product`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -406,6 +406,26 @@ export async function getOrderByIdAction(orderId: number): Promise<PurchaseActio
       };
     }
 
+    // 상품 정보가 없는 경우 별도로 조회
+    if (data.item && data.item.products) {
+      for (const product of data.item.products) {
+        if (!product.product && product.product_id) {
+          // 상품 정보 개별 조회
+          const productRes = await fetch(`${API_URL}/products/${product.product_id}`, {
+            headers: {
+              'Content-Type': 'application/json',
+              'client-id': CLIENT_ID,
+            },
+          });
+
+          if (productRes.ok) {
+            const productData = await productRes.json();
+            product.product = productData.item;
+          }
+        }
+      }
+    }
+
     console.log('[Order 서버 액션] 주문 조회 성공:', data.item);
     return {
       success: true,
@@ -413,6 +433,7 @@ export async function getOrderByIdAction(orderId: number): Promise<PurchaseActio
       data: {
         orderId: data.item?._id,
       },
+      orderData: data.item, // 전체 주문 데이터 반환
     };
   } catch (error) {
     console.error('[Order 서버 액션] 주문 조회 네트워크 오류:', error);

@@ -44,7 +44,7 @@ export default function ProductCard({ product, onClick, isMobile = false }: Prod
   if (isMobile) {
     return (
       <div
-        className='focus:ring-secondary my-6 cursor-pointer justify-items-center gap-x-4 rounded-lg transition-all focus:ring-2 focus:ring-offset-2 focus:outline-none sm:gap-x-6'
+        className='focus-visible:ring-secondary my-6 cursor-pointer justify-items-center gap-x-4 rounded-lg transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 sm:gap-x-6'
         onClick={() => onClick(productId)}
         onKeyDown={handleKeyDown}
         role='button'
@@ -92,7 +92,7 @@ export default function ProductCard({ product, onClick, isMobile = false }: Prod
   // 데스크톱 레이아웃
   return (
     <div
-      className='focus:ring-secondary my-6 cursor-pointer justify-items-center rounded-lg transition-all focus:ring-2 focus:ring-offset-2 focus:outline-none'
+      className='focus-visible:ring-secondary my-6 cursor-pointer justify-items-center rounded-lg transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2'
       onClick={() => onClick(productId)}
       onKeyDown={handleKeyDown}
       role='button'

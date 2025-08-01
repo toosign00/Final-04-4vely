@@ -479,7 +479,7 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
                                         aria-label={`화분 색상 ${color} 선택${isSelected ? ', 현재 선택됨' : ''}`}
                                         onClick={() => setSelectedOptions((prev) => ({ ...prev, [item._id]: color }))}
                                         onKeyDown={(e) => handleColorKeyDown(e, item._id, colorIndex, item.product.extra?.potColors || [])}
-                                        className={`focus:ring-secondary h-10 w-10 rounded-full border-2 transition focus:ring-2 focus:ring-offset-2 focus:outline-none ${isSelected ? 'border-secondary scale-110 border-3' : 'border-gray-300'} ${color === '백색' || color === '흰색' ? 'ring-1 ring-gray-200' : ''}`}
+                                        className={`focus-visible:ring-secondary h-10 w-10 rounded-full border-2 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${isSelected ? 'border-secondary scale-110 border-3' : 'border-gray-300'} ${color === '백색' || color === '흰색' ? 'ring-1 ring-gray-200' : ''}`}
                                         style={{ backgroundColor: hexColor }}
                                         tabIndex={isSelected ? 0 : -1}
                                       />

@@ -455,7 +455,7 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
                     aria-label={`화분 색상 ${option.label} 선택${selectedColorIndex === index ? ', 현재 선택됨' : ''}`}
                     onClick={() => handleColorChange(index)}
                     onKeyDown={(e) => handleColorKeyDown(e, index)}
-                    className={`focus:ring-secondary h-8 w-8 rounded-full border-2 transition focus:ring-2 focus:ring-offset-2 focus:outline-none sm:h-9 sm:w-9 md:h-10 md:w-10 ${
+                    className={`focus-visible:ring-secondary h-8 w-8 rounded-full border-2 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 sm:h-9 sm:w-9 md:h-10 md:w-10 ${
                       selectedColorIndex === index ? 'border-secondary scale-110 border-3' : 'border-gray-300'
                     } ${option.value === 'white' ? 'ring-1 ring-gray-200' : ''}`}
                     style={{ backgroundColor: option.color }}
@@ -637,7 +637,7 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
                         aria-label={`화분 색상 ${option.label} 선택${selectedColorIndex === index ? ', 현재 선택됨' : ''}`}
                         onClick={() => handleColorChange(index)}
                         onKeyDown={(e) => handleColorKeyDown(e, index)}
-                        className={`focus:ring-secondary h-10 w-10 rounded-full border-2 transition focus:ring-2 focus:ring-offset-2 focus:outline-none xl:h-12 xl:w-12 ${selectedColorIndex === index ? 'border-secondary scale-110 border-4' : 'border-gray-300'} ${option.value === 'white' ? 'ring-1 ring-gray-200' : ''}`}
+                        className={`focus-visible:ring-secondary h-10 w-10 rounded-full border-2 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 xl:h-12 xl:w-12 ${selectedColorIndex === index ? 'border-secondary scale-110 border-4' : 'border-gray-300'} ${option.value === 'white' ? 'ring-1 ring-gray-200' : ''}`}
                         style={{ backgroundColor: option.color }}
                         tabIndex={selectedColorIndex === index ? 0 : -1}
                       />

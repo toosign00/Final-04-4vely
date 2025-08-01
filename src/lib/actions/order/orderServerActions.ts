@@ -160,9 +160,8 @@ export async function createCartPurchaseTempOrderAction(selectedCartIds: number[
         if (item.product.image.startsWith('http')) {
           imageUrl = item.product.image;
         } else {
-          const API_URL = process.env.API_URL || 'https://fesp-api.koyeb.app/market';
           const normalizedPath = item.product.image.startsWith('/') ? item.product.image : `/${item.product.image}`;
-          imageUrl = `${API_URL}${normalizedPath}`;
+          imageUrl = normalizedPath;
         }
       }
 

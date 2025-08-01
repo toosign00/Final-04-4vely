@@ -15,7 +15,7 @@ export default async function OrderPage() {
     아이템수: tempOrder?.items?.length,
   });
 
-  // 🔧 핵심 수정: 결제 진행 중인지 확인
+  // 결제 진행 중인지 확인
   const cookieStore = await cookies();
   const isPaymentInProgress = cookieStore.get('payment-in-progress')?.value === 'true';
 

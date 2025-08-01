@@ -326,7 +326,7 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
             {cartItems.length === 0 ? (
               <div className='flex flex-col items-center justify-center py-20'>
                 <p className='text-lg text-gray-500'>장바구니가 비어있습니다.</p>
-                <Button variant='primary' className='mt-4' onClick={() => router.push('/shop')}>
+                <Button variant='primary' className='mt-4' onClick={() => router.push('/shop?page=1')}>
                   쇼핑 계속하기
                 </Button>
               </div>

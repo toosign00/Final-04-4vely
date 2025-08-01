@@ -26,7 +26,7 @@ export default function OrderComplete() {
         if (!orderId) {
           console.log('[주문 완료] orderId 파라미터 없음');
           toast.error('주문 정보를 찾을 수 없습니다');
-          router.replace('/shop');
+          router.replace('/shop?page=1');
           return;
         }
 
@@ -111,7 +111,7 @@ export default function OrderComplete() {
           } else {
             console.error('[주문 완료] 주문 조회 실패:', result.message);
             toast.error('주문 정보를 불러올 수 없습니다');
-            router.replace('/shop');
+            router.replace('/shop?page=1');
             return;
           }
         }
@@ -119,7 +119,7 @@ export default function OrderComplete() {
       } catch (error) {
         console.error('[주문 완료] 주문 정보 조회 오류:', error);
         toast.error('주문 정보를 불러오는 중 오류가 발생했습니다');
-        router.replace('/shop');
+        router.replace('/shop?page=1');
       } finally {
         setIsLoading(false);
       }
@@ -142,7 +142,7 @@ export default function OrderComplete() {
     return (
       <div className='bg-surface flex min-h-screen flex-col items-center px-4 py-20'>
         <p className='mb-4 text-xl text-red-500'>주문 정보를 찾을 수 없습니다</p>
-        <Link href='/shop'>
+        <Link href='/shop?page=1'>
           <Button variant='primary' size='lg'>
             쇼핑 계속하기
           </Button>
@@ -291,7 +291,7 @@ export default function OrderComplete() {
             주문 내역 보기
           </Button>
         </Link>
-        <Link href='/shop' className='flex-1'>
+        <Link href='/shop?page=1' className='flex-1'>
           <Button variant='primary' size='lg' className='w-full'>
             쇼핑 계속하기
           </Button>

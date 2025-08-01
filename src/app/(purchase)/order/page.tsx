@@ -24,7 +24,7 @@ export default async function OrderPage() {
   // 임시 주문 데이터가 없고 결제 진행 중이 아닐 때만 리다이렉트
   if (!tempOrder && !isPaymentInProgress) {
     console.log('[OrderPage] 임시 주문 데이터 없고 결제 진행 중 아님 → 쇼핑 페이지로 리다이렉트');
-    redirect('/shop');
+    redirect('/shop?page=1');
   }
 
   // 임시 주문 데이터가 없지만 결제 진행 중인 경우 - 로딩 화면 표시

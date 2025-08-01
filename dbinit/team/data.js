@@ -3272,6 +3272,7 @@ export const initData = async (clientId, nextSeq) => {
         product_id: 7,
         quantity: 2,
         color: '갈색',
+        user_id: 2,
         createdAt: getTime(),
         updatedAt: getTime(),
         product: {

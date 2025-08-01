@@ -17,15 +17,15 @@ export async function generateMetadata({ params }: ProductDetailPageProps) {
 
     if (!productResponse.ok || !productResponse.item) {
       return {
-        title: '상품 상세 | 4vely Plant Shop',
-        description: '식물 상품 상세 정보',
+        title: '상품 상세 | GreenMate',
+        description: '상품 상세 정보',
       };
     }
 
     const productData = productResponse.item;
 
     return {
-      title: `${productData.name} | 4vely Plant Shop`,
+      title: `${productData.name} | GreenMate`,
       description: productData.content ? productData.content.replace(/<[^>]*>/g, '').substring(0, 160) : `${productData.name} 상품 상세 정보`,
       openGraph: {
         title: productData.name,
@@ -36,8 +36,8 @@ export async function generateMetadata({ params }: ProductDetailPageProps) {
   } catch (error) {
     console.error('메타데이터 생성 실패:', error);
     return {
-      title: '상품 상세 | 4vely Plant Shop',
-      description: '식물 상품 상세 정보',
+      title: '상품 상세 | GreenMate',
+      description: '상품 상세 정보',
     };
   }
 }

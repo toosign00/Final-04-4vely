@@ -201,17 +201,17 @@ export default function OrderComplete() {
   }
 
   return (
-    <div className='bg-surface flex min-h-screen flex-col items-center px-4 py-20'>
+    <div className='bg-surface flex min-h-screen flex-col items-center px-4 py-10 md:py-14 lg:py-20'>
       {/* 완료 아이콘 */}
-      <div className='mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-green-100'>
-        <svg className='h-12 w-12 text-green-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 13l4 4L19 7' />
+      <div className='mb-8 flex size-14 items-center justify-center rounded-full bg-gradient-to-r from-[#7ECBD5] to-[#92D399] md:size-18 lg:size-24'>
+        <svg className='size-8 text-white md:size-10 lg:size-12' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={3} d='M5 13l4 4L19 7' />
         </svg>
       </div>
 
       {/* 완료 메시지 */}
-      <h1 className='text-secondary mb-2 text-3xl font-bold'>주문이 완료되었습니다!</h1>
-      <p className='mb-8 text-lg text-gray-600'>주문번호: {orderInfo._id}</p>
+      <h1 className='text-secondary mb-2 text-xl font-bold md:text-2xl lg:text-3xl'>주문이 완료되었습니다!</h1>
+      <p className='mb-8 text-base text-gray-600 lg:text-lg'>주문번호: {orderInfo._id}</p>
 
       {/* 주문 정보 카드 */}
       <div className='mb-8 w-full max-w-2xl rounded-2xl bg-white p-8 shadow-md'>
@@ -253,7 +253,7 @@ export default function OrderComplete() {
             {orderInfo.memo && ((typeof orderInfo.memo === 'string' && orderInfo.memo) || (typeof orderInfo.memo === 'object' && orderInfo.memo.selectedMemo)) && (
               <>
                 <div className='mb-4'>
-                  <h3 className='mb-2 font-semibold'>배송 요청사항</h3>
+                  <h3 className='mb-2 font-semibold'>배송 메모</h3>
                   <p className='text-gray-600'>{typeof orderInfo.memo === 'string' ? orderInfo.memo : orderInfo.memo.selectedMemo}</p>
                 </div>
               </>
@@ -285,14 +285,14 @@ export default function OrderComplete() {
       </div>
 
       {/* 액션 버튼들 */}
-      <div className='flex w-full max-w-2xl space-x-4'>
-        <Link href='/my-page/order-history' className='flex-1'>
-          <Button variant='outline' size='lg' className='w-full'>
+      <div className='flex w-full max-w-2xl justify-between space-x-4'>
+        <Link href='/my-page/order-history'>
+          <Button variant='outline' size='lg' className='font-semibold'>
             주문 내역 보기
           </Button>
         </Link>
-        <Link href='/shop?page=1' className='flex-1'>
-          <Button variant='primary' size='lg' className='w-full'>
+        <Link href='/shop?page=1' className='items-start'>
+          <Button variant='primary' size='lg' className='font-semibold'>
             쇼핑 계속하기
           </Button>
         </Link>

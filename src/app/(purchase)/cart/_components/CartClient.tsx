@@ -56,8 +56,8 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
   useState(() => {
     const options: Record<number, string> = {};
     cartItems.forEach((item) => {
-      if (item.size) {
-        options[item._id] = item.size;
+      if (item.color) {
+        options[item._id] = item.color;
       }
     });
     setSelectedOptions(options);
@@ -196,7 +196,7 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
     const newColor = selectedOptions[itemId];
     const item = cartItems.find((item) => item._id === itemId);
 
-    if (!item || !newColor || newColor === item.size) {
+    if (!item || !newColor || newColor === item.color) {
       setOpenDialogId(null);
       return;
     }
@@ -358,7 +358,7 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
                       <div className='flex h-28 flex-col justify-between py-1 sm:h-32 md:h-36 lg:h-40'>
                         <div className='space-y-1'>
                           <h2 className='text-sm leading-tight font-semibold sm:text-lg md:text-lg xl:text-xl'>{item.product.name}</h2>
-                          {item.size && <p className='text-muted-foreground text-xs sm:text-sm md:text-sm lg:text-base'>화분 색상 : {getColorKoreanName(item.size)}</p>}
+                          {item.color && <p className='text-muted-foreground text-xs sm:text-sm md:text-sm lg:text-base'>화분 색상 : {getColorKoreanName(item.color)}</p>}
                         </div>
                         <p className='text-sm font-semibold sm:text-base md:text-lg xl:text-xl'>₩ {(item.product.price * item.quantity).toLocaleString()}</p>
                       </div>
@@ -381,7 +381,7 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
                               </DialogHeader>
                               <div className='flex items-start gap-4'>
                                 <div className='relative h-[100px] w-[100px] shrink-0'>
-                                  <Image src={getPreviewImageUrl(item, selectedOptions[item._id] || item.size || '')} alt={item.product.name} fill className='rounded object-cover' />
+                                  <Image src={getPreviewImageUrl(item, selectedOptions[item._id] || item.color || '')} alt={item.product.name} fill className='rounded object-cover' />
                                 </div>
                                 <div>
                                   <h2 className='text-base font-bold md:text-2xl'>{item.product.name}</h2>

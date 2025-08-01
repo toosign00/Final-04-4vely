@@ -6,7 +6,6 @@ function getTime(day = 0, second = 0) {
 
 export const initData = async (clientId, nextSeq) => {
   return {
-    // 회원
     user: [
       {
         _id: await nextSeq('user'),
@@ -58,54 +57,18 @@ export const initData = async (clientId, nextSeq) => {
       },
     ],
 
-    /* 상품 카테고리
-    1~65 : 식물 / 66~77 : 원예 용품
-
-    < 식물 >
-    '소형', '중형', '대형', ---> 크기
-    '쉬움', '보통', '어려움', ---> 난이도
-    '음지', '간접광', '직사광', ---> 빛 조건
-    '실외', '거실', '침실', '욕실', '주방', '사무실', ---> 공간
-    '봄', '여름', '가을', '겨울' ---> 계절
-
-    < 원예 용품 >
-    '화분', '도구', '조명' */
-
-    /* 상품 태그
-    태그명 - 태그설명
-
-    < 식물 >
-    // 물 주기 빈도
-    매일 물주기 - 매일
-    주 1회 물주기 - 일주일에 한 번
-    월 1회 물주기 - 한 달에 한 번
-
-    // 습도 관련
-    다습 식물 - 높은 습도 필요
-    보통 습도 - 일반 실내 습도 적응
-    건조 식물 - 건조한 환경 적응
-
-    // 온도/계절 관련
-    따뜻함 선호 - 따뜻한 온도 선호
-    서늘함 선호 - 서늘한 온도 선호
-    봄이 좋아요 - 봄철 활발한 성장
-    더위 내성 - 여름 더위 잘 견딤
-    겨울잠 - 겨울철 휴면기 
-    
-    < 원예 용품 >
-    신상품, 베스트, 초보자, 관리 쉬움 */
     product: [
       {
-        _id: await nextSeq('product'), // 상품 고유 ID
-        seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-        name: '하트 호야', // 상품명
-        price: 18000, // 상품 가격
-        shippingFees: 3000, // 배송비
-        show: true, // 상품 표시 여부
-        active: true, // 상품 활성화 여부
-        quantity: 9999, // 상품 재고
-        buyQuantity: 12, // 판매된 수량
-        mainImages: [`files/${clientId}/hoya_heart_black.webp`, `files/${clientId}/hoya_heart_brown.webp`], // 상품 메인 이미지
+        _id: await nextSeq('product'),
+        seller_id: 1,
+        name: '하트 호야',
+        price: 18000,
+        shippingFees: 3000,
+        show: true,
+        active: true,
+        quantity: 9999,
+        buyQuantity: 12,
+        mainImages: [`files/${clientId}/hoya_heart_black.webp`, `files/${clientId}/hoya_heart_brown.webp`],
         content: `
           <div class="product-detail">
             <p>통통한 하트모양의 잎이 사랑스러운 하트호야는 예쁜 생김새는 물론이고 키우기도 까다롭지 않아 식물을 처음 키우는 초보 식집사에게 선물하기 좋은 식물입니다. 그 사랑스러운 생김새 떄문에 서양에서는 연인에게 발렌타인 데이에 하트호야를 선물한다고 해요. 그래서 'Sweetheart Vine', 'Valentine's Hoya'라고도 불리운답니다.</p>
@@ -116,37 +79,25 @@ export const initData = async (clientId, nextSeq) => {
         createdAt: getTime(),
         updatedAt: getTime(),
         extra: {
-          isNew: true, // 신상품 여부(boolean)
-          isBest: false, // 베스트 상품 여부(boolean)
+          isNew: true,
+          isBest: false,
           tags: ['월 1회 물주기', '보통 습도', '따뜻함 선호'],
-          category: [
-            // 상품 카테고리(array)
-            '식물',
-            '소형',
-            '쉬움',
-            '음지',
-            '간접광',
-            '거실',
-            '침실',
-            '사무실',
-            '봄',
-            '가을',
-          ],
+          category: ['식물', '소형', '쉬움', '음지', '간접광', '거실', '침실', '사무실', '봄', '가을'],
           potColors: ['흑색', '갈색'],
-          sort: 1, // 상품 정렬 순서(number)
+          sort: 1,
         },
       },
       {
-        _id: await nextSeq('product'), // 상품 고유 ID
-        seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-        name: '스파티필름', // 상품명
-        price: 20000, // 상품 가격
-        shippingFees: 3000, // 배송비
-        show: true, // 상품 표시 여부
-        active: true, // 상품 활성화 여부
-        quantity: 9999, // 상품 재고
-        buyQuantity: 15, // 판매된 수량
-        mainImages: [`files/${clientId}/Spathiphyllum_black.webp`, `files/${clientId}/Spathiphyllum_brown.webp`, `files/${clientId}/Spathiphyllum_gray.webp`], // 상품 메인 이미지
+        _id: await nextSeq('product'),
+        seller_id: 1,
+        name: '스파티필름',
+        price: 20000,
+        shippingFees: 3000,
+        show: true,
+        active: true,
+        quantity: 9999,
+        buyQuantity: 15,
+        mainImages: [`files/${clientId}/Spathiphyllum_black.webp`, `files/${clientId}/Spathiphyllum_brown.webp`, `files/${clientId}/Spathiphyllum_gray.webp`],
         content: `
           <div class="product-detail">
             <p>스파티필름은 공기 정화 능력이 매우 뛰어난 식물이에요. 게다가 빛이 많이 들지 않는 환경에서도 잘 견디고 꽃도 피우기 때문에 초보가드너도 쉽게 키울 수 있는 실내 공기정화 식물이랍니다.</p>
@@ -156,37 +107,25 @@ export const initData = async (clientId, nextSeq) => {
         createdAt: getTime(),
         updatedAt: getTime(),
         extra: {
-          isNew: true, // 신상품 여부(boolean)
-          isBest: false, // 베스트 상품 여부(boolean)
+          isNew: true,
+          isBest: false,
           tags: ['매일 물주기', '다습 식물', '따뜻함 선호'],
-          category: [
-            // 상품 카테고리(array)
-            '식물',
-            '중형',
-            '보통',
-            '음지',
-            '간접광',
-            '거실',
-            '침실',
-            '사무실',
-            '봄',
-            '가을',
-          ],
+          category: ['식물', '중형', '보통', '음지', '간접광', '거실', '침실', '사무실', '봄', '가을'],
           potColors: ['흑색', '갈색', '회색'],
-          sort: 2, // 상품 정렬 순서(number)
+          sort: 2,
         },
       },
       {
-        _id: await nextSeq('product'), // 상품 고유 ID
-        seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-        name: '몬스테라 아단소니', // 상품명
-        price: 24000, // 상품 가격
-        shippingFees: 3000, // 배송비
-        show: true, // 상품 표시 여부
-        active: true, // 상품 활성화 여부
-        quantity: 9999, // 상품 재고
-        buyQuantity: 10, // 판매된 수량
-        mainImages: [`files/${clientId}/monstera_adansonii_black.webp`], // 상품 메인 이미지
+        _id: await nextSeq('product'),
+        seller_id: 1,
+        name: '몬스테라 아단소니',
+        price: 24000,
+        shippingFees: 3000,
+        show: true,
+        active: true,
+        quantity: 9999,
+        buyQuantity: 10,
+        mainImages: [`files/${clientId}/monstera_adansonii_black.webp`],
         content: `
           <div class="product-detail">
             <p>몬스테라 아단소니는 관리가 쉬운 식물로, 잎에 구멍이 나 있는 듯한 화려한 무늬가 특징입니다. 덩굴식물이기 때문에 화분 위로 뻗으며, 말뚝이나 격자를 따라 기어오를 수 있습니다.</p>
@@ -196,36 +135,25 @@ export const initData = async (clientId, nextSeq) => {
         createdAt: getTime(),
         updatedAt: getTime(),
         extra: {
-          isNew: false, // 신상품 여부(boolean)
-          isBest: false, // 베스트 상품 여부(boolean)
+          isNew: false,
+          isBest: false,
           tags: ['주 1회 물주기', '다습 식물', '따뜻함 선호'],
-          category: [
-            // 상품 카테고리(array)
-            '식물',
-            '중형',
-            '쉬움',
-            '음지',
-            '간접광',
-            '욕실',
-            '주방',
-            '봄',
-            '여름',
-          ],
+          category: ['식물', '중형', '쉬움', '음지', '간접광', '욕실', '주방', '봄', '여름'],
           potColors: ['흑색'],
-          sort: 3, // 상품 정렬 순서(number)
+          sort: 3,
         },
       },
       {
-        _id: await nextSeq('product'), // 상품 고유 ID
-        seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-        name: '옥잠화', // 상품명
-        price: 25000, // 상품 가격
-        shippingFees: 3000, // 배송비
-        show: true, // 상품 표시 여부
-        active: true, // 상품 활성화 여부
-        quantity: 9999, // 상품 재고
-        buyQuantity: 11, // 판매된 수량
-        mainImages: [`files/${clientId}/ocjamhwa_brown.webp`, `files/${clientId}/ocjamhwa_gray.webp`], // 상품 메인 이미지
+        _id: await nextSeq('product'),
+        seller_id: 1,
+        name: '옥잠화',
+        price: 25000,
+        shippingFees: 3000,
+        show: true,
+        active: true,
+        quantity: 9999,
+        buyQuantity: 11,
+        mainImages: [`files/${clientId}/ocjamhwa_brown.webp`, `files/${clientId}/ocjamhwa_gray.webp`],
         content: `
           <div class="product-detail">
             <p>옥잠화는 가장 사랑받는 다육식물 중 하나입니다. 관리가 쉽고 오래가는 이 식물은 대대로 물려줄 수 있어 가족의 가보가 될 수 있습니다.</p>
@@ -235,38 +163,25 @@ export const initData = async (clientId, nextSeq) => {
         createdAt: getTime(),
         updatedAt: getTime(),
         extra: {
-          isNew: false, // 신상품 여부(boolean)
-          isBest: true, // 베스트 상품 여부(boolean)
+          isNew: false,
+          isBest: true,
           tags: ['주 1회 물주기', '건조 식물', '서늘함 선호'],
-          category: [
-            // 상품 카테고리(array)
-            '식물',
-            '소형',
-            '쉬움',
-            '간접광',
-            '거실',
-            '침실',
-            '사무실',
-            '봄',
-            '여름',
-            '가을',
-            '겨울',
-          ],
+          category: ['식물', '소형', '쉬움', '간접광', '거실', '침실', '사무실', '봄', '여름', '가을', '겨울'],
           potColors: ['갈색', '회색'],
-          sort: 4, // 상품 정렬 순서(number)
+          sort: 4,
         },
       },
       {
-        _id: await nextSeq('product'), // 상품 고유 ID
-        seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-        name: '나비란', // 상품명
-        price: 19000, // 상품 가격
-        shippingFees: 3000, // 배송비
-        show: true, // 상품 표시 여부
-        active: true, // 상품 활성화 여부
-        quantity: 9999, // 상품 재고
-        buyQuantity: 13, // 판매된 수량
-        mainImages: [`files/${clientId}/nabiran_black.webp`, `files/${clientId}/nabiran_brown.webp`, `files/${clientId}/nabiran_gray.webp`], // 상품 메인 이미지
+        _id: await nextSeq('product'),
+        seller_id: 1,
+        name: '나비란',
+        price: 19000,
+        shippingFees: 3000,
+        show: true,
+        active: true,
+        quantity: 9999,
+        buyQuantity: 13,
+        mainImages: [`files/${clientId}/nabiran_black.webp`, `files/${clientId}/nabiran_brown.webp`, `files/${clientId}/nabiran_gray.webp`],
         content: `
           <div class="product-detail">
             <p>나비란은 실내 식물 중 적응력이 가장 뛰어나며 키우기도 매우 쉽습니다. 이 우아한 식물은 테이블 위부터 벽난로까지, 또는 아름다운 아치형 잎으로 매달아 두는 식물까지 어디에서나 돋보입니다.</p>
@@ -276,41 +191,25 @@ export const initData = async (clientId, nextSeq) => {
         createdAt: getTime(),
         updatedAt: getTime(),
         extra: {
-          isNew: true, // 신상품 여부(boolean)
-          isBest: false, // 베스트 상품 여부(boolean)
+          isNew: true,
+          isBest: false,
           tags: ['주 1회 물주기', '보통 습도', '봄이 좋아요'],
-          category: [
-            // 상품 카테고리(array)
-            '식물',
-            '중형',
-            '쉬움',
-            '음지',
-            '간접광',
-            '거실',
-            '침실',
-            '욕실',
-            '주방',
-            '사무실',
-            '봄',
-            '여름',
-            '가을',
-            '겨울',
-          ],
+          category: ['식물', '중형', '쉬움', '음지', '간접광', '거실', '침실', '욕실', '주방', '사무실', '봄', '여름', '가을', '겨울'],
           potColors: ['흑색', '갈색', '회색'],
-          sort: 5, // 상품 정렬 순서(number)
+          sort: 5,
         },
       },
       {
-        _id: await nextSeq('product'), // 상품 고유 ID
-        seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-        name: '팔러 팜', // 상품명
-        price: 29000, // 상품 가격
-        shippingFees: 3000, // 배송비
-        show: true, // 상품 표시 여부
-        active: true, // 상품 활성화 여부
-        quantity: 9999, // 상품 재고
-        buyQuantity: 20, // 판매된 수량
-        mainImages: [`files/${clientId}/parlor_palm_black.webp`, `files/${clientId}/parlor_palm_brown.webp`, `files/${clientId}/parlor_palm_gray.webp`], // 상품 메인 이미지
+        _id: await nextSeq('product'),
+        seller_id: 1,
+        name: '팔러 팜',
+        price: 29000,
+        shippingFees: 3000,
+        show: true,
+        active: true,
+        quantity: 9999,
+        buyQuantity: 20,
+        mainImages: [`files/${clientId}/parlor_palm_black.webp`, `files/${clientId}/parlor_palm_brown.webp`, `files/${clientId}/parlor_palm_gray.webp`],
         content: `
           <div class="product-detail">
             <p>느리게 자라는 이 소형 야자나무는 다양한 조명 환경과 좁은 공간에서 잘 자랍니다. 짙은 녹색 잎은 무성하고 풍성한 식물로, 탁상, 책상, 선반에 놓으면 더욱 아름답습니다.</p>
@@ -321,39 +220,25 @@ export const initData = async (clientId, nextSeq) => {
         createdAt: getTime(),
         updatedAt: getTime(),
         extra: {
-          isNew: false, // 신상품 여부(boolean)
-          isBest: true, // 베스트 상품 여부(boolean)
+          isNew: false,
+          isBest: true,
           tags: ['주 1회 물주기', '다습 식물', '따뜻함 선호'],
-          category: [
-            // 상품 카테고리(array)
-            '식물',
-            '중형',
-            '쉬움',
-            '음지',
-            '간접광',
-            '침실',
-            '주방',
-            '사무실',
-            '봄',
-            '여름',
-            '가을',
-            '겨울',
-          ],
+          category: ['식물', '중형', '쉬움', '음지', '간접광', '침실', '주방', '사무실', '봄', '여름', '가을', '겨울'],
           potColors: ['흑색', '갈색', '회색'],
-          sort: 6, // 상품 정렬 순서(number)
+          sort: 6,
         },
       },
       {
-        _id: await nextSeq('product'), // 상품 고유 ID
-        seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-        name: '드라세나 골든 하트', // 상품명
-        price: 28000, // 상품 가격
-        shippingFees: 3000, // 배송비
-        show: true, // 상품 표시 여부
-        active: true, // 상품 활성화 여부
-        quantity: 9999, // 상품 재고
-        buyQuantity: 19, // 판매된 수량
-        mainImages: [`files/${clientId}/dracaena_black.webp`, `files/${clientId}/dracaena_brown.webp`, `files/${clientId}/dracaena_white.webp`, `files/${clientId}/dracaena_blue.webp`], // 상품 메인 이미지
+        _id: await nextSeq('product'),
+        seller_id: 1,
+        name: '드라세나 골든 하트',
+        price: 28000,
+        shippingFees: 3000,
+        show: true,
+        active: true,
+        quantity: 9999,
+        buyQuantity: 19,
+        mainImages: [`files/${clientId}/dracaena_black.webp`, `files/${clientId}/dracaena_brown.webp`, `files/${clientId}/dracaena_white.webp`, `files/${clientId}/dracaena_blue.webp`],
         content: `
           <div class="product-detail">
             <p>드라세나 골든 하트는 실내에서 키우기 가장 쉬운 식물 중 하나입니다. 밝은 줄무늬 잎은 거의 모든 실내 환경에 잘 적응하며 잘 자랍니다.</p>
@@ -365,38 +250,25 @@ export const initData = async (clientId, nextSeq) => {
         createdAt: getTime(),
         updatedAt: getTime(),
         extra: {
-          isNew: true, // 신상품 여부(boolean)
-          isBest: false, // 베스트 상품 여부(boolean)
+          isNew: true,
+          isBest: false,
           tags: ['주 1회 물주기', '건조 식물', '따뜻함 선호'],
-          category: [
-            // 상품 카테고리(array)
-            '식물',
-            '중형',
-            '쉬움',
-            '음지',
-            '간접광',
-            '거실',
-            '침실',
-            '주방',
-            '사무실',
-            '봄',
-            '여름',
-          ],
+          category: ['식물', '중형', '쉬움', '음지', '간접광', '거실', '침실', '주방', '사무실', '봄', '여름'],
           potColors: ['흑색', '갈색', '흰색', '남색'],
-          sort: 7, // 상품 정렬 순서(number)
+          sort: 7,
         },
       },
       {
-        _id: await nextSeq('product'), // 상품 고유 ID
-        seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-        name: '브로멜리아드', // 상품명
-        price: 22000, // 상품 가격
-        shippingFees: 3000, // 배송비
-        show: true, // 상품 표시 여부
-        active: true, // 상품 활성화 여부
-        quantity: 9999, // 상품 재고
-        buyQuantity: 25, // 판매된 수량
-        mainImages: [`files/${clientId}/bromeliad_black.webp`, `files/${clientId}/bromeliad_brown.webp`, `files/${clientId}/bromeliad_white.webp`, `files/${clientId}/bromeliad_gray.webp`], // 상품 메인 이미지
+        _id: await nextSeq('product'),
+        seller_id: 1,
+        name: '브로멜리아드',
+        price: 22000,
+        shippingFees: 3000,
+        show: true,
+        active: true,
+        quantity: 9999,
+        buyQuantity: 25,
+        mainImages: [`files/${clientId}/bromeliad_black.webp`, `files/${clientId}/bromeliad_brown.webp`, `files/${clientId}/bromeliad_white.webp`, `files/${clientId}/bromeliad_gray.webp`],
         content: `
           <div class="product-detail">
             <p>화려하고 관리가 쉬운 브로멜리아드는 집안에 따스함을 더하는 매력적인 실내 식물입니다.</p>
@@ -406,41 +278,25 @@ export const initData = async (clientId, nextSeq) => {
         createdAt: getTime(),
         updatedAt: getTime(),
         extra: {
-          isNew: false, // 신상품 여부(boolean)
-          isBest: false, // 베스트 상품 여부(boolean)
+          isNew: false,
+          isBest: false,
           tags: ['매일 물주기', '다습 식물', '따뜻함 선호'],
-          category: [
-            // 상품 카테고리(array)
-            '식물',
-            '소형',
-            '쉬움',
-            '음지',
-            '실외',
-            '거실',
-            '침실',
-            '욕실',
-            '주방',
-            '사무실',
-            '봄',
-            '여름',
-            '가을',
-            '겨울',
-          ],
+          category: ['식물', '소형', '쉬움', '음지', '실외', '거실', '침실', '욕실', '주방', '사무실', '봄', '여름', '가을', '겨울'],
           potColors: ['흑색', '갈색', '흰색', '회색'],
-          sort: 8, // 상품 정렬 순서(number)
+          sort: 8,
         },
       },
       {
-        _id: await nextSeq('product'), // 상품 고유 ID
-        seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-        name: '필로덴드론 버킨', // 상품명
-        price: 29000, // 상품 가격
-        shippingFees: 3000, // 배송비
-        show: true, // 상품 표시 여부
-        active: true, // 상품 활성화 여부
-        quantity: 9999, // 상품 재고
-        buyQuantity: 11, // 판매된 수량
-        mainImages: [`files/${clientId}/philodendron_birkin_black.webp`, `files/${clientId}/philodendron_birkin_brown.webp`, `files/${clientId}/philodendron_birkin_gray.webp`], // 상품 메인 이미지
+        _id: await nextSeq('product'),
+        seller_id: 1,
+        name: '필로덴드론 버킨',
+        price: 29000,
+        shippingFees: 3000,
+        show: true,
+        active: true,
+        quantity: 9999,
+        buyQuantity: 11,
+        mainImages: [`files/${clientId}/philodendron_birkin_black.webp`, `files/${clientId}/philodendron_birkin_brown.webp`, `files/${clientId}/philodendron_birkin_gray.webp`],
         content: `
           <div class="product-detail">
             <p>필로덴드론 버킨은 윤기 있고 두꺼운 잎에 섬세한 흰색 핀스트라이프 무늬가 있는 순한 식물입니다. 다양한 실내 환경에 잘 적응하는 버킨은 어떤 집에서든 시선을 사로잡는 식물입니다.</p>
@@ -450,41 +306,25 @@ export const initData = async (clientId, nextSeq) => {
         createdAt: getTime(),
         updatedAt: getTime(),
         extra: {
-          isNew: false, // 신상품 여부(boolean)
-          isBest: true, // 베스트 상품 여부(boolean)
+          isNew: false,
+          isBest: true,
           tags: ['주 1회 물주기', '다습 식물', '따뜻함 선호'],
-          category: [
-            // 상품 카테고리(array)
-            '식물',
-            '소형',
-            '쉬움',
-            '음지',
-            '간접광',
-            '거실',
-            '침실',
-            '욕실',
-            '주방',
-            '사무실',
-            '봄',
-            '여름',
-            '가을',
-            '겨울',
-          ],
+          category: ['식물', '소형', '쉬움', '음지', '간접광', '거실', '침실', '욕실', '주방', '사무실', '봄', '여름', '가을', '겨울'],
           potColors: ['흑색', '갈색', '회색'],
-          sort: 9, // 상품 정렬 순서(number)
+          sort: 9,
         },
       },
       {
-        _id: await nextSeq('product'), // 상품 고유 ID
-        seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-        name: '필로덴드론 문라이트', // 상품명
-        price: 32000, // 상품 가격
-        shippingFees: 3000, // 배송비
-        show: true, // 상품 표시 여부
-        active: true, // 상품 활성화 여부
-        quantity: 9999, // 상품 재고
-        buyQuantity: 35, // 판매된 수량
-        mainImages: [`files/${clientId}/philodendron_moonlight_black.webp`, `files/${clientId}/philodendron_moonlight_white.webp`, `files/${clientId}/philodendron_moonlight_gray.webp`], // 상품 메인 이미지
+        _id: await nextSeq('product'),
+        seller_id: 1,
+        name: '필로덴드론 문라이트',
+        price: 32000,
+        shippingFees: 3000,
+        show: true,
+        active: true,
+        quantity: 9999,
+        buyQuantity: 35,
+        mainImages: [`files/${clientId}/philodendron_moonlight_black.webp`, `files/${clientId}/philodendron_moonlight_white.webp`, `files/${clientId}/philodendron_moonlight_gray.webp`],
         content: `
           <div class="product-detail">
             <p>네온 옐로우 색상의 새 잎이 밝고 윤기 나는 녹색으로 자라는 필로덴드론 문라이트로 집안에 생기를 더하세요. 이 간편한 식물은 밝은 간접광에서 잘 자라며 어떤 실내 공간에도 열대적인 분위기를 더합니다.</p>
@@ -494,39 +334,25 @@ export const initData = async (clientId, nextSeq) => {
         createdAt: getTime(),
         updatedAt: getTime(),
         extra: {
-          isNew: false, // 신상품 여부(boolean)
-          isBest: true, // 베스트 상품 여부(boolean)
+          isNew: false,
+          isBest: true,
           tags: ['주 1회 물주기', '다습 식물', '따뜻함 선호'],
-          category: [
-            // 상품 카테고리(array)
-            '식물',
-            '소형',
-            '쉬움',
-            '간접광',
-            '거실',
-            '침실',
-            '주방',
-            '사무실',
-            '봄',
-            '여름',
-            '가을',
-            '겨울',
-          ],
+          category: ['식물', '소형', '쉬움', '간접광', '거실', '침실', '주방', '사무실', '봄', '여름', '가을', '겨울'],
           potColors: ['흑색', '흰색', '회색'],
-          sort: 10, // 상품 정렬 순서(number)
+          sort: 10,
         },
       },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '알로카시아 폴리', // 상품명
-      //   price: 32000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 18, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/alocasia_polly_black.webp`, `/files/${clientId}/alocasia_polly_brown.webp`, `/files/${clientId}/alocasia_polly_gray.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '알로카시아 폴리',
+      //   price: 32000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 18,
+      //   mainImages: [`/files/${clientId}/alocasia_polly_black.webp`, `/files/${clientId}/alocasia_polly_brown.webp`, `/files/${clientId}/alocasia_polly_gray.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>알로카시아 폴리는 은빛 잎맥이 반짝이는 짙은 화살촉 모양의 잎을 가진 아름다운 식물입니다. 집안에서 따뜻하고 밝은 곳에 이 아름다운 식물을 두면 잘 자랄 것입니다.</p>
@@ -536,11 +362,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['매일 물주기', '다습 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '중형',
       //       '보통',
@@ -552,20 +378,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '여름',
       //     ],
       //     potColors: ['흑색', '갈색', '회색'],
-      //     sort: 11, // 상품 정렬 순서(number)
+      //     sort: 11,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '칼라테아 프레디', // 상품명
-      //   price: 27000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 16, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/calathea_freddie_brown.webp`, `/files/${clientId}/calathea_freddie_gray.webp`, `/files/${clientId}/calathea_freddie_blue.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '칼라테아 프레디',
+      //   price: 27000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 16,
+      //   mainImages: [`/files/${clientId}/calathea_freddie_brown.webp`, `/files/${clientId}/calathea_freddie_gray.webp`, `/files/${clientId}/calathea_freddie_blue.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>칼라테아 프레디는 칼라테아의 작은 품종으로, 잎이 식물 중앙에서 로제트 모양으로 자랍니다. 섬세하고 물결치는 깃털 모양의 잎은 연녹색에 짙은 녹색 줄무늬가 있습니다.</p>
@@ -575,11 +401,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: true, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: true,
       //     tags: ['매일 물주기', '다습 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '어려움',
@@ -593,20 +419,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['갈색', '회색', '남색'],
-      //     sort: 12, // 상품 정렬 순서(number)
+      //     sort: 12,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '골든 포토스', // 상품명
-      //   price: 25000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 32, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/golden_pothos_black.webp`, `/files/${clientId}/golden_pothos_brown.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '골든 포토스',
+      //   price: 25000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 32,
+      //   mainImages: [`/files/${clientId}/golden_pothos_black.webp`, `/files/${clientId}/golden_pothos_brown.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>골든 포토스는 선반이나 창틀에 꽂아두면 아름다운 폭포처럼 흘러내리는 매력적이고 관리가 쉬운 식물입니다. 하트 모양의 잎에 녹색에서 황금빛 노란색까지 다양한 줄무늬가 있는 이 식물은 시선을 사로잡을 준비가 되어 있습니다.</p>
@@ -616,11 +442,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: true, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: true,
+      //     isBest: false,
       //     tags: ['주 1회 물주기', '보통 습도', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '쉬움',
@@ -635,20 +461,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '가을',
       //     ],
       //     potColors: ['흑색', '갈색'],
-      //     sort: 13, // 상품 정렬 순서(number)
+      //     sort: 13,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '버건디 고무나무', // 상품명
-      //   price: 22000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 28, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/burgundy_rubber_tree_black.webp`, `/files/${clientId}/burgundy_rubber_tree_brown.webp`, `/files/${clientId}/burgundy_rubber_tree_white.webp`, `/files/${clientId}/burgundy_rubber_tree_blue.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '버건디 고무나무',
+      //   price: 22000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 28,
+      //   mainImages: [`/files/${clientId}/burgundy_rubber_tree_black.webp`, `/files/${clientId}/burgundy_rubber_tree_brown.webp`, `/files/${clientId}/burgundy_rubber_tree_white.webp`, `/files/${clientId}/burgundy_rubber_tree_blue.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>강인하고 드라마틱한 버건디 고무나무는 튼튼하고 곧은 줄기에 크고 윤기 나는 잎을 자랑합니다.</p>
@@ -659,11 +485,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: true, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: true,
       //     tags: ['주 1회 물주기', '보통 습도', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '중형',
       //       '보통',
@@ -677,20 +503,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['흑색', '갈색', '흰색', '남색'],
-      //     sort: 14, // 상품 정렬 순서(number)
+      //     sort: 14,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '피쿠스 티네케', // 상품명
-      //   price: 24000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 25, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/ficus_tineke_black.webp`, `/files/${clientId}/ficus_tineke_brown.webp`, `/files/${clientId}/ficus_tineke_gray.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '피쿠스 티네케',
+      //   price: 24000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 25,
+      //   mainImages: [`/files/${clientId}/ficus_tineke_black.webp`, `/files/${clientId}/ficus_tineke_brown.webp`, `/files/${clientId}/ficus_tineke_gray.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>인기 있는 버건디 고무나무의 생기 넘치는 동생, 피쿠스 티네케입니다.</p>
@@ -700,11 +526,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: true, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: true,
+      //     isBest: false,
       //     tags: ['주 1회 물주기', '보통 습도', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '중형',
       //       '보통',
@@ -717,20 +543,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '가을',
       //     ],
       //     potColors: ['흑색', '갈색', '회색'],
-      //     sort: 15, // 상품 정렬 순서(number)
+      //     sort: 15,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '필로덴드론 로호 콩고', // 상품명
-      //   price: 19000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 14, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/philodendron_congo_rojo_black.webp`, `/files/${clientId}/philodendron_congo_rojo_white.webp`, `/files/${clientId}/philodendron_congo_rojo_gray.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '필로덴드론 로호 콩고',
+      //   price: 19000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 14,
+      //   mainImages: [`/files/${clientId}/philodendron_congo_rojo_black.webp`, `/files/${clientId}/philodendron_congo_rojo_white.webp`, `/files/${clientId}/philodendron_congo_rojo_gray.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>선명한 붉은색에서 짙은 녹색으로 변하는 눈부시고 윤기 나는 잎으로 유명한 필로덴드론 로호 콩고로 공간을 더욱 돋보이게 하세요.</p>
@@ -741,11 +567,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: true, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: true,
+      //     isBest: false,
       //     tags: ['주 1회 물주기', '다습 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '쉬움',
@@ -762,20 +588,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['흑색', '흰색', '회색'],
-      //     sort: 16, // 상품 정렬 순서(number)
+      //     sort: 16,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '캥거루 고사리', // 상품명
-      //   price: 26000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 17, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/kangaroo_fern_black.webp`, `/files/${clientId}/kangaroo_fern_brown.webp`, `/files/${clientId}/kangaroo_fern_gray.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '캥거루 고사리',
+      //   price: 26000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 17,
+      //   mainImages: [`/files/${clientId}/kangaroo_fern_black.webp`, `/files/${clientId}/kangaroo_fern_brown.webp`, `/files/${clientId}/kangaroo_fern_gray.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>이 활기차고 반려동물 친화적인 고사리는 독특한 짙은 녹색 잎을 가지고 있습니다.</p>
@@ -786,11 +612,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['매일 물주기', '다습 식물', '서늘함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '중형',
       //       '쉬움',
@@ -802,20 +628,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '여름',
       //     ],
       //     potColors: ['흑색', '갈색', '회색'],
-      //     sort: 17, // 상품 정렬 순서(number)
+      //     sort: 17,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '포니테일 팜', // 상품명
-      //   price: 33000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 25, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/ponytail_palm_black.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '포니테일 팜',
+      //   price: 33000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 25,
+      //   mainImages: [`/files/${clientId}/ponytail_palm_black.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>포니테일 팜은 가뭄에 강한 관엽식물로, 굵은 잎사귀가 어떤 공간에도 이국적인 분위기를 더합니다.</p>
@@ -825,11 +651,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: true, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: true,
       //     tags: ['월 1회 물주기', '건조 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '중형',
       //       '쉬움',
@@ -843,20 +669,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['흑색'],
-      //     sort: 18, // 상품 정렬 순서(number)
+      //     sort: 18,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '얼룩무늬 셰플레라', // 상품명
-      //   price: 37000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 35, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/variegated_schefflera_black.webp`, `/files/${clientId}/variegated_schefflera_brown.webp`, `/files/${clientId}/variegated_schefflera_white.webp`, `/files/${clientId}/variegated_schefflera_blue.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '얼룩무늬 셰플레라',
+      //   price: 37000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 35,
+      //   mainImages: [`/files/${clientId}/variegated_schefflera_black.webp`, `/files/${clientId}/variegated_schefflera_brown.webp`, `/files/${clientId}/variegated_schefflera_white.webp`, `/files/${clientId}/variegated_schefflera_blue.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>우산 모양의 잎을 가진 장난기 넘치는 관엽식물, 얼룩무늬 셰플레라는 집 안에서 키우기 딱 좋은 식물입니다.</p>
@@ -867,11 +693,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: true, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: true,
       //     tags: ['주 1회 물주기', '보통 습도', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '중형',
       //       '쉬움',
@@ -887,20 +713,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['흑색', '갈색', '흰색', '남색'],
-      //     sort: 19, // 상품 정렬 순서(number)
+      //     sort: 19,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '발틱 블루 포토스', // 상품명
-      //   price: 26000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 14, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/baltic_blue_pothos_black.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '발틱 블루 포토스',
+      //   price: 26000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 14,
+      //   mainImages: [`/files/${clientId}/baltic_blue_pothos_black.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>길고 윤기 나는 잎에 자라면서 '창문'이라고 불리는 흥미로운 구멍이 생깁니다. 덩굴성으로 자라는 이 식물은 선반, 창틀 또는 행잉 플랜트로 사용하기에 안성맞춤입니다.</p>
@@ -910,11 +736,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['주 1회 물주기', '보통 습도', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '중형',
       //       '쉬움',
@@ -927,20 +753,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '가을',
       //     ],
       //     potColors: ['흑색'],
-      //     sort: 20, // 상품 정렬 순서(number)
+      //     sort: 20,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '극락조', // 상품명
-      //   price: 36000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 32, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/geokrak_black.webp`, `/files/${clientId}/geokrak_brown.webp`, `/files/${clientId}/geokrak_white.webp`, `/files/${clientId}/geokrak_gray.webp`, `/files/${clientId}/geokrak_blue.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '극락조',
+      //   price: 36000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 32,
+      //   mainImages: [`/files/${clientId}/geokrak_black.webp`, `/files/${clientId}/geokrak_brown.webp`, `/files/${clientId}/geokrak_white.webp`, `/files/${clientId}/geokrak_gray.webp`, `/files/${clientId}/geokrak_blue.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>극락조는 실내 식물계의 여왕으로 여겨집니다. 이 크고 곧은 식물은 윤기 나는 바나나 모양의 잎이 퍼져 나가 공간에 풍부한 열대 분위기를 더합니다.</p>
@@ -952,11 +778,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: true, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: true,
       //     tags: ['매일 물주기', '다습 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '대형', // 크기
       //       '보통',
@@ -972,20 +798,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['흑색', '갈색', '흰색', '회색', '남색'],
-      //     sort: 21, // 상품 정렬 순서(number)
+      //     sort: 21,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '필로덴드론 선 레드', // 상품명
-      //   price: 30000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 27, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/philodendron_sun_red_black.webp`, `/files/${clientId}/philodendron_sun_red_white.webp`, `/files/${clientId}/philodendron_sun_red_gray.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '필로덴드론 선 레드',
+      //   price: 30000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 27,
+      //   mainImages: [`/files/${clientId}/philodendron_sun_red_black.webp`, `/files/${clientId}/philodendron_sun_red_white.webp`, `/files/${clientId}/philodendron_sun_red_gray.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>필로덴드론 선 레드는 생동감 넘치고 윤기 나는 잎이 붉은색과 주황색으로 변하며, 짙은 녹색으로 자라는 아름다운 관엽식물입니다.</p>
@@ -996,11 +822,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: true, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: true,
+      //     isBest: false,
       //     tags: ['주 1회 물주기', '다습 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '쉬움',
@@ -1015,20 +841,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['흑색', '흰색', '회색'],
-      //     sort: 22, // 상품 정렬 순서(number)
+      //     sort: 22,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '올리브 나무', // 상품명
-      //   price: 27000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 16, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/olive_tree_black.webp`, `/files/${clientId}/olive_tree_brown.webp`, `/files/${clientId}/olive_tree_gray.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '올리브 나무',
+      //   price: 27000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 16,
+      //   mainImages: [`/files/${clientId}/olive_tree_black.webp`, `/files/${clientId}/olive_tree_brown.webp`, `/files/${clientId}/olive_tree_gray.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>은은하게 빛나는 세이지 그린 잎을 가진 올리브 나무는 당신의 집 인테리어에 섬세한 색감과 질감을 더할 준비가 되었습니다.</p>
@@ -1038,11 +864,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['주 1회 물주기', '건조 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '중형',
       //       '쉬움',
@@ -1056,20 +882,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['흑색', '갈색', '회색'],
-      //     sort: 23, // 상품 정렬 순서(number)
+      //     sort: 23,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '백색 난초', // 상품명
-      //   price: 30000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 33, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/white_orchid_black.webp`, `/files/${clientId}/white_orchid_brown.webp`, `/files/${clientId}/white_orchid_white.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '백색 난초',
+      //   price: 30000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 33,
+      //   mainImages: [`/files/${clientId}/white_orchid_black.webp`, `/files/${clientId}/white_orchid_brown.webp`, `/files/${clientId}/white_orchid_white.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>우아하고 아담한 실내 식물로, 어떤 공간에도 시대를 초월하는 우아함을 선사합니다.</p>
@@ -1080,11 +906,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: true, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: true,
       //     tags: ['주 1회 물주기', '다습 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '보통',
@@ -1098,20 +924,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['흑색', '갈색', '흰색'],
-      //     sort: 24, // 상품 정렬 순서(number)
+      //     sort: 24,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '머니 트리', // 상품명
-      //   price: 26000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 37, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/money_tree_black.webp`, `/files/${clientId}/money_tree_brown.webp`, `/files/${clientId}/money_tree_gray.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '머니 트리',
+      //   price: 26000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 37,
+      //   mainImages: [`/files/${clientId}/money_tree_black.webp`, `/files/${clientId}/money_tree_brown.webp`, `/files/${clientId}/money_tree_gray.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>머니 트리는 열대적인 분위기와 행운을 동시에 선사하는 완벽한 실내 식물로, 관리가 간편합니다.</p>
@@ -1123,11 +949,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: true, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: true,
       //     tags: ['주 1회 물주기', '다습 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '중형',
       //       '쉬움',
@@ -1141,20 +967,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['흑색', '갈색', '회색'],
-      //     sort: 25, // 상품 정렬 순서(number)
+      //     sort: 25,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '실버 포토스', // 상품명
-      //   price: 22000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 18, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/silver_pothos_brown.webp`, `/files/${clientId}/silver_pothos_gray.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '실버 포토스',
+      //   price: 22000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 18,
+      //   mainImages: [`/files/${clientId}/silver_pothos_brown.webp`, `/files/${clientId}/silver_pothos_gray.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>실버 포토스 잎은 녹색 바탕에 빛을 반사하며 반짝이는 메탈릭 실버 무늬가 마치 이 세상 것이 아닌 듯 신비로운 분위기를 자아냅니다.</p>
@@ -1165,11 +991,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['주 1회 물주기', '보통 습도', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '쉬움',
@@ -1185,20 +1011,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['갈색', '회색'],
-      //     sort: 26, // 상품 정렬 순서(number)
+      //     sort: 26,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '유레카 레몬 트리', // 상품명
-      //   price: 38000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 15, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/eureka_lemon_tree_black.webp`, `/files/${clientId}/eureka_lemon_tree_white.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '유레카 레몬 트리',
+      //   price: 38000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 15,
+      //   mainImages: [`/files/${clientId}/eureka_lemon_tree_black.webp`, `/files/${clientId}/eureka_lemon_tree_white.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>정원사와 인테리어 디자이너들에게 인기 있는 이 인기 과일나무는 키우는 재미가 쏠쏠하며, 새로운 녹색 감각을 시도하고 싶은 분들에게 안성맞춤입니다.</p>
@@ -1209,11 +1035,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['매일 물주기', '보통 습도', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '중형',
       //       '어려움',
@@ -1226,20 +1052,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['흑색', '흰색'],
-      //     sort: 27, // 상품 정렬 순서(number)
+      //     sort: 27,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '산세베리아 문샤인', // 상품명
-      //   price: 26000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 25, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/sansevieria_moonshine_black.webp`, `/files/${clientId}/sansevieria_moonshine_brown.webp`, `/files/${clientId}/sansevieria_moonshine_gray.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '산세베리아 문샤인',
+      //   price: 26000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 25,
+      //   mainImages: [`/files/${clientId}/sansevieria_moonshine_black.webp`, `/files/${clientId}/sansevieria_moonshine_brown.webp`, `/files/${clientId}/sansevieria_moonshine_gray.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>식물을 처음 키우거나 관리하기 쉬운 실내 식물을 찾고 있다면 산세베리아가 정답입니다.</p>
@@ -1250,11 +1076,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: true, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: true,
+      //     isBest: false,
       //     tags: ['월 1회 물주기', '건조 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '중형',
       //       '쉬움', // 난이도
@@ -1272,20 +1098,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['흑색', '갈색', '회색'],
-      //     sort: 28, // 상품 정렬 순서(number)
+      //     sort: 28,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '아프리칸 바이올렛', // 상품명
-      //   price: 28000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 20, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/african_violet_black.webp`, `/files/${clientId}/african_violet_brown.webp`, `/files/${clientId}/african_violet_gray.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '아프리칸 바이올렛',
+      //   price: 28000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 20,
+      //   mainImages: [`/files/${clientId}/african_violet_black.webp`, `/files/${clientId}/african_violet_brown.webp`, `/files/${clientId}/african_violet_gray.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>다채로운 꽃 색깔을 자랑하는 빈티지한 아름다움을 지닌 식물입니다.</p>
@@ -1296,11 +1122,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: true, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: true,
+      //     isBest: false,
       //     tags: ['주 1회 물주기', '다습 식물', '서늘함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '어려움',
@@ -1314,20 +1140,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['흑색', '갈색', '회색'],
-      //     sort: 29, // 상품 정렬 순서(number)
+      //     sort: 29,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '브로멜리아드 구즈마니아', // 상품명
-      //   price: 29000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 25, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/bromeliad_guzmania_black.webp`, `/files/${clientId}/bromeliad_guzmania_brown.webp`, `/files/${clientId}/bromeliad_guzmania_gray.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '브로멜리아드 구즈마니아',
+      //   price: 29000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 25,
+      //   mainImages: [`/files/${clientId}/bromeliad_guzmania_black.webp`, `/files/${clientId}/bromeliad_guzmania_brown.webp`, `/files/${clientId}/bromeliad_guzmania_gray.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>브로멜리아드 구즈마니아는 푸른 바다 속에 강렬한 색감을 더합니다. 보기 드물게 오래가는 꽃을 가진 브로멜리아드는 밝은 꽃을 피우는 새싹을 자연스럽게 키우기 때문에 끊임없이 선물하는 식물입니다.</p>
@@ -1337,11 +1163,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['매일 물주기', '다습 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '보통',
@@ -1354,20 +1180,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '여름',
       //     ],
       //     potColors: ['흑색', '갈색', '회색'],
-      //     sort: 30, // 상품 정렬 순서(number)
+      //     sort: 30,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '고양이 야자수', // 상품명
-      //   price: 24000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 34, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/cat_palm_black.webp`, `/files/${clientId}/cat_palm_brown.webp`, `/files/${clientId}/cat_palm_white.webp`, `/files/${clientId}/cat_palm_gray.webp`, `/files/${clientId}/cat_palm_blue.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '고양이 야자수',
+      //   price: 24000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 34,
+      //   mainImages: [`/files/${clientId}/cat_palm_black.webp`, `/files/${clientId}/cat_palm_brown.webp`, `/files/${clientId}/cat_palm_white.webp`, `/files/${clientId}/cat_palm_gray.webp`, `/files/${clientId}/cat_palm_blue.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>고양이 야자수의 푹신한 잎과 짧은 줄기는 마치 오아시스에 온 듯한 느낌을 선사합니다.</p>
@@ -1377,11 +1203,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: true, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: true,
       //     tags: ['주 1회 물주기', '다습 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '대형',
       //       '쉬움',
@@ -1394,20 +1220,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '가을',
       //     ],
       //     potColors: ['흑색', '갈색', '흰색', '회색', '남색'],
-      //     sort: 31, // 상품 정렬 순서(number)
+      //     sort: 31,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '핑크 얼룩 레몬 트리', // 상품명
-      //   price: 39000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 11, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/variegated_pink_lemon_tree_black.webp`, `/files/${clientId}/variegated_pink_lemon_tree_white.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '핑크 얼룩 레몬 트리',
+      //   price: 39000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 11,
+      //   mainImages: [`/files/${clientId}/variegated_pink_lemon_tree_black.webp`, `/files/${clientId}/variegated_pink_lemon_tree_white.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>흔하지 않은 과일 덕분에 정원사들에게, 그리고 햇볕이 잘 드는 성격 덕분에 인테리어 디자이너들에게 사랑받는 이 인기 과일나무는 키우는 재미가 쏠쏠하며, 새로운 녹색 감각을 시도하고 싶은 분들에게 안성맞춤입니다.</p>
@@ -1418,11 +1244,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: true, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: true,
+      //     isBest: false,
       //     tags: ['매일 물주기', '보통 습도', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '중형',
       //       '어려움',
@@ -1435,20 +1261,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['흑색', '흰색'],
-      //     sort: 32, // 상품 정렬 순서(number)
+      //     sort: 32,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '커피 나무', // 상품명
-      //   price: 25000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 23, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/coffee_plant_black.webp`, `/files/${clientId}/coffee_plant_brown.webp`, `/files/${clientId}/coffee_plant_gray.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '커피 나무',
+      //   price: 25000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 23,
+      //   mainImages: [`/files/${clientId}/coffee_plant_black.webp`, `/files/${clientId}/coffee_plant_brown.webp`, `/files/${clientId}/coffee_plant_gray.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>커피 나무로 식물 컬렉션에 활기를 더하세요. 이 잎이 많은 식물은 윤기 나는 녹색 잎을 자랑하며 밝은 간접 햇빛 아래에서 잘 자랍니다.</p>
@@ -1458,11 +1284,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['주 1회 물주기', '다습 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '보통',
@@ -1476,20 +1302,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['흑색', '갈색', '회색'],
-      //     sort: 33, // 상품 정렬 순서(number)
+      //     sort: 33,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '히비스커스', // 상품명
-      //   price: 31000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 25, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/hibiscus_white.webp`, `/files/${clientId}/hibiscus_gray.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '히비스커스',
+      //   price: 31000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 25,
+      //   mainImages: [`/files/${clientId}/hibiscus_white.webp`, `/files/${clientId}/hibiscus_gray.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>최고의 열대 분위기를 원하신다면 히비스커스만 한 게 없죠. 큼직한 꽃들이 형광빛으로 빛나며 여름 내내 피어납니다.</p>
@@ -1500,11 +1326,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['매일 물주기', '보통 습도', '더위 내성'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '중형',
       //       '쉬움',
@@ -1514,20 +1340,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '여름',
       //     ],
       //     potColors: ['흰색', '회색'],
-      //     sort: 34, // 상품 정렬 순서(number)
+      //     sort: 34,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '산세베리아', // 상품명
-      //   price: 22000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 35, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/sansevieria_black.webp`, `/files/${clientId}/sansevieria_brown.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '산세베리아',
+      //   price: 22000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 35,
+      //   mainImages: [`/files/${clientId}/sansevieria_black.webp`, `/files/${clientId}/sansevieria_brown.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>실내 식물을 처음 키우거나 관리하기 쉬운 실내 식물을 찾고 있다면 산세베리아가 딱입니다.</p>
@@ -1538,11 +1364,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: true, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: true,
       //     tags: ['월 1회 물주기', '건조 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '쉬움',
@@ -1559,20 +1385,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['흑색', '갈색'],
-      //     sort: 35, // 상품 정렬 순서(number)
+      //     sort: 35,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '아글라오네마 시암', // 상품명
-      //   price: 26000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 18, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/aglaonema_siam_black.webp`, `/files/${clientId}/aglaonema_siam_brown.webp`, `/files/${clientId}/aglaonema_siam_gray.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '아글라오네마 시암',
+      //   price: 26000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 18,
+      //   mainImages: [`/files/${clientId}/aglaonema_siam_black.webp`, `/files/${clientId}/aglaonema_siam_brown.webp`, `/files/${clientId}/aglaonema_siam_gray.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>강인하고 아름다운 식물인 아글라오네마 시암은 연분홍색 줄기와 붉은색, 분홍색, 녹색이 어우러진 윤기 나는 잎을 자랑합니다.</p>
@@ -1582,11 +1408,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: true, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: true,
+      //     isBest: false,
       //     tags: ['주 1회 물주기', '다습 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '쉬움',
@@ -1603,20 +1429,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['흑색', '갈색', '회색'],
-      //     sort: 36, // 상품 정렬 순서(number)
+      //     sort: 36,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '칼라테아 핀스트라이프', // 상품명
-      //   price: 27000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 22, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/calathea_pinstripe_black.webp`, `/files/${clientId}/calathea_pinstripe_brown.webp`, `/files/${clientId}/calathea_pinstripe_gray.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '칼라테아 핀스트라이프',
+      //   price: 27000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 22,
+      //   mainImages: [`/files/${clientId}/calathea_pinstripe_black.webp`, `/files/${clientId}/calathea_pinstripe_brown.webp`, `/files/${clientId}/calathea_pinstripe_gray.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>이 칼라테아 핀스트라이프는 짙은 녹색 잎에 얇은 분홍색 줄무늬가 그려져 있어 어떤 컬렉션에서든 돋보일 것입니다.</p>
@@ -1627,11 +1453,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['매일 물주기', '다습 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '어려움',
@@ -1643,26 +1469,26 @@ export const initData = async (clientId, nextSeq) => {
       //       '여름',
       //     ],
       //     potColors: ['흑색', '갈색', '회색'],
-      //     sort: 37, // 상품 정렬 순서(number)
+      //     sort: 37,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '드라세나 마지나타', // 상품명
-      //   price: 37000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 19, // 판매된 수량
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '드라세나 마지나타',
+      //   price: 37000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 19,
       //   mainImages: [
       //     `/files/${clientId}/dracaena_marginata_black.webp`,
       //     `/files/${clientId}/dracaena_marginata_brown.webp`,
       //     `/files/${clientId}/dracaena_marginata_white.webp`,
       //     `/files/${clientId}/dracaena_marginata_gray.webp`,
       //     `/files/${clientId}/dracaena_marginata_blue.webp`,
-      //   ], // 상품 메인 이미지
+      //   ],
       //   content: `
       //     <div class="product-detail">
       //       <p>드라세나 품종으로, 얽히고설킨 줄기와 뾰족하고 곧은 잎을 가진 재미있고 대담한 품종입니다.</p>
@@ -1672,11 +1498,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: true, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: true,
+      //     isBest: false,
       //     tags: ['주 1회 물주기', '건조 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '대형', // 크기
       //       '쉬움',
@@ -1690,20 +1516,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['흑색', '갈색', '흰색', '회색', '남색'],
-      //     sort: 38, // 상품 정렬 순서(number)
+      //     sort: 38,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '금전수', // 상품명
-      //   price: 38000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 32, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/geumjeunsu_black.webp`, `/files/${clientId}/geumjeunsu_brown.webp`, `/files/${clientId}/geumjeunsu_white.webp`, `/files/${clientId}/geumjeunsu_gray.webp`, `/files/${clientId}/geumjeunsu_blue.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '금전수',
+      //   price: 38000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 32,
+      //   mainImages: [`/files/${clientId}/geumjeunsu_black.webp`, `/files/${clientId}/geumjeunsu_brown.webp`, `/files/${clientId}/geumjeunsu_white.webp`, `/files/${clientId}/geumjeunsu_gray.webp`, `/files/${clientId}/geumjeunsu_blue.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>이 실내 식물은 회복력이 강해 건망증이 있는 식물 주인에게 안성맞춤입니다. 관리가 간편한 금전수는 물 없이도 몇 주 동안 생존할 수 있으며 직사광선을 제외한 모든 빛에서 잘 자랍니다.</p>
@@ -1714,11 +1540,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['월 1회 물주기', '건조 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '대형',
       //       '쉬움',
@@ -1735,20 +1561,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['흑색', '갈색', '흰색', '회색', '남색'],
-      //     sort: 39, // 상품 정렬 순서(number)
+      //     sort: 39,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '붉은 안스리움', // 상품명
-      //   price: 28000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 27, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/red_anthurium_black.webp`, `/files/${clientId}/red_anthurium_brown.webp`, `/files/${clientId}/red_anthurium_white.webp`, `/files/${clientId}/red_anthurium_gray.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '붉은 안스리움',
+      //   price: 28000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 27,
+      //   mainImages: [`/files/${clientId}/red_anthurium_black.webp`, `/files/${clientId}/red_anthurium_brown.webp`, `/files/${clientId}/red_anthurium_white.webp`, `/files/${clientId}/red_anthurium_gray.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>크고 굵은 하트 모양의 꽃을 피우는 레드 안스리움은 환대, 행운, 그리고 끈끈한 관계를 상징하며, 어떤 집에든 행복과 풍요로움을 가져다줍니다.</p>
@@ -1759,11 +1585,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: true, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: true,
+      //     isBest: false,
       //     tags: ['매일 물주기', '다습 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '쉬움',
@@ -1777,20 +1603,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['흑색', '갈색', '흰색', '회색'],
-      //     sort: 40, // 상품 정렬 순서(number)
+      //     sort: 40,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '인삼', // 상품명
-      //   price: 30000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 25, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/insam_black.webp`, `/files/${clientId}/insam_brown.webp`, `/files/${clientId}/insam_gray.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '인삼',
+      //   price: 30000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 25,
+      //   mainImages: [`/files/${clientId}/insam_black.webp`, `/files/${clientId}/insam_brown.webp`, `/files/${clientId}/insam_gray.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>초보자도 쉽게 키울 수 있는 이 인기 있는 나무는 다른 분재에 비해 관리가 훨씬 쉽습니다.</p>
@@ -1801,11 +1627,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: true, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: true,
       //     tags: ['주 1회 물주기', '다습 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '보통',
@@ -1818,20 +1644,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '가을',
       //     ],
       //     potColors: ['흑색', '갈색', '회색'],
-      //     sort: 41, // 상품 정렬 순서(number)
+      //     sort: 41,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '몬스테라 델리시오사', // 상품명
-      //   price: 25000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 21, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/monstera_deliciosa_black.webp`, `/files/${clientId}/monstera_deliciosa_brown.webp`, `/files/${clientId}/monstera_deliciosa_white.webp`, `/files/${clientId}/monstera_deliciosa_blue.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '몬스테라 델리시오사',
+      //   price: 25000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 21,
+      //   mainImages: [`/files/${clientId}/monstera_deliciosa_black.webp`, `/files/${clientId}/monstera_deliciosa_brown.webp`, `/files/${clientId}/monstera_deliciosa_white.webp`, `/files/${clientId}/monstera_deliciosa_blue.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>몬스테라 델리시오사(Monstera deliciosa)는 스위스 치즈 플랜트라고도 불리는 매력적인 열대 식물로, 멕시코 남부 열대우림이 원산지입니다.</p>
@@ -1841,11 +1667,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['주 1회 물주기', '다습 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '중형',
       //       '쉬움',
@@ -1856,20 +1682,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '여름',
       //     ],
       //     potColors: ['흑색', '갈색', '흰색', '남색'],
-      //     sort: 42, // 상품 정렬 순서(number)
+      //     sort: 42,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '얼룩무늬 크로톤', // 상품명
-      //   price: 27000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 18, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/variegated_croton_black.webp`, `/files/${clientId}/variegated_croton_brown.webp`, `/files/${clientId}/variegated_croton_white.webp`, `/files/${clientId}/variegated_croton_blue.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '얼룩무늬 크로톤',
+      //   price: 27000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 18,
+      //   mainImages: [`/files/${clientId}/variegated_croton_black.webp`, `/files/${clientId}/variegated_croton_brown.webp`, `/files/${clientId}/variegated_croton_white.webp`, `/files/${clientId}/variegated_croton_blue.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>집에 포인트 컬러를 원하신다면, 얼룩무늬 크로톤이 제격입니다! 이 화사한 색상의 식물은 강렬한 붉은색, 주황색, 노란색에 더해 짙은 버건디와 녹색의 색조를 자랑합니다.</p>
@@ -1880,11 +1706,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: true, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: true,
+      //     isBest: false,
       //     tags: ['주 1회 물주기', '다습 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '중형',
       //       '어려움',
@@ -1898,20 +1724,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['흑색', '갈색', '흰색', '남색'],
-      //     sort: 43, // 상품 정렬 순서(number)
+      //     sort: 43,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '미니 머니 트리', // 상품명
-      //   price: 20000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 31, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/mini_money_tree_black.webp`, `/files/${clientId}/mini_money_tree_brown.webp`, `/files/${clientId}/mini_money_tree_gray.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '미니 머니 트리',
+      //   price: 20000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 31,
+      //   mainImages: [`/files/${clientId}/mini_money_tree_black.webp`, `/files/${clientId}/mini_money_tree_brown.webp`, `/files/${clientId}/mini_money_tree_gray.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>굵은 줄기 위에 손바닥 모양의 잎이 얹힌 생기 넘치는 반려동물 친화적인 식물입니다.</p>
@@ -1921,11 +1747,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['주 1회 물주기', '다습 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '쉬움',
@@ -1940,20 +1766,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['흑색', '갈색', '회색'],
-      //     sort: 44, // 상품 정렬 순서(number)
+      //     sort: 44,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '플라밍고', // 상품명
-      //   price: 20000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 15, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/flamingo_flower.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '플라밍고',
+      //   price: 20000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 15,
+      //   mainImages: [`/files/${clientId}/flamingo_flower.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>화려한 플라밍고 플라워로 집안에 색감을 더하세요! 일 년 내내 피어나는 이 꽃은 열대 지방의 보물로, 대담한 꽃으로 휴가 분위기를 즉시 집에 선사합니다.</p>
@@ -1964,11 +1790,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['매일 물주기', '다습 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '쉬움',
@@ -1983,20 +1809,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['갈색'],
-      //     sort: 45, // 상품 정렬 순서(number)
+      //     sort: 45,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '수박 페페로미아', // 상품명
-      //   price: 23000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 25, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/watermelon_peperomia.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '수박 페페로미아',
+      //   price: 23000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 25,
+      //   mainImages: [`/files/${clientId}/watermelon_peperomia.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>그야말로 실내 식물 컬렉션에 완벽한 추가 아이템입니다. 작은 수박을 닮은 독특한 잎을 가진 멋진 수박 페페로미아를 만나보세요.</p>
@@ -2006,11 +1832,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['주 1회 물주기', '보통 습도', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '쉬움',
@@ -2024,20 +1850,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['갈색'],
-      //     sort: 46, // 상품 정렬 순서(number)
+      //     sort: 46,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '마란타 레우코네우라', // 상품명
-      //   price: 26000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 16, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/maranta_leuconeura.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '마란타 레우코네우라',
+      //   price: 26000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 16,
+      //   mainImages: [`/files/${clientId}/maranta_leuconeura.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>마란타 붉은 기도 식물(마란타 류코네우라)은 마치 우리가 쓰는 시계와 같이 행동합니다. 저녁에는 잎을 들어 올리고, 아침에는 기도하듯이 들어올린 잎을 내립니다.</p>
@@ -2047,11 +1873,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['매일 물주기', '다습 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '쉬움',
@@ -2066,20 +1892,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['갈색'],
-      //     sort: 47, // 상품 정렬 순서(number)
+      //     sort: 47,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '칼라테아 란시폴리아', // 상품명
-      //   price: 26000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 13, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/calathea_lancifolia.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '칼라테아 란시폴리아',
+      //   price: 26000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 13,
+      //   mainImages: [`/files/${clientId}/calathea_lancifolia.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>칼라테아는 잎에 칠해진 것처럼 어두운 붓질로 눈에 띄고 독특한 라임라이트 그린 무늬를 자랑합니다.</p>
@@ -2089,11 +1915,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['매일 물주기', '다습 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '쉬움',
@@ -2108,20 +1934,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['갈색'],
-      //     sort: 48, // 상품 정렬 순서(number)
+      //     sort: 48,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '몬스테라 타이 컨스텔레이션', // 상품명
-      //   price: 32000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 22, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/monstera_thai_constellation.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '몬스테라 타이 컨스텔레이션',
+      //   price: 32000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 22,
+      //   mainImages: [`/files/${clientId}/monstera_thai_constellation.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>희귀하고 탐나는 몬스테라 타이 컨스텔레이션이 드디어 도착했습니다!</p>
@@ -2131,11 +1957,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: true, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: true,
+      //     isBest: false,
       //     tags: ['주 1회 물주기', '다습 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '중형',
       //       '쉬움',
@@ -2149,20 +1975,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '가을',
       //     ],
       //     potColors: ['갈색'],
-      //     sort: 49, // 상품 정렬 순서(number)
+      //     sort: 49,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '크라슐라 오바타', // 상품명
-      //   price: 23000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 15, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/crashula_obata.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '크라슐라 오바타',
+      //   price: 23000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 15,
+      //   mainImages: [`/files/${clientId}/crashula_obata.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>매혹적인 제이드 식물(크라슐라 오바타)로 공간을 변신시키세요. 이 견고하고 탄력 있는 자연의 보석은 광택이 나는 활기찬 잎으로 장식된 두껍고 상록적인 가지를 자랑하며 풍성한 디스플레이를 만들어냅니다.</p>
@@ -2172,11 +1998,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['월 1회 물주기', '건조 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '쉬움',
@@ -2192,20 +2018,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['갈색'],
-      //     sort: 50, // 상품 정렬 순서(number)
+      //     sort: 50,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '필로덴드론 핑크 공주', // 상품명
-      //   price: 26000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 17, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/princess_philodendron_pink.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '필로덴드론 핑크 공주',
+      //   price: 26000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 17,
+      //   mainImages: [`/files/${clientId}/princess_philodendron_pink.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>핑크 프린세스 필로덴드론(필로덴드론 에루베센스)은 식물 애호가에게는 드물게 볼 수 있는 하트 모양의 잎 미인입니다.</p>
@@ -2215,11 +2041,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['주 1회 물주기', '다습 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '중형',
       //       '보통',
@@ -2233,20 +2059,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['갈색'],
-      //     sort: 51, // 상품 정렬 순서(number)
+      //     sort: 51,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '필로덴드론 지니', // 상품명
-      //   price: 21000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 35, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/philodendron_genie(mini monstera).webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '필로덴드론 지니',
+      //   price: 21000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 35,
+      //   mainImages: [`/files/${clientId}/philodendron_genie(mini monstera).webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>필로덴드론 지니라고 불리는 이 식물은 마치 몬스테라 델리시오사의 작은 버전처럼 보입니다.</p>
@@ -2257,11 +2083,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['주 1회 물주기', '다습 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '중형',
       //       '보통',
@@ -2276,20 +2102,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['흑색'],
-      //     sort: 52, // 상품 정렬 순서(number)
+      //     sort: 52,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '녹영', // 상품명
-      //   price: 25000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 31, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/nokyong.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '녹영',
+      //   price: 25000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 31,
+      //   mainImages: [`/files/${clientId}/nokyong.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>사방에서 흘러나오는 이 특이한 아름다움을 가진 다육식물을 좋아하지 않는 사람이 있을까요?</p>
@@ -2299,11 +2125,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: true, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: true,
+      //     isBest: false,
       //     tags: ['월 1회 물주기', '건조 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '쉬움',
@@ -2315,20 +2141,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '가을',
       //     ],
       //     potColors: ['흑색'],
-      //     sort: 53, // 상품 정렬 순서(number)
+      //     sort: 53,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '핑크 난초', // 상품명
-      //   price: 29000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 16, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/pink_palenopsis_orchid.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '핑크 난초',
+      //   price: 29000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 16,
+      //   mainImages: [`/files/${clientId}/pink_palenopsis_orchid.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>이 아름다움을 보세요... 이 아름다운 난초는 하나가 아닌 두 개의 멋진 꽃봉오리를 자랑하며 항상 눈길을 사로 잡습니다.</p>
@@ -2338,11 +2164,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: true, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: true,
       //     tags: ['주 1회 물주기', '다습 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '쉬움',
@@ -2355,20 +2181,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['회색'],
-      //     sort: 54, // 상품 정렬 순서(number)
+      //     sort: 54,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '보스턴 고사리', // 상품명
-      //   price: 20000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 12, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/nephropis_scotch.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '보스턴 고사리',
+      //   price: 20000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 12,
+      //   mainImages: [`/files/${clientId}/nephropis_scotch.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>아름다운 이 식물은 집에 숲의 매력을 더해줄 것입니다. 게다가 공기 중의 포름알데히드와 같은 화학 물질을 제거하는 데 매우 효율적입니다.</p>
@@ -2378,11 +2204,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['매일 물주기', '다습 식물', '서늘함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '쉬움',
@@ -2394,20 +2220,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['흑색'],
-      //     sort: 55, // 상품 정렬 순서(number)
+      //     sort: 55,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '보라 난초', // 상품명
-      //   price: 28000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 21, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/purple_palenopsis_orchid.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '보라 난초',
+      //   price: 28000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 21,
+      //   mainImages: [`/files/${clientId}/purple_palenopsis_orchid.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>난초계의 스타일리시한 록스타 보라색 난초에게 인사하세요! 선명한 보라색 꽃이 피어나는 이 아름다움은 어떤 공간에도 색을 더해줍니다.</p>
@@ -2417,11 +2243,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['주 1회 물주기', '다습 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '쉬움',
@@ -2435,20 +2261,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['회색'],
-      //     sort: 56, // 상품 정렬 순서(number)
+      //     sort: 56,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '필로덴드론 레몬 라임', // 상품명
-      //   price: 25000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 22, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/philodendron_vine_lemon-lime.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '필로덴드론 레몬 라임',
+      //   price: 25000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 22,
+      //   mainImages: [`/files/${clientId}/philodendron_vine_lemon-lime.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>중저광에 내성이 있지만 밝은 간접광을 받는 것을 선호합니다. 잎 색깔은 분홍~노랑을 띠며, 처음엔 깊은 레몬색으로 발달하고 시간이 지나면서 마지막으로 라임 그린색으로 변합니다.</p>
@@ -2458,11 +2284,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['주 1회 물주기', '다습 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '쉬움',
@@ -2475,20 +2301,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['흑색'],
-      //     sort: 57, // 상품 정렬 순서(number)
+      //     sort: 57,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '레몬 버튼', // 상품명
-      //   price: 21000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 11, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/Lemon-Button.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '레몬 버튼',
+      //   price: 21000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 11,
+      //   mainImages: [`/files/${clientId}/Lemon-Button.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>보스턴 고사리의 작은 버전인 이 귀여운 레몬 버튼을 컬렉션에 추가하세요.</p>
@@ -2499,11 +2325,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['매일 물주기', '다습 식물', '서늘함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '쉬움',
@@ -2516,20 +2342,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['갈색'],
-      //     sort: 58, // 상품 정렬 순서(number)
+      //     sort: 58,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '하이포테스', // 상품명
-      //   price: 26000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 31, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/hippoesthes_philostakia.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '하이포테스',
+      //   price: 26000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 31,
+      //   mainImages: [`/files/${clientId}/hippoesthes_philostakia.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>놀라운 아름다움을 가진 멋진 실내 식물이지만, 온대 지역의 야외에서 매년 재배할 수도 있습니다.</p>
@@ -2540,11 +2366,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['매일 물주기', '보통 습도', '더위 내성'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '쉬움',
@@ -2560,20 +2386,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['갈색'],
-      //     sort: 59, // 상품 정렬 순서(number)
+      //     sort: 59,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '엽란', // 상품명
-      //   price: 23000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 16, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/Yublan.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '엽란',
+      //   price: 23000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 16,
+      //   mainImages: [`/files/${clientId}/Yublan.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>유지 관리 필요도가 매우 낮으며 저조도, 불규칙한 물 공급, 다양한 습도 변화 등 다양한 조건을 견딜 수 있습니다.</p>
@@ -2583,11 +2409,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['주 1회 물주기', '보통 습도', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '쉬움',
@@ -2602,20 +2428,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['갈색'],
-      //     sort: 60, // 상품 정렬 순서(number)
+      //     sort: 60,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '아카디아 난초', // 상품명
-      //   price: 28000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 32, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/acadia_palenopsis_orchid.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '아카디아 난초',
+      //   price: 28000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 32,
+      //   mainImages: [`/files/${clientId}/acadia_palenopsis_orchid.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>자연이 직접 만든 걸작인 아카디아 난초의 아름다움을 보세요! 이 이국적인 난초는 하나가 아닌 두 개의 멋진 꽃봉오리를 자랑하여 항상 사람들의 눈길을 훔칩니다.</p>
@@ -2625,11 +2451,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['주 1회 물주기', '다습 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '쉬움',
@@ -2642,20 +2468,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['회색'],
-      //     sort: 61, // 상품 정렬 순서(number)
+      //     sort: 61,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '공작 나무', // 상품명
-      //   price: 30000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 27, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/gogzak_tree.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '공작 나무',
+      //   price: 30000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 27,
+      //   mainImages: [`/files/${clientId}/gogzak_tree.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>공작 나무는 왕립 원예 협회에서 필수 식물로 명성을 얻기도 했습니다.</p>
@@ -2666,11 +2492,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['매일 물주기', '다습 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '쉬움',
@@ -2683,20 +2509,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['흑색'],
-      //     sort: 62, // 상품 정렬 순서(number)
+      //     sort: 62,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '마블 퀸 포토스', // 상품명
-      //   price: 25000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 61, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/marvel_queen_photos.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '마블 퀸 포토스',
+      //   price: 25000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 61,
+      //   mainImages: [`/files/${clientId}/marvel_queen_photos.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>마블 퀸 포토스는 의심할 여지 없는 베스트셀러 식물입니다!</p>
@@ -2707,11 +2533,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: true, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: true,
       //     tags: ['주 1회 물주기', '보통 습도', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '쉬움',
@@ -2726,20 +2552,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['흑색'],
-      //     sort: 63, // 상품 정렬 순서(number)
+      //     sort: 63,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '잉글리시 아이비', // 상품명
-      //   price: 23000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 22, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/english_ivy.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '잉글리시 아이비',
+      //   price: 23000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 22,
+      //   mainImages: [`/files/${clientId}/english_ivy.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>튼튼하지만 예쁘고 일 년 내내 녹색을 유지하며, 그늘진 곳에서 꽤 행복해합니다.</p>
@@ -2749,11 +2575,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['주 1회 물주기', '보통 습도', '서늘함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '쉬움',
@@ -2767,20 +2593,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '가을',
       //     ],
       //     potColors: ['흑색'],
-      //     sort: 64, // 상품 정렬 순서(number)
+      //     sort: 64,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '필로덴드론 불의 고리', // 상품명
-      //   price: 33000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 29, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/philodendron_fire.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '필로덴드론 불의 고리',
+      //   price: 33000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 29,
+      //   mainImages: [`/files/${clientId}/philodendron_fire.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>희귀하고 눈에 띄는 필로덴드론의 불의 고리가 도착했습니다.</p>
@@ -2791,11 +2617,11 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: true, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: true,
+      //     isBest: false,
       //     tags: ['주 1회 물주기', '다습 식물', '따뜻함 선호'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '식물',
       //       '소형',
       //       '쉬움',
@@ -2808,20 +2634,20 @@ export const initData = async (clientId, nextSeq) => {
       //       '겨울',
       //     ],
       //     potColors: ['흰색'],
-      //     sort: 65, // 상품 정렬 순서(number)
+      //     sort: 65,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '에코팟 원형 화분 - 10인치', // 상품명
-      //   price: 12000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 28, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/eco_pot_10_black.webp`, `/files/${clientId}/eco_pot_10_brown.webp`, `/files/${clientId}/eco_pot_10_white.webp`, `/files/${clientId}/eco_pot_10_blue.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '에코팟 원형 화분 - 10인치',
+      //   price: 12000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 28,
+      //   mainImages: [`/files/${clientId}/eco_pot_10_black.webp`, `/files/${clientId}/eco_pot_10_brown.webp`, `/files/${clientId}/eco_pot_10_white.webp`, `/files/${clientId}/eco_pot_10_blue.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>미니멀한 디자인의 10인치 원형 에코팟 화분은 시선을 빼앗지 않으면서도 식물과 잘 어울립니다.</p>
@@ -2832,29 +2658,29 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['초보자', '관리 쉬움'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '원예 용품',
       //       '화분',
       //     ],
       //     potColors: ['흑색', '갈색', '흰색', '남색'],
-      //     sort: 66, // 상품 정렬 순서(number)
+      //     sort: 66,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '에코팟 원형 화분 - 6인치', // 상품명
-      //   price: 10000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 38, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/eco_pot_6_black.webp`, `/files/${clientId}/eco_pot_6_brown.webp`, `/files/${clientId}/eco_pot_6_gray.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '에코팟 원형 화분 - 6인치',
+      //   price: 10000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 38,
+      //   mainImages: [`/files/${clientId}/eco_pot_6_black.webp`, `/files/${clientId}/eco_pot_6_brown.webp`, `/files/${clientId}/eco_pot_6_gray.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>미니멀한 디자인의 6인치 원형 에코팟 화분은 시선을 빼앗지 않으면서도 식물과 잘 어울립니다.</p>
@@ -2865,29 +2691,29 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: true, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: true,
       //     tags: ['베스트', '초보자', '관리 쉬움'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '원예 용품',
       //       '화분',
       //     ],
       //     potColors: ['흑색', '갈색', '회색'],
-      //     sort: 67, // 상품 정렬 순서(number)
+      //     sort: 67,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '에코팟 원형 화분 - 12인치', // 상품명
-      //   price: 14000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 18, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/eco_pot_12_black.webp`, `/files/${clientId}/eco_pot_12_brown.webp`, `/files/${clientId}/eco_pot_12_white.webp`, `/files/${clientId}/eco_pot_12_gray.webp`, `/files/${clientId}/eco_pot_12_blue.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '에코팟 원형 화분 - 12인치',
+      //   price: 14000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 18,
+      //   mainImages: [`/files/${clientId}/eco_pot_12_black.webp`, `/files/${clientId}/eco_pot_12_brown.webp`, `/files/${clientId}/eco_pot_12_white.webp`, `/files/${clientId}/eco_pot_12_gray.webp`, `/files/${clientId}/eco_pot_12_blue.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>미니멀한 디자인의 12인치 원형 에코팟 화분은 시선을 빼앗지 않으면서도 식물과 잘 어울립니다.</p>
@@ -2898,29 +2724,29 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: true, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: true,
+      //     isBest: false,
       //     tags: ['신상품', '초보자', '관리 쉬움'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '원예 용품',
       //       '화분',
       //     ],
       //     potColors: ['흑색', '갈색', '흰색', '회색', '남색'],
-      //     sort: 68, // 상품 정렬 순서(number)
+      //     sort: 68,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '화분용 흙', // 상품명
-      //   price: 6000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 48, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/dirt.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '화분용 흙',
+      //   price: 6000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 48,
+      //   mainImages: [`/files/${clientId}/dirt.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>이 화분용 흙은 모든 화분 관리에 필요한 것을 제공합니다.</p>
@@ -2932,28 +2758,28 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: true, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: true,
       //     tags: ['베스트', '초보자', '관리 쉬움'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '원예 용품',
       //       '도구',
       //     ],
-      //     sort: 69, // 상품 정렬 순서(number)
+      //     sort: 69,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '다목적 비료(20‑20‑20)', // 상품명
-      //   price: 10000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 38, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/202020_fertilizer.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '다목적 비료(20‑20‑20)',
+      //   price: 10000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 38,
+      //   mainImages: [`/files/${clientId}/202020_fertilizer.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>관엽식물에 안성맞춤인 이 믿을 수 있는 다용도 비료는 당신의 식물이 풍성하고 튼튼하며 건강하게 자라도록 도와줍니다!</p>
@@ -2963,28 +2789,28 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['초보자', '관리 쉬움'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '원예 용품',
       //       '도구',
       //     ],
-      //     sort: 70, // 상품 정렬 순서(number)
+      //     sort: 70,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '절삭 공구', // 상품명
-      //   price: 8000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 28, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/cutting_tool.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '절삭 공구',
+      //   price: 8000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 28,
+      //   mainImages: [`/files/${clientId}/cutting_tool.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>이 양날 절단 도구는 분갈이, 이식, 잡초 제거 및 정원 관리에 유용합니다.</p>
@@ -2995,28 +2821,28 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['초보자', '관리 쉬움'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '원예 용품',
       //       '도구',
       //     ],
-      //     sort: 71, // 상품 정렬 순서(number)
+      //     sort: 71,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '모종삽', // 상품명
-      //   price: 5000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 31, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/hand_trowel.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '모종삽',
+      //   price: 5000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 31,
+      //   mainImages: [`/files/${clientId}/hand_trowel.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>이 다재다능한 모종삽은 실내외 모두에서 분갈이와 심기에 유용합니다.</p>
@@ -3027,28 +2853,28 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['초보자', '관리 쉬움'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '원예 용품',
       //       '도구',
       //     ],
-      //     sort: 72, // 상품 정렬 순서(number)
+      //     sort: 72,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: 'Sowvital 도구 세트', // 상품명
-      //   price: 18000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 15, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/sowvital_set.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: 'Sowvital 도구 세트',
+      //   price: 18000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 15,
+      //   mainImages: [`/files/${clientId}/sowvital_set.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>Sowvital 하우스 플랜트 도구 세트는 모든 정원사에게 필수적인 프리미엄 원예 도구 세트입니다.</p>
@@ -3058,28 +2884,28 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['초보자', '관리 쉬움'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '원예 용품',
       //       '도구',
       //     ],
-      //     sort: 73, // 상품 정렬 순서(number)
+      //     sort: 73,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '물뿌리개', // 상품명
-      //   price: 6000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 38, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/watering_can.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '물뿌리개',
+      //   price: 6000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 38,
+      //   mainImages: [`/files/${clientId}/watering_can.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>이 매력적인 물뿌리개는 식물 관리 용품에 없어서는 안 될 필수품입니다.</p>
@@ -3090,28 +2916,28 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: true, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: true,
       //     tags: ['베스트', '초보자', '관리 쉬움'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '원예 용품',
       //       '도구',
       //     ],
-      //     sort: 74, // 상품 정렬 순서(number)
+      //     sort: 74,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '이끼 기둥', // 상품명
-      //   price: 7000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 22, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/moss_pole.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '이끼 기둥',
+      //   price: 7000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 22,
+      //   mainImages: [`/files/${clientId}/moss_pole.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>이 독특한 약 75cm 길이의 구부러지는 이끼 기둥으로 자연의 아름다움을 기념해 보세요.</p>
@@ -3122,28 +2948,28 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: false,
       //     tags: ['초보자', '관리 쉬움'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '원예 용품',
       //       '도구',
       //     ],
-      //     sort: 75, // 상품 정렬 순서(number)
+      //     sort: 75,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '소형 간접 조명 (화이트)', // 상품명
-      //   price: 10000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 48, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/little_light_white.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '소형 간접 조명 (화이트)',
+      //   price: 10000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 48,
+      //   mainImages: [`/files/${clientId}/little_light_white.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>식물이 잘 자라는 데 필요한 빛이 부족한가요? 이 세련된 소형 성장 조명으로 실내 식물에 최적의 조명 환경을 만들어 보세요.</p>
@@ -3153,28 +2979,28 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: true, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: true,
       //     tags: ['베스트', '초보자', '관리 쉬움'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '원예 용품',
       //       '조명',
       //     ],
-      //     sort: 76, // 상품 정렬 순서(number)
+      //     sort: 76,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '소형 간접 조명 (블랙)', // 상품명
-      //   price: 10000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 48, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/little_light_black.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '소형 간접 조명 (블랙)',
+      //   price: 10000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 48,
+      //   mainImages: [`/files/${clientId}/little_light_black.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>식물이 잘 자라는 데 필요한 빛이 부족한가요? 이 세련된 소형 성장 조명으로 실내 식물에 최적의 조명 환경을 만들어 보세요.</p>
@@ -3184,28 +3010,28 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: false, // 신상품 여부(boolean)
-      //     isBest: true, // 베스트 상품 여부(boolean)
+      //     isNew: false,
+      //     isBest: true,
       //     tags: ['베스트', '초보자', '관리 쉬움'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '원예 용품',
       //       '조명',
       //     ],
-      //     sort: 77, // 상품 정렬 순서(number)
+      //     sort: 77,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '중형 간접 조명 (화이트)', // 상품명
-      //   price: 13000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 25, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/middle_light_white.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '중형 간접 조명 (화이트)',
+      //   price: 13000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 25,
+      //   mainImages: [`/files/${clientId}/middle_light_white.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>대형 식물이 잘 자라는 데 필요한 빛이 부족한가요? 소형 조명 가지고는 부족하다고요? 그렇다면 새로 나온 이 세련된 대형 성장 조명으로 실내 식물에 최적의 조명 환경을 만들어 보세요!</p>
@@ -3215,28 +3041,28 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: true, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: true,
+      //     isBest: false,
       //     tags: ['신상품', '초보자', '관리 쉬움'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '원예 용품',
       //       '조명',
       //     ],
-      //     sort: 78, // 상품 정렬 순서(number)
+      //     sort: 78,
       //   },
       // },
       // {
-      //   _id: await nextSeq('product'), // 상품 고유 ID
-      //   seller_id: 1, // 판매자 ID (user 테이블 참조), 1번 유저인 관리자가 판매자
-      //   name: '중형 간접 조명 (블랙)', // 상품명
-      //   price: 13000, // 상품 가격
-      //   shippingFees: 3000, // 배송비
-      //   show: true, // 상품 표시 여부
-      //   active: true, // 상품 활성화 여부
-      //   quantity: 9999, // 상품 재고
-      //   buyQuantity: 25, // 판매된 수량
-      //   mainImages: [`/files/${clientId}/middle_light_black.webp`], // 상품 메인 이미지
+      //   _id: await nextSeq('product'),
+      //   seller_id: 1,
+      //   name: '중형 간접 조명 (블랙)',
+      //   price: 13000,
+      //   shippingFees: 3000,
+      //   show: true,
+      //   active: true,
+      //   quantity: 9999,
+      //   buyQuantity: 25,
+      //   mainImages: [`/files/${clientId}/middle_light_black.webp`],
       //   content: `
       //     <div class="product-detail">
       //       <p>대형 식물이 잘 자라는 데 필요한 빛이 부족한가요? 소형 조명 가지고는 부족하다고요? 그렇다면 새로 나온 이 세련된 대형 성장 조명으로 실내 식물에 최적의 조명 환경을 만들어 보세요!</p>
@@ -3246,29 +3072,254 @@ export const initData = async (clientId, nextSeq) => {
       //   createdAt: getTime(),
       //   updatedAt: getTime(),
       //   extra: {
-      //     isNew: true, // 신상품 여부(boolean)
-      //     isBest: false, // 베스트 상품 여부(boolean)
+      //     isNew: true,
+      //     isBest: false,
       //     tags: ['신상품', '초보자', '관리 쉬움'],
       //     category: [
-      //       // 상품 카테고리(array)
+      //
       //       '원예 용품',
       //       '조명',
       //     ],
-      //     sort: 79, // 상품 정렬 순서(number)
+      //     sort: 79,
       //   },
       // },
     ],
 
-    // 주문
-    order: [],
+    order: [
+      {
+        _id: await nextSeq('order'),
+        products: [
+          {
+            _id: 3,
+            quantity: 3,
+            seller_id: 1,
+            name: '몬스테라 아단소니',
+            image: 'files/febc13-final04-emjf/monstera_adansonii_black.webp',
+            price: 72000,
+            color: '흑색',
+            extra: {
+              isNew: false,
+              isBest: false,
+              tags: ['주 1회 물주기', '다습 식물', '따뜻함 선호'],
+              category: ['식물', '중형', '쉬움', '음지', '간접광', '욕실', '주방', '봄', '여름'],
+              potColors: ['흑색'],
+              sort: 3,
+            },
+          },
+        ],
+        address: {
+          name: '포블리',
+          value: '수원시 장안구 가상동 12345',
+          phone: '010-9876-5678',
+        },
+        memo: {
+          selectedMemo: '문 앞에 두시면 됩니다.',
+          selectedImage: ['files/febc13-final04-emjf/monstera_adansonii_black.webp'],
+        },
+        state: 'OS020',
+        user_id: 2,
+        _id: 1,
+        createdAt: getTime(),
+        updatedAt: getTime(),
+        cost: {
+          products: 72000,
+          shippingFees: 3000,
+          discount: {
+            products: 0,
+            shippingFees: 0,
+          },
+          total: 75000,
+        },
+      },
+      {
+        _id: await nextSeq('order'),
+        products: [
+          {
+            _id: 5,
+            quantity: 2,
+            seller_id: 1,
+            name: '나비란',
+            image: 'files/febc13-final04-emjf/nabiran_black.webp',
+            price: 38000,
+            color: '갈색',
+            extra: {
+              isNew: true,
+              isBest: false,
+              tags: ['주 1회 물주기', '보통 습도', '봄이 좋아요'],
+              category: ['식물', '중형', '쉬움', '음지', '간접광', '거실', '침실', '욕실', '주방', '사무실', '봄', '여름', '가을', '겨울'],
+              potColors: ['흑색', '갈색', '회색'],
+              sort: 5,
+            },
+          },
+          {
+            _id: 2,
+            quantity: 1,
+            seller_id: 1,
+            name: '스파티필름',
+            image: 'files/febc13-final04-emjf/Spathiphyllum_black.webp',
+            price: 20000,
+            color: '회색',
+            extra: {
+              isNew: true,
+              isBest: false,
+              tags: ['매일 물주기', '다습 식물', '따뜻함 선호'],
+              category: ['식물', '중형', '보통', '음지', '간접광', '거실', '침실', '사무실', '봄', '가을'],
+              potColors: ['흑색', '갈색', '회색'],
+              sort: 2,
+            },
+          },
+        ],
+        address: {
+          name: '김멋사',
+          value: '서울시 강남구 역삼동 234',
+          phone: '010-1234-5678',
+        },
+        memo: {
+          selectedMemo: '파손 위험이 있으니 주의해주세요.',
+          selectedImage: ['files/febc13-final04-emjf/nabiran_brown.webp', 'files/febc13-final04-emjf/Spathiphyllum_gray.webp'],
+        },
+        state: 'OS020',
+        user_id: 2,
+        _id: 2,
+        createdAt: getTime(),
+        updatedAt: getTime(),
+        cost: {
+          products: 58000,
+          shippingFees: 3000,
+          discount: {
+            products: 0,
+            shippingFees: 0,
+          },
+          total: 61000,
+        },
+      },
+    ],
 
-    // 후기
-    review: [],
+    review: [
+      {
+        _id: await nextSeq('review'),
+        order_id: 1,
+        product_id: 1,
+        rating: 5,
+        content: '정말 예쁜 식물이에요! 배송도 안전하게 왔고 건강한 상태로 도착했습니다. 하트 모양이 너무 귀여워요.',
+        extra: {
+          title: 'Review',
+        },
+        user_id: 2,
+        user: {
+          _id: 2,
+          name: '테스트 유저 1',
+          image: `files/${clientId}/user_test01.webp`,
+        },
+        createdAt: getTime(),
+      },
+      {
+        _id: await nextSeq('review'),
+        order_id: 2,
+        product_id: 2,
+        rating: 4,
+        content: '사진보다 실물이 더 예뻐요. 관리 방법도 상세하게 나와있어서 좋았습니다. 아이가 정말 좋아해요.',
+        extra: {
+          title: 'Review',
+        },
+        user_id: 1,
+        user: {
+          _id: 1,
+          name: '테스트 관리자',
+          image: `files/${clientId}/user_admnin.webp`,
+        },
+        createdAt: getTime(),
+      },
+      {
+        _id: await nextSeq('review'),
+        order_id: 3,
+        product_id: 3,
+        rating: 5,
+        content: '처음 키우는 식물인데 설명서대로 하니까 잘 자라고 있어요. 새 잎이 나오는 게 신기하네요!',
+        extra: {
+          title: 'Review',
+        },
+        user_id: 2,
+        user: {
+          _id: 2,
+          name: '테스트 유저 1',
+          image: `files/${clientId}/user_test01.webp`,
+        },
+        createdAt: getTime(),
+      },
+      {
+        _id: await nextSeq('review'),
+        order_id: 4,
+        product_id: 1,
+        rating: 3,
+        content: '배송 중에 살짝 상처가 났지만 식물 자체는 건강해요. 포장을 좀 더 신경써주시면 좋을 것 같아요.',
+        extra: {
+          title: 'Review',
+        },
+        user_id: 1,
+        user: {
+          _id: 1,
+          name: '테스트 관리자',
+          image: `files/${clientId}/user_admnin.webp`,
+        },
+        createdAt: getTime(),
+      },
+    ],
 
-    // 장바구니
-    cart: [],
+    cart: [
+      {
+        _id: await nextSeq('cart'),
+        product_id: 7,
+        quantity: 2,
+        color: '갈색',
+        createdAt: getTime(),
+        updatedAt: getTime(),
+        product: {
+          _id: 7,
+          name: '드라세나 골든 하트',
+          price: 28000,
+          seller_id: 1,
+          quantity: 9999,
+          buyQuantity: 19,
+          image: 'files/febc13-final04-emjf/dracaena_black.webp',
+          extra: {
+            isNew: true,
+            isBest: false,
+            tags: ['주 1회 물주기', '건조 식물', '따뜻함 선호'],
+            category: ['식물', '중형', '쉬움', '음지', '간접광', '거실', '침실', '주방', '사무실', '봄', '여름'],
+            potColors: ['흑색', '갈색', '흰색', '남색'],
+            sort: 7,
+          },
+        },
+      },
+      {
+        _id: await nextSeq('cart'),
+        product_id: 1,
+        quantity: 1,
+        color: '흑색',
+        user_id: 1,
+        createdAt: getTime(),
+        updatedAt: getTime(),
+        product: {
+          _id: 1,
+          name: '하트 호야',
+          price: 18000,
+          seller_id: 1,
+          quantity: 9999,
+          buyQuantity: 12,
+          image: 'files/febc13-final04-emjf/hoya_heart_black.webp',
+          extra: {
+            isNew: true,
+            isBest: false,
+            tags: ['월 1회 물주기', '보통 습도', '따뜻함 선호'],
+            category: ['식물', '소형', '쉬움', '음지', '간접광', '거실', '침실', '사무실', '봄', '가을'],
+            potColors: ['흑색', '갈색'],
+            sort: 1,
+          },
+        },
+      },
+    ],
 
-    // 즐겨찾기/북마크
     bookmark: [
       {
         _id: await nextSeq('bookmark'),
@@ -3350,7 +3401,6 @@ export const initData = async (clientId, nextSeq) => {
       },
     ],
 
-    // QnA, 공지사항 등의 게시판
     post: [
       {
         _id: await nextSeq('post'),
@@ -3580,10 +3630,8 @@ export const initData = async (clientId, nextSeq) => {
       },
     ],
 
-    // 코드
     code: [],
 
-    // 설정
     config: [],
   };
 };

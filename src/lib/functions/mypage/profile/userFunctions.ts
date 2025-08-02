@@ -1,8 +1,8 @@
 'use server';
 
+import { getAuthInfo } from '@/lib/utils/auth.server';
 import { ApiRes } from '@/types/api.types';
 import { User } from '@/types/user.types';
-import { getAuthInfo } from '@/lib/utils/auth.server';
 
 // 상세 정보 타입 (User 확장)
 export interface UserDetail extends User {
@@ -20,8 +20,6 @@ export interface UserDetail extends User {
 
 const API_URL = process.env.API_URL || '';
 const CLIENT_ID = process.env.CLIENT_ID || '';
-
-// getAuthInfo 함수는 auth.server.ts로 이동됨
 
 /**
  * 내 회원 상세 정보 조회 (모든 속성 포함)

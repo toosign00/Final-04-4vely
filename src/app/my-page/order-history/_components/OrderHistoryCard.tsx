@@ -4,7 +4,7 @@ import { useOrderDeliveryStatus } from '@/app/my-page/order-history/_hooks/useOr
 import { Button } from '@/components/ui/Button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/Dialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/Tooltip';
-import { getOrderReviewStatusAction } from '@/lib/actions/orderReviewServerActions';
+import { getOrderReviewStatusAction } from '@/lib/actions/mypage/orderList/orderReviewServerActions';
 import { getImageUrlClient } from '@/lib/utils/auth.client';
 import { ChevronDownIcon, ChevronUpIcon, PlusIcon } from 'lucide-react';
 import Image from 'next/image';

@@ -1,5 +1,5 @@
-import { getLatestDiariesBatch } from '@/lib/actions/diaryActions';
-import { getMyPlants, PaginationParams, Plant } from '@/lib/actions/plantActions';
+import { getLatestDiariesBatch } from '@/lib/actions/mypage/myPlant/diaryActions';
+import { getMyPlants, PaginationParams, Plant } from '@/lib/actions/mypage/myPlant/plantActions';
 import { redirect } from 'next/navigation';
 import ErrorDisplay from '../_components/ErrorDisplay';
 import MyPlantsClient from './_components/MyPlantsClient';

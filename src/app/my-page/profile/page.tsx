@@ -1,4 +1,4 @@
-import { getUserDetail, type UserDetail } from '@/lib/functions/userFunctions';
+import { getUserDetail, type UserDetail } from '@/lib/functions/mypage/profile/userFunctions';
 import ProfileClient from './_components/ProfileClient';
 
 export default async function ProfilePage() {

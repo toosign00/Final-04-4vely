@@ -4,7 +4,7 @@
  *              데이터 로딩 중 에러가 발생할 경우, 사용자에게 적절한 에러 메시지를 보여줍니다.
  *              이 페이지는 서버 컴포넌트로 동작하여 초기 로딩 성능을 최적화합니다.
  */
-import { getBookmarksFromServer } from '@/lib/functions/mypage/bookmarkFunctions';
+import { getBookmarksFromServer } from '@/lib/functions/mypage/bookmark/bookmarkFunctions';
 import ErrorDisplay from '../../_components/ErrorDisplay';
 import BookmarkPostsList from './_components/BookmarkPostsList';
 

@@ -6,7 +6,7 @@
 'use client';
 
 import PaginationWrapper from '@/components/ui/PaginationWrapper';
-import { TransformedBookmarkItem } from '@/lib/functions/mypage/bookmarkFunctions';
+import { TransformedBookmarkItem } from '@/lib/functions/mypage/bookmark/bookmarkFunctions';
 import { getImageUrlClient } from '@/lib/utils/auth.client';
 import { ShoppingCart } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';

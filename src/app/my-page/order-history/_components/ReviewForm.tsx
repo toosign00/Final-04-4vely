@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/Button';
-import { createReviewAction } from '@/lib/actions/orderReviewServerActions';
+import { createReviewAction } from '@/lib/actions/mypage/orderList/orderReviewServerActions';
 import { getImageUrlClient } from '@/lib/utils/auth.client';
 import { Star } from 'lucide-react';
 import Image from 'next/image';

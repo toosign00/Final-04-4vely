@@ -9,7 +9,7 @@
 import { Button } from '@/components/ui/Button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/Dialog';
 import { addToCartAction } from '@/lib/actions/cartServerActions';
-import { getProductById } from '@/lib/functions/productClientFunctions';
+import { getProductById } from '@/lib/functions/shop/productClientFunctions';
 import { getImageUrlClient } from '@/lib/utils/auth.client';
 import { getProductPotColors, Product } from '@/types/product.types';
 import { Minus, Plus } from 'lucide-react';
@@ -210,7 +210,7 @@ export default function AddToCartDialog({ productId, isOpen, onClose, onSuccess 
         product_id: productId,
         quantity: quantityNumber,
         // 색상이 선택된 경우에만 size 정보 포함
-        size: selectedColor || undefined,
+        color: selectedColor || undefined,
       });
 
       if (result.success) {

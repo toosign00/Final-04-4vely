@@ -1,4 +1,4 @@
-import { Plant, PlantPost } from '@/lib/actions/plantActions';
+import { Plant, PlantPost } from '@/lib/actions/mypage/myPlant/plantActions';
 
 /**
  * 날짜 문자열을 YYYY.MM.DD 형식으로 통일하는 함수

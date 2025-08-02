@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/Button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/Dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
 import { Input } from '@/components/ui/Input';
-import { createPlant } from '@/lib/actions/plantActions';
+import { createPlant } from '@/lib/actions/mypage/myPlant/plantActions';
 import { Plus } from 'lucide-react';
 import Image from 'next/image';
 import { memo, useCallback, useRef, useState } from 'react';

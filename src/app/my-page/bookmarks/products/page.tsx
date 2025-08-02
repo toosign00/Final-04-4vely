@@ -3,7 +3,7 @@
  * @description 서버에서 북마크된 상품 데이터를 가져와 `BookmarkProductsList` 컴포넌트에 전달하여 화면에 표시합니다.
  *              데이터 로딩 중 에러가 발생할 경우, 사용자에게 적절한 에러 메시지를 보여줍니다.
  */
-import { getBookmarksFromServer } from '@/lib/functions/mypage/bookmarkFunctions';
+import { getBookmarksFromServer } from '@/lib/functions/mypage/bookmark/bookmarkFunctions';
 import BookmarkProductsList from './_components/BookmarkProductsList';
 import ErrorDisplay from './_components/ErrorDisplay';
 

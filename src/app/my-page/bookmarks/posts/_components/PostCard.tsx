@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/Button';
-import { deleteBookmark } from '@/lib/actions/mypage/bookmarkActions';
+import { deleteBookmark } from '@/lib/actions/mypage/bookmark/bookmarkActions';
 import { Eye, MessageCircle, Trash2, User } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';

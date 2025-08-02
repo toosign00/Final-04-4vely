@@ -1,4 +1,4 @@
-import { getOrders, Order, PaginationParams } from '@/lib/functions/orderFunctions';
+import { getOrders, Order, PaginationParams } from '@/lib/functions/mypage/orderList/orderFunctions';
 import { redirect } from 'next/navigation';
 import ErrorDisplay from '../_components/ErrorDisplay';
 import OrderHistoryList from './_components/OrderHistoryList';

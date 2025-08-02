@@ -1,7 +1,7 @@
 'use client';
 
 import PaginationWrapper from '@/components/ui/PaginationWrapper';
-import { deletePlant } from '@/lib/actions/plantActions';
+import { deletePlant } from '@/lib/actions/mypage/myPlant/plantActions';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useState } from 'react';
 import { toast } from 'sonner';

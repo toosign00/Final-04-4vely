@@ -1,4 +1,4 @@
-import { DiaryReply } from '@/lib/actions/diaryActions';
+import { DiaryReply } from '@/lib/actions/mypage/myPlant/diaryActions';
 import { formatDateString } from '../_utils/plantUtils';
 
 /**

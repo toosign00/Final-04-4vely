@@ -1740,7 +1740,7 @@
       "user": {
         "_id": 1,
         "name": "용쌤",
-        "image": "uploadFiles/user_admnin.webp"
+        "image": "uploadFiles/user_admin.webp"
       }
     },
     {
@@ -1770,7 +1770,7 @@
       "user": {
         "_id": 1,
         "name": "테스트 관리자",
-        "image": "uploadFiles/user_admnin.webp"
+        "image": "uploadFiles/user_admin.webp"
       }
     }
   ],
@@ -1939,7 +1939,7 @@
       "user": {
         "_id": 1,
         "name": "테스트 관리자",
-        "image": "uploadFiles/user_admnin.webp"
+        "image": "uploadFiles/user_admin.webp"
       },
       "title": "관리자가 작성한 테스트용 커뮤니티 게시물입니다!",
       "content": "관리자가 작성한 테스트용 커뮤니티 게시물 내용입니다.",

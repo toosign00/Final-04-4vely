@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/Button';
 
 import UpdateButton from '@/app/community/[id]/_components/UpdateButton';
 import BookmarkButton from '@/components/ui/BookmarkButton';
-import { createComment, deleteComment, fetchComments, resolveUrl, updateComment } from '@/lib/functions/communityFunctions';
+import { createComment, deleteComment, fetchComments, updateComment } from '@/lib/functions/communityFunctions';
 import useUserStore from '@/store/authStore';
 import { CommunityComment, Post } from '@/types/commnunity.types';
 import { Eye, Heart, MessageCircle } from 'lucide-react';
@@ -70,7 +70,7 @@ export default function ClientDetail({ post }: { post: Post }) {
   return (
     <div className='overflow-x-hidden'>
       {/* 대표 이미지 */}
-      <div className='relative h-50 w-full md:h-60'>{coverImage && <Image src={resolveUrl(coverImage)} alt='대표 이미지' fill sizes='(max-width: 640px) 100vw, 640px' priority className='object-cover' />}</div>
+      <div className='relative h-50 w-full md:h-60'>{coverImage && <Image src={coverImage} alt='대표 이미지' fill sizes='(max-width: 640px) 100vw, 640px' priority className='object-cover' />}</div>
 
       <main className='mx-auto w-full max-w-4xl px-4 py-10 md:p-6 lg:p-8'>
         {/* 제목 및 메타 영역 */}
@@ -78,8 +78,8 @@ export default function ClientDetail({ post }: { post: Post }) {
           <h1 className='mb-4 text-xl font-semibold md:text-2xl'>{title}</h1>
 
           <div className='mt-4 flex items-center justify-between'>
-            <div className='flex items-center gap-2 text-sm'>
-              <Avatar className='h-8 w-8'>{author.avatar ? <AvatarImage src={resolveUrl(author.avatar)} alt={author.username} /> : <AvatarFallback>{author.username.charAt(0)}</AvatarFallback>}</Avatar>
+            <div className='flex items-center gap-2'>
+              <Avatar className='h-8 w-8'>{author.avatar ? <AvatarImage src={author.avatar} alt={author.username} /> : <AvatarFallback>{author.username.charAt(0)}</AvatarFallback>}</Avatar>
               <span>{author.username}</span>
             </div>
 
@@ -121,7 +121,7 @@ export default function ClientDetail({ post }: { post: Post }) {
           <section key={block.id} className='mx-auto mb-10 max-w-[50rem] px-5 text-center'>
             {block.postImage && (
               <div className='relative mx-auto mb-10 aspect-[3/4] max-w-[30rem] overflow-hidden rounded-xl border'>
-                <Image src={resolveUrl(block.postImage)} alt={block.title || '첨부 이미지'} fill priority className='object-cover' />
+                <Image src={block.postImage} alt={'첨부 이미지'} fill priority className='object-cover' />
               </div>
             )}
             {block.content && <p className='mt-6 lg:text-lg'>{block.content}</p>}
@@ -162,7 +162,7 @@ export default function ClientDetail({ post }: { post: Post }) {
         <section className='space-y-6'>
           {comments.map((comment) => (
             <div key={comment._id} className='flex gap-3'>
-              <Avatar className='h-9 w-9 shrink-0'>{comment.user.avatar ? <AvatarImage src={resolveUrl(comment.user.avatar)} alt={comment.user.name} /> : <AvatarFallback>{comment.user.name.charAt(0)}</AvatarFallback>}</Avatar>
+              <Avatar className='h-9 w-9 shrink-0'>{comment.user.image ? <AvatarImage src={comment.user.image} alt={comment.user.name} /> : <AvatarFallback>{comment.user.name.charAt(0)}</AvatarFallback>}</Avatar>
               <div className='flex-1'>
                 <div className='mb-1 flex items-center justify-between gap-2'>
                   <span className='text-sm font-medium'>{comment.user.name}</span>
@@ -188,7 +188,7 @@ export default function ClientDetail({ post }: { post: Post }) {
                         >
                           수정
                         </Button>
-                        <Button size='sm' variant='ghost' onClick={() => handleDelete(comment._id)}>
+                        <Button size='sm' variant='ghost' className='text-red-500' onClick={() => handleDelete(comment._id)}>
                           삭제
                         </Button>
                       </div>

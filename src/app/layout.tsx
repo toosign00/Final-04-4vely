@@ -1,3 +1,4 @@
+import Notice from '@/app/notice';
 import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
 import '@/styles/globals.css';
@@ -27,6 +28,7 @@ export default function RootLayout({
   return (
     <html lang='ko' className={pretendard.variable}>
       <body className={`${pretendard.className} bg-surface`}>
+        <Notice />
         <Header />
         <main>
           <Toaster

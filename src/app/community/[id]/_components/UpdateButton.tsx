@@ -4,6 +4,7 @@
 import { Button } from '@/components/ui/Button';
 import { fetchPostById } from '@/lib/functions/communityFunctions';
 import useUserStore from '@/store/authStore';
+import { Pencil } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 interface Props {
@@ -38,6 +39,7 @@ export default function UpdateButton({ postId }: Props) {
 
   return (
     <Button variant='default' size='sm' onClick={handleEdit}>
+      <Pencil size={12} className='mr-1' />
       수정
     </Button>
   );

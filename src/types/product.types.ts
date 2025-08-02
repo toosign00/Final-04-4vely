@@ -1,4 +1,4 @@
-// src/types/product.ts
+// src/types/product.types.ts
 
 // ============================================================================
 // 상품 관련 타입 (API 원본 + UI 확장)
@@ -97,11 +97,9 @@ export function getImageUrl(imagePath?: string): string {
   if (!imagePath) return '/images/placeholder-plant.jpg';
   if (imagePath.startsWith('http')) return imagePath;
 
-  const API_URL = process.env.API_URL || 'https://fesp-api.koyeb.app/market';
-
   // imagePath가 /로 시작하지 않으면 /를 추가
   const normalizedPath = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
-  return `${API_URL}${normalizedPath}`;
+  return normalizedPath;
 }
 
 /**

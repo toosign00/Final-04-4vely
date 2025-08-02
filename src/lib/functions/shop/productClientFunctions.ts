@@ -1,4 +1,4 @@
-// src/lib/functions/productClientFunctions.ts
+// src/lib/functions/shop/productClientFunctions.ts
 
 /**
  * 상품 클라이언트 함수
@@ -133,7 +133,15 @@ export async function getBestProducts(limit: number = 4): ApiResPromise<Product[
  */
 export async function getNewProducts(limit: number = 4): ApiResPromise<Product[]> {
   try {
-    const res = await fetch(`${API_URL}/products?custom.isNew=true&limit=${limit}`, {
+    const params = new URLSearchParams({
+      custom: JSON.stringify({ 'extra.isNew': true }),
+
+      // 불러올 상품 개수 제한
+      limit: limit.toString(),
+    });
+
+    // 신상품만 필터링된 목록 반환
+    const res = await fetch(`${API_URL}/products?${params}`, {
       headers: getHeaders(),
     });
 

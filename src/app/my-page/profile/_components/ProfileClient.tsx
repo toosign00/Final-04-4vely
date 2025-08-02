@@ -2,8 +2,8 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
-import { updateUserProfile } from '@/lib/actions/userActions';
-import type { UserDetail } from '@/lib/functions/userFunctions';
+import { updateUserProfile } from '@/lib/actions/mypage/profile/userActions';
+import type { UserDetail } from '@/lib/functions/mypage/profile/userFunctions';
 import { Calendar, Camera, ChevronRight, Mail, MapPin, Phone, User } from 'lucide-react';
 import { useEffect, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';

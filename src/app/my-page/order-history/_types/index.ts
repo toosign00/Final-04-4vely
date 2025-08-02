@@ -1,3 +1,6 @@
+// Core types for order history functionality
+export type DeliveryStatus = 'preparing' | 'shipping' | 'completed';
+
 export interface ProductDetail {
   id: number;
   name: string;
@@ -5,30 +8,18 @@ export interface ProductDetail {
   option: string;
   quantity: number;
   price: number;
+  color?: string;
+  image?: string;
 }
 
-export interface OrderHistoryCardProps {
-  order: {
-    id: number;
-    image: string;
-    name: string;
-    option: string;
-    quantity: number;
-    orderDate: string;
-    totalPrice: string;
-    deliveryStatus: 'preparing' | 'shipping' | 'completed';
-    products?: ProductDetail[];
-    hasMultipleProducts?: boolean;
-    cost?: {
-      products: number;
-      shippingFees: number;
-      discount: {
-        products: number;
-        shippingFees: number;
-      };
-      total: number;
-    };
+export interface OrderCost {
+  products: number;
+  shippingFees: number;
+  discount: {
+    products: number;
+    shippingFees: number;
   };
+  total: number;
 }
 
 export interface OrderCardData {
@@ -39,22 +30,30 @@ export interface OrderCardData {
   quantity: number;
   orderDate: string;
   totalPrice: string;
-  deliveryStatus: 'preparing' | 'shipping' | 'completed';
+  deliveryStatus: DeliveryStatus;
   products?: ProductDetail[];
   hasMultipleProducts?: boolean;
-  cost?: {
-    products: number;
-    shippingFees: number;
-    discount: {
-      products: number;
-      shippingFees: number;
-    };
-    total: number;
+  cost?: OrderCost;
+  memo?: {
+    selectedMemo: string;
+    selectedImage: string[];
   };
+}
+
+export interface OrderHistoryCardProps {
+  order: OrderCardData;
+}
+
+export interface PaginationInfo {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
 }
 
 export interface OrderHistoryListProps {
   orders: OrderCardData[];
+  pagination: PaginationInfo;
 }
 
 export interface ReviewFormProps {

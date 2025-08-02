@@ -2,7 +2,7 @@
 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/AlertDialog';
 import { Button } from '@/components/ui/Button';
-import { Plant } from '@/lib/actions/plantActions';
+import { Plant } from '@/lib/actions/mypage/myPlant/plantActions';
 import { ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useCallback, useMemo, useState } from 'react';

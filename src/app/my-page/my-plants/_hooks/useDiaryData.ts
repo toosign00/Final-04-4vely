@@ -1,6 +1,6 @@
 'use client';
 
-import { createDiary, deleteDiary, getDiariesByPlantId, updateDiary } from '@/lib/actions/diaryActions';
+import { createDiary, deleteDiary, getDiariesByPlantId, updateDiary } from '@/lib/actions/mypage/myPlant/diaryActions';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { CreateDiaryInput, Diary, mapDiaryReplyToDiary, UpdateDiaryInput } from '../_types/diary.types';

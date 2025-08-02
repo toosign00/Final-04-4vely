@@ -1,6 +1,6 @@
 'use client';
 
-import { deletePlant as deletePlantAPI, getPlantById, Plant, updatePlant as updatePlantAPI } from '@/lib/actions/plantActions';
+import { deletePlant as deletePlantAPI, getPlantById, Plant, updatePlant as updatePlantAPI } from '@/lib/actions/mypage/myPlant/plantActions';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { mapPlantPostToPlant } from '../_utils/plantUtils';

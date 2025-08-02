@@ -1,9 +1,9 @@
 'use server';
 
 import { uploadFile } from '@/lib/actions/fileActions';
+import { getAuthInfo } from '@/lib/utils/auth.server';
 import { ApiRes } from '@/types/api.types';
 import { Post } from '@/types/post.types';
-import { getAuthInfo } from '@/lib/utils/auth.server';
 
 // 환경 변수를 통해 API URL과 클라이언트 ID 설정
 const API_URL = process.env.API_URL || '';
@@ -54,16 +54,38 @@ export interface Plant {
   memoTitle: string;
 }
 
+/**
+ * 식물 목록 응답 타입 (페이지네이션 포함)
+ */
+export interface PlantsResponse {
+  plants: PlantPost[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+/**
+ * 페이지네이션 파라미터 타입
+ */
+export interface PaginationParams {
+  page?: number; // 페이지 번호 (기본값: 1)
+  limit?: number; // 한 페이지당 항목 수 (기본값: 10)
+  sort?: string; // 정렬 (내림차순: -1, 오름차순: 1)
+}
+
 // getAuthInfo 함수는 @/lib/utils/auth.server.ts로 이동됨
 
 /**
- * 사용자의 식물 목록을 조회하는 서버 액션
- * @description 인증된 사용자의 모든 식물 게시물을 API에서 조회하여 원본 데이터 반환
- * @returns {Promise<ApiRes<PlantPost[]>>} 식물 목록 API 응답
+ * 사용자의 식물 목록을 조회하는 서버 액션 (페이지네이션 포함)
+ * @description 인증된 사용자의 식물 게시물을 페이지네이션과 함께 조회
+ * @param paginationParams - 페이지네이션 파라미터 (선택사항)
+ * @returns {Promise<ApiRes<PlantsResponse>>} 식물 목록과 페이지네이션 정보 API 응답
  * @throws API 호출 실패 시 에러 메시지 반환
- * @performance 인증 정보 추출 로직을 getAuthInfo로 분리하여 중복 제거
  */
-export async function getMyPlants(): Promise<ApiRes<PlantPost[]>> {
+export async function getMyPlants(paginationParams?: PaginationParams): Promise<ApiRes<PlantsResponse>> {
   // 인증 정보 검증
   const auth = await getAuthInfo();
   if (!auth) {
@@ -76,8 +98,22 @@ export async function getMyPlants(): Promise<ApiRes<PlantPost[]>> {
   const { accessToken } = auth;
 
   try {
+    // Build API request URL with query parameters
+    const queryParams = new URLSearchParams();
+    queryParams.append('type', 'plant');
+
+    if (paginationParams) {
+      const { page, limit, sort } = paginationParams;
+      if (page) queryParams.append('page', page.toString());
+      if (limit) queryParams.append('limit', limit.toString());
+      if (sort) queryParams.append('sort', sort);
+    }
+
+    const queryString = queryParams.toString();
+    const url = `${API_URL}/posts/users?${queryString}`;
+
     // 사용자별 식물 타입 게시물 조회 API 호출
-    const res = await fetch(`${API_URL}/posts/users?type=plant`, {
+    const res = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -95,15 +131,41 @@ export async function getMyPlants(): Promise<ApiRes<PlantPost[]>> {
       };
     }
 
-    // 이미지 경로 보정 (상대 경로를 절대 URL로 변환)
-    if (data.ok && data.item && Array.isArray(data.item)) {
-      data.item = data.item.map((plant: PlantPost) => ({
-        ...plant,
-        image: plant.image ? `${API_URL}/${plant.image}` : undefined,
-      }));
+    const defaultPagination = {
+      page: 1,
+      limit: 10,
+      total: 0,
+      totalPages: 0,
+    };
+
+    let plants: PlantPost[];
+    let pagination;
+
+    if (data.item && data.pagination) {
+      // Response with pagination
+      plants = data.item;
+      pagination = data.pagination;
+    } else if (data.item) {
+      // Legacy response format (backward compatibility)
+      plants = data.item;
+      pagination = {
+        ...defaultPagination,
+        total: plants.length,
+        totalPages: 1,
+      };
+    } else if (Array.isArray(data)) {
+      plants = data;
+      pagination = {
+        ...defaultPagination,
+        total: plants.length,
+        totalPages: 1,
+      };
+    } else {
+      plants = [];
+      pagination = defaultPagination;
     }
 
-    return data;
+    return { ok: 1, item: { plants, pagination } };
   } catch (error) {
     console.error('식물 목록 조회 중 오류:', error);
     return {
@@ -111,6 +173,19 @@ export async function getMyPlants(): Promise<ApiRes<PlantPost[]>> {
       message: '서버 오류로 식물 목록을 불러오지 못했습니다.',
     };
   }
+}
+
+/**
+ * 사용자의 모든 식물 목록을 조회하는 서버 액션 (기존 호환성 유지)
+ * @description 페이지네이션 없이 모든 식물을 조회 (기존 코드 호환성 유지용)
+ * @returns {Promise<ApiRes<PlantPost[]>>} 식물 목록 API 응답
+ */
+export async function getAllMyPlants(): Promise<ApiRes<PlantPost[]>> {
+  const result = await getMyPlants();
+  if (result.ok) {
+    return { ok: 1, item: result.item.plants };
+  }
+  return result as ApiRes<PlantPost[]>;
 }
 
 /**
@@ -158,14 +233,6 @@ export async function getPlantById(plantId: number): Promise<ApiRes<PlantPost>> 
       return {
         ok: 0,
         message: data.message || '식물 정보 조회에 실패했습니다.',
-      };
-    }
-
-    // 이미지 경로 보정 (상대 경로를 절대 URL로 변환)
-    if (data.ok && data.item) {
-      data.item = {
-        ...data.item,
-        image: data.item.image ? `${API_URL}/${data.item.image}` : undefined,
       };
     }
 
@@ -273,14 +340,6 @@ export async function createPlant(formData: FormData): Promise<ApiRes<PlantPost>
       return {
         ok: 0,
         message: data.message || '식물 등록에 실패했습니다.',
-      };
-    }
-
-    // 이미지 경로 보정 (상대 경로를 절대 URL로 변환)
-    if (data.ok && data.item) {
-      data.item = {
-        ...data.item,
-        image: data.item.image ? `${API_URL}/${data.item.image}` : undefined,
       };
     }
 
@@ -394,14 +453,6 @@ export async function updatePlant(plantId: number, formData: FormData): Promise<
       return {
         ok: 0,
         message: data.message || '식물 정보 수정에 실패했습니다.',
-      };
-    }
-
-    // 이미지 경로 보정 (상대 경로를 절대 URL로 변환)
-    if (data.ok && data.item) {
-      data.item = {
-        ...data.item,
-        image: data.item.image ? `${API_URL}/${data.item.image}` : undefined,
       };
     }
 

@@ -7,10 +7,10 @@
 'use client';
 
 import PaginationWrapper from '@/components/ui/PaginationWrapper';
-import { TransformedBookmarkItem } from '@/lib/functions/mypage/bookmarkFunctions';
+import { TransformedBookmarkItem } from '@/lib/functions/mypage/bookmark/bookmarkFunctions';
 import { BookOpen } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import PostCard from './PostCard';
 
 /**
@@ -20,13 +20,14 @@ import PostCard from './PostCard';
  */
 interface BookmarkPostsListProps {
   bookmarks: TransformedBookmarkItem[];
+  initialPage: number;
 }
 
 /**
  * @constant {number} ITEMS_PER_PAGE
  * @description 한 페이지에 표시될 게시글의 수를 정의하는 상수입니다.
  */
-const ITEMS_PER_PAGE = 3;
+const ITEMS_PER_PAGE = 5;
 
 /**
  * @function BookmarkPostsList
@@ -34,8 +35,10 @@ const ITEMS_PER_PAGE = 3;
  * @param {BookmarkPostsListProps} props - 컴포넌트 props.
  * @returns {JSX.Element} 렌더링된 북마크 게시글 목록 또는 빈 상태 메시지를 반환합니다.
  */
-export default function BookmarkPostsList({ bookmarks: initialBookmarks }: BookmarkPostsListProps) {
+export default function BookmarkPostsList({ bookmarks: initialBookmarks, initialPage }: BookmarkPostsListProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const topRef = useRef<HTMLDivElement>(null);
 
   /**
    * @state {TransformedBookmarkItem[]} bookmarks
@@ -45,17 +48,44 @@ export default function BookmarkPostsList({ bookmarks: initialBookmarks }: Bookm
 
   /**
    * @state {number} currentPage
-   * @description 현재 페이지 번호를 관리하는 상태입니다. 1부터 시작합니다.
+   * @description 현재 페이지 번호를 URL 기반으로 관리하는 상태입니다.
    */
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(initialPage);
 
   /**
    * @function handleDetailClick
    * @description 게시글 상세보기 버튼 클릭 시 게시글 상세 페이지로 이동하는 핸들러입니다.
    * @param {number} postId - 이동할 게시글의 ID
    */
-  const handleDetailClick = (postId: number) => {
-    router.push(`/community/${postId}`);
+  const handleDetailClick = (postId: number, postType: 'community' | 'magazine') => {
+    if (postType === 'magazine') {
+      router.push(`/green-magazine/${postId}`);
+    } else {
+      router.push(`/community/${postId}`);
+    }
+  };
+
+  /**
+   * @function handlePageChange
+   * @description 페이지 변경 시 URL을 업데이트하고 스크롤을 최상단으로 이동하는 핸들러입니다.
+   * @param {number} page - 이동할 페이지 번호
+   */
+  const handlePageChange = (page: number) => {
+    // 즉시 페이지 상태 업데이트 (지연 방지)
+    setCurrentPage(page);
+
+    // 스크롤을 즉시 최상단으로 이동 (애니메이션 없음)
+    window.scrollTo({ top: 0, behavior: 'auto' });
+
+    // URL 업데이트 (히스토리 추가)
+    const params = new URLSearchParams(searchParams);
+    if (page === 1) {
+      params.delete('page');
+    } else {
+      params.set('page', page.toString());
+    }
+    const queryString = params.toString();
+    router.push(`/my-page/bookmarks/posts${queryString ? `?${queryString}` : ''}`);
   };
 
   /**
@@ -76,6 +106,18 @@ export default function BookmarkPostsList({ bookmarks: initialBookmarks }: Bookm
   useEffect(() => {
     setBookmarks(initialBookmarks);
   }, [initialBookmarks]);
+
+  /**
+   * @effect
+   * @description URL 파라미터가 변경될 때마다 현재 페이지 상태를 동기화합니다.
+   *              브라우저의 뒤로가기/앞으로가기 버튼을 지원합니다.
+   */
+  useEffect(() => {
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    if (page !== currentPage) {
+      setCurrentPage(page);
+    }
+  }, [searchParams, currentPage]);
 
   /**
    * @memo paginationData
@@ -130,7 +172,7 @@ export default function BookmarkPostsList({ bookmarks: initialBookmarks }: Bookm
 
   // 북마크된 게시글이 있을 경우, 목록과 페이지네이션을 렌더링합니다.
   return (
-    <div className='grid gap-6 p-4 md:p-5 lg:p-6'>
+    <div ref={topRef} className='grid gap-6'>
       {/* 현재 페이지에 해당하는 게시글 카드 목록을 렌더링합니다. */}
       <div className='grid gap-8'>
         {paginationData.displayItems.map((post) => (
@@ -145,9 +187,10 @@ export default function BookmarkPostsList({ bookmarks: initialBookmarks }: Bookm
               author: post.author || '작성자 없음',
               viewCount: post.views || 0,
               commentCount: post.repliesCount || 0,
+              type: post.type as 'community' | 'magazine',
             }}
             bookmarkId={post.bookmarkId}
-            onDetailClick={handleDetailClick}
+            onDetailClick={(postId, postType) => handleDetailClick(postId, postType)}
             onDelete={() => handleDelete(post.id)}
           />
         ))}
@@ -156,7 +199,7 @@ export default function BookmarkPostsList({ bookmarks: initialBookmarks }: Bookm
       {/* 페이지네이션이 필요한 경우 (전체 페이지가 2 이상) UI를 렌더링합니다. */}
       {paginationData.showPagination && (
         <div className='mt-6 flex justify-center'>
-          <PaginationWrapper currentPage={currentPage} totalPages={paginationData.totalPages} setCurrentPage={setCurrentPage} />
+          <PaginationWrapper currentPage={currentPage} totalPages={paginationData.totalPages} setCurrentPage={handlePageChange} />
         </div>
       )}
     </div>

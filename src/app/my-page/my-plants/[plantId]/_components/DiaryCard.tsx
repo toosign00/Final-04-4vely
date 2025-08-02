@@ -105,7 +105,7 @@ export default function DiaryCard({ diary, onDelete, onEdit, onUpdate, isPriorit
       {/* 수정 모달 */}
       <DiaryModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} diary={diary} onSave={handleEditSave} mode='edit' plantId={diary.plantId} />
 
-      {/* 개선된 이미지 확대 모달 */}
+      {/* 이미지 확대 모달 */}
       <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
         <DialogDescription className='sr-only'>이미지 확대 보기</DialogDescription>
         <DialogContent className='flex h-auto max-h-[98vh] w-auto max-w-[98vw] items-center justify-center border-none bg-transparent p-0 shadow-none' showCloseButton={true}>
@@ -114,7 +114,7 @@ export default function DiaryCard({ diary, onDelete, onEdit, onUpdate, isPriorit
 
           {selectedImage && (
             <div className='relative flex max-h-full max-w-full items-center justify-center'>
-              <Image src={selectedImage} alt='확대된 이미지' width={1200} height={900} className='max-h-[94vh] max-w-[96vw] rounded-lg object-contain' priority />
+              <Image src={selectedImage} alt='확대된 이미지' width={1200} height={900} className='max-h-[94vh] max-w-[96vw] object-cover' priority />
             </div>
           )}
         </DialogContent>

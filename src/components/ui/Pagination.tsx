@@ -42,25 +42,25 @@ function PaginationLink({ className, isActive, size = 'icon', ...props }: Pagina
 
 function PaginationPrevious({ className, ...props }: React.ComponentProps<typeof PaginationLink>) {
   return (
-    <PaginationLink aria-label='Go to previous page' size='default' className={cn('gap-1 px-2.5 sm:pl-2.5', className)} {...props}>
-      <ChevronLeftIcon />
+    <PaginationLink size='default' className={cn('gap-1 px-2.5 py-2', className)} {...props}>
+      <ChevronLeftIcon className='h-4 w-4' />
     </PaginationLink>
   );
 }
 
 function PaginationNext({ className, ...props }: React.ComponentProps<typeof PaginationLink>) {
   return (
-    <PaginationLink aria-label='Go to next page' size='default' className={cn('gap-1 px-2.5 sm:pr-2.5', className)} {...props}>
-      <ChevronRightIcon />
+    <PaginationLink size='default' className={cn('gap-1 px-2.5 py-2', className)} {...props}>
+      <ChevronRightIcon className='h-4 w-4' />
     </PaginationLink>
   );
 }
 
 function PaginationEllipsis({ className, ...props }: React.ComponentProps<'span'>) {
   return (
-    <span aria-hidden data-slot='pagination-ellipsis' className={cn('flex size-9 items-center justify-center', className)} {...props}>
-      <MoreHorizontalIcon className='size-4' />
-      <span className='sr-only'>More pages</span>
+    <span aria-hidden data-slot='pagination-ellipsis' className={cn('flex size-9 items-center justify-center', 'text-muted/60 hover:text-muted transition-colors duration-200', 'cursor-default select-none', className)} {...props}>
+      <MoreHorizontalIcon className='size-4 animate-pulse hover:animate-none' />
+      <span className='sr-only'>더 많은 페이지</span>
     </span>
   );
 }

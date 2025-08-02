@@ -4,22 +4,19 @@
 
 'use server';
 
-import { getImageUrl } from '@/lib/utils/auth.server';
 import { BookmarkItem, TransformedBookmarkItem } from '@/types/mypageBookmark.types';
 import { getPostDetailsBatch, getProductDetailsBatch } from './bookmarkApi';
 import { extractImagePath, stripHtmlTags } from './bookmarkUtils';
 
-// 기본 플레이스홀더 이미지 URL (캐싱)
-let cachedPlaceholderUrl: string | null = null;
-
 /**
- * 기본 플레이스홀더 이미지 URL 가져오기 (캐싱 적용)
+ * API에서 받은 type 값을 안전한 타입으로 변환
  */
-async function getPlaceholderImageUrl(): Promise<string> {
-  if (cachedPlaceholderUrl) return cachedPlaceholderUrl;
-  cachedPlaceholderUrl = await getImageUrl('');
-  return cachedPlaceholderUrl;
+function normalizePostType(type: string | undefined): 'community' | 'magazine' {
+  return type === 'magazine' ? 'magazine' : 'community';
 }
+
+// 기본 플레이스홀더 이미지 URL
+const PLACEHOLDER_IMAGE_URL = '/images/placeholder-plant.svg';
 
 /**
  * 상품 북마크를 UI용 형태로 변환 (성능 최적화)
@@ -27,8 +24,8 @@ async function getPlaceholderImageUrl(): Promise<string> {
 export async function transformProductBookmarks(bookmarks: BookmarkItem[]): Promise<TransformedBookmarkItem[]> {
   if (bookmarks.length === 0) return [];
 
-  // 기본 플레이스홀더 이미지 URL 미리 가져오기
-  const placeholderUrl = await getPlaceholderImageUrl();
+  // 기본 플레이스홀더 이미지 URL 사용
+  const placeholderUrl = PLACEHOLDER_IMAGE_URL;
 
   // 유효한 상품 ID들만 추출
   const validProductIds = bookmarks.map((bookmark) => bookmark.product?._id).filter((id): id is number => id !== undefined && id !== null);
@@ -55,14 +52,12 @@ export async function transformProductBookmarks(bookmarks: BookmarkItem[]): Prom
     const productDetail = productDetailsMap.get(product._id);
     if (!productDetail) return defaultItem;
 
-    // 이미지 URL 처리 (동기 처리)
+    // 이미지 URL 처리
     let imageUrl = placeholderUrl;
     if (productDetail.mainImages?.length > 0) {
       const imagePath = extractImagePath(productDetail.mainImages[0]);
       if (imagePath) {
-        // API_URL을 직접 사용하여 동기 처리
-        const API_URL = process.env.API_URL;
-        imageUrl = imagePath.startsWith('http') ? imagePath : `${API_URL}${imagePath.startsWith('/') ? imagePath : `/${imagePath}`}`;
+        imageUrl = imagePath;
       }
     }
 
@@ -85,8 +80,8 @@ export async function transformProductBookmarks(bookmarks: BookmarkItem[]): Prom
 export async function transformCommunityBookmarks(bookmarks: BookmarkItem[]): Promise<TransformedBookmarkItem[]> {
   if (bookmarks.length === 0) return [];
 
-  // 기본 플레이스홀더 이미지 URL 미리 가져오기
-  const placeholderUrl = await getPlaceholderImageUrl();
+  // 기본 플레이스홀더 이미지 URL 사용
+  const placeholderUrl = PLACEHOLDER_IMAGE_URL;
 
   // 유효한 게시글 ID들만 추출
   const validPostIds = bookmarks.map((bookmark) => bookmark.post?._id).filter((id): id is number => id !== undefined && id !== null);
@@ -106,7 +101,7 @@ export async function transformCommunityBookmarks(bookmarks: BookmarkItem[]): Pr
       views: 0,
       author: '작성자 없음',
       repliesCount: 0,
-      type: 'community',
+      type: normalizePostType(post?.type),
       createdAt: bookmark.createdAt,
     };
 
@@ -115,12 +110,10 @@ export async function transformCommunityBookmarks(bookmarks: BookmarkItem[]): Pr
     const postDetail = postDetailsMap.get(post._id);
     if (!postDetail) return defaultItem;
 
-    // 이미지 URL 처리 (동기 처리)
+    // 이미지 URL 처리
     let imageUrl = placeholderUrl;
     if (postDetail.image) {
-      // API_URL을 직접 사용하여 동기 처리
-      const API_URL = process.env.API_URL;
-      imageUrl = postDetail.image.startsWith('http') ? postDetail.image : `${API_URL}${postDetail.image.startsWith('/') ? postDetail.image : `/${postDetail.image}`}`;
+      imageUrl = postDetail.image;
     }
 
     return {
@@ -132,7 +125,7 @@ export async function transformCommunityBookmarks(bookmarks: BookmarkItem[]): Pr
       views: postDetail.views,
       author: postDetail.user?.name || defaultItem.author,
       repliesCount: postDetail.replies?.length || 0,
-      type: 'community',
+      type: normalizePostType(postDetail.type),
       createdAt: bookmark.createdAt,
     };
   });

@@ -6,27 +6,28 @@
 'use client';
 
 import PaginationWrapper from '@/components/ui/PaginationWrapper';
-import { TransformedBookmarkItem } from '@/lib/functions/mypage/bookmarkFunctions';
-import { getImageUrlClient } from '@/lib/utils/auth.client';
+import { TransformedBookmarkItem } from '@/lib/functions/mypage/bookmark/bookmarkFunctions';
 import { ShoppingCart } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import ProductCard from './ProductCard';
 
 /**
  * @interface BookmarkProductsListProps
  * @description BookmarkProductsList 컴포넌트가 받는 props의 타입을 정의합니다.
  * @property {TransformedBookmarkItem[]} bookmarks - 서버로부터 변환되어 전달된 북마크 상품 아이템의 배열입니다.
+ * @property {number} initialPage - URL에서 가져온 초기 페이지 번호입니다.
  */
 interface BookmarkProductsListProps {
   bookmarks: TransformedBookmarkItem[];
+  initialPage: number;
 }
 
 /**
  * @constant {number} ITEMS_PER_PAGE
  * @description 한 페이지에 표시될 상품의 수를 정의하는 상수입니다.
  */
-const ITEMS_PER_PAGE = 3;
+const ITEMS_PER_PAGE = 5;
 
 /**
  * @function BookmarkProductsList
@@ -34,8 +35,10 @@ const ITEMS_PER_PAGE = 3;
  * @param {BookmarkProductsListProps} props - 컴포넌트 props.
  * @returns {JSX.Element} 렌더링된 북마크 상품 목록 또는 빈 상태 메시지를 반환합니다.
  */
-export default function BookmarkProductsList({ bookmarks: initialBookmarks }: BookmarkProductsListProps) {
+export default function BookmarkProductsList({ bookmarks: initialBookmarks, initialPage }: BookmarkProductsListProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const topRef = useRef<HTMLDivElement>(null);
 
   /**
    * @state {TransformedBookmarkItem[]} bookmarks
@@ -45,9 +48,9 @@ export default function BookmarkProductsList({ bookmarks: initialBookmarks }: Bo
 
   /**
    * @state {number} currentPage
-   * @description 현재 페이지 번호를 관리하는 상태입니다. 1부터 시작합니다.
+   * @description 현재 페이지 번호를 URL 기반으로 관리하는 상태입니다.
    */
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(initialPage);
 
   /**
    * @function handleDetailClick
@@ -56,6 +59,29 @@ export default function BookmarkProductsList({ bookmarks: initialBookmarks }: Bo
    */
   const handleDetailClick = (productId: number) => {
     router.push(`/shop/products/${productId}`);
+  };
+
+  /**
+   * @function handlePageChange
+   * @description 페이지 변경 시 URL을 업데이트하고 스크롤을 최상단으로 이동하는 핸들러입니다.
+   * @param {number} page - 이동할 페이지 번호
+   */
+  const handlePageChange = (page: number) => {
+    // 즉시 페이지 상태 업데이트 (지연 방지)
+    setCurrentPage(page);
+
+    // 스크롤을 즉시 최상단으로 이동 (애니메이션 없음)
+    window.scrollTo({ top: 0, behavior: 'auto' });
+
+    // URL 업데이트 (히스토리 추가)
+    const params = new URLSearchParams(searchParams);
+    if (page === 1) {
+      params.delete('page');
+    } else {
+      params.set('page', page.toString());
+    }
+    const queryString = params.toString();
+    router.push(`/my-page/bookmarks/products${queryString ? `?${queryString}` : ''}`);
   };
 
   /**
@@ -78,6 +104,18 @@ export default function BookmarkProductsList({ bookmarks: initialBookmarks }: Bo
   }, [initialBookmarks]);
 
   /**
+   * @effect
+   * @description URL 파라미터가 변경될 때마다 현재 페이지 상태를 동기화합니다.
+   *              브라우저의 뒤로가기/앞으로가기 버튼을 지원합니다.
+   */
+  useEffect(() => {
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    if (page !== currentPage) {
+      setCurrentPage(page);
+    }
+  }, [searchParams, currentPage]);
+
+  /**
    * @memo paginationData
    * @description 페이지네이션과 관련된 데이터를 계산하고 메모이제이션합니다.
    *              내부 `bookmarks` 상태나 `currentPage`가 변경될 때만 재계산하여 성능을 최적화합니다.
@@ -90,10 +128,10 @@ export default function BookmarkProductsList({ bookmarks: initialBookmarks }: Bo
     // 북마크 목록을 최신순으로 정렬 (createdAt 기준)
     const sortedBookmarks = [...bookmarks].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-    // 이미지 URL을 클라이언트에서 처리
+    // 이미지 URL을 그대로 사용
     const processedBookmarks = sortedBookmarks.map((bookmark) => ({
       ...bookmark,
-      imageUrl: getImageUrlClient(bookmark.imageUrl),
+      imageUrl: bookmark.imageUrl,
     }));
 
     const totalPages = Math.ceil(processedBookmarks.length / ITEMS_PER_PAGE);
@@ -139,7 +177,7 @@ export default function BookmarkProductsList({ bookmarks: initialBookmarks }: Bo
 
   // 북마크된 상품이 있을 경우, 목록과 페이지네이션을 렌더링합니다.
   return (
-    <div className='grid gap-6 p-4 md:p-5 lg:p-6'>
+    <div ref={topRef} className='grid gap-6'>
       {/* 현재 페이지에 해당하는 상품 카드 목록을 렌더링합니다. */}
       <div className='grid gap-8'>
         {paginationData.displayItems.map((product) => (
@@ -163,7 +201,7 @@ export default function BookmarkProductsList({ bookmarks: initialBookmarks }: Bo
       {/* 페이지네이션이 필요한 경우 (전체 페이지가 2 이상) UI를 렌더링합니다. */}
       {paginationData.showPagination && (
         <div className='mt-6 flex justify-center'>
-          <PaginationWrapper currentPage={currentPage} totalPages={paginationData.totalPages} setCurrentPage={setCurrentPage} />
+          <PaginationWrapper currentPage={currentPage} totalPages={paginationData.totalPages} setCurrentPage={handlePageChange} />
         </div>
       )}
     </div>

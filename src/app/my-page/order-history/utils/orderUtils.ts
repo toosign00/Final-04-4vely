@@ -2,8 +2,7 @@
  * @fileoverview 주문 관련 유틸리티 함수들
  */
 
-// 배송 상태 타입 정의
-export type DeliveryStatus = 'preparing' | 'shipping' | 'completed';
+import type { DeliveryStatus } from '../_types';
 
 /**
  * 주문 날짜를 한국어 형식으로 변환
@@ -12,31 +11,24 @@ export type DeliveryStatus = 'preparing' | 'shipping' | 'completed';
  */
 export function formatOrderDate(dateString: string): string {
   if (!dateString || typeof dateString !== 'string') {
-    console.warn('Invalid date string provided to formatOrderDate:', dateString);
     return '';
   }
 
   try {
-    // 날짜 문자열을 Date 객체로 변환
     const date = new Date(dateString);
 
-    // 유효한 날짜인지 확인
     if (isNaN(date.getTime())) {
-      console.warn('Invalid date format provided to formatOrderDate:', dateString);
       return '';
     }
 
-    // 년, 월, 일, 시, 분 추출
     const year = date.getFullYear();
-    const month = date.getMonth() + 1; // getMonth()는 0부터 시작하므로 +1
+    const month = date.getMonth() + 1;
     const day = date.getDate();
     const hours = date.getHours();
     const minutes = date.getMinutes();
 
-    // 한국어 형식으로 포맷팅
     return `${year}년 ${month}월 ${day}일 ${hours}시 ${minutes}분`;
-  } catch (error) {
-    console.warn('Error formatting date in formatOrderDate:', error);
+  } catch {
     return '';
   }
 }
@@ -48,7 +40,6 @@ export function formatOrderDate(dateString: string): string {
  */
 export function formatPrice(price: number): string {
   if (typeof price !== 'number' || isNaN(price)) {
-    console.warn('Invalid price provided to formatPrice:', price);
     return '0원';
   }
 

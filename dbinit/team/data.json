@@ -1,0 +1,731 @@
+{
+  "user": [
+    {
+      "email": "admin@market.com",
+      "password": "$2a$10$GuEyVTkqijXx58GmQC.fW.WEShfxE/bk9hH3oiiEzLiYzdEHmjPva",
+      "name": "테스트 관리자",
+      "phone": "01011112222",
+      "address": "테스트시 테스트구 관리자동 123",
+      "type": "admin",
+      "loginType": "email",
+      "image": "uploadFiles/user_admin.webp",
+      "extra": {
+        "birthday": "11-07"
+      }
+    },
+    {
+      "email": "test@test.com",
+      "password": "$2a$10$Adma5vG8KIGixsl9TWdOCejFVmjp2/KLwk960jPe5jRv4Tz9hp01u",
+      "name": "테스트 유저 1",
+      "phone": "01012345678",
+      "address": "테스트시 테스트구 테스트동 123",
+      "type": "user",
+      "loginType": "email",
+      "image": "uploadFiles/user_test01.webp",
+      "extra": {
+        "birthday": "01-01"
+      }
+    },
+    {
+      "email": "test2@test.com",
+      "password": "$2a$10$Adma5vG8KIGixsl9TWdOCejFVmjp2/KLwk960jPe5jRv4Tz9hp01u",
+      "name": "테스트 유저 2",
+      "phone": "01012345678",
+      "address": "테스트시 테스트구 테스트동 456",
+      "type": "user",
+      "loginType": "email",
+      "image": "uploadFiles/user_test02.webp",
+      "extra": {
+        "birthday": "01-02"
+      }
+    }
+  ],
+  "product": [
+    {
+      "seller_id": 1,
+      "name": "하트 호야",
+      "price": 18000,
+      "shippingFees": 3000,
+      "show": true,
+      "active": true,
+      "quantity": 9999,
+      "buyQuantity": 12,
+      "mainImages": ["uploadFiles/hoya_heart_black.webp", "uploadFiles/hoya_heart_brown.webp"],
+      "content": "<div class=\"product-detail\"><p>통통한 하트모양의 잎이 사랑스러운 하트호야는 예쁜 생김새는 물론이고 키우기도 까다롭지 않아 식물을 처음 키우는 초보 식집사에게 선물하기 좋은 식물입니다. 그 사랑스러운 생김새 떄문에 서양에서는 연인에게 발렌타인 데이에 하트호야를 선물한다고 해요. 그래서 'Sweetheart Vine', 'Valentine's Hoya'라고도 불리운답니다.</p><p>통통한 잎에는 수분을 많이 머금고 있어 물을 자주 주지 않아도 되고, 평균 실내 습도에서도 잘 자라 대표적인 순둥이 식물이랍니다. 식물 가게에서 하트모양의 잎만 뿅 심겨져 있는 하트호야도 많이 보셨을텐데, 이 잎꽂이 하트호야는 생장점 없이 뿌리만 발달되어 새 잎이 나거나 꽃이 피지 않고 그 모양 그대로 유지된다고 해요.</p><p>원래의 하트호야는 줄기를 늘어뜨리며 자라는 덩굴식물이에요. 밝은 빛을 충분히 받고 자라면 아름다운 꽃도 보실 수 있답니다.</p></div>",
+      "extra": {
+        "isNew": true,
+        "isBest": false,
+        "tags": ["월 1회 물주기", "보통 습도", "따뜻함 선호"],
+        "category": ["식물", "소형", "쉬움", "음지", "간접광", "거실", "침실", "사무실", "봄", "가을"],
+        "potColors": ["흑색", "갈색"],
+        "sort": 1
+      }
+    },
+    {
+      "seller_id": 1,
+      "name": "스파티필름",
+      "price": 20000,
+      "shippingFees": 3000,
+      "show": true,
+      "active": true,
+      "quantity": 9999,
+      "buyQuantity": 15,
+      "mainImages": ["uploadFiles/Spathiphyllum_black.webp", "uploadFiles/Spathiphyllum_brown.webp", "uploadFiles/Spathiphyllum_gray.webp"],
+      "content": "<div class=\"product-detail\"><p>스파티필름은 공기 정화 능력이 매우 뛰어난 식물이에요. 게다가 빛이 많이 들지 않는 환경에서도 잘 견디고 꽃도 피우기 때문에 초보가드너도 쉽게 키울 수 있는 실내 공기정화 식물이랍니다.</p><p>스파티필름(Spathiphyllum)은 '포엽(leaf spathe)'을 뜻하는 말로, 꽃처럼 보이는 하얀 잎이 바로 '포엽'이랍니다. 잎에는 독성이 있어 반려동물이 있는 집에서는 주의해서 키워야 해요.</p></div>",
+      "extra": {
+        "isNew": true,
+        "isBest": false,
+        "tags": ["매일 물주기", "다습 식물", "따뜻함 선호"],
+        "category": ["식물", "중형", "보통", "음지", "간접광", "거실", "침실", "사무실", "봄", "가을"],
+        "potColors": ["흑색", "갈색", "회색"],
+        "sort": 2
+      }
+    },
+    {
+      "seller_id": 1,
+      "name": "몬스테라 아단소니",
+      "price": 24000,
+      "shippingFees": 3000,
+      "show": true,
+      "active": true,
+      "quantity": 9999,
+      "buyQuantity": 10,
+      "mainImages": ["uploadFiles/monstera_adansonii_black.webp"],
+      "content": "<div class=\"product-detail\"><p>몬스테라 아단소니는 관리가 쉬운 식물로, 잎에 구멍이 나 있는 듯한 화려한 무늬가 특징입니다. 덩굴식물이기 때문에 화분 위로 뻗으며, 말뚝이나 격자를 따라 기어오를 수 있습니다.</p><p>중남미 전역에서 흔히 발견되는 몬스테라 아단소니는 열대우림의 우림 아래 큰 나무 줄기에서 자랍니다. 따라서 이 식물은 간접적인 햇빛과 높은 습도를 선호합니다.</p></div>",
+      "extra": {
+        "isNew": false,
+        "isBest": false,
+        "tags": ["주 1회 물주기", "다습 식물", "따뜻함 선호"],
+        "category": ["식물", "중형", "쉬움", "음지", "간접광", "욕실", "주방", "봄", "여름"],
+        "potColors": ["흑색"],
+        "sort": 3
+      }
+    },
+    {
+      "seller_id": 1,
+      "name": "옥잠화",
+      "price": 25000,
+      "shippingFees": 3000,
+      "show": true,
+      "active": true,
+      "quantity": 9999,
+      "buyQuantity": 11,
+      "mainImages": ["uploadFiles/ocjamhwa_brown.webp", "uploadFiles/ocjamhwa_gray.webp"],
+      "content": "<div class=\"product-detail\"><p>옥잠화는 가장 사랑받는 다육식물 중 하나입니다. 관리가 쉽고 오래가는 이 식물은 대대로 물려줄 수 있어 가족의 가보가 될 수 있습니다.</p><p>간접광으로 밝은 곳에 두고 흙이 완전히 말랐을 때만 물을 주세요. 둥근 잎에 해충이 없도록 정기적으로 먼지를 털어주세요.</p></div>",
+      "extra": {
+        "isNew": false,
+        "isBest": true,
+        "tags": ["주 1회 물주기", "건조 식물", "서늘함 선호"],
+        "category": ["식물", "소형", "쉬움", "간접광", "거실", "침실", "사무실", "봄", "여름", "가을", "겨울"],
+        "potColors": ["갈색", "회색"],
+        "sort": 4
+      }
+    },
+    {
+      "seller_id": 1,
+      "name": "나비란",
+      "price": 19000,
+      "shippingFees": 3000,
+      "show": true,
+      "active": true,
+      "quantity": 9999,
+      "buyQuantity": 13,
+      "mainImages": ["uploadFiles/nabiran_black.webp", "uploadFiles/nabiran_brown.webp", "uploadFiles/nabiran_gray.webp"],
+      "content": "<div class=\"product-detail\"><p>나비란은 실내 식물 중 적응력이 가장 뛰어나며 키우기도 매우 쉽습니다. 이 우아한 식물은 테이블 위부터 벽난로까지, 또는 아름다운 아치형 잎으로 매달아 두는 식물까지 어디에서나 돋보입니다.</p><p>반려동물과 함께 키우기 좋은 나비란은 공기 정화 효과로도 유명하여 집안에 건강한 분위기를 더해줍니다.</p></div>",
+      "extra": {
+        "isNew": true,
+        "isBest": false,
+        "tags": ["주 1회 물주기", "보통 습도", "봄이 좋아요"],
+        "category": ["식물", "중형", "쉬움", "음지", "간접광", "거실", "침실", "욕실", "주방", "사무실", "봄", "여름", "가을", "겨울"],
+        "potColors": ["흑색", "갈색", "회색"],
+        "sort": 5
+      }
+    },
+    {
+      "seller_id": 1,
+      "name": "팔러 팜",
+      "price": 29000,
+      "shippingFees": 3000,
+      "show": true,
+      "active": true,
+      "quantity": 9999,
+      "buyQuantity": 20,
+      "mainImages": ["uploadFiles/parlor_palm_black.webp", "uploadFiles/parlor_palm_brown.webp", "uploadFiles/parlor_palm_gray.webp"],
+      "content": "<div class=\"product-detail\"><p>느리게 자라는 이 소형 야자나무는 다양한 조명 환경과 좁은 공간에서 잘 자랍니다. 짙은 녹색 잎은 무성하고 풍성한 식물로, 탁상, 책상, 선반에 놓으면 더욱 아름답습니다.</p><p>팔러 팜은 밝고 여과된 빛에서 가장 잘 자라지만, 어두운 곳에서도 잘 적응합니다. 관리가 거의 필요 없으며, 뛰어난 공기 청정 효과를 자랑합니다.</p><p>적응력이 뛰어난 실내 식물로, 재배 환경이 좋지 않은 사무실이나 사업장에 적합합니다.</p></div>",
+      "extra": {
+        "isNew": false,
+        "isBest": true,
+        "tags": ["주 1회 물주기", "다습 식물", "따뜻함 선호"],
+        "category": ["식물", "중형", "쉬움", "음지", "간접광", "침실", "주방", "사무실", "봄", "여름", "가을", "겨울"],
+        "potColors": ["흑색", "갈색", "회색"],
+        "sort": 6
+      }
+    },
+    {
+      "seller_id": 1,
+      "name": "드라세나 골든 하트",
+      "price": 28000,
+      "shippingFees": 3000,
+      "show": true,
+      "active": true,
+      "quantity": 9999,
+      "buyQuantity": 19,
+      "mainImages": ["uploadFiles/dracaena_black.webp", "uploadFiles/dracaena_brown.webp", "uploadFiles/dracaena_white.webp", "uploadFiles/dracaena_blue.webp"],
+      "content": "<div class=\"product-detail\"><p>드라세나 골든 하트는 실내에서 키우기 가장 쉬운 식물 중 하나입니다. 밝은 줄무늬 잎은 거의 모든 실내 환경에 잘 적응하며 잘 자랍니다.</p><p>윤기 나는 녹색에서 노란색 잎을 가진 이 열대 식물은 직립형으로 빛이 적은 실내 식물로 잘 자라며 형광등에도 잘 적응합니다. 간접적인 밝은 빛에서도 잘 자라며 잎의 색이 밝아집니다.</p><p>드라세나 골든 하트는 아프리카 열대 지역이 원산지입니다. 다양한 환경에 잘 견디기 때문에 식물을 처음 키우는 사람에게도 훌륭한 선택입니다.</p><p>흙이 거의 마르면 물을 주세요. 잎 끝이 갈색으로 변하면 날카로운 전정 가위를 사용하면 잎이 아름답게 유지됩니다.</p></div>",
+      "extra": {
+        "isNew": true,
+        "isBest": false,
+        "tags": ["주 1회 물주기", "건조 식물", "따뜻함 선호"],
+        "category": ["식물", "중형", "쉬움", "음지", "간접광", "거실", "침실", "주방", "사무실", "봄", "여름"],
+        "potColors": ["흑색", "갈색", "흰색", "남색"],
+        "sort": 7
+      }
+    },
+    {
+      "seller_id": 1,
+      "name": "브로멜리아드",
+      "price": 22000,
+      "shippingFees": 3000,
+      "show": true,
+      "active": true,
+      "quantity": 9999,
+      "buyQuantity": 25,
+      "mainImages": ["uploadFiles/bromeliad_black.webp", "uploadFiles/bromeliad_brown.webp", "uploadFiles/bromeliad_white.webp", "uploadFiles/bromeliad_gray.webp"],
+      "content": "<div class=\"product-detail\"><p>화려하고 관리가 쉬운 브로멜리아드는 집안에 따스함을 더하는 매력적인 실내 식물입니다.</p><p>밝고 화사한 자홍색 꽃을 자랑하는 이 브로멜리아드는 반려동물과 함께 키우기 좋으며, 식물 애호가나 식물 초보자에게 훌륭한 선물이 됩니다.</p></div>",
+      "extra": {
+        "isNew": false,
+        "isBest": false,
+        "tags": ["매일 물주기", "다습 식물", "따뜻함 선호"],
+        "category": ["식물", "소형", "쉬움", "음지", "실외", "거실", "침실", "욕실", "주방", "사무실", "봄", "여름", "가을", "겨울"],
+        "potColors": ["흑색", "갈색", "흰색", "회색"],
+        "sort": 8
+      }
+    },
+    {
+      "seller_id": 1,
+      "name": "필로덴드론 버킨",
+      "price": 29000,
+      "shippingFees": 3000,
+      "show": true,
+      "active": true,
+      "quantity": 9999,
+      "buyQuantity": 11,
+      "mainImages": ["uploadFiles/philodendron_birkin_black.webp", "uploadFiles/philodendron_birkin_brown.webp", "uploadFiles/philodendron_birkin_gray.webp"],
+      "content": "<div class=\"product-detail\"><p>필로덴드론 버킨은 윤기 있고 두꺼운 잎에 섬세한 흰색 핀스트라이프 무늬가 있는 순한 식물입니다. 다양한 실내 환경에 잘 적응하는 버킨은 어떤 집에서든 시선을 사로잡는 식물입니다.</p><p>오랜 식물 애호가든, 이제 막 친환경 생활을 시작하든, 버킨의 순한 성격 덕분에 특별한 식물에 대한 지식 없이도 아름다운 자태를 즐길 수 있습니다.</p></div>",
+      "extra": {
+        "isNew": false,
+        "isBest": true,
+        "tags": ["주 1회 물주기", "다습 식물", "따뜻함 선호"],
+        "category": ["식물", "소형", "쉬움", "음지", "간접광", "거실", "침실", "욕실", "주방", "사무실", "봄", "여름", "가을", "겨울"],
+        "potColors": ["흑색", "갈색", "회색"],
+        "sort": 9
+      }
+    },
+    {
+      "seller_id": 1,
+      "name": "필로덴드론 문라이트",
+      "price": 32000,
+      "shippingFees": 3000,
+      "show": true,
+      "active": true,
+      "quantity": 9999,
+      "buyQuantity": 35,
+      "mainImages": ["uploadFiles/philodendron_moonlight_black.webp", "uploadFiles/philodendron_moonlight_white.webp", "uploadFiles/philodendron_moonlight_gray.webp"],
+      "content": "<div class=\"product-detail\"><p>네온 옐로우 색상의 새 잎이 밝고 윤기 나는 녹색으로 자라는 필로덴드론 문라이트로 집안에 생기를 더하세요. 이 간편한 식물은 밝은 간접광에서 잘 자라며 어떤 실내 공간에도 열대적인 분위기를 더합니다.</p><p>식물을 처음 키우는 초보자와 경험 많은 애호가 모두에게 적합한 문라이트는 오랫동안 어떤 집이든 밝게 빛내줄 사려 깊고 오래가는 선물이 될 것입니다.</p></div>",
+      "extra": {
+        "isNew": false,
+        "isBest": true,
+        "tags": ["주 1회 물주기", "다습 식물", "따뜻함 선호"],
+        "category": ["식물", "소형", "쉬움", "간접광", "거실", "침실", "주방", "사무실", "봄", "여름", "가을", "겨울"],
+        "potColors": ["흑색", "흰색", "회색"],
+        "sort": 10
+      }
+    }
+  ],
+  "order": [
+    {
+      "products": [
+        {
+          "_id": 3,
+          "quantity": 3,
+          "seller_id": 1,
+          "name": "몬스테라 아단소니",
+          "image": "uploadFiles/monstera_adansonii_black.webp",
+          "price": 72000,
+          "color": "흑색",
+          "extra": {
+            "isNew": false,
+            "isBest": false,
+            "tags": ["주 1회 물주기", "다습 식물", "따뜻함 선호"],
+            "category": ["식물", "중형", "쉬움", "음지", "간접광", "욕실", "주방", "봄", "여름"],
+            "potColors": ["흑색"],
+            "sort": 3
+          }
+        }
+      ],
+      "address": {
+        "name": "포블리",
+        "value": "수원시 장안구 가상동 12345",
+        "phone": "010-9876-5678"
+      },
+      "memo": {
+        "selectedMemo": "문 앞에 두시면 됩니다.",
+        "selectedImage": ["uploadFiles/monstera_adansonii_black.webp"]
+      },
+      "state": "OS020",
+      "user_id": 2,
+      "cost": {
+        "products": 72000,
+        "shippingFees": 3000,
+        "discount": {
+          "products": 0,
+          "shippingFees": 0
+        },
+        "total": 75000
+      }
+    },
+    {
+      "products": [
+        {
+          "_id": 5,
+          "quantity": 2,
+          "seller_id": 1,
+          "name": "나비란",
+          "image": "uploadFiles/nabiran_black.webp",
+          "price": 38000,
+          "color": "갈색",
+          "extra": {
+            "isNew": true,
+            "isBest": false,
+            "tags": ["주 1회 물주기", "보통 습도", "봄이 좋아요"],
+            "category": ["식물", "중형", "쉬움", "음지", "간접광", "거실", "침실", "욕실", "주방", "사무실", "봄", "여름", "가을", "겨울"],
+            "potColors": ["흑색", "갈색", "회색"],
+            "sort": 5
+          }
+        },
+        {
+          "_id": 2,
+          "quantity": 1,
+          "seller_id": 1,
+          "name": "스파티필름",
+          "image": "uploadFiles/Spathiphyllum_black.webp",
+          "price": 20000,
+          "color": "회색",
+          "extra": {
+            "isNew": true,
+            "isBest": false,
+            "tags": ["매일 물주기", "다습 식물", "따뜻함 선호"],
+            "category": ["식물", "중형", "보통", "음지", "간접광", "거실", "침실", "사무실", "봄", "가을"],
+            "potColors": ["흑색", "갈색", "회색"],
+            "sort": 2
+          }
+        }
+      ],
+      "address": {
+        "name": "김멋사",
+        "value": "서울시 강남구 역삼동 234",
+        "phone": "010-1234-5678"
+      },
+      "memo": {
+        "selectedMemo": "파손 위험이 있으니 주의해주세요.",
+        "selectedImage": ["uploadFiles/nabiran_brown.webp", "uploadFiles/Spathiphyllum_gray.webp"]
+      },
+      "state": "OS020",
+      "user_id": 2,
+      "cost": {
+        "products": 58000,
+        "shippingFees": 3000,
+        "discount": {
+          "products": 0,
+          "shippingFees": 0
+        },
+        "total": 61000
+      }
+    }
+  ],
+  "review": [
+    {
+      "order_id": 1,
+      "product_id": 1,
+      "rating": 5,
+      "content": "정말 예쁜 식물이에요! 배송도 안전하게 왔고 건강한 상태로 도착했습니다. 하트 모양이 너무 귀여워요.",
+      "extra": {
+        "title": "Review"
+      },
+      "user_id": 2,
+      "user": {
+        "_id": 2,
+        "name": "테스트 유저 1",
+        "image": "uploadFiles/user_test01.webp"
+      }
+    },
+    {
+      "order_id": 2,
+      "product_id": 2,
+      "rating": 4,
+      "content": "사진보다 실물이 더 예뻐요. 관리 방법도 상세하게 나와있어서 좋았습니다. 아이가 정말 좋아해요.",
+      "extra": {
+        "title": "Review"
+      },
+      "user_id": 1,
+      "user": {
+        "_id": 1,
+        "name": "테스트 관리자",
+        "image": "uploadFiles/user_admnin.webp"
+      }
+    },
+    {
+      "order_id": 3,
+      "product_id": 3,
+      "rating": 5,
+      "content": "처음 키우는 식물인데 설명서대로 하니까 잘 자라고 있어요. 새 잎이 나오는 게 신기하네요!",
+      "extra": {
+        "title": "Review"
+      },
+      "user_id": 2,
+      "user": {
+        "_id": 2,
+        "name": "테스트 유저 1",
+        "image": "uploadFiles/user_test01.webp"
+      }
+    },
+    {
+      "order_id": 4,
+      "product_id": 1,
+      "rating": 3,
+      "content": "배송 중에 살짝 상처가 났지만 식물 자체는 건강해요. 포장을 좀 더 신경써주시면 좋을 것 같아요.",
+      "extra": {
+        "title": "Review"
+      },
+      "user_id": 1,
+      "user": {
+        "_id": 1,
+        "name": "테스트 관리자",
+        "image": "uploadFiles/user_admnin.webp"
+      }
+    }
+  ],
+  "cart": [
+    {
+      "product_id": 7,
+      "quantity": 2,
+      "color": "갈색",
+      "user_id": 2,
+      "product": {
+        "_id": 7,
+        "name": "드라세나 골든 하트",
+        "price": 28000,
+        "seller_id": 1,
+        "quantity": 9999,
+        "buyQuantity": 19,
+        "image": "uploadFiles/dracaena_black.webp",
+        "extra": {
+          "isNew": true,
+          "isBest": false,
+          "tags": ["주 1회 물주기", "건조 식물", "따뜻함 선호"],
+          "category": ["식물", "중형", "쉬움", "음지", "간접광", "거실", "침실", "주방", "사무실", "봄", "여름"],
+          "potColors": ["흑색", "갈색", "흰색", "남색"],
+          "sort": 7
+        }
+      }
+    },
+    {
+      "product_id": 1,
+      "quantity": 1,
+      "color": "흑색",
+      "user_id": 1,
+      "product": {
+        "_id": 1,
+        "name": "하트 호야",
+        "price": 18000,
+        "seller_id": 1,
+        "quantity": 9999,
+        "buyQuantity": 12,
+        "image": "uploadFiles/hoya_heart_black.webp",
+        "extra": {
+          "isNew": true,
+          "isBest": false,
+          "tags": ["월 1회 물주기", "보통 습도", "따뜻함 선호"],
+          "category": ["식물", "소형", "쉬움", "음지", "간접광", "거실", "침실", "사무실", "봄", "가을"],
+          "potColors": ["흑색", "갈색"],
+          "sort": 1
+        }
+      }
+    }
+  ],
+  "bookmark": [
+    {
+      "user_id": 2,
+      "user": {
+        "_id": 2,
+        "name": "테스트 유저 1",
+        "image": "uploadFiles/user_test01.webp"
+      },
+      "type": "product",
+      "target_id": 1,
+      "memo": "내일 이모네집에 선물하기"
+    },
+    {
+      "user_id": 2,
+      "user": {
+        "_id": 2,
+        "name": "테스트 유저 1",
+        "image": "uploadFiles/user_test01.webp"
+      },
+      "type": "product",
+      "target_id": 2,
+      "memo": "2번 상품 북마크"
+    },
+    {
+      "user_id": 2,
+      "user": {
+        "_id": 2,
+        "name": "테스트 유저 1",
+        "image": "uploadFiles/user_test01.webp"
+      },
+      "type": "product",
+      "target_id": 3,
+      "memo": "3번 상품 북마크"
+    },
+    {
+      "user_id": 2,
+      "user": {
+        "_id": 2,
+        "name": "테스트 유저 1",
+        "image": "uploadFiles/user_test01.webp"
+      },
+      "type": "product",
+      "target_id": 4,
+      "memo": "4번 상품 북마크"
+    },
+    {
+      "user_id": 2,
+      "user": {
+        "_id": 2,
+        "name": "테스트 유저 1",
+        "image": "uploadFiles/user_test01.webp"
+      },
+      "type": "post",
+      "target_id": 1,
+      "memo": "커뮤니티 게시물 북마크 테스트 1"
+    },
+    {
+      "user_id": 2,
+      "user": {
+        "_id": 2,
+        "name": "테스트 유저 1",
+        "image": "uploadFiles/user_test01.webp"
+      },
+      "type": "post",
+      "target_id": 2,
+      "memo": "커뮤니티 게시물 북마크 테스트 2"
+    }
+  ],
+  "post": [
+    {
+      "type": "community",
+      "views": 25,
+      "user": {
+        "_id": 2,
+        "name": "테스트 유저 1",
+        "image": "uploadFiles/user_test01.webp"
+      },
+      "title": "테스트용 커뮤니티 게시물입니다!",
+      "content": "테스트용 커뮤니티 게시물 내용입니다.",
+      "image": "uploadFiles/user_test01.webp",
+      "replies": [
+        {
+          "_id": 1,
+          "user_id": 3,
+          "user": {
+            "_id": 3,
+            "name": "테스트 유저 2",
+            "email": "test2@test.com",
+            "image": "user_test02.webp"
+          },
+          "content": "테스트용 커뮤니티 게시물의 댓글입니다.",
+          "like": 5,
+          "createdAt": "2025.07.21 05:37:30",
+          "updatedAt": "2025.07.20 15:37:30"
+        },
+        {
+          "_id": 2,
+          "user_id": 1,
+          "user": {
+            "_id": 1,
+            "name": "테스트 관리자",
+            "email": "admin@market.com",
+            "image": "user_admin.webp"
+          },
+          "content": "안녕하세요 테스트 관리자입니다. 규칙위반 하셨습니다.",
+          "like": 7,
+          "createdAt": "2025.07.25 23:37:30",
+          "updatedAt": "2025.07.20 08:37:30"
+        }
+      ]
+    },
+    {
+      "type": "community",
+      "views": 30,
+      "user": {
+        "_id": 1,
+        "name": "테스트 관리자",
+        "image": "uploadFiles/user_admnin.webp"
+      },
+      "title": "관리자가 작성한 테스트용 커뮤니티 게시물입니다!",
+      "content": "관리자가 작성한 테스트용 커뮤니티 게시물 내용입니다.",
+      "image": "uploadFiles/user_test01.webp",
+      "replies": [
+        {
+          "_id": 1,
+          "user_id": 2,
+          "user": {
+            "_id": 2,
+            "name": "테스트 유저 1",
+            "email": "test@test.com",
+            "image": "user_test01.webp"
+          },
+          "content": "테스트용 커뮤니티 게시물의 댓글입니다. 작성자는 테스트 유저 01입니다.",
+          "like": 5,
+          "createdAt": "2025.07.21 05:37:30",
+          "updatedAt": "2025.07.20 15:37:30"
+        },
+        {
+          "_id": 2,
+          "user_id": 1,
+          "user": {
+            "_id": 1,
+            "name": "테스트 관리자",
+            "email": "admin@market.com",
+            "image": "user_admin.webp"
+          },
+          "content": "안녕하세요 테스트 관리자입니다. 규칙위반 하셨습니다.",
+          "like": 7,
+          "createdAt": "2025.07.25 23:37:30",
+          "updatedAt": "2025.07.20 08:37:30"
+        }
+      ]
+    },
+    {
+      "type": "magazine",
+      "title": "해피트리, 물 주는 타이밍이 중요해요",
+      "content": "잎이 처지거나 노랗게 변하셨나요? 해피트리는 과습에 민감한 식물입니다. 물 주는 빈도보다, \"흙이 마른 시점\"을 기준으로 판단하는 것이 핵심입니다.",
+      "image": "uploadFiles/calathea_lancifolia.webp",
+      "bookmarks": 12,
+      "myBookmarkId": null,
+      "views": 123,
+      "user": {
+        "_id": 1,
+        "name": "테스트 관리자",
+        "email": "admin@market.com",
+        "image": "uploadFiles/user_admin.webp"
+      },
+      "extra": {
+        "contents": [
+          {
+            "content": "해피트리는 과습에 특히 민감해요. 흙을 손가락으로 만졌을 때 촉촉하지 않다면, 그때 물을 주세요.",
+            "postImage": "uploadFiles/calathea_lancifolia.webp"
+          },
+          {
+            "content": "잎이 처진다면 과습의 신호일 수 있어요. 뿌리 썩음을 방지하려면 물빠짐 좋은 화분을 사용하세요.",
+            "postImage": "uploadFiles/calathea_lancifolia.webp"
+          }
+        ]
+      }
+    },
+    {
+      "type": "magazine",
+      "title": "화분은 어디에 두는 게 좋을까요?",
+      "content": "빛의 방향, 창문의 위치, 에어컨 바람까지… 식물은 단순히 빛만 있으면 되는 게 아닙니다. 집 구조를 고려한 최적의 배치 전략을 소개합니다.",
+      "image": "uploadFiles/crashula_obata.webp",
+      "bookmarks": 9,
+      "myBookmarkId": null,
+      "views": 87,
+      "user": {
+        "_id": 1,
+        "name": "테스트 관리자",
+        "email": "admin@market.com",
+        "image": "uploadFiles/user_admin.webp"
+      },
+      "extra": {
+        "contents": [
+          {
+            "content": "창문 근처라도 직광은 피하고 간접광이 드는 곳이 좋아요.",
+            "postImage": "uploadFiles/crashula_obata.webp"
+          }
+        ]
+      }
+    },
+    {
+      "type": "magazine",
+      "title": "식물도 밤에는 쉬고 싶어해요",
+      "content": "낮과 밤의 온도 차, 인공조명의 영향까지 생각해 본 적 있으신가요? 식물의 생체리듬에 맞춘 야간 관리 습관으로 더 건강하게 키워보세요.",
+      "image": "uploadFiles/red_anthurium_white.webp",
+      "bookmarks": 7,
+      "myBookmarkId": null,
+      "views": 69,
+      "user": {
+        "_id": 1,
+        "name": "테스트 관리자",
+        "email": "admin@market.com",
+        "image": "uploadFiles/user_admin.webp"
+      },
+      "extra": {
+        "contents": [
+          {
+            "content": "밤에도 조명을 켜두면 식물이 스트레스를 받을 수 있어요.",
+            "postImage": "uploadFiles/red_anthurium_white.webp"
+          }
+        ]
+      }
+    },
+    {
+      "type": "magazine",
+      "title": "초보자를 위한 실내 식물 추천",
+      "content": "물을 자주 주지 않아도 잘 자라는 식물들이 있습니다. 관리가 쉬우면서도 인테리어 효과까지 주는 식물들을 소개합니다.",
+      "image": "uploadFiles/variegated_pink_lemon_tree_white.webp",
+      "bookmarks": 15,
+      "myBookmarkId": null,
+      "views": 152,
+      "user": {
+        "_id": 1,
+        "name": "테스트 관리자",
+        "email": "admin@market.com",
+        "image": "uploadFiles/user_admin.webp"
+      },
+      "extra": {
+        "contents": [
+          {
+            "content": "스투키, 산세베리아, 아이비 등은 초보자에게 적합한 식물이에요.",
+            "postImage": "uploadFiles/variegated_pink_lemon_tree_white.webp"
+          }
+        ]
+      }
+    },
+    {
+      "type": "magazine",
+      "title": "식물의 휴식 시간도 중요해요",
+      "content": "물, 햇빛 못지않게 식물에게는 \"쉼\"도 필요합니다. 잠시라도 어둡고 조용한 환경을 제공해보세요.",
+      "image": "uploadFiles/hibiscus_gray.webp",
+      "bookmarks": 6,
+      "myBookmarkId": null,
+      "views": 41,
+      "user": {
+        "_id": 1,
+        "name": "테스트 관리자",
+        "email": "admin@market.com",
+        "image": "uploadFiles/user_admin.webp"
+      },
+      "extra": {
+        "contents": [
+          {
+            "content": "낮 시간 동안 충분히 빛을 받은 식물은 밤에는 어둠 속에서 회복하는 시간을 가져요.",
+            "postImage": "uploadFiles/hibiscus_gray.webp"
+          }
+        ]
+      }
+    }
+  ],
+  "code": [],
+  "config": []
+}

@@ -3,7 +3,7 @@
 import { getTempOrderAction } from '@/lib/actions/order/orderServerActions';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import OrderClientSection from './_components/orderClient';
+import OrderClientSection from './_components/OrderClient';
 
 export default async function OrderPage() {
   // 서버에서 임시 주문 데이터 가져오기

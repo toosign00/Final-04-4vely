@@ -403,24 +403,7 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
             <div className='grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-2 md:gap-8' role='grid' aria-label={`상품 목록, ${products.length}개 상품`}>
               {products.map((product) => (
                 <div key={product._id} role='gridcell'>
-                  <button
-                    type='button'
-                    onClick={() => handleProductClick(product._id)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        handleProductClick(product._id);
-                      }
-                    }}
-                    className='focus-visible:ring-secondary w-full rounded-lg text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2'
-                    aria-label={`${product.name} 상품 상세 페이지로 이동`}
-                  >
-                    <ProductCard
-                      product={product}
-                      onClick={() => {}} // 빈 함수로 전달하여 중복 클릭 방지
-                      isMobile={true}
-                    />
-                  </button>
+                  <ProductCard product={product} onClick={handleProductClick} isMobile={false} />
                 </div>
               ))}
             </div>
@@ -516,23 +499,7 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
               <div className='grid grid-cols-3 gap-6 xl:grid-cols-3 xl:gap-8 2xl:grid-cols-4 2xl:gap-10' role='grid' aria-label={`상품 목록, ${products.length}개 상품`}>
                 {products.map((product) => (
                   <div key={product._id} role='gridcell'>
-                    <button
-                      type='button'
-                      onClick={() => handleProductClick(product._id)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          handleProductClick(product._id);
-                        }
-                      }}
-                      className='focus-visible:ring-secondary w-full rounded-lg text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2'
-                      aria-label={`${product.name} 상품 상세 페이지로 이동`}
-                    >
-                      <ProductCard
-                        product={product}
-                        onClick={() => {}} // 빈 함수로 전달하여 중복 클릭 방지
-                      />
-                    </button>
+                    <ProductCard product={product} onClick={handleProductClick} isMobile={false} />
                   </div>
                 ))}
               </div>

@@ -8,6 +8,8 @@ export interface ProductDetail {
   option: string;
   quantity: number;
   price: number;
+  color?: string;
+  image?: string;
 }
 
 export interface OrderCost {
@@ -32,6 +34,10 @@ export interface OrderCardData {
   products?: ProductDetail[];
   hasMultipleProducts?: boolean;
   cost?: OrderCost;
+  memo?: {
+    selectedMemo: string;
+    selectedImage: string[];
+  };
 }
 
 export interface OrderHistoryCardProps {

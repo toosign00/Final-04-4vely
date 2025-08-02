@@ -17,6 +17,7 @@ interface OrderProduct {
   name: string; // 상품명
   image: string; // 상품 이미지 URL
   price: number; // 상품 가격
+  color: string; // 선택한 상품 색상 옵션
   extra: {
     isNew: boolean; // 신상품 여부
     isBest: boolean; // 베스트 상품 여부
@@ -56,6 +57,10 @@ export interface Order {
   _id: number; // 주문 고유 ID
   products: OrderProduct[]; // 주문 상품 목록
   address: OrderAddress; // 배송지 정보
+  memo: {
+    selectedMemo: string; // 선택한 배송 메모
+    selectedImage: string[]; // 구매한 상품별 옵션에 해당하는 이미지 배열
+  }; // 주문 메모 및 이미지 정보
   state: string; // 주문 상태
   user_id: number; // 사용자 ID
   createdAt: string; // 주문 생성일

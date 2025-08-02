@@ -113,7 +113,7 @@ export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
                 <div className='flex gap-4'>
                   <div className='flex-shrink-0'>
                     <div className='h-20 w-20 overflow-hidden rounded-xl border border-gray-200 bg-gray-100'>
-                      <Image src={order.image} alt={order.name} width={80} height={80} className='h-full w-full object-cover' />
+                      <Image src={order.products?.[0]?.image || order.image || (order.memo?.selectedImage && order.memo.selectedImage[0]) || ''} alt={order.name} width={80} height={80} className='h-full w-full object-cover' />
                     </div>
                   </div>
                   <div className='min-w-0 flex-1'>
@@ -121,7 +121,7 @@ export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
                     <div className='grid grid-cols-1 gap-3 text-sm sm:grid-cols-2'>
                       <div>
                         <span className='text-muted text-sm sm:text-base'>옵션:</span>
-                        <span className='text-secondary ml-2 text-sm sm:text-base'>{order.option}</span>
+                        <span className='text-secondary ml-2 text-sm sm:text-base'>{order.products?.[0]?.color || order.option}</span>
                       </div>
                       <div>
                         <span className='text-muted text-sm sm:text-base'>수량:</span>
@@ -145,13 +145,13 @@ export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
                       <div key={product.id} className='flex gap-3 rounded-lg border border-gray-100 bg-gray-50 p-3 transition-colors hover:bg-gray-100'>
                         <div className='flex-shrink-0'>
                           <div className='h-14 w-14 overflow-hidden rounded-lg border border-gray-200 bg-white'>
-                            <Image src={product.imageUrl} alt={product.name} width={56} height={56} className='h-full w-full object-cover' />
+                            <Image src={product.image || product.imageUrl || (order.memo?.selectedImage && order.memo.selectedImage[order.products?.indexOf(product) || 0]) || ''} alt={product.name} width={56} height={56} className='h-full w-full object-cover' />
                           </div>
                         </div>
                         <div className='min-w-0 flex-1'>
                           <h5 className='t-body text-secondary mb-1 line-clamp-1 font-medium'>{product.name}</h5>
                           <p className='text-muted mb-2 text-sm sm:text-base'>
-                            옵션: <span className='text-secondary mb-2 text-sm sm:text-base'>{product.option}</span>
+                            옵션: <span className='text-secondary mb-2 text-sm sm:text-base'>{product.color || product.option}</span>
                           </p>
                           <div className='flex items-center justify-between'>
                             <span className='t-small text-muted'>{product.quantity}개</span>
@@ -180,13 +180,13 @@ export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
                         <div key={product.id} className='flex gap-3 rounded-lg border border-gray-100 bg-gray-50 p-3 transition-colors hover:bg-gray-100'>
                           <div className='flex-shrink-0'>
                             <div className='h-14 w-14 overflow-hidden rounded-lg border border-gray-200 bg-white'>
-                              <Image src={product.imageUrl} alt={product.name} width={56} height={56} className='h-full w-full object-cover' />
+                              <Image src={product.image || product.imageUrl || (order.memo?.selectedImage && order.memo.selectedImage[order.products?.indexOf(product) || 0]) || ''} alt={product.name} width={56} height={56} className='h-full w-full object-cover' />
                             </div>
                           </div>
                           <div className='min-w-0 flex-1'>
                             <h5 className='t-body text-secondary mb-1 line-clamp-1 font-medium'>{product.name}</h5>
                             <p className='text-muted mb-2 text-sm sm:text-base'>
-                              옵션: <span className='text-secondary mb-2 text-sm sm:text-base'>{product.option}</span>
+                              옵션: <span className='text-secondary mb-2 text-sm sm:text-base'>{product.color || product.option}</span>
                             </p>
                             <div className='flex items-center justify-between'>
                               <span className='t-small text-muted'>{product.quantity}개</span>
@@ -257,10 +257,12 @@ export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
                         const productToReview = {
                           id: 0,
                           name: order.name,
-                          imageUrl: order.image,
-                          option: order.option,
+                          imageUrl: order.products?.[0]?.image || order.image || (order.memo?.selectedImage && order.memo.selectedImage[0]) || '',
+                          option: order.products?.[0]?.color || order.option,
                           quantity: order.quantity,
                           price: 0,
+                          color: order.products?.[0]?.color,
+                          image: order.products?.[0]?.image,
                         };
                         if (!reviewedProductIds.includes(productToReview.id)) {
                           setSelectedProduct(productToReview);
@@ -287,11 +289,11 @@ export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
             {!hasMultipleProducts && selectedProduct && (
               <div className='flex items-center gap-3 border-b border-gray-200 pb-4'>
                 <div className='h-12 w-12 overflow-hidden rounded-lg border border-gray-200 bg-gray-100'>
-                  <Image src={selectedProduct.imageUrl} alt={selectedProduct.name} width={48} height={48} className='h-full w-full object-cover' />
+                  <Image src={selectedProduct.image || selectedProduct.imageUrl || ''} alt={selectedProduct.name} width={48} height={48} className='h-full w-full object-cover' />
                 </div>
                 <div className='flex-1'>
                   <h4 className='text-secondary t-body line-clamp-1 font-medium'>{selectedProduct.name}</h4>
-                  <p className='text-muted t-small'>{selectedProduct.option}</p>
+                  <p className='text-muted t-small'>{selectedProduct.color || selectedProduct.option}</p>
                 </div>
               </div>
             )}

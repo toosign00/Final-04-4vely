@@ -10,7 +10,10 @@ import { formatOrderDate, formatPrice, getDeliveryStatus } from './utils/orderUt
  * @param potColors - 화분 색상 배열
  * @returns 포맷팅된 옵션 문자열
  */
-const formatProductOption = (potColors?: string[]): string => {
+const formatProductOption = (selectedColor?: string, potColors?: string[]): string => {
+  if (selectedColor) {
+    return `${selectedColor} 화분`;
+  }
   return potColors?.[0] ? `${potColors[0]} 화분` : '기본 옵션';
 };
 
@@ -29,13 +32,15 @@ function transformOrderData(orders: Order[]): OrderCardData[] {
     const totalQuantity = products.reduce((sum, product) => sum + product.quantity, 0);
 
     // 상품 상세 정보를 화면 표시용 형태로 변환
-    const productDetails: ProductDetail[] = products.map((product) => ({
+    const productDetails: ProductDetail[] = products.map((product, index) => ({
       id: product._id,
       name: product.name,
-      imageUrl: product.image,
-      option: formatProductOption(product.extra.potColors),
+      imageUrl: order.memo?.selectedImage?.[index] || product.image,
+      option: formatProductOption(product.color, product.extra.potColors),
       quantity: product.quantity,
       price: product.price,
+      color: product.color,
+      image: order.memo?.selectedImage?.[index] || product.image,
     }));
 
     // 화면에 표시할 상품명 생성 (단일 상품 또는 다중 상품 표시 형태로)
@@ -43,9 +48,9 @@ function transformOrderData(orders: Order[]): OrderCardData[] {
 
     return {
       id: orderId,
-      image: mainProduct.image,
+      image: order.memo?.selectedImage?.[0] || mainProduct.image,
       name: displayName,
-      option: formatProductOption(mainProduct.extra.potColors),
+      option: formatProductOption(mainProduct.color, mainProduct.extra.potColors),
       quantity: totalQuantity,
       orderDate: formatOrderDate(createdAt),
       totalPrice: formatPrice(cost.total),
@@ -53,6 +58,7 @@ function transformOrderData(orders: Order[]): OrderCardData[] {
       products: productDetails,
       hasMultipleProducts,
       cost,
+      memo: order.memo,
     };
   });
 }

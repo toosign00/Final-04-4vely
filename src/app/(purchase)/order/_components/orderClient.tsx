@@ -459,9 +459,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
               // 각 상품의 이미지 경로 추출
               if (!item.productImage) return '';
 
-              // URL에서 files/ 이후 경로만 추출
-              const match = item.productImage.match(/files\/(.+)/);
-              return match ? `files/${match[1]}` : '';
+              return item.productImage;
             })
             .filter((img) => img !== ''), // 빈 문자열 제거
         },

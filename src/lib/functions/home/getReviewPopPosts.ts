@@ -49,7 +49,7 @@ export async function getReviewPopPosts(): Promise<ReviewPopCard[]> {
       .slice(0, 4);
 
     // 각 상품에서 평점 높은 리뷰 1개 추출
-    const result = top4.map(([_, replies]) => {
+    const result = top4.map(([, replies]) => {
       const best = replies.sort((a, b) => b.rating - a.rating)[0];
 
       return {
@@ -66,7 +66,7 @@ export async function getReviewPopPosts(): Promise<ReviewPopCard[]> {
     });
 
     return result;
-  } catch (error) {
+  } catch {
     throw new Error('홈의 인기 리뷰글을 불러오는 데 실패했습니다.');
   }
 }

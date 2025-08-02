@@ -57,7 +57,7 @@ export function mapPlantPostToPlant(post: PlantPost): Plant {
     name: post.title || '', // 빈 문자열 대비 안전 처리
     species: post.extra?.species || '',
     location: post.extra?.location || '',
-    imageUrl: post.image || '', // 서버에서 이미 보정된 완전한 URL 사용
+    imageUrl: post.image || '',
     date: formattedDate,
     memo: post.content || '',
     memoTitle: post.extra?.memoTitle || '', // 메모 제목

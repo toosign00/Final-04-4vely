@@ -1,6 +1,5 @@
 import { Button } from '@/components/ui/Button';
 import { createReviewAction } from '@/lib/actions/mypage/orderList/orderReviewServerActions';
-import { getImageUrlClient } from '@/lib/utils/auth.client';
 import { Star } from 'lucide-react';
 import Image from 'next/image';
 import React, { useState } from 'react';
@@ -84,7 +83,7 @@ export default function ReviewForm({ productId, orderId, onSuccess, products, re
                   onClick={() => !isReviewed && onProductSelect?.(product)}
                 >
                   <div className='h-10 w-10 flex-shrink-0 overflow-hidden rounded-lg border border-gray-200 bg-gray-100'>
-                    <Image src={getImageUrlClient(product.imageUrl)} alt={product.name} width={40} height={40} className='h-full w-full object-cover' />
+                    <Image src={product.imageUrl} alt={product.name} width={40} height={40} className='h-full w-full object-cover' />
                   </div>
                   <div className='min-w-0 flex-1'>
                     <h4 className='text-secondary t-small line-clamp-1 font-medium'>{product.name}</h4>

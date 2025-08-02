@@ -7,7 +7,6 @@
 
 import PaginationWrapper from '@/components/ui/PaginationWrapper';
 import { TransformedBookmarkItem } from '@/lib/functions/mypage/bookmark/bookmarkFunctions';
-import { getImageUrlClient } from '@/lib/utils/auth.client';
 import { ShoppingCart } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -129,10 +128,10 @@ export default function BookmarkProductsList({ bookmarks: initialBookmarks, init
     // 북마크 목록을 최신순으로 정렬 (createdAt 기준)
     const sortedBookmarks = [...bookmarks].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-    // 이미지 URL을 클라이언트에서 처리
+    // 이미지 URL을 그대로 사용
     const processedBookmarks = sortedBookmarks.map((bookmark) => ({
       ...bookmark,
-      imageUrl: getImageUrlClient(bookmark.imageUrl),
+      imageUrl: bookmark.imageUrl,
     }));
 
     const totalPages = Math.ceil(processedBookmarks.length / ITEMS_PER_PAGE);

@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/Button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/Dialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/Tooltip';
 import { getOrderReviewStatusAction } from '@/lib/actions/mypage/orderList/orderReviewServerActions';
-import { getImageUrlClient } from '@/lib/utils/auth.client';
 import { ChevronDownIcon, ChevronUpIcon, PlusIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
@@ -114,7 +113,7 @@ export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
                 <div className='flex gap-4'>
                   <div className='flex-shrink-0'>
                     <div className='h-20 w-20 overflow-hidden rounded-xl border border-gray-200 bg-gray-100'>
-                      <Image src={getImageUrlClient(order.image)} alt={order.name} width={80} height={80} className='h-full w-full object-cover' />
+                      <Image src={order.image} alt={order.name} width={80} height={80} className='h-full w-full object-cover' />
                     </div>
                   </div>
                   <div className='min-w-0 flex-1'>
@@ -142,11 +141,11 @@ export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
 
                   {/* 기본 3개 상품 표시 */}
                   <div className='space-y-3'>
-                    {order.products?.slice(0, 3).map((product) => (
+                    {order.products?.slice(0, 5).map((product) => (
                       <div key={product.id} className='flex gap-3 rounded-lg border border-gray-100 bg-gray-50 p-3 transition-colors hover:bg-gray-100'>
                         <div className='flex-shrink-0'>
                           <div className='h-14 w-14 overflow-hidden rounded-lg border border-gray-200 bg-white'>
-                            <Image src={getImageUrlClient(product.imageUrl)} alt={product.name} width={56} height={56} className='h-full w-full object-cover' />
+                            <Image src={product.imageUrl} alt={product.name} width={56} height={56} className='h-full w-full object-cover' />
                           </div>
                         </div>
                         <div className='min-w-0 flex-1'>
@@ -181,7 +180,7 @@ export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
                         <div key={product.id} className='flex gap-3 rounded-lg border border-gray-100 bg-gray-50 p-3 transition-colors hover:bg-gray-100'>
                           <div className='flex-shrink-0'>
                             <div className='h-14 w-14 overflow-hidden rounded-lg border border-gray-200 bg-white'>
-                              <Image src={getImageUrlClient(product.imageUrl)} alt={product.name} width={56} height={56} className='h-full w-full object-cover' />
+                              <Image src={product.imageUrl} alt={product.name} width={56} height={56} className='h-full w-full object-cover' />
                             </div>
                           </div>
                           <div className='min-w-0 flex-1'>
@@ -288,7 +287,7 @@ export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
             {!hasMultipleProducts && selectedProduct && (
               <div className='flex items-center gap-3 border-b border-gray-200 pb-4'>
                 <div className='h-12 w-12 overflow-hidden rounded-lg border border-gray-200 bg-gray-100'>
-                  <Image src={getImageUrlClient(selectedProduct.imageUrl)} alt={selectedProduct.name} width={48} height={48} className='h-full w-full object-cover' />
+                  <Image src={selectedProduct.imageUrl} alt={selectedProduct.name} width={48} height={48} className='h-full w-full object-cover' />
                 </div>
                 <div className='flex-1'>
                   <h4 className='text-secondary t-body line-clamp-1 font-medium'>{selectedProduct.name}</h4>

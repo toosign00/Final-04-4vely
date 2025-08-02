@@ -52,11 +52,6 @@ export async function getUserDetail(): Promise<ApiRes<UserDetail>> {
       };
     }
 
-    // 이미지 경로 보정
-    if (data.ok && data.item && data.item.image) {
-      data.item.image = `${API_URL}/${data.item.image}`;
-    }
-
     return data;
   } catch {
     return {

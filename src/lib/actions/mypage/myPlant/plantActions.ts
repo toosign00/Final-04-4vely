@@ -1,9 +1,9 @@
 'use server';
 
 import { uploadFile } from '@/lib/actions/fileActions';
+import { getAuthInfo } from '@/lib/utils/auth.server';
 import { ApiRes } from '@/types/api.types';
 import { Post } from '@/types/post.types';
-import { getAuthInfo } from '@/lib/utils/auth.server';
 
 // 환경 변수를 통해 API URL과 클라이언트 ID 설정
 const API_URL = process.env.API_URL || '';
@@ -165,12 +165,6 @@ export async function getMyPlants(paginationParams?: PaginationParams): Promise<
       pagination = defaultPagination;
     }
 
-    // 이미지 경로 보정 (상대 경로를 절대 URL로 변환)
-    plants = plants.map((plant: PlantPost) => ({
-      ...plant,
-      image: plant.image ? `${API_URL}/${plant.image}` : undefined,
-    }));
-
     return { ok: 1, item: { plants, pagination } };
   } catch (error) {
     console.error('식물 목록 조회 중 오류:', error);
@@ -239,14 +233,6 @@ export async function getPlantById(plantId: number): Promise<ApiRes<PlantPost>> 
       return {
         ok: 0,
         message: data.message || '식물 정보 조회에 실패했습니다.',
-      };
-    }
-
-    // 이미지 경로 보정 (상대 경로를 절대 URL로 변환)
-    if (data.ok && data.item) {
-      data.item = {
-        ...data.item,
-        image: data.item.image ? `${API_URL}/${data.item.image}` : undefined,
       };
     }
 
@@ -354,14 +340,6 @@ export async function createPlant(formData: FormData): Promise<ApiRes<PlantPost>
       return {
         ok: 0,
         message: data.message || '식물 등록에 실패했습니다.',
-      };
-    }
-
-    // 이미지 경로 보정 (상대 경로를 절대 URL로 변환)
-    if (data.ok && data.item) {
-      data.item = {
-        ...data.item,
-        image: data.item.image ? `${API_URL}/${data.item.image}` : undefined,
       };
     }
 
@@ -475,14 +453,6 @@ export async function updatePlant(plantId: number, formData: FormData): Promise<
       return {
         ok: 0,
         message: data.message || '식물 정보 수정에 실패했습니다.',
-      };
-    }
-
-    // 이미지 경로 보정 (상대 경로를 절대 URL로 변환)
-    if (data.ok && data.item) {
-      data.item = {
-        ...data.item,
-        image: data.item.image ? `${API_URL}/${data.item.image}` : undefined,
       };
     }
 

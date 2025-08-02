@@ -10,7 +10,6 @@ import { Button } from '@/components/ui/Button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/Dialog';
 import { addToCartAction } from '@/lib/actions/cartServerActions';
 import { getProductById } from '@/lib/functions/shop/productClientFunctions';
-import { getImageUrlClient } from '@/lib/utils/auth.client';
 import { getProductPotColors, Product } from '@/types/product.types';
 import { Minus, Plus } from 'lucide-react';
 import Image from 'next/image';
@@ -72,10 +71,10 @@ export default function AddToCartDialog({ productId, isOpen, onClose, onSuccess 
       getProductById(productId)
         .then((response) => {
           if (response.ok && response.item) {
-            // 상품 이미지 클라이언트에서 처리
+            // 상품 이미지를 그대로 사용
             const processedProduct = {
               ...response.item,
-              mainImages: response.item.mainImages?.map((imagePath) => getImageUrlClient(imagePath)) || [],
+              mainImages: response.item.mainImages || [],
             };
             setProduct(processedProduct);
 

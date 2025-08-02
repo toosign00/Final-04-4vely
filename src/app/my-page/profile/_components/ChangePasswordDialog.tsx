@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/Button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/Dialog';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
-import { updateUserProfile } from '@/lib/actions/userActions';
+import { updateUserProfile } from '@/lib/actions/mypage/profile/userActions';
 import { Eye, EyeOff, Lock } from 'lucide-react';
 import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';

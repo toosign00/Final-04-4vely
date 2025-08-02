@@ -1,8 +1,8 @@
 'use server';
 
+import { getAuthInfo } from '@/lib/utils/auth.server';
 import { ApiRes } from '@/types/api.types';
 import { User } from '@/types/user.types';
-import { getAuthInfo } from '@/lib/utils/auth.server';
 
 // 상세 정보 타입 (User 확장)
 export interface UserDetail extends User {
@@ -20,8 +20,6 @@ export interface UserDetail extends User {
 
 const API_URL = process.env.API_URL || '';
 const CLIENT_ID = process.env.CLIENT_ID || '';
-
-// getAuthInfo 함수는 auth.server.ts로 이동됨
 
 /**
  * 내 회원 상세 정보 조회 (모든 속성 포함)
@@ -52,11 +50,6 @@ export async function getUserDetail(): Promise<ApiRes<UserDetail>> {
         ok: 0,
         message: data.message || '회원 정보 조회에 실패했습니다.',
       };
-    }
-
-    // 이미지 경로 보정
-    if (data.ok && data.item && data.item.image) {
-      data.item.image = `${API_URL}/${data.item.image}`;
     }
 
     return data;

@@ -15,7 +15,7 @@ export type { BookmarkItem, TransformedBookmarkItem } from '@/types/mypageBookma
 /**
  * 서버에서 사용자의 북마크 목록을 조회하고 UI에 최적화된 형태로 변환
  */
-export async function getBookmarksFromServer(type: 'product' | 'community' | 'post'): Promise<{
+export async function getBookmarksFromServer(type: 'product' | 'post'): Promise<{
   success: boolean;
   data?: TransformedBookmarkItem[];
   error?: string;
@@ -44,7 +44,7 @@ export async function getBookmarksFromServer(type: 'product' | 'community' | 'po
 
     if (type === 'product') {
       data = await transformProductBookmarks(bookmarkArray);
-    } else if (type === 'community' || type === 'post') {
+    } else if (type === 'post') {
       data = await transformCommunityBookmarks(bookmarkArray);
     }
 

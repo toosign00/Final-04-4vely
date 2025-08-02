@@ -30,6 +30,7 @@ export interface BookmarkItem {
   };
   post?: {
     _id: number;
+    type: string; // 게시글 타입 (community, magazine 등)
     title: string;
     content: string;
     views: number;
@@ -67,11 +68,11 @@ export interface TransformedBookmarkItem {
   imageUrl: string;
   name: string;
   description: string;
-  price?: number; // community 타입에서는 가격이 없을 수 있음
-  views?: number; // community 전용 필드
-  author?: string; // community 전용 필드
-  repliesCount?: number; // community 전용 필드
-  type: 'product' | 'community';
+  price?: number; // product 타입에서만 사용
+  views?: number; // post 타입에서만 사용
+  author?: string; // post 타입에서만 사용
+  repliesCount?: number; // post 타입에서만 사용
+  type: 'product' | 'community' | 'magazine'; // 실제 게시글 타입을 구분
   createdAt: string;
 }
 
@@ -91,6 +92,7 @@ export interface ProductDetail {
  */
 export interface PostDetail {
   _id: number;
+  type: string; // 게시글 타입 (community, magazine 등)
   title: string;
   content: string;
   views: number;

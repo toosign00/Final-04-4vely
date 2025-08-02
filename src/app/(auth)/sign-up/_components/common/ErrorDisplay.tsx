@@ -55,7 +55,7 @@ interface FieldErrorProps {
 
 export function FieldError({ error, success, warning, className = '' }: FieldErrorProps) {
   return (
-    <div className={`min-h-[1.5rem] mt-2 flex items-start ${className}`}>
+    <div className={`mt-2 flex min-h-[1.5rem] items-start ${className}`}>
       {error && <ValidationError message={error} />}
       {!error && success && <SuccessMessage message={success} />}
       {!error && !success && warning && <WarningMessage message={warning} />}

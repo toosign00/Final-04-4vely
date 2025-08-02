@@ -1,5 +1,5 @@
-import { getDiariesByPlantId } from '@/lib/actions/diaryActions';
-import { getPlantById } from '@/lib/actions/plantActions';
+import { getDiariesByPlantId } from '@/lib/actions/mypage/myPlant/diaryActions';
+import { getPlantById } from '@/lib/actions/mypage/myPlant/plantActions';
 import { notFound } from 'next/navigation';
 import { Diary, mapDiaryReplyToDiary } from '../_types/diary.types';
 import { mapPlantPostToPlant } from '../_utils/plantUtils';

@@ -18,7 +18,7 @@ export interface DiaryReply {
   _id: number;
   /** 일지 내용 텍스트 */
   content: string;
-  /** 단일 이미지 경로 (하위 호환성을 위해 유지) */
+  /** 단일 이미지 경로 */
   image?: string;
   /** 일지 작성자 정보 */
   user: {
@@ -89,11 +89,10 @@ async function uploadMultipleFiles(files: File[]): Promise<{ ok: boolean; paths?
 
 /**
  * 특정 식물의 일지 목록을 조회하는 서버 액션
- * @description 식물 게시물의 댓글 형태로 저장된 일지들을 최신순으로 조회하여 이미지 경로를 보정한 데이터 반환
+ * @description 식물 게시물의 댓글 형태로 저장된 일지들을 최신순으로 조회하여 데이터 반환
  * @param {number} plantId - 일지를 조회할 식물 게시물의 고유 ID
- * @returns {Promise<ApiRes<DiaryReply[]>>} 이미지 경로가 보정된 일지 목록 API 응답
+ * @returns {Promise<ApiRes<DiaryReply[]>>} 일지 목록 API 응답
  * @throws API 호출 실패, 인증 실패 시 에러 메시지 반환
- * @performance 이미지 경로 보정을 map 함수로 일괄 처리하여 효율성 확보
  * @validation plantId는 양의 정수여야 함
  */
 export async function getDiariesByPlantId(plantId: number): Promise<ApiRes<DiaryReply[]>> {
@@ -155,22 +154,6 @@ export async function getDiariesByPlantId(plantId: number): Promise<ApiRes<Diary
       };
     }
 
-    // 이미지 경로 보정 (상대 경로를 절대 URL로 변환)
-    if (data.ok && data.item && Array.isArray(data.item)) {
-      data.item = data.item.map((diary: DiaryReply) => ({
-        ...diary,
-        user: {
-          ...diary.user,
-          image: diary.user.image ? `${API_URL}/${diary.user.image}` : undefined,
-        },
-        // extra.images 배열의 모든 이미지 경로 보정
-        extra: {
-          ...diary.extra,
-          images: diary.extra?.images?.map((img: string) => (img.startsWith('http') ? img : `${API_URL}/${img}`)) || [],
-        },
-      }));
-    }
-
     return data;
   } catch (error) {
     console.error(`식물 ID ${plantId} 일지 목록 조회 중 오류:`, error);
@@ -190,9 +173,8 @@ export async function getDiariesByPlantId(plantId: number): Promise<ApiRes<Diary
  * @param {string} formData.content - 일지 내용
  * @param {string} formData.date - 일지 날짜 (YYYY-MM-DD 형식)
  * @param {File[]} formData.images[n] - 다중 이미지 파일들 (선택사항)
- * @returns {Promise<ApiRes<DiaryReply>>} 생성된 일지 정보 API 응답 (이미지 경로 보정됨)
+ * @returns {Promise<ApiRes<DiaryReply>>} 생성된 일지 정보 API 응답
  * @throws 이미지 업로드 실패, API 호출 실패, 인증 실패 시 에러 메시지 반환
- * @performance 다중 이미지를 병렬 업로드하여 처리 시간 단축
  * @validation plantId는 양의 정수, 필수 필드는 비어있으면 안됨
  */
 export async function createDiary(plantId: number, formData: FormData): Promise<ApiRes<DiaryReply>> {
@@ -302,22 +284,6 @@ export async function createDiary(plantId: number, formData: FormData): Promise<
       };
     }
 
-    // 응답 데이터의 이미지 경로 보정
-    if (data.ok && data.item) {
-      data.item = {
-        ...data.item,
-        user: {
-          ...data.item.user,
-          image: data.item.user.image ? `${API_URL}/${data.item.user.image}` : undefined,
-        },
-        // extra.images 배열의 모든 이미지 경로 보정
-        extra: {
-          ...data.item.extra,
-          images: data.item.extra?.images?.map((img: string) => (img.startsWith('http') ? img : `${API_URL}/${img}`)) || [],
-        },
-      };
-    }
-
     return data;
   } catch (error) {
     console.error(`식물 ID ${plantId} 일지 생성 중 오류:`, error);
@@ -333,7 +299,7 @@ export async function createDiary(plantId: number, formData: FormData): Promise<
  * @param plantId - 식물 게시물 ID
  * @param diaryId - 일지(댓글) ID
  * @param formData - 수정할 일지 데이터가 담긴 FormData
- * @returns ApiRes<DiaryReply> 이미지 경로 보정된 원본 API 데이터
+ * @returns ApiRes<DiaryReply> 원본 API 데이터
  */
 export async function updateDiary(plantId: number, diaryId: number, formData: FormData): Promise<ApiRes<DiaryReply>> {
   const cookieStore = await cookies();
@@ -428,22 +394,6 @@ export async function updateDiary(plantId: number, diaryId: number, formData: Fo
       };
     }
 
-    // 이미지 경로 보정
-    if (data.ok && data.item) {
-      data.item = {
-        ...data.item,
-        user: {
-          ...data.item.user,
-          image: data.item.user.image ? `${API_URL}/${data.item.user.image}` : undefined,
-        },
-        // extra.images 경로 보정
-        extra: {
-          ...data.item.extra,
-          images: data.item.extra?.images?.map((img: string) => `${API_URL}/${img}`) || [],
-        },
-      };
-    }
-
     return data;
   } catch {
     return {
@@ -460,15 +410,14 @@ export async function updateDiary(plantId: number, diaryId: number, formData: Fo
  * @param {number} diaryId - 삭제할 일지(댓글)의 고유 ID
  * @returns {Promise<ApiRes<void>>} 삭제 작업 결과 API 응답
  * @throws API 호출 실패, 권한 없음, 존재하지 않는 ID 시 에러 메시지 반환
- * @warning 이 작업은 되돌릴 수 없으며, 일지와 관련된 이미지도 함께 삭제될 수 있음
  * @validation plantId와 diaryId는 모두 양의 정수여야 함
  */
+
 /**
  * 여러 식물의 최신 일지를 배치로 조회하는 서버 액션
  * @description 여러 식물 ID를 받아 각각의 최신 일지를 한 번에 조회하여 성능 최적화
  * @param {number[]} plantIds - 일지를 조회할 식물 ID 배열
  * @returns {Promise<{[plantId: number]: DiaryReply | null}>} 식물 ID를 키로 하는 최신 일지 객체
- * @performance 병렬 API 호출로 처리 시간 단축
  */
 export async function getLatestDiariesBatch(plantIds: number[]): Promise<{ [plantId: number]: DiaryReply | null }> {
   if (!plantIds || plantIds.length === 0) {

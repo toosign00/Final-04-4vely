@@ -9,8 +9,6 @@ import { CommunityPost } from '@/types/homeCommunityPop.types';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
-
 // 커뮤니티 인기글
 export default function CommunityPop() {
   const [popularPosts, setPopularPosts] = useState<CommunityPost[]>([]);
@@ -18,7 +16,7 @@ export default function CommunityPop() {
   const [isLiked, setIsLiked] = useState<{ [id: number]: boolean }>({});
 
   useEffect(() => {
-    getCommunityPopPosts(4)
+    getCommunityPopPosts('community')
       .then((data) => {
         setPopularPosts(data);
       })
@@ -54,7 +52,7 @@ export default function CommunityPop() {
                 <Card className='max-w-none justify-between shadow-md'>
                   <Link href={`/community/${post._id}`} className='block'>
                     {/* 인기 반려식물 이미지 */}
-                    <CardImage src={`${API_URL}/${post.image}`} alt={post.title} priority />
+                    <CardImage src={post.image ?? '/images/default_image.webp'} alt={post.title} priority />
                     {/* 콘텐츠 - 제목 & 본문 */}
                     <CardContent>
                       <CardTitle title={`[ 제목 ] ${post.title}`} className='text-secondary text-base font-semibold sm:line-clamp-1 md:text-lg' />

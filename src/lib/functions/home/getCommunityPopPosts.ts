@@ -6,16 +6,9 @@ const API_URL = process.env.API_URL;
 const CLIENT_ID = process.env.CLIENT_ID || '';
 
 // 조회수 기준으로 커뮤니티 인기글 가져옴
-export async function getCommunityPopPosts(limit = 4): Promise<CommunityPost[]> {
+export async function getCommunityPopPosts(type: string, page = 1, limit = 4): Promise<CommunityPost[]> {
   try {
-    const params = new URLSearchParams({
-      page: '1',
-      limit: limit.toString(),
-      type: 'community',
-      sort: JSON.stringify({ views: -1 }),
-    });
-
-    const res = await fetch(`${API_URL}/posts?${params.toString()}`, {
+    const res = await fetch(`${API_URL}/posts?type=${type}&page=${page}&limit=${limit}`, {
       headers: {
         'Client-Id': CLIENT_ID,
       },

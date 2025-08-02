@@ -1,5 +1,6 @@
 'use client';
 
+import SkeletonWeatherCard from '@/components/_home/weather/SkeletonWeatherCard';
 import { Button } from '@/components/ui/Button';
 import { WeatherInfo } from '@/lib/functions/weather/fetchWeather';
 import { mapWeatherToTips } from '@/lib/functions/weather/mapWeatherToTips';
@@ -19,6 +20,7 @@ export default function WeatherWidget() {
   const [tipsData, setTipsData] = useState<WeatherTipData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+
   // 사용자 위치 요청
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -60,13 +62,13 @@ export default function WeatherWidget() {
   return (
     <section className='mx-auto border-b border-[#e3e0d8] py-14'>
       <div className='relative mb-4 flex max-w-[67rem] flex-col self-center px-5' aria-label='현재 날씨 정보'>
-        {/* 로딩 중일 때 메시지 */}
-        {loading && <div className='rounded-xl bg-white p-4 text-gray-600 shadow-md'>날씨 정보를 불러오는 중입니다...</div>}
+        {/* 스켈레톤 UI */}
+        {loading && <SkeletonWeatherCard />}
 
         {/* 오류 또는 데이터 없음 */}
         {!loading && (!tipsData || error) && <div className='text-error rounded-xl bg-white p-4 shadow-md'>날씨 정보를 불러오는 데 실패했습니다. 다시 시도해주세요.</div>}
 
-        {/* 정상적으로 데이터가 있을 때 */}
+        {/* 정상 데이터 렌더링 */}
         {!loading && tipsData && (
           <>
             {/* 날씨 및 팁 카드 */}
@@ -78,10 +80,8 @@ export default function WeatherWidget() {
                 backgroundPosition: 'center',
               }}
             >
-              {/* 배경 어둡게 처리하는 오버레이 */}
               <div className='absolute inset-0 rounded-xl bg-black/30' />
 
-              {/* 실제 콘텐츠 */}
               <div className='relative rounded-xl p-4'>
                 <div className='grid grid-cols-1 gap-4 md:grid-cols-2 md:text-lg lg:text-xl'>
                   {/* 날씨 정보 */}
@@ -101,7 +101,7 @@ export default function WeatherWidget() {
                   </div>
 
                   {/* 식물 팁 정보 */}
-                  <div className='bg-surface/70 text-secondary rounded-lg p-3 text-sm md:text-base lg:text-xl'>
+                  <div className='bg-surface/70 text-secondary rounded-lg p-5 text-sm md:text-base lg:text-xl'>
                     <h3 className='mb-2 font-semibold'>오늘의 식물 관리 팁</h3>
                     <p className='mb-3 text-xs md:text-sm lg:text-base'>{tipsData.weather.tip}</p>
 

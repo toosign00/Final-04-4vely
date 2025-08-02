@@ -6,15 +6,9 @@ const API_URL = process.env.API_URL;
 const CLIENT_ID = process.env.CLIENT_ID || '';
 
 // 최신순 기준으로 매거진 게시글 가져옴
-export async function magazineForHome(limit = 5): Promise<MagazinePostData[]> {
+export async function magazineForHome(type: string, limit = 5): Promise<MagazinePostData[]> {
   try {
-    const params = new URLSearchParams({
-      type: 'magazine',
-      limit: limit.toString(),
-      sort: JSON.stringify({ createdAt: -1 }),
-    });
-
-    const res = await fetch(`${API_URL}/posts?${params.toString()}`, {
+    const res = await fetch(`${API_URL}/posts?type=${type}&limit=${limit}`, {
       headers: {
         'Client-Id': CLIENT_ID,
       },

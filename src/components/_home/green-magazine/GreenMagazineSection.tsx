@@ -10,7 +10,7 @@ export default function GreenMagazineSection() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await magazineForHome();
+      const res = await magazineForHome('magazine');
       setItems(res);
     };
 

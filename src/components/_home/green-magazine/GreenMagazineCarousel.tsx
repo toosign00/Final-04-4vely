@@ -31,7 +31,7 @@ export function GreenMagazineCarousel({ greenMagazineItems }: HomeMagazineProps)
                     {/* 슬라이드 카드 - 콘텐츠 부분 */}
                     <article className='relative aspect-square w-full overflow-hidden rounded-2xl shadow-md transition-transform duration-300 group-hover:scale-105 group-hover:shadow-lg'>
                       {/* 이미지 */}
-                      <Image src={`/${item.image}`} alt={item.title} fill sizes='(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw' className='object-cover' />
+                      <Image src={item.image} alt={item.title} fill sizes='(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw' className='object-cover' />
 
                       {/* 글 제목 & 내용 */}
                       <div className='absolute bottom-0 left-0 flex w-full flex-col justify-center bg-white/80 px-4 py-3'>

@@ -14,7 +14,7 @@ export default function MagazineDetailContent({ post, myBookmarkId }: DetailCont
     <div className='text-secondary w-full'>
       {/* 대표 이미지 */}
       <div className='relative h-[15rem] w-full md:h-[18rem] lg:h-[23rem]'>
-        <Image src={`/${post.image}`} alt='게시글 대표 이미지' fill className='object-cover' priority />
+        <Image src={post.image} alt='게시글 대표 이미지' fill className='object-cover' priority />
       </div>
 
       <main className='mx-auto w-full max-w-4xl px-4 py-10 md:p-6 lg:px-8 lg:py-12'>
@@ -24,11 +24,12 @@ export default function MagazineDetailContent({ post, myBookmarkId }: DetailCont
           <div className='flex items-center justify-between text-sm text-gray-500 md:text-base'>
             <div className='flex items-center gap-2'>
               <Avatar className='border-muted h-8 w-8 rounded-3xl border'>
-                <AvatarImage src={`/${post.user.image}`} alt={post.user.name} />
+                <AvatarImage src={post.user.image} alt={post.user.name} />
                 <AvatarFallback>{post.user.name}</AvatarFallback>
               </Avatar>
               <span>{post.user.name}</span>
               <span>·</span>
+              {/* 시간 어떻게 처리할지 월요일에 다시 정리 */}
               <span>{post.createdAt}</span>
             </div>
             <span className='flex items-center gap-1'>
@@ -42,7 +43,7 @@ export default function MagazineDetailContent({ post, myBookmarkId }: DetailCont
         <section className='mx-auto mb-10 max-w-[50rem] px-5 text-center'>
           {post.extra?.contents?.map((item, i) => (
             <div className='mb-10' key={i}>
-              <Image src={`/${item.postImage}`} alt={`콘텐츠 이미지 ${i + 1}`} width={300} height={400} className='mx-auto w-full max-w-[30rem] rounded-xl border' />
+              <Image src={item.postImage} alt={`콘텐츠 이미지 ${i + 1}`} width={300} height={400} className='mx-auto w-full max-w-[30rem] rounded-xl border' />
               <p className='mt-6 lg:text-lg'>{item.content}</p>
             </div>
           ))}

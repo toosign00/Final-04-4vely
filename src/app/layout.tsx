@@ -1,6 +1,7 @@
 import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
 import '@/styles/globals.css';
+import { SessionProvider } from 'next-auth/react';
 import localFont from 'next/font/local';
 import { Toaster } from 'sonner';
 
@@ -25,26 +26,28 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='ko' className={pretendard.variable}>
-      <body className={`${pretendard.className} bg-surface`}>
-        <Header />
-        <main>
-          <Toaster
-            position='top-center'
-            richColors={true}
-            theme='light'
-            closeButton={false}
-            toastOptions={{
-              duration: 2500,
-              style: {
-                fontFamily: 'var(--font-pretendard)',
-              },
-            }}
-          />
-          {children}
-        </main>
-        <Footer />
-      </body>
-    </html>
+    <SessionProvider>
+      <html lang='ko' className={pretendard.variable}>
+        <body className={`${pretendard.className} bg-surface`}>
+          <Header />
+          <main>
+            <Toaster
+              position='top-center'
+              richColors={true}
+              theme='light'
+              closeButton={false}
+              toastOptions={{
+                duration: 2500,
+                style: {
+                  fontFamily: 'var(--font-pretendard)',
+                },
+              }}
+            />
+            {children}
+          </main>
+          <Footer />
+        </body>
+      </html>
+    </SessionProvider>
   );
 }

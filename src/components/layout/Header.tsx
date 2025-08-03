@@ -2,23 +2,38 @@
 import { Button } from '@/components/ui/Button';
 import { HEADER_CONTAINER, MOBILE_MENU_LINK, NAV_LINK, headerIcons, menuLinks } from '@/constants/header.constants';
 import { useHeaderMenu } from '@/hooks/useHeaderMenu';
-import useUserStore from '@/store/authStore';
+import { useAuth } from '@/store/authStore';
 import { Menu, ShoppingCart, UserRound, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { signOut } from 'next-auth/react';
 import React from 'react';
 import { toast } from 'sonner';
 
 export default function Header() {
   const { isOpen, setIsOpen, menuHeight, menuRef, buttonRef } = useHeaderMenu();
-  const { user, logout } = useUserStore();
+  const { isLoggedIn, zustandUser, session, zustandLogout } = useAuth();
 
-  // 로그아웃 함수
+  // 로그아웃 함수 - NextAuth와 Zustand 모두 처리
   const handleLogout = async () => {
-    await logout();
-    toast.success('로그아웃 되었습니다.', {
-      description: '다음에 또 만나요!',
-    });
+    try {
+      // NextAuth 로그아웃
+      if (session) {
+        await signOut({ redirect: false });
+      }
+      
+      // Zustand 로그아웃
+      if (zustandUser) {
+        await zustandLogout();
+      }
+      
+      toast.success('로그아웃 되었습니다.', {
+        description: '다음에 또 만나요!',
+      });
+    } catch (error) {
+      console.error('로그아웃 중 오류:', error);
+      toast.error('로그아웃 중 오류가 발생했습니다.');
+    }
   };
 
   // 아이콘 문자열을 실제 컴포넌트로 변환
@@ -50,7 +65,7 @@ export default function Header() {
         <div className='hidden items-center gap-3 md:flex'>
           {headerIcons.map((item) => {
             if (item.name === 'Login') {
-              return user ? (
+              return isLoggedIn ? (
                 <Button key='logout' type='button' variant='ghost' className='t-small text-secondary flex items-center justify-end' style={{ padding: '0px', minWidth: 50 }} onClick={handleLogout}>
                   Logout
                   <span className='sr-only'>로그아웃</span>
@@ -102,7 +117,7 @@ export default function Header() {
                 .filter((link) => link.showOn.includes('mobile'))
                 .map((link) => {
                   if (link.name === '로그인') {
-                    return user ? (
+                    return isLoggedIn ? (
                       <Button
                         key='logout-mobile'
                         type='button'

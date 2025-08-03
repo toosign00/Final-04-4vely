@@ -17,10 +17,16 @@ function getUserTypeFromCookie(request: NextRequest): string | null {
   }
 }
 
-// 인증 상태 검증 함수
+// 인증 상태 검증 함수 - NextAuth와 Zustand 모두 확인
 function isAuthenticated(request: NextRequest): boolean {
-  const authCookie = request.cookies.get('user-auth');
+  // 1. NextAuth 세션 쿠키 확인
+  const nextAuthSessionToken = request.cookies.get('authjs.session-token') || request.cookies.get('__Secure-authjs.session-token');
+  if (nextAuthSessionToken?.value) {
+    return true; // NextAuth 세션이 있으면 인증된 것으로 간주
+  }
 
+  // 2. Zustand 쿠키 확인
+  const authCookie = request.cookies.get('user-auth');
   if (!authCookie?.value || authCookie.value === 'undefined' || authCookie.value === 'null' || authCookie.value.trim() === '') {
     return false;
   }

@@ -1,6 +1,6 @@
 import MagazineDetailContent from '@/app/green-magazine/_components/MagazineDetailContent';
-import { getBookmarkByTarget } from '@/lib/functions/bookmarkServerFunctions';
 import { fetchMagazineDetail } from '@/lib/functions/greenmagazine/fetchMagazineDetail';
+import { getBookmarkByTarget } from '@/lib/functions/shop/bookmarkServerFunctions';
 
 interface MagazineDetail {
   params: Promise<{ id: string }>;

@@ -2,12 +2,12 @@
 export function weatherImage(description: string): string {
   const lower = description.toLowerCase();
 
-  if (lower.includes('clear')) return 'clear';
-  if (lower.includes('cloud')) return 'cloud';
-  if (lower.includes('rain') || lower.includes('drizzle') || lower.includes('shower')) return 'rain';
-  if (lower.includes('snow')) return 'snow';
-  if (lower.includes('thunderstorm')) return 'thunderstorm';
-  if (lower.includes('mist') || lower.includes('fog') || lower.includes('haze') || lower.includes('smoke')) return 'mist';
+  if (lower.includes('clear') || lower.includes('맑')) return 'clear';
+  if (lower.includes('cloud') || lower.includes('흐림') || lower.includes('구름')) return 'cloud';
+  if (lower.includes('rain') || lower.includes('비') || lower.includes('drizzle') || lower.includes('shower')) return 'rain';
+  if (lower.includes('snow') || lower.includes('눈')) return 'snow';
+  if (lower.includes('thunderstorm') || lower.includes('천둥')) return 'thunderstorm';
+  if (lower.includes('mist') || lower.includes('fog') || lower.includes('안개') || lower.includes('haze') || lower.includes('smoke')) return 'mist';
 
   return 'default';
 }

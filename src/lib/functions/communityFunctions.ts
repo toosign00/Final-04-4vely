@@ -1,8 +1,9 @@
+'use server';
 // src/lib/functions/community.ts
 import type { CommunityComment } from '@/types/commnunity.types';
 import { Post } from '@/types/commnunity.types';
 
-export const API_BASE_URL = process.env.API_SERVER || 'https://fesp-api.koyeb.app/market';
+const API_BASE_URL = process.env.API_SERVER || 'https://fesp-api.koyeb.app/market';
 const CLIENT_ID = process.env.CLIENT_ID || 'febc13-final04-emjf';
 
 // ------------------------------
@@ -45,7 +46,7 @@ interface RawPost {
   type: string;
   product_id?: number | string | null;
   seller_id?: number | string | null;
-  user: { _id: number; name: string; avatar?: string };
+  user: { _id: number; name: string; image?: string };
   title: string;
   content: string;
   image: string;
@@ -70,32 +71,24 @@ function makeHeaders(token?: string): Record<string, string> {
   return headers;
 }
 
-export const resolveUrl = (path: string): string => {
-  if (!path) return '';
-  if (path.startsWith('http')) return path;
-
-  if (path.startsWith('/')) return `${API_BASE_URL}${path}`;
-  return `${API_BASE_URL}/${path}`;
-};
-
 function mapRawPost(item: RawPost): Post {
   return {
     id: String(item._id),
     title: item.title,
     description: item.content,
-    coverImage: resolveUrl(item.image),
+    coverImage: item.image,
     contents:
       item.extra?.contents.map((c) => ({
         id: c.id,
         title: c.title,
         content: c.content,
-        postImage: resolveUrl(c.postImage),
-        thumbnailImage: resolveUrl(c.thumbnailImage),
+        postImage: c.postImage,
+        thumbnailImage: c.thumbnailImage,
       })) || [],
     author: {
       id: String(item.user._id),
       username: item.user.name,
-      avatar: item.user.avatar ? resolveUrl(item.user.avatar) : '',
+      avatar: item.user.image ?? '',
     },
     stats: {
       likes: 0,
@@ -105,7 +98,6 @@ function mapRawPost(item: RawPost): Post {
     repliesCount: item.repliesCount,
     type: item.type,
     myBookmarkId: item.myBookmarkId ?? null,
-    isBookmarked: item.isBookmarked ?? !!item.myBookmarkId,
     createdAt: item.createdAt,
     updatedAt: item.updatedAt,
     name: item.extra?.name ?? '',
@@ -134,7 +126,8 @@ export async function uploadFile(file: File): Promise<string> {
 
   const { item } = await res.json();
   const filePath = Array.isArray(item) && item[0]?.path;
-  return filePath.startsWith('/') ? filePath : `/${filePath}`;
+  if (!filePath) return '';
+  return filePath.startsWith('http') ? filePath : filePath.startsWith('/') ? filePath : `/${filePath}`;
 }
 
 /**
@@ -190,6 +183,7 @@ export async function fetchPosts(page = 1, limit = 8, type = 'community', token?
     item: RawPost[];
     pagination: Pagination;
   };
+  console.log('게시물 조회 RawPost:', item);
   return {
     posts: item.map(mapRawPost),
     pagination,
@@ -206,7 +200,6 @@ export async function fetchPostById(id: string): Promise<Post> {
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
   const { item } = (await res.json()) as { ok: number; item: RawPost };
-  console.log('서버에서 받은 item:', item);
   if (item.type !== 'community') throw new Error(`잘못된 타입: ${item.type}`);
   return mapRawPost(item);
 }
@@ -216,8 +209,8 @@ export async function fetchPostById(id: string): Promise<Post> {
  * @param token 로그인 사용자 토큰 (필요 시)
  */
 
-export async function fetchPostsByUserId(userId: string, page = 1, limit = 8, token?: string): Promise<{ posts: Post[]; pagination: Pagination }> {
-  const url = `${API_BASE_URL}/posts/users/${userId}?page=${page}&limit=${limit}&type=community`;
+export async function fetchPostsByUserId(page = 1, limit = 8, token?: string): Promise<{ posts: Post[]; pagination: Pagination }> {
+  const url = `${API_BASE_URL}/posts/users/?page=${page}&limit=${limit}&type=community`;
 
   const headers: Record<string, string> = {
     'client-id': CLIENT_ID,
@@ -235,6 +228,10 @@ export async function fetchPostsByUserId(userId: string, page = 1, limit = 8, to
     item: RawPost[];
     pagination: Pagination;
   };
+  console.log('내가 쓴글 RawPost:', item);
+  console.log(headers);
+  const posts = item.map(mapRawPost);
+  console.log('내가 쓴글 Post:', posts); // 변환된 값 확인
 
   return {
     posts: item.map(mapRawPost),

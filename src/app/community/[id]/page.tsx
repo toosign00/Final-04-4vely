@@ -1,6 +1,7 @@
 import ClientDetail from '@/app/community/[id]/_components/ClientDetail';
-import { getBookmarkByTarget } from '@/lib/functions/bookmarkServerFunctions';
+
 import { fetchPostById } from '@/lib/functions/communityFunctions';
+import { getBookmarkByTarget } from '@/lib/functions/shop/bookmarkServerFunctions';
 import { notFound } from 'next/navigation';
 
 export default async function CommunityDetailPage({ params }: { params: Promise<{ id: string }> }) {

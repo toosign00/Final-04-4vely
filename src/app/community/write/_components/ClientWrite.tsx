@@ -111,7 +111,7 @@ export default function ClientWrite() {
       {/* 대문 이미지 */}
       <section className='w-full text-gray-500'>
         <label htmlFor='cover-upload' className='block w-full cursor-pointer'>
-          <div className='relative flex h-64 w-full items-center justify-center overflow-hidden bg-white'>
+          <div className='relative flex h-64 w-full items-center justify-center overflow-hidden border border-dashed border-gray-300 bg-white'>
             {cover ? (
               <Image src={URL.createObjectURL(cover)} alt='cover' fill className='object-cover' priority />
             ) : (
@@ -126,15 +126,15 @@ export default function ClientWrite() {
       </section>
 
       {/* 제목 */}
-      <h1 className='w-full max-w-4xl px-4 text-2xl font-bold'>글쓰기</h1>
+      <h1 className='w-full max-w-4xl px-4 text-3xl font-bold'>글쓰기</h1>
 
-      {/* 정보 입력 테이블 */}
-      <section className='w-full max-w-4xl overflow-hidden rounded-3xl bg-amber-50 p-6'>
+      {/* 정보 입력 한 줄 */}
+      <section className='mb-8 w-full max-w-4xl overflow-hidden rounded-3xl bg-teal-50 p-6'>
         <h3 className='mb-4 text-lg font-semibold'>정보</h3>
-        <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+        <div className='grid grid-cols-1 gap-4 sm:grid-cols-3'>
           {/* 식물이름 (필수) */}
           <div className='flex flex-col'>
-            <label htmlFor='name' className={`flex items-center text-sm font-medium ${nameError ? 'text-red-500' : ''}`}>
+            <label htmlFor='name' className={`flex items-center text-sm font-medium ${nameError ? 'text-red-500' : 'text-gray-700'}`}>
               식물이름<span className='ml-1 text-red-500'>*</span>
             </label>
             <input
@@ -150,14 +150,14 @@ export default function ClientWrite() {
               }}
               placeholder='예: 안스리움'
               disabled={isSubmitting}
-              className={`mt-1 h-10 w-full rounded border border-gray-300 px-3 text-sm focus:outline-none ${nameError ? 'border-red-500 focus:border-red-500' : ''} `}
+              className={`mt-1 h-10 min-w-[160px] rounded border px-3 text-sm transition focus:ring-2 focus:ring-green-400 focus:outline-none ${nameError ? 'border-red-500' : 'border-gray-300 hover:border-green-500'}`}
             />
             {nameError && <p className='mt-1 text-xs text-red-500'>식물 이름을 입력해주세요.</p>}
           </div>
 
-          {/* 애칭 (선택) */}
+          {/* 애칭 */}
           <div className='flex flex-col'>
-            <label htmlFor='nickname' className='text-sm font-medium'>
+            <label htmlFor='nickname' className='text-sm font-medium text-gray-700'>
               애칭
             </label>
             <input
@@ -167,13 +167,13 @@ export default function ClientWrite() {
               onChange={(e) => setNickname(e.target.value)}
               placeholder='애칭을 입력하세요'
               disabled={isSubmitting}
-              className='mt-1 h-10 w-full rounded border border-gray-300 px-3 text-sm focus:outline-none'
+              className='mt-1 h-10 min-w-[140px] rounded border border-gray-300 px-3 text-sm transition hover:border-green-500 focus:ring-2 focus:ring-green-400 focus:outline-none'
             />
           </div>
 
-          {/* 종류 (선택) */}
-          <div className='flex flex-col sm:col-span-2'>
-            <label htmlFor='species' className='text-sm font-medium'>
+          {/* 종류 */}
+          <div className='flex flex-col'>
+            <label htmlFor='species' className='text-sm font-medium text-gray-700'>
               종류
             </label>
             <input
@@ -183,15 +183,15 @@ export default function ClientWrite() {
               onChange={(e) => setSpecies(e.target.value)}
               placeholder='종류를 입력하세요'
               disabled={isSubmitting}
-              className='mt-1 h-10 w-full rounded border border-gray-300 px-3 text-sm focus:outline-none'
+              className='mt-1 h-10 min-w-[140px] rounded border border-gray-300 px-3 text-sm transition hover:border-green-500 focus:ring-2 focus:ring-green-400 focus:outline-none'
             />
           </div>
         </div>
       </section>
 
-      <div className='flex w-full max-w-4xl flex-col gap-6 md:flex-row'>
-        {/* 썸네일 섹션  */}
-        <div className='mt-2 ml-4 hidden flex-col items-end gap-4 md:flex'>
+      <div className='flex w-full max-w-4xl flex-col gap-6 px-4 md:flex-row'>
+        {/* 썸네일 섹션 */}
+        <div className='hidden flex-col items-end gap-4 md:flex'>
           {postForms.map((form) => (
             <div key={form.id}>
               {form.thumbnailImage ? (
@@ -208,9 +208,9 @@ export default function ClientWrite() {
         </div>
 
         {/* 글쓰기 폼 영역 */}
-        <div className='flex-1 space-y-6'>
+        <div className='flex-1 space-y-6 bg-teal-50'>
           {postForms.map((form, idx) => (
-            <section key={form.id} className='rounded-lg border p-4'>
+            <section key={form.id} className='rounded-lg border p-4 transition hover:shadow-md'>
               {/* 첫 번째 폼: 제목 + 삭제 */}
               {idx === 0 ? (
                 <div className='mb-6 flex items-center gap-4'>
@@ -220,7 +220,7 @@ export default function ClientWrite() {
                     maxLength={80}
                     value={form.title}
                     onChange={(e) => updatePostForm(form.id, 'title', e.target.value)}
-                    className='h-12 flex-1 rounded-lg border border-gray-300 px-4'
+                    className='h-12 flex-1 rounded-lg border border-gray-300 px-4 transition hover:border-green-500 focus:ring-2 focus:ring-green-400 focus:outline-none'
                     disabled={isSubmitting}
                   />
                   <Button variant='destructive' onClick={() => removePostForm(form.id)} disabled={isSubmitting || postForms.length === 1}>
@@ -228,7 +228,6 @@ export default function ClientWrite() {
                   </Button>
                 </div>
               ) : (
-                /* 나머지 폼: 삭제 버튼 */
                 <div className='mb-4 flex justify-end'>
                   <Button variant='destructive' onClick={() => removePostForm(form.id)} disabled={isSubmitting}>
                     삭제
@@ -238,7 +237,7 @@ export default function ClientWrite() {
 
               <div className='grid grid-cols-1 gap-6 md:grid-cols-2'>
                 {/* 이미지 업로드 */}
-                <div className='relative min-h-[200px] overflow-hidden rounded-lg border border-gray-300 bg-gray-100'>
+                <div className='relative min-h-[200px] overflow-hidden rounded-lg border border-gray-300 bg-gray-100 transition hover:border-green-500'>
                   <label htmlFor={`post-upload-${form.id}`} className='absolute inset-0 flex cursor-pointer items-center justify-center text-gray-400'>
                     {!form.postImage && (
                       <div className='text-center'>
@@ -268,7 +267,7 @@ export default function ClientWrite() {
                           updatePostForm(form.id, 'postImage', null);
                           updatePostForm(form.id, 'thumbnailImage', null);
                         }}
-                        className='absolute top-2 right-2 text-gray-400 hover:text-gray-600'
+                        className='absolute top-2 right-2 text-gray-400 transition hover:text-gray-600'
                         disabled={isSubmitting}
                       >
                         <X size={20} />
@@ -282,7 +281,7 @@ export default function ClientWrite() {
                   placeholder='내용을 입력해주세요.'
                   value={form.content}
                   onChange={(e) => updatePostForm(form.id, 'content', e.target.value)}
-                  className='min-h-[200px] w-full resize-none rounded-lg border border-gray-300 bg-white p-4'
+                  className='min-h-[200px] w-full resize-none rounded-lg border border-gray-300 bg-white p-4 transition hover:border-green-500 focus:ring-2 focus:ring-green-400 focus:outline-none'
                   disabled={isSubmitting}
                 />
               </div>
@@ -292,13 +291,23 @@ export default function ClientWrite() {
       </div>
 
       {/* 하단 버튼 */}
-      <div className='flex w-full max-w-4xl justify-between px-4 md:pl-33'>
-        <Button onClick={addNewForm} disabled={isSubmitting || postForms.length >= MAX_FORMS}>
-          추가하기
-        </Button>
-        <Button variant='primary' onClick={handleSubmit} disabled={isSubmitting}>
-          {isSubmitting ? '작성 중...' : '작성하기'}
-        </Button>
+      <div className='flex w-full max-w-4xl items-center justify-between px-4 md:pl-33'>
+        <div className='flex items-center gap-3'>
+          <Button onClick={addNewForm} disabled={isSubmitting || postForms.length >= MAX_FORMS} className='flex items-center gap-1'>
+            추가하기{' '}
+            <span className='text-sm text-gray-600'>
+              ({postForms.length}/{MAX_FORMS})
+            </span>
+          </Button>
+        </div>
+        <div className='flex gap-2'>
+          <Button variant='secondary' onClick={() => router.push('/community')} disabled={isSubmitting}>
+            취소
+          </Button>
+          <Button variant='primary' onClick={handleSubmit} disabled={isSubmitting}>
+            {isSubmitting ? '작성 중...' : '작성하기'}
+          </Button>
+        </div>
       </div>
     </main>
   );

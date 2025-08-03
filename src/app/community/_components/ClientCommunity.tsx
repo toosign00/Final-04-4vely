@@ -1,6 +1,7 @@
 'use client';
 
-import { AvatarImage } from '@/components/ui/Avatar';
+import Error from '@/app/error';
+import Loading from '@/app/loading';
 import BookmarkButton from '@/components/ui/BookmarkButton';
 import { Button } from '@/components/ui/Button';
 import { Card, CardAvatar, CardContent, CardDescription, CardFooter, CardImage, CardTitle } from '@/components/ui/Card';
@@ -36,12 +37,6 @@ export default function ClientCommunity({ initialPosts, initialPagination }: Pro
   // 정렬 옵션
   const [sortOrder, setSortOrder] = useState<'recent' | 'oldest' | 'popular'>('recent');
 
-  // 북마크 토글
-  const handleBookmarkChange = (postId: string, isBookmarked: boolean, bookmarkId?: number) => {
-    console.log('[handleBookmarkChange]', postId, isBookmarked, bookmarkId);
-    setPosts((prev) => prev.map((p) => (p.id === postId ? { ...p, myBookmarkId: isBookmarked ? bookmarkId! : null } : p)));
-  };
-
   // 좋아요 토글
   const handleToggleLike = (id: string) => {
     setLikedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
@@ -56,7 +51,7 @@ export default function ClientCommunity({ initialPosts, initialPagination }: Pro
   useEffect(() => {
     if (showMine && !token) return;
     setLoading(true);
-    const api = showMine ? fetchPostsByUserId(userId, pagination.page, pagination.limit, token) : fetchPosts(pagination.page, pagination.limit, 'community', token);
+    const api = showMine ? fetchPostsByUserId(pagination.page, pagination.limit, token) : fetchPosts(pagination.page, pagination.limit, 'community', token);
 
     api
       .then(({ posts: newPosts, pagination: pg }) => {
@@ -68,6 +63,11 @@ export default function ClientCommunity({ initialPosts, initialPagination }: Pro
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, [showMine, userId, pagination.page, pagination.limit, token]);
+
+  // 북마크 토글
+  const handleBookmarkChange = (postId: string, isBookmarked: boolean, bookmarkId?: number) => {
+    setPosts((prev) => prev.map((p) => (p.id === postId ? { ...p, myBookmarkId: isBookmarked ? bookmarkId! : null } : p)));
+  };
 
   // 정렬된 게시물
   const sortedPosts = useMemo(() => {
@@ -123,43 +123,47 @@ export default function ClientCommunity({ initialPosts, initialPagination }: Pro
       </div>
 
       {/* 콘텐츠 */}
-      {loading && <div className='py-8 text-center'>로딩 중…</div>}
-      {error && <div className='py-8 text-center text-red-500'>{error}</div>}
+      {loading && <Loading />}
+      {error && <Error />}
       {!loading && !error && (
         <>
           {!sortedPosts.length ? (
             <div className='py-8 text-center text-gray-500'>등록된 글이 없습니다.</div>
           ) : (
             <div className='grid grid-cols-1 justify-items-center gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
-              {sortedPosts.map((post) => (
-                <div key={post.id}>
-                  <Card className='h-[30rem] w-[15rem] cursor-pointer' onClick={() => router.push(`/community/${post.id}`)}>
-                    <div className='relative h-40 overflow-hidden rounded-t-lg'>
-                      {/* 북마크 */}
-                      <div className='absolute top-2 right-2 z-10' onClick={(e) => e.stopPropagation()}>
-                        <BookmarkButton type='post' targetId={Number(post.id)} myBookmarkId={post.myBookmarkId ?? undefined} onBookmarkChange={(isBookmarked, bookmarkId) => handleBookmarkChange(post.id, isBookmarked, bookmarkId)} />
+              {sortedPosts.map((post) => {
+                return (
+                  <div key={post.id}>
+                    <Card className='h-[30rem] w-[15rem] cursor-pointer' onClick={() => router.push(`/community/${post.id}`)}>
+                      <div className='relative h-40 overflow-hidden rounded-t-lg'>
+                        {/* 북마크 */}
+                        <div className='absolute top-2 right-2 z-1' onClick={(e) => e.stopPropagation()}>
+                          <BookmarkButton type='post' targetId={Number(post.id)} myBookmarkId={post.myBookmarkId ?? undefined} onBookmarkChange={(isBookmarked, bookmarkId) => handleBookmarkChange(post.id, isBookmarked, bookmarkId)} />
+                        </div>
+                        <CardImage src={post.coverImage} alt={post.title} priority />
                       </div>
-                      <CardImage src={post.coverImage || '/placeholder.png'} alt={post.title} priority />
-                    </div>
-                    <CardContent>
-                      <CardTitle title={post.title} className='min-h-[45px]' />
-                      <CardDescription description={post.description} className='min-h-[4.5rem]' />
-                      <CardAvatar fallback={post.author.username.charAt(0)}>{post.author.avatar && <AvatarImage src={post.author.avatar} alt={post.author.username} />}</CardAvatar>
-                      {/* 푸터 영역(좋아요, view, 댓글수) */}
-                      <div onClick={(e) => e.stopPropagation()}>
-                        <CardFooter
-                          likes={post.stats.likes}
-                          isLiked={likedIds.includes(post.id)}
-                          comments={post.repliesCount ?? 0}
-                          views={post.stats.views}
-                          timeAgo={new Date(post.createdAt).toLocaleDateString('ko-KR')}
-                          onLike={() => handleToggleLike(post.id)}
-                        />
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              ))}
+                      <CardContent>
+                        <CardTitle title={post.title} className='min-h-[45px]' />
+                        <CardDescription description={post.description} className='min-h-[4.5rem]' />
+
+                        <CardAvatar src={post.author.avatar} fallback={post.author.username.charAt(0)} username={post.author.username} />
+
+                        {/* 푸터 영역(좋아요, view, 댓글수) */}
+                        <div onClick={(e) => e.stopPropagation()}>
+                          <CardFooter
+                            likes={post.stats.likes}
+                            isLiked={likedIds.includes(post.id)}
+                            comments={post.repliesCount ?? 0}
+                            views={post.stats.views}
+                            timeAgo={new Date(post.createdAt).toLocaleDateString('ko-KR')}
+                            onLike={() => handleToggleLike(post.id)}
+                          />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                );
+              })}
             </div>
           )}
           {pagination.totalPages > 1 && (

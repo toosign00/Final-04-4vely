@@ -34,10 +34,10 @@ export default function Footer() {
   // 푸터 링크 배열
   const footerLinks = [
     { name: '홈', href: '/' },
-    { name: '쇼핑하기', href: '#' },
-    { name: '커뮤니티', href: '#' },
-    { name: 'FAQ', href: '#' },
-    { name: '마이페이지', href: '#' },
+    { name: 'Green Magazine', href: '/green-magazine?page=1' },
+    { name: '쇼핑하기', href: '/shop?page=1' },
+    { name: '커뮤니티', href: '/community?page=1' },
+    { name: '마이페이지', href: '/my-page' },
     { name: '이용약관', href: '#' },
     { name: '개인정보', href: '#' },
     { name: '고객센터', href: '#' },
@@ -52,9 +52,9 @@ export default function Footer() {
           <div className='flex flex-col gap-3 lg:max-w-xs'>
             <Image src='/icons/logo_white.svg' alt='Green Mate' width={201} height={53} className='h-auto w-[7.5rem] max-w-[7.5rem]' priority />
             <p className='t-body'>
-              브랜드 슬로건 들어가면 됩니다.
+              반려식물의 진짜 친구, Green Mate.
               <br />
-              브랜드 슬로건 들어가면 됩니다.
+              초록을 돌보는 마음, Green Mate와 함께.
             </p>
 
             {/* 소셜 미디어 */}

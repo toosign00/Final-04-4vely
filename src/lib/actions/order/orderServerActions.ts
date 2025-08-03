@@ -385,7 +385,7 @@ export async function getOrderByIdAction(orderId: number): Promise<PurchaseActio
       };
     }
 
-    // API 요청 - populate 파라미터 추가하여 상품 정보도 함께 조회
+    // API 요청
     const res = await fetch(`${API_URL}/orders/${orderId}?populate=products.product`, {
       method: 'GET',
       headers: {

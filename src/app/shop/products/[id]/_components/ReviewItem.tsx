@@ -50,7 +50,7 @@ export default function ReviewItem({ review, isAuthor, productId }: ReviewItemPr
       e.preventDefault();
       setEditRating(starIndex + 1);
 
-      // 접근성: 별점 변경 알림
+      // 별점 변경 알림
       if (reviewAnnouncementRef.current) {
         reviewAnnouncementRef.current.textContent = `별점이 ${starIndex + 1}점으로 변경되었습니다.`;
       }
@@ -60,7 +60,7 @@ export default function ReviewItem({ review, isAuthor, productId }: ReviewItemPr
       const newRating = Math.max(1, Math.min(5, editRating + direction));
       setEditRating(newRating);
 
-      // 접근성: 별점 변경 알림
+      // 별점 변경 알림
       if (reviewAnnouncementRef.current) {
         reviewAnnouncementRef.current.textContent = `별점이 ${newRating}점으로 변경되었습니다.`;
       }
@@ -76,7 +76,7 @@ export default function ReviewItem({ review, isAuthor, productId }: ReviewItemPr
 
     setIsLoading(true);
 
-    // 접근성: 수정 진행 상황 알림
+    // 수정 진행 상황 알림
     if (reviewAnnouncementRef.current) {
       reviewAnnouncementRef.current.textContent = '리뷰를 수정하고 있습니다.';
     }
@@ -91,7 +91,7 @@ export default function ReviewItem({ review, isAuthor, productId }: ReviewItemPr
         toast.success(result.message);
         setIsEditing(false);
 
-        // 접근성: 수정 완료 알림
+        // 수정 완료 알림
         if (reviewAnnouncementRef.current) {
           reviewAnnouncementRef.current.textContent = '리뷰가 성공적으로 수정되었습니다.';
         }
@@ -114,7 +114,7 @@ export default function ReviewItem({ review, isAuthor, productId }: ReviewItemPr
     setShowDeleteAlert(false);
     setIsLoading(true);
 
-    // 접근성: 삭제 진행 상황 알림
+    // 삭제 진행 상황 알림
     if (reviewAnnouncementRef.current) {
       reviewAnnouncementRef.current.textContent = '리뷰를 삭제하고 있습니다.';
     }
@@ -125,7 +125,7 @@ export default function ReviewItem({ review, isAuthor, productId }: ReviewItemPr
       if (result.success) {
         toast.success(result.message);
 
-        // 접근성: 삭제 완료 알림
+        // 삭제 완료 알림
         if (reviewAnnouncementRef.current) {
           reviewAnnouncementRef.current.textContent = '리뷰가 삭제되었습니다.';
         }
@@ -145,7 +145,7 @@ export default function ReviewItem({ review, isAuthor, productId }: ReviewItemPr
     setEditRating(review.rating);
     setIsEditing(false);
 
-    // 접근성: 수정 취소 알림
+    // 수정 취소 알림
     if (reviewAnnouncementRef.current) {
       reviewAnnouncementRef.current.textContent = '리뷰 수정이 취소되었습니다.';
     }
@@ -155,7 +155,7 @@ export default function ReviewItem({ review, isAuthor, productId }: ReviewItemPr
   const handleEditStart = () => {
     setIsEditing(true);
 
-    // 접근성: 수정 모드 진입 알림
+    // 수정 모드 진입 알림
     if (reviewAnnouncementRef.current) {
       reviewAnnouncementRef.current.textContent = '리뷰 수정 모드로 전환되었습니다.';
     }
@@ -168,7 +168,7 @@ export default function ReviewItem({ review, isAuthor, productId }: ReviewItemPr
 
   return (
     <>
-      {/* 접근성: 스크린 리더용 실시간 알림 영역 */}
+      {/* 스크린 리더용 실시간 알림 영역 */}
       <div aria-live='polite' aria-atomic='true' className='sr-only'>
         <div ref={reviewAnnouncementRef} />
       </div>

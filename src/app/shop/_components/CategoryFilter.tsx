@@ -105,11 +105,11 @@ export default function CategoryFilterSidebar({ filters, onFilterChange, isMobil
     }
   };
 
-  // 필터 변경 핸들러 (접근성 알림 추가)
+  // 필터 변경 핸들러
   const handleFilterChange = (category: keyof CategoryFilter, value: string) => {
     onFilterChange(category, value);
 
-    // 접근성: 필터 변경 알림
+    // 필터 변경 알림
     if (filterAnnouncementRef.current) {
       const isSelected = filters[category]?.includes(value) || false;
       const action = isSelected ? '선택 해제' : '선택';
@@ -159,7 +159,7 @@ export default function CategoryFilterSidebar({ filters, onFilterChange, isMobil
   if (isMobile) {
     return (
       <div>
-        {/* 접근성: 스크린 리더용 실시간 알림 영역 */}
+        {/* 스크린 리더용 실시간 알림 영역 */}
         <div aria-live='polite' aria-atomic='true' className='sr-only'>
           <div ref={filterAnnouncementRef} />
         </div>
@@ -245,7 +245,7 @@ export default function CategoryFilterSidebar({ filters, onFilterChange, isMobil
   // 데스크톱 레이아웃
   return (
     <div>
-      {/* 접근성: 스크린 리더용 실시간 알림 영역 */}
+      {/* 스크린 리더용 실시간 알림 영역 */}
       <div aria-live='polite' aria-atomic='true' className='sr-only'>
         <div ref={filterAnnouncementRef} />
       </div>

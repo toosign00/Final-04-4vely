@@ -290,12 +290,12 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
     }
   };
 
-  // 🔧 주소 찾기 핸들러
+  // 주소 찾기 핸들러
   const handleAddressSearch = () => {
     setShowPostcode(true);
   };
 
-  // 나머지 핸들러들 (기존과 동일)
+  // 나머지 핸들러들
   const handleSelectAddress = async (addressId: string) => {
     const selected = savedAddresses.find((addr) => addr.id === addressId);
     if (selected) {
@@ -311,7 +311,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
       if (success) {
         setOrderData((prev) => ({ ...prev, address }));
 
-        // 접근성: 배송지 선택 알림
+        // 배송지 선택 알림
         if (orderAnnouncementRef.current) {
           orderAnnouncementRef.current.textContent = `배송지가 선택되었습니다: ${selected.name}`;
         }
@@ -350,7 +350,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
           setSavedAddresses((prev) => [...prev, newAddress]);
         }
 
-        // 접근성: 배송지 저장 알림
+        // 배송지 저장 알림
         if (orderAnnouncementRef.current) {
           orderAnnouncementRef.current.textContent = `배송지 정보가 저장되었습니다: ${address.name}`;
         }
@@ -382,7 +382,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
       setSelectedAddressId('');
     }
 
-    // 접근성: 배송지 삭제 알림
+    // 배송지 삭제 알림
     if (orderAnnouncementRef.current && addressToRemove) {
       orderAnnouncementRef.current.textContent = `${addressToRemove.name}의 배송지가 삭제되었습니다.`;
     }
@@ -398,7 +398,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
       if (success) {
         setOrderData((prev) => ({ ...prev, memo }));
 
-        // 접근성: 배송 메모 설정 알림
+        // 배송 메모 설정 알림
         if (orderAnnouncementRef.current) {
           orderAnnouncementRef.current.textContent = `배송 메모가 설정되었습니다: ${memo}`;
         }
@@ -417,12 +417,12 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
     }
   };
 
-  // handlePayment 함수 - 결제 수단 확인 제거
+  // handlePayment 함수
   const handlePayment = async () => {
     try {
       setIsProcessingOrder(true);
 
-      // 접근성: 결제 처리 시작 알림
+      // 결제 처리 시작 알림
       if (paymentStepRef.current) {
         paymentStepRef.current.textContent = '결제 처리를 시작합니다.';
       }
@@ -435,12 +435,10 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
       // 배송지 정보 확인
       if (!orderData.address || !orderData.address.name || !orderData.address.phone || !orderData.address.address) {
         toast.error('배송지 정보를 입력해주세요');
-        return; // 페이지 이동 없이 현재 페이지 유지
+        return;
       }
 
-      // 결제 방법 확인 제거 - PortOne 올인원에서 선택
-
-      // 주문 생성 요청 데이터 준비 - API 형식에 맞게 변환
+      // 주문 생성 요청 데이터 준비
       const createOrderData: CreateOrderRequest = {
         products: orderData.items.map((item) => ({
           _id: item.productId,
@@ -459,9 +457,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
               // 각 상품의 이미지 경로 추출
               if (!item.productImage) return '';
 
-              // URL에서 files/ 이후 경로만 추출
-              const match = item.productImage.match(/files\/(.+)/);
-              return match ? `files/${match[1]}` : '';
+              return item.productImage;
             })
             .filter((img) => img !== ''), // 빈 문자열 제거
         },
@@ -498,10 +494,9 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
 
       console.log('[결제 처리] orderId 확인:', orderId);
 
-      // ==================== PortOne 결제 시작 ====================
       console.log('[결제 처리] PortOne 결제 시작');
 
-      // 접근성: 결제창 호출 알림
+      // 결제창 호출 알림
       if (paymentStepRef.current) {
         paymentStepRef.current.textContent = '결제창을 호출합니다.';
       }
@@ -537,7 +532,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
         channelKey,
       });
 
-      // PortOne 결제창 호출 (올인원 사용)
+      // PortOne 결제창 호출
       const response = await PortOne.requestPayment({
         storeId: storeId,
         channelKey: channelKey,
@@ -545,7 +540,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
         orderName: orderName,
         totalAmount: totalAmount,
         currency: 'CURRENCY_KRW',
-        payMethod: 'CARD', // 올인원이므로 기본값 설정
+        payMethod: 'CARD',
         customer: {
           fullName: orderData.address.name,
           phoneNumber: orderData.address.phone,
@@ -557,14 +552,13 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
 
       console.log('[결제 처리] PortOne 응답:', response);
 
-      // 🔧 결제 실패/취소 처리 - 즉시 쿠키 삭제
+      // 결제 실패/취소 처리 - 즉시 쿠키 삭제
       if (response?.code) {
         console.error('[결제 처리] PortOne 결제 실패/취소:', response);
 
-        // 🎯 중요: 결제 취소/실패 시 즉시 쿠키 삭제
         document.cookie = 'payment-in-progress=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
 
-        // 접근성: 결제 취소/실패 알림
+        // 결제 취소/실패 알림
         if (paymentStepRef.current) {
           const isCancel = response.code === 'FAILURE_TYPE_CANCEL' || response.message?.includes('취소');
           paymentStepRef.current.textContent = isCancel ? '결제가 취소되었습니다.' : '결제에 실패했습니다.';
@@ -583,7 +577,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
           });
         }
 
-        // 🔧 임시 주문 데이터 복원 (다시 결제할 수 있도록)
+        // 임시 주문 데이터 복원 (다시 결제할 수 있도록)
         try {
           const { saveTempOrderAction } = await import('@/lib/actions/order/orderServerActions');
           await saveTempOrderAction(orderData);
@@ -599,7 +593,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
       if (!response?.paymentId) {
         console.error('[결제 처리] paymentId 없음:', response);
 
-        // 🎯 중요: 이 경우에도 쿠키 삭제
+        // 이 경우에도 쿠키 삭제
         document.cookie = 'payment-in-progress=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
 
         toast.error('결제 정보를 가져올 수 없습니다');
@@ -608,17 +602,17 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
 
       console.log('[결제 처리] 결제 성공, paymentId:', response.paymentId);
 
-      // 결제 성공 - 서버에서 검증
+      // 결제 성공
       console.log('[결제 처리] 결제 성공, 검증 시작');
 
-      // 접근성: 결제 검증 시작 알림
+      // 결제 검증 시작 알림
       if (paymentStepRef.current) {
         paymentStepRef.current.textContent = '결제 검증을 진행하고 있습니다.';
       }
 
-      // 검증 중 토스트 (수동으로 관리)
+      // 검증 중 토스트
       const verifyingToastId = toast.loading('결제 검증 중...', {
-        duration: Infinity, // 수동으로 닫을 때까지 유지
+        duration: Infinity,
       });
 
       const verificationResult = await verifyPaymentAndCompleteOrderAction(response.paymentId!, String(orderId));
@@ -632,7 +626,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
         // 검증 실패 시에도 쿠키 삭제
         document.cookie = 'payment-in-progress=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
 
-        // 접근성: 결제 검증 실패 알림
+        // 결제 검증 실패 알림
         if (paymentStepRef.current) {
           paymentStepRef.current.textContent = '결제 검증에 실패했습니다.';
         }
@@ -650,7 +644,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
       // 결제 완료 시 쿠키 삭제
       document.cookie = 'payment-in-progress=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
 
-      // 접근성: 결제 완료 알림
+      // 결제 완료 알림
       if (paymentStepRef.current) {
         paymentStepRef.current.textContent = '결제가 성공적으로 완료되었습니다.';
       }
@@ -662,7 +656,6 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
       console.log('[결제 처리] redirectUrl:', redirectUrl);
 
       // 결제 검증 성공한 경우에만 페이지 이동
-      // fallback 처리 개선
       if (!redirectUrl) {
         console.error('[결제 처리] redirectUrl이 없습니다');
         if (orderId) {
@@ -674,7 +667,6 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
             duration: 2000,
           });
 
-          // 성공한 경우에만 페이지 이동
           setTimeout(() => {
             router.push(manualRedirectUrl);
           }, 1000);
@@ -688,7 +680,6 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
         duration: 2000,
       });
 
-      // 성공한 경우에만 페이지 이동
       if (redirectUrl) {
         console.log('[결제 처리] 페이지 이동:', redirectUrl);
         setTimeout(() => {
@@ -708,7 +699,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
       // catch 블록에서도 쿠키 삭제
       document.cookie = 'payment-in-progress=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
 
-      // 접근성: 결제 오류 알림
+      // 결제 오류 알림
       if (paymentStepRef.current) {
         paymentStepRef.current.textContent = '결제 처리 중 오류가 발생했습니다.';
       }
@@ -726,13 +717,13 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
         });
       }
 
-      // 오류 발생 시 현재 페이지에 머무르기 (페이지 이동 절대 금지)
+      // 오류 발생 시 현재 페이지에 머무르기
       console.log('[결제 처리] 오류 발생 - 현재 페이지 유지');
     } finally {
       // finally에서도 페이지 이동 없이 로딩 상태만 해제
       setIsProcessingOrder(false);
 
-      // finally에서도 결제 진행 쿠키 정리 (안전 장치...)
+      // finally에서도 결제 진행 쿠키 정리
       document.cookie = 'payment-in-progress=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
 
       console.log('[결제 처리] finally: 처리 완료, 현재 페이지 유지');
@@ -751,7 +742,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
 
   return (
     <div className='bg-surface min-h-screen w-full p-4 sm:p-6 lg:p-8'>
-      {/* 접근성: 스크린 리더용 실시간 알림 영역 */}
+      {/* 스크린 리더용 실시간 알림 영역 */}
       <div aria-live='polite' aria-atomic='true' className='sr-only'>
         <div ref={orderAnnouncementRef} />
         <div ref={paymentStepRef} />
@@ -920,7 +911,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
                 )}
               </div>
 
-              {/* 🔧 배송지 설정 모달 - 개선된 버전 */}
+              {/* 배송지 설정 모달 */}
               <Dialog open={dialogOpen} onOpenChange={handleDialogClose}>
                 <DialogContent className='max-h-[90vh] max-w-4xl overflow-y-auto' role='dialog' aria-labelledby='address-dialog-title'>
                   <div className='w-full bg-white'>
@@ -1012,7 +1003,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
                             </p>
                           )}
 
-                          {/* 배송 메모 select */}
+                          {/* 배송 메모 */}
                           {savedAddresses.length > 0 && (
                             <>
                               <hr className='my-4 border-gray-200' />
@@ -1212,8 +1203,6 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
             </div>
           </section>
 
-          {/* 결제 방법 섹션 제거 */}
-
           {/* 총 결제 금액 */}
           <section className='mt-7 rounded-2xl bg-white p-6 text-sm shadow-md lg:flex lg:items-end lg:justify-between' role='region' aria-labelledby='payment-summary-title'>
             <div className='w-full lg:w-[500px]'>
@@ -1242,7 +1231,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
                 </div>
               </div>
             </div>
-            {/* 결제버튼 - 배송지만 확인 */}
+            {/* 결제 버튼 */}
             <Button
               fullWidth
               variant='primary'

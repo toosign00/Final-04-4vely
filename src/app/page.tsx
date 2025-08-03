@@ -1,24 +1,18 @@
-import hero from '@/assets/images/hero.webp';
 import CommunityPop from '@/components/_home/CommunityPop';
 import GreenMagazineSection from '@/components/_home/green-magazine/GreenMagazineSection';
+import HomeHero from '@/components/_home/HomeHero';
 import NewProductSection from '@/components/_home/new-product/NewProductSection';
 import ReviewCarousel from '@/components/_home/ReviewCarousel';
-import WeatherWidget from '@/components/_home/WeatherWidget';
+import WeatherWidget from '@/components/_home/weather/WeatherWidget';
 import { getReviewPopPosts } from '@/lib/functions/home/getReviewPopPosts';
-import Image from 'next/image';
 
 export default async function Home() {
   const reviews = await getReviewPopPosts();
 
   return (
-    // gap-15
     <div className='text-secondary flex flex-col md:text-2xl lg:text-3xl'>
-      {/* 배너 이미지 - 임시 */}
-      <Image className='mb-4 h-[13rem] w-full border-4 object-cover md:h-[15rem] lg:h-[19.75rem]' src={hero} alt='배너 이미지' priority />
-      {/* 배너 영상 - 임시 */}
-      {/* <section className='relative h-[13rem] w-full md:h-[17rem] lg:h-[25rem]'>
-        <iframe className='pointer-events-none h-full w-full' src='https://www.youtube.com/embed/V2voCiBjqdU?autoplay=1&mute=1&loop=1&controls=0&playlist=V2voCiBjqdU' title='배너 영상' allow='autoplay; encrypted-media' allowFullScreen />
-      </section> */}
+      {/* Hero 배너 */}
+      <HomeHero />
 
       {/* 날씨 정보 */}
       <WeatherWidget />

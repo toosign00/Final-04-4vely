@@ -1,7 +1,7 @@
 'use server';
 
 import { GreenMagazineRes, MagazinePostData } from '@/app/green-magazine/_types/magazine.types';
-import { getBulkBookmarks, getServerAccessToken } from '@/lib/functions/bookmarkServerFunctions';
+import { getBulkBookmarks, getServerAccessToken } from '@/lib/functions/shop/bookmarkServerFunctions';
 
 const API_URL = process.env.API_URL;
 const CLIENT_ID = process.env.CLIENT_ID || '';

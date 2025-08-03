@@ -1,5 +1,6 @@
 'use client';
 
+import SkeletonWeatherCard from '@/components/_home/weather/SkeletonWeatherCard';
 import { Button } from '@/components/ui/Button';
 import { WeatherInfo } from '@/lib/functions/weather/fetchWeather';
 import { mapWeatherToTips } from '@/lib/functions/weather/mapWeatherToTips';
@@ -19,6 +20,7 @@ export default function WeatherWidget() {
   const [tipsData, setTipsData] = useState<WeatherTipData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+
   // 사용자 위치 요청
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -58,32 +60,32 @@ export default function WeatherWidget() {
   }, []);
 
   return (
-    <div className='relative mb-4 flex max-w-[67rem] flex-col self-center px-5 pt-5' aria-label='현재 날씨 정보'>
-      {/* 로딩 중일 때 메시지 */}
-      {loading && <div className='rounded-xl bg-white p-4 text-gray-600 shadow-md'>날씨 정보를 불러오는 중입니다...</div>}
+    <section className='relative mx-auto my-14 flex w-full flex-col px-5 sm:max-w-[40rem] md:max-w-none lg:max-w-[70rem]' aria-label='현재 날씨 정보'>
+      {/* 스켈레톤 UI */}
+      {loading && <SkeletonWeatherCard />}
 
       {/* 오류 또는 데이터 없음 */}
       {!loading && (!tipsData || error) && <div className='text-error rounded-xl bg-white p-4 shadow-md'>날씨 정보를 불러오는 데 실패했습니다. 다시 시도해주세요.</div>}
 
-      {/* 정상적으로 데이터가 있을 때 */}
+      {/* 정상 데이터 렌더링 */}
       {!loading && tipsData && (
         <>
           {/* 날씨 및 팁 카드 */}
           <div
-            className='relative overflow-hidden rounded-xl text-white shadow-md'
+            className='relative flex min-h-[18.75rem] items-center overflow-hidden rounded-xl text-white shadow-md'
             style={{
-              backgroundImage: `url(/images/${weatherImage(tipsData.weather.description)}.webp)`,
+              backgroundImage: `url(/images/${weatherImage(tipsData.weather.rawDescription)}.webp)`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
             }}
           >
-            {/* 배경 어둡게 처리하는 오버레이 */}
+            {/* 반투명 오버레이 */}
             <div className='absolute inset-0 rounded-xl bg-black/30' />
 
-            {/* 실제 콘텐츠 */}
-            <div className='relative rounded-xl p-4'>
+            {/* 컨텐츠 레이어 */}
+            <div className='relative w-full p-4'>
               <div className='grid grid-cols-1 gap-4 md:grid-cols-2 md:text-lg lg:text-xl'>
-                {/* 날씨 정보 */}
+                {/* 좌측: 날씨 정보 */}
                 <div className='flex flex-col items-center justify-center'>
                   <div className='flex flex-row items-center gap-5 font-bold'>
                     <FiMapPin className='md:h-6 md:w-6' />
@@ -99,23 +101,39 @@ export default function WeatherWidget() {
                   </div>
                 </div>
 
-                {/* 식물 팁 정보 */}
-                <div className='bg-surface/70 text-secondary rounded-lg p-3 text-sm md:text-base lg:text-xl'>
-                  <h3 className='mb-2 font-semibold'>오늘의 식물 관리 팁</h3>
-                  <p className='mb-3 text-xs md:text-sm lg:text-base'>{tipsData.weather.tip}</p>
+                {/* 우측: 식물 팁 정보 */}
+                <div className='bg-surface/70 text-secondary flex min-h-[12rem] flex-col justify-between rounded-lg p-5 text-base lg:text-xl'>
+                  {/* 팁 제목 및 설명 */}
+                  <div>
+                    <h3 className='mb-2 font-semibold'>오늘의 식물 관리 팁</h3>
+                    <div className='mb-3 text-sm lg:text-base'>
+                      {tipsData.weather.tip
+                        .split('.')
+                        .filter((sentence) => sentence.trim() !== '')
+                        .map((sentence, index) => (
+                          <p key={index} className='mb-1'>
+                            {sentence.trim() + '.'}
+                          </p>
+                        ))}
+                    </div>
+                  </div>
 
-                  {tipsData.plants.length > 0 && (
-                    <div>
-                      <h4 className='mb-2 font-semibold'>추천 식물</h4>
+                  {/* 추천 식물 (없어도 레이아웃 유지) */}
+                  <div className='mt-4'>
+                    <h4 className='mb-2 font-semibold'>오늘의 초록 친구</h4>
+
+                    {tipsData.plants.length > 0 ? (
                       <div className='flex flex-wrap gap-1 md:gap-3'>
                         {tipsData.plants.map((plant, index) => (
-                          <span key={index} className='rounded-full border-2 border-green-600 bg-white px-3 py-1 text-xs text-green-700 md:text-sm lg:text-base'>
+                          <span key={index} className='rounded-full border-2 border-green-600 bg-white px-3 py-1 text-sm text-green-700 lg:text-base'>
                             {plant}
                           </span>
                         ))}
                       </div>
-                    </div>
-                  )}
+                    ) : (
+                      <div className='h-3 text-sm text-gray-600 lg:text-base'>오늘은 초록 친구가 쉬고 있어요.</div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -129,6 +147,6 @@ export default function WeatherWidget() {
           </div>
         </>
       )}
-    </div>
+    </section>
   );
 }

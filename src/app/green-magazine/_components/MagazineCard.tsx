@@ -8,8 +8,6 @@ import { Button } from '@/components/ui/Button';
 import Image from 'next/image';
 import Link from 'next/link';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
-
 interface MagazineCardProps {
   post: MagazinePostData;
   priority?: boolean;
@@ -21,7 +19,7 @@ export default function MagazineCard({ post, priority = false }: MagazineCardPro
     <div className='flex flex-col gap-4 rounded-xl bg-white p-4 shadow-sm hover:shadow-md md:flex-row md:gap-10'>
       {/* 이미지 */}
       <div className='relative h-40 w-full overflow-hidden rounded-lg md:h-50 md:w-1/5'>
-        <Image src={`${API_URL}/${post.image}`} alt={post.title} fill sizes='(max-width: 768px) 100vw, 20vw' className='object-cover' priority={priority} />
+        <Image src={post.image} alt={post.title} fill sizes='(max-width: 768px) 100vw, 20vw' className='object-cover' priority={priority} />
       </div>
 
       {/* 콘텐츠 영역 */}
@@ -36,11 +34,12 @@ export default function MagazineCard({ post, priority = false }: MagazineCardPro
           {/* 작성자 & 작성 날짜 & 조회 수 */}
           <div className='flex items-center gap-2 text-center text-xs text-gray-500 md:text-sm'>
             <Avatar className='border-muted h-8 w-8 rounded-3xl border'>
-              <AvatarImage src={`${API_URL}/${post.user.image}`} alt={post.user.name} />
+              <AvatarImage src={post.user.image} alt={post.user.name} />
               <AvatarFallback>{post.user.name}</AvatarFallback>
             </Avatar>
             <span>{post.user.name}</span>
             <span>·</span>
+            {/* 시간 월요일에 다시 처리 */}
             <span>{formatDate(post.createdAt)}</span>
             <span>·</span>
             <span>조회수 {post.views}</span>

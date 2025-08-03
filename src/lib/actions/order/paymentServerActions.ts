@@ -1,9 +1,9 @@
 // src/lib/actions/paymentServerActions.ts
 'use server';
 
-import { revalidatePath } from 'next/cache';
 import { getAuthInfo } from '@/lib/utils/auth.server';
-
+import { revalidatePath } from 'next/cache';
+import { cookies } from 'next/headers';
 const API_URL = process.env.API_URL || 'https://fesp-api.koyeb.app/market';
 const CLIENT_ID = process.env.CLIENT_ID || 'febc13-final04-emjf';
 const PORTONE_API_SECRET = process.env.PORTONE_API_SECRET;
@@ -64,7 +64,6 @@ async function getPortOnePayment(paymentId: string): Promise<PortOnePayment> {
     throw error;
   }
 }
-
 
 /**
  * 결제 검증 및 주문 완료 처리 서버 액션

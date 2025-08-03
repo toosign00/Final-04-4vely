@@ -1,6 +1,6 @@
 // src/app/community/page.tsx
 import ClientCommunity from '@/app/community/_components/ClientCommunity';
-import { getBulkBookmarks } from '@/lib/functions/bookmarkServerFunctions';
+import { getBulkBookmarks } from '@/lib/functions/shop/bookmarkServerFunctions';
 import { fetchPosts } from '@/lib/functions/communityFunctions';
 
 export default async function CommunityPage() {

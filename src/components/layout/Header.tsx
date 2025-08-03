@@ -4,9 +4,9 @@ import { HEADER_CONTAINER, MOBILE_MENU_LINK, NAV_LINK, headerIcons, menuLinks } 
 import { useHeaderMenu } from '@/hooks/useHeaderMenu';
 import { useAuth } from '@/store/authStore';
 import { Menu, ShoppingCart, UserRound, X } from 'lucide-react';
+import { signOut } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { signOut } from 'next-auth/react';
 import React from 'react';
 import { toast } from 'sonner';
 
@@ -21,12 +21,12 @@ export default function Header() {
       if (session) {
         await signOut({ redirect: false });
       }
-      
+
       // Zustand 로그아웃
       if (zustandUser) {
         await zustandLogout();
       }
-      
+
       toast.success('로그아웃 되었습니다.', {
         description: '다음에 또 만나요!',
       });

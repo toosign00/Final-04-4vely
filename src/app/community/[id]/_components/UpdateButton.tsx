@@ -3,7 +3,7 @@
 
 import { Button } from '@/components/ui/Button';
 import { fetchPostById } from '@/lib/functions/communityFunctions';
-import useUserStore from '@/store/authStore';
+import { useAuth } from '@/store/authStore';
 import { useRouter } from 'next/navigation';
 
 interface Props {
@@ -12,18 +12,19 @@ interface Props {
 
 export default function UpdateButton({ postId }: Props) {
   const router = useRouter();
-  const user = useUserStore((s) => s.user);
-  const token = user?.token?.accessToken;
+  const { isLoggedIn, zustandUser, session } = useAuth();
+  const token = zustandUser?.token?.accessToken || session?.accessToken;
+  const currentUserId = zustandUser?._id || session?.id;
 
   const handleEdit = async () => {
-    if (!token) {
+    if (!isLoggedIn || !token) {
       alert('로그인이 필요합니다.');
       return;
     }
     try {
       const post = await fetchPostById(postId);
       // 작성자 체크
-      if (post.author.id !== String(user._id)) {
+      if (post.author.id !== String(currentUserId)) {
         alert('다른 사람의 게시물을 수정할 수 없습니다.');
         router.push('/community');
         return;

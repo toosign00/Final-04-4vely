@@ -175,9 +175,6 @@ export async function logoutAction(): Promise<ApiRes<{ message: string }>> {
   }
 }
 
-
-
-
 // ============================================================================
 // 내부 함수들 (서버 액션에서만 사용)
 // ============================================================================
@@ -306,6 +303,3 @@ async function refreshAccessToken(refreshToken: string): Promise<ApiRes<{ access
     };
   }
 }
-
-
-

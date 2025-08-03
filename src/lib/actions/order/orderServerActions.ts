@@ -2,13 +2,13 @@
 
 'use server';
 
+import { getAuthInfo } from '@/lib/utils/auth.server';
 import { CreateOrderApiResponse, CreateOrderRequest, DirectPurchaseItem, Order, OrderPageData, PurchaseActionResult } from '@/types/order.types';
 import { revalidatePath } from 'next/cache';
-import { getAuthInfo } from '@/lib/utils/auth.server';
+import { cookies } from 'next/headers';
 
 const API_URL = process.env.API_URL || 'https://fesp-api.koyeb.app/market';
 const CLIENT_ID = process.env.CLIENT_ID || 'febc13-final04-emjf';
-
 
 /**
  * 임시 주문 데이터를 쿠키에 저장 (1시간 유효)
@@ -120,7 +120,6 @@ export async function createCartPurchaseTempOrderAction(selectedCartIds: number[
       console.log('[Order 서버 액션] 로그인 필요');
       return false;
     }
-    const { accessToken } = authInfo;
 
     // 장바구니 아이템 정보 가져오기
     const { getCartItemsActionOptimized } = await import('@/lib/actions/cartServerActions');
@@ -438,27 +437,19 @@ export async function getUserAddressAction(): Promise<{
   userId: number | null;
 }> {
   try {
-    const cookieStore = await cookies();
-    const userAuthCookie = cookieStore.get('user-auth')?.value;
-
-    if (!userAuthCookie) {
+    // getAuthInfo를 사용하여 인증 정보 가져오기
+    const authInfo = await getAuthInfo();
+    if (!authInfo) {
       console.log('[getUserAddressAction] 로그인되지 않은 사용자');
       return { address: null, name: null, phone: null, userId: null };
     }
 
-    const userData = JSON.parse(userAuthCookie);
-    const userId = userData?.state?.user?._id;
-    const accessToken = userData?.state?.user?.token?.accessToken;
+    const { accessToken, userId } = authInfo;
 
     console.log('[getUserAddressAction] 사용자 정보:', {
       userId,
       hasToken: !!accessToken,
     });
-
-    if (!userId || !accessToken) {
-      console.log('[getUserAddressAction] 사용자 정보 불완전');
-      return { address: null, name: null, phone: null, userId: null };
-    }
 
     // API 요청
     const apiUrl = `${API_URL}/users/${userId}`;

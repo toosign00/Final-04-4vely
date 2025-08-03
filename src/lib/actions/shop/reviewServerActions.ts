@@ -2,14 +2,13 @@
 
 'use server';
 
+import { getAuthInfo } from '@/lib/utils/auth.server';
 import { ApiRes } from '@/types/api.types';
 import { ProductReply, ReplyActionResult, UpdateReplyRequest } from '@/types/review.types';
 import { revalidatePath } from 'next/cache';
-import { getAuthInfo } from '@/lib/utils/auth.server';
-
+import { cookies } from 'next/headers';
 const API_URL = process.env.API_URL || 'https://fesp-api.koyeb.app/market';
 const CLIENT_ID = process.env.CLIENT_ID || 'febc13-final04-emjf';
-
 
 /**
  * 리뷰를 수정하는 서버 액션

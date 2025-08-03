@@ -12,17 +12,14 @@ const cookieStorage: StateStorage = {
   getItem: (name: string): string | null => {
     if (typeof window === 'undefined') return null;
 
-    // 쿠키 파싱
-    const cookies = document.cookie.split(';').reduce((acc: Record<string, string>, cookie) => {
-      const [key, ...valueParts] = cookie.split('=').map((c) => c.trim());
-      if (key && valueParts.length > 0) {
-        const value = valueParts.join('=');
-        acc[key] = decodeURIComponent(value);
-      }
-      return acc;
-    }, {});
-
-    return cookies[name] || null;
+    // 간소화된 쿠키 파싱
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) {
+      const cookieValue = parts.pop()?.split(';').shift();
+      return cookieValue ? decodeURIComponent(cookieValue) : null;
+    }
+    return null;
   },
   setItem: (): void => {
     // zustand persist에서 쿠키 설정하지 않음 (서버 액션에서만 설정)
@@ -258,7 +255,7 @@ export function useAuth() {
 
   // NextAuth 세션 또는 Zustand user 중 하나라도 있으면 로그인된 것으로 간주
   const isLoggedIn = useMemo(() => !!session?.user || !!zustandUser, [session?.user, zustandUser]);
-  
+
   // 현재 사용자 정보 (OAuth 우선, 그 다음 Zustand)
   const currentUser = useMemo(() => session?.user || zustandUser, [session?.user, zustandUser]);
 
@@ -270,12 +267,12 @@ export function useAuth() {
     isLoggedIn,
     currentUser,
     isLoading, // 통합된 로딩 상태
-    
+
     // 개별 상태 (필요시 접근)
     zustandUser,
     session: session?.user,
     sessionStatus: status,
-    
+
     // Zustand 메서드들 (isLoading 제외)
     setUser: rest.setUser,
     resetUser: rest.resetUser,

@@ -22,7 +22,6 @@ export async function fetchMagazine(type: string, page: number, limit: number): 
     // 로그인한 경우에만 북마크 여부 조회
     const authInfo = await getAuthInfo();
     if (!authInfo) return data;
-    const { accessToken } = authInfo;
 
     // 북마크 대상 리스트 생성
     const targets = data.item.map((post) => ({

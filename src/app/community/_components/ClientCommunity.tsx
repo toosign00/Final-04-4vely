@@ -8,7 +8,7 @@ import PaginationWrapper from '@/components/ui/PaginationWrapper';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select';
 import { Switch } from '@/components/ui/switch';
 import { fetchPosts, fetchPostsByUserId, Pagination } from '@/lib/functions/communityFunctions';
-import useUserStore from '@/store/authStore';
+import { useAuth } from '@/store/authStore';
 import { Post } from '@/types/commnunity.types';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
@@ -20,9 +20,9 @@ interface Props {
 
 export default function ClientCommunity({ initialPosts, initialPagination }: Props) {
   const router = useRouter(); // 네비게이션용
-  const user = useUserStore((state) => state.user);
-  const userId = user?._id ? String(user._id) : '';
-  const token = user?.token?.accessToken;
+  const { zustandUser, session, isLoggedIn } = useAuth();
+  const userId = zustandUser?._id ? String(zustandUser._id) : session?.id ? String(session.id) : '';
+  const token = zustandUser?.token?.accessToken || session?.accessToken;
 
   // 상태 정의
   const [posts, setPosts] = useState<Post[]>(initialPosts); // 게시물 목록
@@ -54,7 +54,7 @@ export default function ClientCommunity({ initialPosts, initialPagination }: Pro
 
   // 게시물 불러오기
   useEffect(() => {
-    if (showMine && !token) return;
+    if (showMine && !isLoggedIn) return;
     setLoading(true);
     const api = showMine ? fetchPostsByUserId(userId, pagination.page, pagination.limit, token) : fetchPosts(pagination.page, pagination.limit, 'community', token);
 
@@ -67,7 +67,7 @@ export default function ClientCommunity({ initialPosts, initialPagination }: Pro
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, [showMine, userId, pagination.page, pagination.limit, token]);
+  }, [showMine, userId, pagination.page, pagination.limit, token, isLoggedIn]);
 
   // 정렬된 게시물
   const sortedPosts = useMemo(() => {

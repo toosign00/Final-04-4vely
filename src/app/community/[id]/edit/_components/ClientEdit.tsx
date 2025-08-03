@@ -7,7 +7,7 @@ import { ChangeEvent, useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/Button';
 import { fetchPostById, updatePostById, uploadFile } from '@/lib/functions/communityFunctions';
-import useUserStore from '@/store/authStore';
+import { useAuth } from '@/store/authStore';
 
 interface PostForm {
   id: string;
@@ -25,8 +25,8 @@ const MAX_FORMS = 10;
 
 export default function ClientEdit({ postId }: ClientEditProps) {
   const router = useRouter();
-  const user = useUserStore((state) => state.user);
-  const token = user?.token?.accessToken;
+  const { zustandUser, session } = useAuth();
+  const token = zustandUser?.token?.accessToken || session?.accessToken;
 
   const [cover, setCover] = useState<File | string | null>(null);
   const [postForms, setPostForms] = useState<PostForm[]>([]);

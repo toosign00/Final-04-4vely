@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/Button';
 import UpdateButton from '@/app/community/[id]/_components/UpdateButton';
 import BookmarkButton from '@/components/ui/BookmarkButton';
 import { createComment, deleteComment, fetchComments, resolveUrl, updateComment } from '@/lib/functions/communityFunctions';
-import useUserStore from '@/store/authStore';
+import { useAuth } from '@/store/authStore';
 import { CommunityComment, Post } from '@/types/commnunity.types';
 import { Eye, Heart, MessageCircle } from 'lucide-react';
 
@@ -20,11 +20,11 @@ export default function ClientDetail({ post }: { post: Post }) {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const currentUser = useUserStore((state) => state.user);
+  const { isLoggedIn, zustandUser, session } = useAuth();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingContent, setEditingContent] = useState('');
-  const currentUserId = currentUser?._id;
-  const token = currentUser?.token?.accessToken;
+  const currentUserId = zustandUser?._id || session?.id;
+  const token = zustandUser?.token?.accessToken || session?.accessToken;
 
   useEffect(() => {
     const loadComments = async () => {
@@ -39,7 +39,7 @@ export default function ClientDetail({ post }: { post: Post }) {
   }, [id]);
 
   const handleCommentSubmit = async () => {
-    if (!input.trim() || !token) return;
+    if (!input.trim() || !isLoggedIn || !token) return;
     setLoading(true);
     try {
       const newComment = await createComment(id, input, token);
@@ -54,7 +54,7 @@ export default function ClientDetail({ post }: { post: Post }) {
 
   // 댓글 수정
   async function handleUpdate(commentId: string) {
-    if (!editingContent.trim() || !token) return;
+    if (!editingContent.trim() || !isLoggedIn || !token) return;
     const updated = await updateComment(id, commentId, editingContent, token);
     setComments((cs) => cs.map((c) => (c._id === commentId ? updated : c)));
     setEditingId(null);
@@ -62,8 +62,8 @@ export default function ClientDetail({ post }: { post: Post }) {
 
   // 댓글 삭제
   async function handleDelete(commentId: string) {
-    if (!confirm('정말 삭제하시겠습니까?')) return;
-    await deleteComment(id, commentId, token!);
+    if (!confirm('정말 삭제하시겠습니까?') || !token) return;
+    await deleteComment(id, commentId, token);
     setComments((cs) => cs.filter((c) => c._id !== commentId));
   }
 
@@ -153,7 +153,7 @@ export default function ClientDetail({ post }: { post: Post }) {
           <h3 className='mb-3 text-sm font-semibold'>댓글 목록</h3>
           <div className='flex items-start gap-4'>
             <textarea value={input} onChange={(e) => setInput(e.target.value)} placeholder='칭찬과 격려의 댓글은 작성자에게 큰 힘이 됩니다 :) 2줄까지' className='h-12 flex-1 resize-none rounded border px-3 py-2 text-sm' />
-            <Button onClick={handleCommentSubmit} disabled={loading || !token} variant='primary'>
+            <Button onClick={handleCommentSubmit} disabled={loading || !isLoggedIn || !token} variant='primary'>
               등록
             </Button>
           </div>

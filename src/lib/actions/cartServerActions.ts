@@ -2,13 +2,12 @@
 
 'use server';
 
+import { getAuthInfo } from '@/lib/utils/auth.server';
 import { AddToCartRequest, CartActionResult, CartApiResponse, CartItem, CartListApiResponse } from '@/types/cart.types';
 import { revalidatePath } from 'next/cache';
-import { getAuthInfo } from '@/lib/utils/auth.server';
 
 const API_URL = process.env.API_URL || 'https://fesp-api.koyeb.app/market';
 const CLIENT_ID = process.env.CLIENT_ID || 'febc13-final04-emjf';
-
 
 /**
  * 장바구니 목록을 조회하는 서버 액션

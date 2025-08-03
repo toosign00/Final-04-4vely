@@ -52,9 +52,9 @@ export default function Footer() {
           <div className='flex flex-col gap-3 lg:max-w-xs'>
             <Image src='/icons/logo_white.svg' alt='Green Mate' width={201} height={53} className='h-auto w-[7.5rem] max-w-[7.5rem]' priority />
             <p className='t-body'>
-              브랜드 슬로건 들어가면 됩니다.
+              반려식물의 진짜 친구, Green Mate.
               <br />
-              브랜드 슬로건 들어가면 됩니다.
+              초록을 돌보는 마음, Green Mate와 함께.
             </p>
 
             {/* 소셜 미디어 */}

@@ -160,7 +160,7 @@ export default function ClientDetail({ post }: { post: Post }) {
         </section>
 
         <section className='space-y-6'>
-          {comments.map((comment) => (
+          {comments.map((comment: CommunityComment) => (
             <div key={comment._id} className='flex gap-3'>
               <Avatar className='h-9 w-9 shrink-0'>{comment.user.image ? <AvatarImage src={comment.user.image} alt={comment.user.name} /> : <AvatarFallback>{comment.user.name.charAt(0)}</AvatarFallback>}</Avatar>
               <div className='flex-1'>

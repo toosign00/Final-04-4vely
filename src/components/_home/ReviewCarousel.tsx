@@ -26,7 +26,7 @@ export default function ReviewCarousel({ reviews }: ReviewCarouselProps) {
                   <Link href={`/shop/products/${review.product_id}`} className='flex w-full max-w-[60rem] items-stretch gap-6 rounded-xl bg-white shadow-md transition-all duration-300 hover:shadow-lg md:gap-8 lg:h-[20rem]'>
                     {/* 좌측 상품 이미지 */}
                     <div className='relative h-full w-[80%] overflow-hidden rounded-l-xl'>
-                      <Image src={review.product?.image ?? '/images/default_image.webp'} alt={`${review.product?.name}  상품 이미지`} fill className='object-cover' />
+                      <Image src={review.product?.image ?? '/images/default_image.webp'} alt={`${review.product?.name}  상품 이미지`} sizes='(max-width: 768px) 100vw, 700px' fill className='object-cover' />
                     </div>
 
                     {/* 우측 텍스트 영역 */}

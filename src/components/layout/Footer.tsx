@@ -34,10 +34,10 @@ export default function Footer() {
   // 푸터 링크 배열
   const footerLinks = [
     { name: '홈', href: '/' },
-    { name: '쇼핑하기', href: '#' },
-    { name: '커뮤니티', href: '#' },
-    { name: 'FAQ', href: '#' },
-    { name: '마이페이지', href: '#' },
+    { name: 'Green Magazine', href: '/green-magazine?page=1' },
+    { name: '쇼핑하기', href: '/shop?page=1' },
+    { name: '커뮤니티', href: '/community?page=1' },
+    { name: '마이페이지', href: '/my-page' },
     { name: '이용약관', href: '#' },
     { name: '개인정보', href: '#' },
     { name: '고객센터', href: '#' },

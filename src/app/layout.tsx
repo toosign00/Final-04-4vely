@@ -30,7 +30,7 @@ export default function RootLayout({
       <body className={`${pretendard.className} bg-surface`}>
         <Notice />
         <Header />
-        <main>
+        <main className='pt-[68px] md:pt-[84px]'>
           <Toaster
             position='top-center'
             richColors={true}

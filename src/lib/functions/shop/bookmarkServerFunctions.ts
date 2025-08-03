@@ -13,7 +13,7 @@ const API_URL = process.env.API_URL || 'https://fesp-api.koyeb.app/market';
 const CLIENT_ID = process.env.CLIENT_ID || 'febc13-final04-emjf';
 
 /**
- * 특정 대상의 북마크 정보를 조회합니다ㅋ
+ * 특정 대상의 북마크 정보를 조회합니다
  * @param {number} targetId - 대상 ID (상품 ID, 게시글 ID 등)
  * @param {BookmarkType} type - 북마크 타입
  * @returns {Promise<Bookmark | null>} 북마크 정보 또는 null

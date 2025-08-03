@@ -60,77 +60,93 @@ export default function WeatherWidget() {
   }, []);
 
   return (
-    <section className='mx-auto border-b border-[#e3e0d8] py-14'>
-      <div className='relative mb-4 flex max-w-[67rem] flex-col self-center px-5' aria-label='현재 날씨 정보'>
-        {/* 스켈레톤 UI */}
-        {loading && <SkeletonWeatherCard />}
+    <section className='relative mx-auto my-14 flex w-full flex-col px-5 sm:max-w-[40rem] md:max-w-none lg:max-w-[70rem]' aria-label='현재 날씨 정보'>
+      {/* 스켈레톤 UI */}
+      {loading && <SkeletonWeatherCard />}
 
-        {/* 오류 또는 데이터 없음 */}
-        {!loading && (!tipsData || error) && <div className='text-error rounded-xl bg-white p-4 shadow-md'>날씨 정보를 불러오는 데 실패했습니다. 다시 시도해주세요.</div>}
+      {/* 오류 또는 데이터 없음 */}
+      {!loading && (!tipsData || error) && <div className='text-error rounded-xl bg-white p-4 shadow-md'>날씨 정보를 불러오는 데 실패했습니다. 다시 시도해주세요.</div>}
 
-        {/* 정상 데이터 렌더링 */}
-        {!loading && tipsData && (
-          <>
-            {/* 날씨 및 팁 카드 */}
-            <div
-              className='relative overflow-hidden rounded-xl text-white shadow-md'
-              style={{
-                backgroundImage: `url(/images/${weatherImage(tipsData.weather.description)}.webp)`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-              }}
-            >
-              <div className='absolute inset-0 rounded-xl bg-black/30' />
+      {/* 정상 데이터 렌더링 */}
+      {!loading && tipsData && (
+        <>
+          {/* 날씨 및 팁 카드 */}
+          <div
+            className='relative flex min-h-[18.75rem] items-center overflow-hidden rounded-xl text-white shadow-md'
+            style={{
+              backgroundImage: `url(/images/${weatherImage(tipsData.weather.rawDescription)}.webp)`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}
+          >
+            {/* 반투명 오버레이 */}
+            <div className='absolute inset-0 rounded-xl bg-black/30' />
 
-              <div className='relative rounded-xl p-4'>
-                <div className='grid grid-cols-1 gap-4 md:grid-cols-2 md:text-lg lg:text-xl'>
-                  {/* 날씨 정보 */}
-                  <div className='flex flex-col items-center justify-center'>
-                    <div className='flex flex-row items-center gap-5 font-bold'>
-                      <FiMapPin className='md:h-6 md:w-6' />
-                      <p className='mr-3 text-xl font-bold md:mr-2 md:text-2xl'>{tipsData.weather.city}</p>
-                    </div>
-                    <div className='flex flex-row items-center'>
-                      {tipsData.weather.description} {tipsData.weather.temp}°C
-                      <Image src={`https://openweathermap.org/img/wn/${tipsData.weather.icon}@2x.png`} width={48} height={48} alt={tipsData.weather.description} className='h-12 w-12 md:h-16 md:w-16' />
-                    </div>
-                    <div className='flex flex-row items-center text-base text-gray-200 md:text-lg lg:text-xl'>
-                      <IoWaterOutline className='mr-1' /> {tipsData.weather.humidity}%
-                      <FiWind className='mr-1 ml-4' /> {tipsData.weather.windSpeed}m/s
+            {/* 컨텐츠 레이어 */}
+            <div className='relative w-full p-4'>
+              <div className='grid grid-cols-1 gap-4 md:grid-cols-2 md:text-lg lg:text-xl'>
+                {/* 좌측: 날씨 정보 */}
+                <div className='flex flex-col items-center justify-center'>
+                  <div className='flex flex-row items-center gap-5 font-bold'>
+                    <FiMapPin className='md:h-6 md:w-6' />
+                    <p className='mr-3 text-xl font-bold md:mr-2 md:text-2xl'>{tipsData.weather.city}</p>
+                  </div>
+                  <div className='flex flex-row items-center'>
+                    {tipsData.weather.description} {tipsData.weather.temp}°C
+                    <Image src={`https://openweathermap.org/img/wn/${tipsData.weather.icon}@2x.png`} width={48} height={48} alt={tipsData.weather.description} className='h-12 w-12 md:h-16 md:w-16' />
+                  </div>
+                  <div className='flex flex-row items-center text-base text-gray-200 md:text-lg lg:text-xl'>
+                    <IoWaterOutline className='mr-1' /> {tipsData.weather.humidity}%
+                    <FiWind className='mr-1 ml-4' /> {tipsData.weather.windSpeed}m/s
+                  </div>
+                </div>
+
+                {/* 우측: 식물 팁 정보 */}
+                <div className='bg-surface/70 text-secondary flex min-h-[12rem] flex-col justify-between rounded-lg p-5 text-base lg:text-xl'>
+                  {/* 팁 제목 및 설명 */}
+                  <div>
+                    <h3 className='mb-2 font-semibold'>오늘의 식물 관리 팁</h3>
+                    <div className='mb-3 text-sm lg:text-base'>
+                      {tipsData.weather.tip
+                        .split('.')
+                        .filter((sentence) => sentence.trim() !== '')
+                        .map((sentence, index) => (
+                          <p key={index} className='mb-1'>
+                            {sentence.trim() + '.'}
+                          </p>
+                        ))}
                     </div>
                   </div>
 
-                  {/* 식물 팁 정보 */}
-                  <div className='bg-surface/70 text-secondary rounded-lg p-5 text-sm md:text-base lg:text-xl'>
-                    <h3 className='mb-2 font-semibold'>오늘의 식물 관리 팁</h3>
-                    <p className='mb-3 text-xs md:text-sm lg:text-base'>{tipsData.weather.tip}</p>
+                  {/* 추천 식물 (없어도 레이아웃 유지) */}
+                  <div className='mt-4'>
+                    <h4 className='mb-2 font-semibold'>오늘의 초록 친구</h4>
 
-                    {tipsData.plants.length > 0 && (
-                      <div>
-                        <h4 className='mb-2 font-semibold'>추천 식물</h4>
-                        <div className='flex flex-wrap gap-1 md:gap-3'>
-                          {tipsData.plants.map((plant, index) => (
-                            <span key={index} className='rounded-full border-2 border-green-600 bg-white px-3 py-1 text-xs text-green-700 md:text-sm lg:text-base'>
-                              {plant}
-                            </span>
-                          ))}
-                        </div>
+                    {tipsData.plants.length > 0 ? (
+                      <div className='flex flex-wrap gap-1 md:gap-3'>
+                        {tipsData.plants.map((plant, index) => (
+                          <span key={index} className='rounded-full border-2 border-green-600 bg-white px-3 py-1 text-sm text-green-700 lg:text-base'>
+                            {plant}
+                          </span>
+                        ))}
                       </div>
+                    ) : (
+                      <div className='h-3 text-sm text-gray-600 lg:text-base'>오늘은 초록 친구가 쉬고 있어요.</div>
                     )}
                   </div>
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* 버튼 영역 */}
-            <div className='mt-4 flex justify-end'>
-              <Button asChild variant='secondary' size='sm' className='md:h-9 md:px-4 md:py-2 md:text-base lg:h-10 lg:px-6 lg:text-xl'>
-                <Link href='/my-page/my-plants'>내 식물 관리하기</Link>
-              </Button>
-            </div>
-          </>
-        )}
-      </div>
+          {/* 버튼 영역 */}
+          <div className='mt-4 flex justify-end'>
+            <Button asChild variant='secondary' size='sm' className='md:h-9 md:px-4 md:py-2 md:text-base lg:h-10 lg:px-6 lg:text-xl'>
+              <Link href='/my-page/my-plants'>내 식물 관리하기</Link>
+            </Button>
+          </div>
+        </>
+      )}
     </section>
   );
 }

@@ -108,7 +108,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           user.refreshToken = userInfo.token!.refreshToken;
           break;
 
-          break;
       }
       return true;
     },

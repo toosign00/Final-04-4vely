@@ -20,7 +20,7 @@ export interface CartItem {
     quantity: number;
     buyQuantity: number;
     image: string; // 현재 선택된 색상의 이미지
-    mainImages?: string[]; // 모든 색상의 이미지 배열 (상세 API에서 가져옴)
+    mainImages?: string[]; // 모든 색상의 이미지 배열
     extra?: {
       isNew?: boolean;
       isBest?: boolean;
@@ -38,7 +38,7 @@ export interface CartItem {
 export interface AddToCartRequest {
   product_id: number;
   quantity: number;
-  color?: string; // 화분 색상을 color로 저장 (새로운 API 지원)
+  color?: string; // 화분 색상을 color로 저장
 }
 
 /**

@@ -188,7 +188,7 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
     if (newQuantity >= 1) {
       setQuantity(newQuantity);
 
-      // 접근성: 수량 변경 알림
+      // 수량 변경 알림
       if (quantityAnnouncementRef.current) {
         quantityAnnouncementRef.current.textContent = `수량이 ${newQuantity}개로 변경되었습니다.`;
       }
@@ -198,7 +198,7 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
   const handleColorChange = (colorIndex: number) => {
     setSelectedColorIndex(colorIndex);
 
-    // 접근성: 색상 변경 알림
+    // 색상 변경 알림
     if (colorAnnouncementRef.current && colorOptions[colorIndex]) {
       colorAnnouncementRef.current.textContent = `화분 색상이 ${colorOptions[colorIndex].label}로 변경되었습니다.`;
     }
@@ -357,7 +357,7 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
 
   return (
     <>
-      {/* 접근성: 스크린 리더용 실시간 알림 영역 */}
+      {/* 스크린 리더용 실시간 알림 영역 */}
       <div aria-live='polite' aria-atomic='true' className='sr-only'>
         <div ref={quantityAnnouncementRef} />
         <div ref={colorAnnouncementRef} />

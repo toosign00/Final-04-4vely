@@ -24,7 +24,7 @@ export default function ProductCard({ product, onClick, isMobile = false }: Prod
   const imageUrl = getProductImageUrl(product);
   const isNew = isNewProduct(product);
 
-  // 북마크 상태 정보 (서버)
+  // 북마크 상태 정보
   const myBookmarkId = product.myBookmarkId;
 
   // 키보드 네비게이션 핸들러

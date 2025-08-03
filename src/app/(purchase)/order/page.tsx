@@ -43,7 +43,7 @@ export default async function OrderPage() {
     );
   }
 
-  // 정상적인 경우: tempOrder가 확실히 존재하므로 타입 안전
+  // 정상적인 경우
   console.log('[OrderPage] 정상적인 주문 페이지 렌더링');
   return <OrderClientSection initialOrderData={tempOrder!} />;
 }

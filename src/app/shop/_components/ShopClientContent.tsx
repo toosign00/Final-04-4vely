@@ -86,7 +86,7 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
     (newPage: number) => {
       const params = new URLSearchParams();
 
-      // 페이지 파라미터 - 항상 포함 (page=1도 포함)
+      // 페이지 파라미터
       params.set('page', newPage.toString());
 
       // 카테고리 파라미터 설정 (기본값이 아닌 경우만)
@@ -143,7 +143,7 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
     setTotalPages(pagination.totalPages);
     setTotalProducts(pagination.total);
 
-    // 접근성: 상품 목록 업데이트 알림
+    // 상품 목록 업데이트 알림
     if (shopAnnouncementRef.current) {
       if (isPending) {
         shopAnnouncementRef.current.textContent = '상품을 불러오는 중입니다.';
@@ -198,7 +198,7 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
     console.log('[페이지 변경]:', { from: currentPage, to: page });
     setCurrentPage(page);
 
-    // 접근성: 페이지 변경 알림
+    // 페이지 변경 알림
     if (shopAnnouncementRef.current) {
       shopAnnouncementRef.current.textContent = `페이지 ${page}로 이동 중입니다.`;
     }
@@ -214,7 +214,7 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
       const currentValues = prev[category];
       const newValues = currentValues.includes(value) ? currentValues.filter((item) => item !== value) : [...currentValues, value];
 
-      // 접근성: 필터 변경 알림
+      // 필터 변경 알림
       if (shopAnnouncementRef.current) {
         const action = currentValues.includes(value) ? '제거' : '추가';
         shopAnnouncementRef.current.textContent = `${value} 필터가 ${action}되었습니다.`;
@@ -242,7 +242,7 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
       category: [],
     });
 
-    // 접근성: 카테고리 변경 알림
+    // 카테고리 변경 알림
     if (shopAnnouncementRef.current) {
       const categoryName = category === 'new' ? '신상품' : category === 'plant' ? '식물' : '용품';
       shopAnnouncementRef.current.textContent = `${categoryName} 카테고리로 변경되었습니다.`;
@@ -254,7 +254,7 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
     console.log('[정렬 변경]:', { from: sortBy, to: value });
     setSortBy(value);
 
-    // 접근성: 정렬 변경 알림
+    // 정렬 변경 알림
     if (shopAnnouncementRef.current) {
       const sortLabel = SORT_OPTIONS.find((opt) => opt.value === value)?.label || value;
       shopAnnouncementRef.current.textContent = `${sortLabel}로 정렬이 변경되었습니다.`;
@@ -283,7 +283,7 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
     setSortBy('recommend');
     setSelectedCategory('plant');
 
-    // 접근성: 필터 초기화 알림
+    // 필터 초기화 알림
     if (shopAnnouncementRef.current) {
       shopAnnouncementRef.current.textContent = '모든 필터가 초기화되었습니다.';
     }

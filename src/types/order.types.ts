@@ -30,7 +30,7 @@ export interface OrderProduct {
   };
   createdAt?: string;
   updatedAt?: string;
-  product?: Product; // 상품 상세 정보 (populate된 경우)
+  product?: Product; // 상품 상세 정보
 }
 
 /** 주문 메모 객체 타입 */
@@ -50,7 +50,6 @@ export interface Order {
     products: number; // 상품 금액
     shippingFees: number; // 배송비
     discount?: {
-      // 할인 정보
       products: number;
       shippingFees: number;
     };
@@ -104,7 +103,7 @@ export interface DirectPurchaseItem {
 /** 구매 타입 */
 export type PurchaseType = 'direct' | 'cart';
 
-/** 구매 액션 결과 - orderData 추가 */
+/** 구매 액션 결과 */
 export interface PurchaseActionResult {
   success: boolean;
   message: string;
@@ -112,7 +111,7 @@ export interface PurchaseActionResult {
     orderId?: number;
     redirectUrl?: string;
   };
-  orderData?: Order; // 전체 주문 데이터 추가
+  orderData?: Order; // 전체 주문 데이터
 }
 
 /** 주문 API 응답 타입 */

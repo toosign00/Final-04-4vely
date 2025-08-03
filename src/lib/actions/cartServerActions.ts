@@ -70,7 +70,7 @@ export async function getCartItemsActionOptimized(): Promise<CartItem[]> {
         }
 
         try {
-          // 캐시된 상품 상세 정보 사용 (revalidate 옵션으로 캐싱)
+          // 캐시된 상품 상세 정보 사용
           const productRes = await fetch(`${API_URL}/products/${item.product._id}`, {
             headers: {
               'Content-Type': 'application/json',

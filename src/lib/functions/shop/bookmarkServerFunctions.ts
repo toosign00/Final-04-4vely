@@ -27,7 +27,10 @@ const CLIENT_ID = process.env.CLIENT_ID || 'febc13-final04-emjf';
 export async function getBookmarkByTarget(targetId: number, type: BookmarkType): Promise<Bookmark | null> {
   try {
     const authInfo = await getAuthInfo();
-    if (!authInfo) return null;
+    if (!authInfo) {
+      console.log(`서버 북마크 조회: ${type} 인증 정보 없음 - 로그인 필요`);
+      return null;
+    }
     const { accessToken } = authInfo;
 
     console.log(`[서버 북마크 조회] ${type} ID: ${targetId}`);
@@ -78,13 +81,6 @@ export async function getBookmarks(type: BookmarkType, options?: { page?: number
     const authInfo = await getAuthInfo();
     if (!authInfo) return { ok: 0, message: '로그인이 필요합니다.' };
     const { accessToken } = authInfo;
-
-    if (!accessToken) {
-      return {
-        ok: 0,
-        message: '로그인이 필요합니다.',
-      };
-    }
 
     const queryParams = new URLSearchParams();
     if (options?.page) queryParams.append('page', options.page.toString());

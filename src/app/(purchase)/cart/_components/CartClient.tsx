@@ -231,7 +231,7 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
   };
 
   // 옵션 변경 처리
-  // size 속성을 통한 필드 직접 수정(옵션 변경)을 지원하지 않는 것 같아서, 기존 상품을 삭제하고 옵션 변경된 상품으로 재등록 하는 로직 사용.
+  // color 속성을 통한 필드 직접 수정(옵션 변경)을 지원하지 않는 것 같아서, 기존 상품을 삭제하고 옵션 변경된 상품으로 재등록 하는 로직 사용.
   const handleOptionChange = async (itemId: number) => {
     const newColor = selectedOptions[itemId];
     const item = cartItems.find((item) => item._id === itemId);
@@ -262,9 +262,9 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
               ...result.data!, // 서버에서 반환된 새 아이템 데이터 사용
               product: {
                 ...result.data!.product,
-                image: newImage, // 올바른 색상 이미지로 설정
-                mainImages: item.product.mainImages, // mainImages
-                extra: item.product.extra, // extra
+                image: newImage,
+                mainImages: item.product.mainImages,
+                extra: item.product.extra,
               },
             };
             return newItems;
@@ -292,7 +292,6 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
 
         setOpenDialogId(null);
 
-        // router.refresh로는 새로고침이 되지 않는 현상이 발생하여, 확실한 페이지 새로고침을 위해 location.href 사용.
         setTimeout(() => {
           window.location.href = '/cart';
         });
@@ -343,7 +342,7 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
 
   return (
     <div className='bg-surface min-h-screen w-full p-4 sm:p-6 lg:p-8'>
-      {/* 접근성: 스크린 리더용 실시간 알림 영역 */}
+      {/* 스크린 리더용 실시간 알림 영역 */}
       <div aria-live='polite' aria-atomic='true' className='sr-only'>
         <div ref={cartAnnouncementRef} />
       </div>

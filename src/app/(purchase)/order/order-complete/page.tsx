@@ -29,7 +29,7 @@ export default function OrderComplete() {
         if (!orderId) {
           console.log('[주문 완료] orderId 파라미터 없음');
 
-          // 접근성: 오류 상태 알림
+          // 오류 상태 알림
           if (pageAnnouncementRef.current) {
             pageAnnouncementRef.current.textContent = '주문 정보를 찾을 수 없습니다. 쇼핑 페이지로 이동합니다.';
           }
@@ -41,7 +41,7 @@ export default function OrderComplete() {
 
         console.log('[주문 완료] 주문 정보 조회 시작:', orderId);
 
-        // 접근성: 로딩 상태 알림
+        // 로딩 상태 알림
         if (pageAnnouncementRef.current) {
           pageAnnouncementRef.current.textContent = '주문 정보를 불러오고 있습니다.';
         }
@@ -53,12 +53,12 @@ export default function OrderComplete() {
           console.log('[주문 완료] 주문 정보 조회 성공:', result.orderData);
           setOrderInfo(result.orderData);
 
-          // 접근성: 주문 완료 상태 알림
+          // 주문 완료 상태 알림
           if (pageAnnouncementRef.current) {
             pageAnnouncementRef.current.textContent = `주문번호 ${orderId}번 주문이 성공적으로 완료되었습니다.`;
           }
         } else {
-          // API 조회 실패 시 임시 주문 데이터에서 정보 가져오기 (폴백)
+          // API 조회 실패 시 임시 주문 데이터에서 정보 가져오기 (fallback)
           const tempOrderData = sessionStorage.getItem('lastOrderData');
           if (tempOrderData) {
             const parsedData = JSON.parse(tempOrderData);
@@ -128,14 +128,14 @@ export default function OrderComplete() {
             setOrderInfo(mockOrderInfo);
             sessionStorage.removeItem('lastOrderData');
 
-            // 접근성: 주문 완료 상태 알림
+            // 주문 완료 상태 알림
             if (pageAnnouncementRef.current) {
               pageAnnouncementRef.current.textContent = `주문번호 ${orderId}번 주문이 성공적으로 완료되었습니다.`;
             }
           } else {
             console.error('[주문 완료] 주문 조회 실패:', result.message);
 
-            // 접근성: 오류 상태 알림
+            // 오류 상태 알림
             if (pageAnnouncementRef.current) {
               pageAnnouncementRef.current.textContent = '주문 정보를 불러올 수 없습니다. 쇼핑 페이지로 이동합니다.';
             }
@@ -149,7 +149,7 @@ export default function OrderComplete() {
       } catch (error) {
         console.error('[주문 완료] 주문 정보 조회 오류:', error);
 
-        // 접근성: 오류 상태 알림
+        // 오류 상태 알림
         if (pageAnnouncementRef.current) {
           pageAnnouncementRef.current.textContent = '주문 정보를 불러오는 중 오류가 발생했습니다. 쇼핑 페이지로 이동합니다.';
         }
@@ -168,7 +168,7 @@ export default function OrderComplete() {
   if (isLoading) {
     return (
       <div className='bg-surface flex min-h-screen flex-col items-center px-4 py-20'>
-        {/* 접근성: 스크린 리더용 실시간 알림 영역 */}
+        {/* 스크린 리더용 실시간 알림 영역 */}
         <div aria-live='polite' aria-atomic='true' className='sr-only'>
           <div ref={pageAnnouncementRef} />
         </div>
@@ -186,7 +186,7 @@ export default function OrderComplete() {
   if (!orderInfo) {
     return (
       <div className='bg-surface flex min-h-screen flex-col items-center px-4 py-20'>
-        {/* 접근성: 스크린 리더용 실시간 알림 영역 */}
+        {/* 스크린 리더용 실시간 알림 영역 */}
         <div aria-live='polite' aria-atomic='true' className='sr-only'>
           <div ref={pageAnnouncementRef} />
         </div>
@@ -227,7 +227,6 @@ export default function OrderComplete() {
     // API 응답에 상품명과 이미지가 직접 포함되어 있음
     displayProductName = firstProduct.name || firstProduct.product?.name || '상품명 없음';
 
-    // 이미지는 products[0].image 또는 memo.selectedImage 사용
     let productImage = '';
 
     // memo.selectedImage 처리
@@ -256,7 +255,7 @@ export default function OrderComplete() {
 
   return (
     <div className='bg-surface flex min-h-screen flex-col items-center px-4 py-10 md:py-14 lg:py-20'>
-      {/* 접근성: 스크린 리더용 실시간 알림 영역 */}
+      {/* 스크린 리더용 실시간 알림 영역 */}
       <div aria-live='polite' aria-atomic='true' className='sr-only'>
         <div ref={pageAnnouncementRef} />
       </div>

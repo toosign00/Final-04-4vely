@@ -3,7 +3,7 @@
 import { getTempOrderAction } from '@/lib/actions/order/orderServerActions';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import OrderClientSection from './_components/orderClient';
+import OrderClientSection from './_components/OrderClient';
 
 export default async function OrderPage() {
   // 서버에서 임시 주문 데이터 가져오기
@@ -43,7 +43,7 @@ export default async function OrderPage() {
     );
   }
 
-  // 정상적인 경우: tempOrder가 확실히 존재하므로 타입 안전
+  // 정상적인 경우
   console.log('[OrderPage] 정상적인 주문 페이지 렌더링');
   return <OrderClientSection initialOrderData={tempOrder!} />;
 }

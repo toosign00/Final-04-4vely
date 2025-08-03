@@ -91,7 +91,7 @@ export async function getFilteredProductsWithPagination(params: {
       }
     }
 
-    // custom 파라미터를 사용한 필터링 - API 문서 형식에 맞춰 수정
+    // custom 파라미터를 사용한 필터링
     let customFilterString = '';
     const category = params.category || 'plant';
 
@@ -395,7 +395,7 @@ export async function getBestProducts(limit: number = 4): ApiResPromise<Product[
 }
 
 /**
- * 배열을 랜덤하게 섞는 함수 (Fisher-Yates 알고리즘)
+ * 배열을 랜덤하게 섞는 함수
  */
 function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array];

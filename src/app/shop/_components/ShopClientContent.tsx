@@ -76,14 +76,18 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
     { value: 'price-high', label: '가격 높은 순' },
   ];
 
+  // 필터/정렬/카테고리 변경 추적을 위한 refs
+  const prevFiltersRef = useRef(filters);
+  const prevSortByRef = useRef(sortBy);
+  const prevCategoryRef = useRef(selectedCategory);
+
   // URL 업데이트 및 페이지 이동 함수
   const updateURLAndNavigate = useCallback(
-    (newPage?: number) => {
+    (newPage: number) => {
       const params = new URLSearchParams();
 
-      // 페이지 파라미터 - 항상 포함 (page=1도 포함)
-      const pageToUse = newPage || currentPage;
-      params.set('page', pageToUse.toString());
+      // 페이지 파라미터
+      params.set('page', newPage.toString());
 
       // 카테고리 파라미터 설정 (기본값이 아닌 경우만)
       if (selectedCategory !== 'plant') {
@@ -129,7 +133,7 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
         router.push(newURL, { scroll: true });
       });
     },
-    [selectedCategory, searchTerm, sortBy, filters, currentPage, router],
+    [selectedCategory, searchTerm, sortBy, filters, router],
   );
 
   // props 변경 시 상태 업데이트
@@ -139,7 +143,7 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
     setTotalPages(pagination.totalPages);
     setTotalProducts(pagination.total);
 
-    // 접근성: 상품 목록 업데이트 알림
+    // 상품 목록 업데이트 알림
     if (shopAnnouncementRef.current) {
       if (isPending) {
         shopAnnouncementRef.current.textContent = '상품을 불러오는 중입니다.';
@@ -151,25 +155,41 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
 
   // 필터, 정렬, 카테고리 변경 시 1페이지로 이동
   useEffect(() => {
-    if (currentPage !== 1) {
+    // 이전 값과 비교하여 실제로 변경되었는지 확인
+    const filtersChanged = JSON.stringify(prevFiltersRef.current) !== JSON.stringify(filters);
+    const sortByChanged = prevSortByRef.current !== sortBy;
+    const categoryChanged = prevCategoryRef.current !== selectedCategory;
+
+    if (filtersChanged || sortByChanged || categoryChanged) {
+      console.log('[필터/정렬/카테고리 변경 감지]:', {
+        filtersChanged,
+        sortByChanged,
+        categoryChanged,
+      });
+
+      // 값 업데이트
+      prevFiltersRef.current = filters;
+      prevSortByRef.current = sortBy;
+      prevCategoryRef.current = selectedCategory;
+
+      // 1페이지로 이동
       setCurrentPage(1);
+      updateURLAndNavigate(1);
     }
-    updateURLAndNavigate(1);
-  }, [filters, sortBy, selectedCategory, currentPage, updateURLAndNavigate]);
+  }, [filters, sortBy, selectedCategory, updateURLAndNavigate]);
 
   // 검색어 변경 시 처리 (디바운싱)
   useEffect(() => {
     const timer = setTimeout(() => {
       if (searchTerm !== urlParams.search) {
-        if (currentPage !== 1) {
-          setCurrentPage(1);
-        }
+        console.log('[검색어 변경]:', { from: urlParams.search, to: searchTerm });
+        setCurrentPage(1);
         updateURLAndNavigate(1);
       }
     }, 500); // 500ms 디바운싱
 
     return () => clearTimeout(timer);
-  }, [searchTerm, urlParams.search, currentPage, updateURLAndNavigate]);
+  }, [searchTerm, urlParams.search, updateURLAndNavigate]);
 
   // 페이지 변경 핸들러
   const handlePageChange = (page: number) => {
@@ -178,7 +198,7 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
     console.log('[페이지 변경]:', { from: currentPage, to: page });
     setCurrentPage(page);
 
-    // 접근성: 페이지 변경 알림
+    // 페이지 변경 알림
     if (shopAnnouncementRef.current) {
       shopAnnouncementRef.current.textContent = `페이지 ${page}로 이동 중입니다.`;
     }
@@ -194,9 +214,9 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
       const currentValues = prev[category];
       const newValues = currentValues.includes(value) ? currentValues.filter((item) => item !== value) : [...currentValues, value];
 
-      // 접근성: 필터 변경 알림
+      // 필터 변경 알림
       if (shopAnnouncementRef.current) {
-        const action = currentValues.includes(value) ? '제거' : '선택';
+        const action = currentValues.includes(value) ? '제거' : '추가';
         shopAnnouncementRef.current.textContent = `${value} 필터가 ${action}되었습니다.`;
       }
 
@@ -210,56 +230,9 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
   // 카테고리 변경 핸들러
   const handleCategoryChange = (category: ProductCategory) => {
     console.log('[카테고리 변경]:', { from: selectedCategory, to: category });
-
     setSelectedCategory(category);
 
-    // 접근성: 카테고리 변경 알림
-    if (shopAnnouncementRef.current) {
-      const categoryNames = { new: '신상품', plant: '식물', supplies: '원예 용품' };
-      shopAnnouncementRef.current.textContent = `${categoryNames[category]} 카테고리로 변경되었습니다.`;
-    }
-
-    // 카테고리 변경 시 관련 없는 필터 초기화
-    if (category === 'new') {
-      setFilters({
-        size: [],
-        difficulty: [],
-        light: [],
-        space: [],
-        season: [],
-        category: [],
-      });
-    } else if (category === 'plant') {
-      setFilters((prev) => ({
-        ...prev,
-        category: [],
-      }));
-    } else if (category === 'supplies') {
-      setFilters((prev) => ({
-        size: [],
-        difficulty: [],
-        light: [],
-        space: [],
-        season: [],
-        category: prev.category || [],
-      }));
-    }
-  };
-
-  // 상품 클릭 핸들러
-  const handleProductClick = (id: number) => {
-    const currentUrl = new URLSearchParams(window.location.search);
-    const backUrl = `/shop?${currentUrl.toString()}`;
-    router.push(`/shop/products/${id}?back=${encodeURIComponent(backUrl)}`);
-  };
-
-  // 필터 초기화 핸들러
-  const handleResetFilters = () => {
-    console.log('[필터 초기화]');
-
-    setSearchTerm('');
-    setSelectedCategory('plant');
-    setSortBy('recommend');
+    // 카테고리 변경 시 필터 초기화
     setFilters({
       size: [],
       difficulty: [],
@@ -268,61 +241,64 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
       season: [],
       category: [],
     });
-    setCurrentPage(1);
 
-    // 접근성: 필터 초기화 알림
+    // 카테고리 변경 알림
     if (shopAnnouncementRef.current) {
-      shopAnnouncementRef.current.textContent = '모든 필터가 초기화되었습니다.';
-    }
-
-    // URL도 초기화
-    startTransition(() => {
-      router.push('/shop?page=1');
-    });
-  };
-
-  // 검색 핸들러
-  const handleSearch = useCallback(
-    (value: string) => {
-      console.log('[검색어 변경]:', value);
-      setSearchTerm(value);
-      if (currentPage !== 1) {
-        setCurrentPage(1);
-      }
-
-      // 접근성: 검색 실행 알림
-      if (shopAnnouncementRef.current && value.trim()) {
-        shopAnnouncementRef.current.textContent = `"${value.trim()}" 검색을 실행합니다.`;
-      }
-    },
-    [currentPage],
-  );
-
-  // 검색 입력 엔터키 핸들러
-  const handleSearchKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleSearch(searchTerm);
+      const categoryName = category === 'new' ? '신상품' : category === 'plant' ? '식물' : '용품';
+      shopAnnouncementRef.current.textContent = `${categoryName} 카테고리로 변경되었습니다.`;
     }
   };
 
   // 정렬 변경 핸들러
-  const handleSortChange = (newSortBy: string) => {
-    setSortBy(newSortBy);
+  const handleSortChange = (value: string) => {
+    console.log('[정렬 변경]:', { from: sortBy, to: value });
+    setSortBy(value);
 
-    // 접근성: 정렬 변경 알림
+    // 정렬 변경 알림
     if (shopAnnouncementRef.current) {
-      const sortOption = SORT_OPTIONS.find((option) => option.value === newSortBy);
-      if (sortOption) {
-        shopAnnouncementRef.current.textContent = `정렬이 ${sortOption.label}로 변경되었습니다.`;
-      }
+      const sortLabel = SORT_OPTIONS.find((opt) => opt.value === value)?.label || value;
+      shopAnnouncementRef.current.textContent = `${sortLabel}로 정렬이 변경되었습니다.`;
     }
+  };
+
+  // 검색어 변경 핸들러
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    console.log('[검색어 입력]:', value);
+    setSearchTerm(value);
+  };
+
+  // 필터 초기화 핸들러
+  const handleResetFilters = () => {
+    console.log('[필터 초기화]');
+    setFilters({
+      size: [],
+      difficulty: [],
+      light: [],
+      space: [],
+      season: [],
+      category: [],
+    });
+    setSearchTerm('');
+    setSortBy('recommend');
+    setSelectedCategory('plant');
+
+    // 필터 초기화 알림
+    if (shopAnnouncementRef.current) {
+      shopAnnouncementRef.current.textContent = '모든 필터가 초기화되었습니다.';
+    }
+  };
+
+  // 상품 클릭 핸들러
+  const handleProductClick = (productId: number) => {
+    console.log('[상품 클릭]:', productId);
+    router.push(`/shop/products/${productId}`);
   };
 
   // 페이지네이션 렌더링 함수
   const renderPaginationItems = () => {
     const items = [];
     const maxVisiblePages = 5;
-
     let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
     const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
 
@@ -335,11 +311,10 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
         <PaginationItem key={i}>
           <PaginationLink
             onClick={() => handlePageChange(i)}
-            isActive={i === currentPage}
+            isActive={currentPage === i}
             className={`cursor-pointer ${isPending ? 'pointer-events-none opacity-50' : ''}`}
-            disabled={isPending}
-            aria-label={`페이지 ${i}${i === currentPage ? ', 현재 페이지' : ''}로 이동`}
-            aria-current={i === currentPage ? 'page' : undefined}
+            aria-label={`페이지 ${i}${currentPage === i ? ', 현재 페이지' : ''}`}
+            aria-current={currentPage === i ? 'page' : undefined}
           >
             {i}
           </PaginationLink>
@@ -352,86 +327,64 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
 
   return (
     <>
-      {/* 접근성: 스크린 리더용 실시간 알림 영역 */}
-      <div aria-live='polite' aria-atomic='true' className='sr-only'>
-        <div ref={shopAnnouncementRef} />
-      </div>
+      {/* 접근성을 위한 숨겨진 알림 영역 */}
+      <div ref={shopAnnouncementRef} className='sr-only' aria-live='polite' aria-atomic='true' />
 
-      {/* 모바일/태블릿 레이아웃 */}
-      <div className='md:p-2 lg:hidden'>
-        <div className='mx-auto flex w-full max-w-6xl flex-col items-start pb-2'>
+      {/* 모바일 레이아웃 */}
+      <div className='lg:hidden'>
+        <div className='mb-4 px-4'>
           <div className='text-secondary t-small font-medium'>| Products</div>
           <h1 className='text-secondary t-h2 mt-2 font-light' role='heading' aria-level={1}>
             Our Plants
           </h1>
         </div>
 
-        {/* 모바일 필터 버튼 */}
-        <div className='mb-3 flex items-center gap-2 pt-4' role='toolbar' aria-label='상품 정렬 및 필터링 도구'>
+        <div className='mb-4 flex items-center justify-between px-4' role='toolbar' aria-label='상품 필터 및 정렬'>
           <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
             <SheetTrigger asChild>
-              <Button variant='default' size='sm' className='flex h-8 items-center gap-1.5 px-2.5 py-1.5' aria-label='필터 옵션 열기' aria-expanded={isFilterOpen} aria-controls='mobile-filter-panel'>
-                <Filter size={16} aria-hidden='true' />
-                <span className='text-xs sm:text-sm'>필터</span>
+              <Button variant='outline' size='sm' aria-label='필터 열기'>
+                <Filter className='mr-2 h-4 w-4' aria-hidden='true' />
+                필터
               </Button>
             </SheetTrigger>
-            <SheetContent side='left' className='flex w-[250px] flex-col sm:w-[300px]' id='mobile-filter-panel' role='dialog' aria-labelledby='mobile-filter-title'>
-              <SheetHeader className='flex-shrink-0'>
-                <SheetTitle id='mobile-filter-title' className='t-h1 mb-4 text-left'>
-                  필터
-                </SheetTitle>
+            <SheetContent side='left' className='w-[280px] sm:w-[350px]'>
+              <SheetHeader>
+                <SheetTitle>필터</SheetTitle>
               </SheetHeader>
-              <div className='flex-1 overflow-y-auto' role='region' aria-label='필터 옵션'>
-                <CategoryFilterSidebar filters={filters} onFilterChange={handleFilterChange} isMobile={true} selectedCategory={selectedCategory} onCategoryChange={handleCategoryChange} />
-              </div>
-              <div className='mt-4 flex gap-2' role='group' aria-label='필터 관리'>
-                <Button onClick={handleResetFilters} variant='outline' className='flex-1' aria-label='모든 필터 초기화'>
-                  초기화
-                </Button>
-                <Button onClick={() => setIsFilterOpen(false)} className='flex-1' aria-label='필터 적용하고 닫기'>
-                  적용
-                </Button>
-              </div>
+              <CategoryFilterSidebar filters={filters} onFilterChange={handleFilterChange} selectedCategory={selectedCategory} onCategoryChange={handleCategoryChange} />
             </SheetContent>
           </Sheet>
 
-          <span className='text-secondary mr-1 ml-auto text-[10px] sm:text-sm md:text-base' role='status' aria-label={`총 ${totalProducts.toLocaleString()}개의 상품이 있습니다`}>
+          <div className='flex items-center space-x-2'>
+            <Select value={sortBy} onValueChange={handleSortChange}>
+              <SelectTrigger className='w-[120px]' aria-label={`정렬 방식 선택, 현재: ${SORT_OPTIONS.find((opt) => opt.value === sortBy)?.label || '추천순'}`}>
+                <SelectValue placeholder='정렬' />
+              </SelectTrigger>
+              <SelectContent className='[&_[data-radix-select-item-indicator]]:hidden'>
+                {SORT_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value} aria-label={`${option.label}로 정렬`}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div className='mb-4 px-4'>
+          <div className='relative'>
+            <Input ref={searchInputRef} type='search' placeholder='상품 검색...' value={searchTerm} onChange={handleSearchChange} className='pr-10' aria-label='상품 검색' />
+            <Search className='absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 text-gray-400' aria-hidden='true' />
+          </div>
+        </div>
+
+        <div className='mb-4 px-4'>
+          <p className='text-secondary text-sm' role='status' aria-label={`총 ${totalProducts.toLocaleString()}개의 상품이 있습니다`}>
             {totalProducts.toLocaleString()} products
-          </span>
-
-          <Select value={sortBy} onValueChange={handleSortChange}>
-            <SelectTrigger className='h-8 w-[95px] text-xs sm:h-9 sm:w-[115px] sm:text-sm md:w-[135px]' aria-label={`정렬 방식 선택, 현재: ${SORT_OPTIONS.find((opt) => opt.value === sortBy)?.label || '추천순'}`}>
-              <SelectValue placeholder='정렬' />
-            </SelectTrigger>
-            <SelectContent className='[&_[data-radix-select-item-indicator]]:hidden'>
-              {SORT_OPTIONS.map((option) => (
-                <SelectItem key={option.value} value={option.value} className='text-xs sm:text-sm' aria-label={`${option.label}로 정렬`}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          </p>
         </div>
 
-        <div className='relative mb-4' role='search' aria-label='상품 검색'>
-          <Search className='text-surface0 absolute top-1/2 left-2.5 -translate-y-1/2 transform' size={16} aria-hidden='true' />
-          <Input
-            ref={searchInputRef}
-            placeholder='식물을 검색하세요'
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyPress={handleSearchKeyPress}
-            className='h-8 w-full pl-8 text-xs sm:h-9 sm:text-sm'
-            aria-label='상품 검색어 입력'
-            aria-describedby='search-description'
-          />
-          <span id='search-description' className='sr-only'>
-            엔터키를 눌러 검색하거나 입력 후 잠시 기다리면 자동으로 검색됩니다
-          </span>
-        </div>
-
-        {/* 상품 그리드 */}
-        <div className='my-6'>
+        <div className='px-4'>
           {isPending ? (
             <div className='flex min-h-[40vh] items-center justify-center' role='status' aria-live='polite'>
               <div className='text-center'>
@@ -450,24 +403,7 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
             <div className='grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-2 md:gap-8' role='grid' aria-label={`상품 목록, ${products.length}개 상품`}>
               {products.map((product) => (
                 <div key={product._id} role='gridcell'>
-                  <button
-                    type='button'
-                    onClick={() => handleProductClick(product._id)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        handleProductClick(product._id);
-                      }
-                    }}
-                    className='focus-visible:ring-secondary w-full rounded-lg text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2'
-                    aria-label={`${product.name} 상품 상세 페이지로 이동`}
-                  >
-                    <ProductCard
-                      product={product}
-                      onClick={() => {}} // 빈 함수로 전달하여 중복 클릭 방지
-                      isMobile={true}
-                    />
-                  </button>
+                  <ProductCard product={product} onClick={handleProductClick} isMobile={false} />
                 </div>
               ))}
             </div>
@@ -537,26 +473,14 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
                   ))}
                 </SelectContent>
               </Select>
-
-              <div className='relative max-w-md' role='search' aria-label='상품 검색'>
-                <Search className='text-secondary absolute top-1/2 left-3 -translate-y-1/2 transform' size={20} aria-hidden='true' />
-                <Input
-                  placeholder='상품을 검색하세요...'
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  onKeyPress={handleSearchKeyPress}
-                  className='w-60 pl-10 2xl:w-80'
-                  aria-label='상품 검색어 입력'
-                  aria-describedby='desktop-search-description'
-                />
-                <span id='desktop-search-description' className='sr-only'>
-                  엔터키를 눌러 검색하거나 입력 후 잠시 기다리면 자동으로 검색됩니다
-                </span>
+              <div className='relative'>
+                <Input ref={searchInputRef} type='search' placeholder='상품 검색...' value={searchTerm} onChange={handleSearchChange} className='w-[200px] pr-10 lg:w-[200px] 2xl:w-[250px]' aria-label='상품 검색' />
+                <Search className='absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 text-gray-400' aria-hidden='true' />
               </div>
             </div>
           </div>
 
-          <div className='mb-8 px-16'>
+          <div className='px-16'>
             {isPending ? (
               <div className='flex min-h-[40vh] items-center justify-center' role='status' aria-live='polite'>
                 <div className='text-center'>
@@ -575,23 +499,7 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
               <div className='grid grid-cols-3 gap-6 xl:grid-cols-3 xl:gap-8 2xl:grid-cols-4 2xl:gap-10' role='grid' aria-label={`상품 목록, ${products.length}개 상품`}>
                 {products.map((product) => (
                   <div key={product._id} role='gridcell'>
-                    <button
-                      type='button'
-                      onClick={() => handleProductClick(product._id)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          handleProductClick(product._id);
-                        }
-                      }}
-                      className='focus-visible:ring-secondary w-full rounded-lg text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2'
-                      aria-label={`${product.name} 상품 상세 페이지로 이동`}
-                    >
-                      <ProductCard
-                        product={product}
-                        onClick={() => {}} // 빈 함수로 전달하여 중복 클릭 방지
-                      />
-                    </button>
+                    <ProductCard product={product} onClick={handleProductClick} isMobile={false} />
                   </div>
                 ))}
               </div>

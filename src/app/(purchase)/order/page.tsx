@@ -1,9 +1,9 @@
 // src/app/(purchase)/order/page.tsx 수정 버전 (TypeScript 오류 해결)
 
+import OrderClientSection from '@/app/(purchase)/order/_components/orderClient';
 import { getTempOrderAction } from '@/lib/actions/order/orderServerActions';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import OrderClientSection from './_components/OrderClient';
 
 export default async function OrderPage() {
   // 서버에서 임시 주문 데이터 가져오기

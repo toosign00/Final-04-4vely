@@ -12,7 +12,7 @@ export interface CommunityComment {
   user: {
     _id: string;
     name: string;
-    avatar?: string;
+    image?: string;
   };
   createdAt: string;
   updatedAt?: string;
@@ -39,7 +39,7 @@ export interface Post {
   };
   type?: string;
   myBookmarkId?: number | null;
-  isBookmarked?: boolean;
+
   repliesCount?: number;
   createdAt: string;
   updatedAt?: string;

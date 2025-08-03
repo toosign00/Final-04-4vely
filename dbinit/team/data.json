@@ -2205,6 +2205,202 @@
         "image": "uploadFiles/user_test01.webp"
       },
       "seller_id": null
+    },
+    {
+      "type": "community",
+      "title": "식물 잎이 노랗게 변해요, 원인 뭘까요?",
+      "content": "안녕하세요! 요즘 키우고 있는 반려식물 잎이 한두 장씩 노랗게 변해서 걱정이에요ㅠㅠ. 혹시 아시는 분들 원인과 해결 방법 조언 부탁드려요.",
+      "image": "uploadFiles/community-dummy-image.webp",
+      "extra": {
+        "contents": [
+          {
+            "id": 1,
+            "content": "안녕하세요! 요즘 키우고 있는 반려식물 잎이 한두 장씩 노랗게 변해서 걱정이에요ㅠㅠ. 혹시 아시는 분들 원인과 해결 방법 조언 부탁드려요.",
+            "postImage": "uploadFiles/community-dummy-image.webp"
+          }
+        ],
+        "name": "몬스테라",
+        "nickname": "없음",
+        "species": "몬스테라 아단소니"
+      },
+      "views": 10,
+      "user": {
+        "_id": 2,
+        "type": "user",
+        "name": "테스트 유저 1",
+        "email": "test@test.com",
+        "image": "uploadFiles/user_test01.webp"
+      },
+      "seller_id": null,
+      "replies": [
+        {
+          "content": "혹시 화분 밑으로 물 빠짐은 괜찮은가요? 흙이 항상 젖어 있으면 과습일 가능성이 높아요. 뿌리 상태 확인해보세요",
+          "user": {
+            "_id": 3,
+            "name": "테스트 유저 2",
+            "email": "test2@test.com",
+            "image": "uploadFiles/user_test02.webp"
+          },
+          "_id": 1
+        },
+        {
+          "content": "감사합니다~",
+          "user": {
+            "_id": 2,
+            "name": "테스트 유저 1",
+            "email": "test@test.com",
+            "image": "uploadFiles/user_test01.webp"
+          },
+          "_id": 2
+        }
+      ]
+    },
+    {
+      "type": "community",
+      "title": "친구에게 줄 반려식물 선물 포장 아이디어 공유해요",
+      "content": "최근에 친구 생일이라 작은 반려식물을 선물했는데, 친구 반응이 좋았어서 공유해요~.",
+      "image": "uploadFiles/white_orchid_white.webp",
+      "extra": {
+        "contents": [
+          {
+            "id": 1,
+            "content": "최근에 친구 생일이라 작은 반려식물을 선물했는데, 친구 반응 좋았어서 공유해요~.",
+            "postImage": "uploadFiles/white_orchid_white.webp"
+          }
+        ],
+        "name": "백난",
+        "nickname": "없음",
+        "species": "하얀색 난초"
+      },
+      "views": 10,
+      "user": {
+        "_id": 3,
+        "type": "user",
+        "name": "테스트 유저 2",
+        "email": "test2@test.com",
+        "image": "uploadFiles/user_test02.webp"
+      },
+      "seller_id": null,
+      "replies": [
+        {
+          "content": "와~~ 너무 이쁘네요 어디서 샀어요?",
+          "user": {
+            "_id": 2,
+            "name": "테스트 유저 1",
+            "email": "test1@test.com",
+            "image": "uploadFiles/user_test01.webp"
+          },
+          "_id": 1
+        },
+        {
+          "content": "그린메이트요!",
+          "user": {
+            "_id": 3,
+            "name": "테스트 유저 2",
+            "email": "test2@test.com",
+            "image": "uploadFiles/user_test02.webp"
+          },
+          "_id": 2
+        }
+      ]
+    },
+    {
+      "type": "community",
+      "title": "아끼는 식물이 곰팡이 생겼어요ㅠㅠ, 어떻게 하죠?",
+      "content": "안녕하세요! 얼마 전부터 화분 표면이나 잎 사이에 흰색/회색 같은 곰팡이(?), 먼지 같은 게 붙어있는 것 같아서요.",
+      "image": "uploadFiles/watermelon_peperomia.webp",
+      "extra": {
+        "contents": [
+          {
+            "id": 1,
+            "content": "안녕하세요! 얼마 전부터 화분 표면이나 잎 사이에 흰색/회색 같은 곰팡이(?), 먼지 같은 게 붙어있는 것 같아서요.",
+            "postImage": "uploadFiles/watermelon_peperomia.webp"
+          }
+        ],
+        "name": "수박 페페로미아",
+        "nickname": "수박이",
+        "species": "페페로미아"
+      },
+      "views": 10,
+      "user": {
+        "_id": 2,
+        "type": "user",
+        "name": "테스트 유저 1",
+        "email": "test@test.com",
+        "image": "uploadFiles/user_test01.webp"
+      },
+      "seller_id": null,
+      "replies": [
+        {
+          "content": "그냥 버리세요~",
+          "user": {
+            "_id": 2,
+            "name": "테스트 유저 1",
+            "email": "test@test.com",
+            "image": "uploadFiles/user_test01.webp"
+          },
+          "_id": 1
+        },
+        {
+          "content": "네ㅠㅠ",
+          "user": {
+            "_id": 3,
+            "name": "테스트 유저 2",
+            "email": "test2@test.com",
+            "image": "uploadFiles/user_test02.webp"
+          },
+          "_id": 2
+        }
+      ]
+    },
+    {
+      "type": "community",
+      "title": "이 식물, 어디에 두면 더 잘 클까요?",
+      "content": "요즘 제가 키우는 식물들이 위치 때문에 성장 속도가 다 다른 것 같아서 실험 중이에요.",
+      "image": "uploadFiles/red_anthurium_white.webp",
+      "extra": {
+        "contents": [
+          {
+            "id": 1,
+            "content": "요즘 제가 키우는 식물들이 위치 때문에 성장 속도가 다 다른 것 같아서 실험 중이에요.",
+            "postImage": "uploadFiles/red_anthurium_white.webp"
+          }
+        ],
+        "name": "붉은 안스리움",
+        "nickname": "붉은 악마",
+        "species": "안스리움"
+      },
+      "views": 10,
+      "user": {
+        "_id": 3,
+        "type": "user",
+        "name": "테스트 유저 2",
+        "email": "test2@test.com",
+        "image": "uploadFiles/user_test02.webp"
+      },
+      "seller_id": null,
+      "replies": [
+        {
+          "content": "재밌는 실험이네요ㅋㅋ아무데나 둬요~",
+          "user": {
+            "_id": 2,
+            "name": "테스트 유저 1",
+            "email": "test@test.com",
+            "image": "uploadFiles/user_test01.webp"
+          },
+          "_id": 1
+        },
+        {
+          "content": "넹 감사합니다~",
+          "user": {
+            "_id": 3,
+            "name": "테스트 유저 2",
+            "email": "test2@test.com",
+            "image": "uploadFiles/user_test02.webp"
+          },
+          "_id": 2
+        }
+      ]
     }
   ],
   "code": [],

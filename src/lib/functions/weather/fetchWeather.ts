@@ -5,7 +5,8 @@ export interface WeatherInfo {
   datetime: number; // 현재 시간 -> 계절 분기용으로 사용
   temp: number; // 현재 기온 (섭씨)
   humidity: number; // 현재 습도
-  description: string; // 날씨 설명 (ex. 맑음)
+  description: string; // 날씨 설명 (한글 변환)
+  rawDescription: string; // 날씨 설명 (원본 영어)
   icon: string; // 날씨 아이콘
   windSpeed: number; // 풍속
 }
@@ -59,6 +60,7 @@ export async function fetchWeather(lat: number, lon: number) {
       temp: Math.round(data.main.temp * 10) / 10,
       humidity: data.main.humidity,
       description,
+      rawDescription,
       icon,
       windSpeed,
     };

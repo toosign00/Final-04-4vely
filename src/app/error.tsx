@@ -5,12 +5,12 @@ import { AlertTriangle, Home } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
-interface ErrorProps {
+export interface ErrorProps {
   error: Error;
   reset: () => void;
 }
 
-export default function Error({ error, reset }: ErrorProps) {
+export default function Error({ error, reset }: Partial<ErrorProps>) {
   const router = useRouter();
   const pathname = usePathname();
 

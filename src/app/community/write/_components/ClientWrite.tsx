@@ -129,7 +129,7 @@ export default function ClientWrite() {
       <h1 className='w-full max-w-4xl px-4 text-3xl font-bold'>글쓰기</h1>
 
       {/* 정보 입력 한 줄 */}
-      <section className='mb-8 w-full max-w-4xl overflow-hidden rounded-3xl p-6'>
+      <section className='mb-8 w-full max-w-4xl overflow-hidden rounded-3xl bg-teal-50 p-6'>
         <h3 className='mb-4 text-lg font-semibold'>정보</h3>
         <div className='grid grid-cols-1 gap-4 sm:grid-cols-3'>
           {/* 식물이름 (필수) */}
@@ -208,7 +208,7 @@ export default function ClientWrite() {
         </div>
 
         {/* 글쓰기 폼 영역 */}
-        <div className='flex-1 space-y-6'>
+        <div className='flex-1 space-y-6 bg-teal-50'>
           {postForms.map((form, idx) => (
             <section key={form.id} className='rounded-lg border p-4 transition hover:shadow-md'>
               {/* 첫 번째 폼: 제목 + 삭제 */}

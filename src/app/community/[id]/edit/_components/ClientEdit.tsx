@@ -43,12 +43,12 @@ export default function ClientEdit({ postId }: ClientEditProps) {
         setName(post.name || '');
         setNickname(post.nickname || '');
         setSpecies(post.species || '');
-        const forms = post.contents.map((c) => ({
+        const forms = post.contents.map((c, idx) => ({
           id: c.id,
-          title: c.title,
+          title: c.title || (idx === 0 ? post.title : ''),
           content: c.content,
           postImage: c.postImage || '',
-          thumbnailImage: c.thumbnailImage || '',
+          thumbnailImage: c.thumbnailImage || (idx === 0 ? post.coverImage || '' : ''),
         }));
         setPostForms(forms.length ? forms : [{ id: '1', title: post.title, content: post.description, postImage: null, thumbnailImage: null }]);
       } catch {
@@ -142,7 +142,7 @@ export default function ClientEdit({ postId }: ClientEditProps) {
       <h1 className='w-full max-w-4xl px-4 text-3xl font-bold'>게시글 수정</h1>
 
       {/* 정보 입력 */}
-      <section className='mb-8 w-full max-w-4xl overflow-hidden rounded-3xl p-6 transition focus-within:border-green-500'>
+      <section className='mb-8 w-full max-w-4xl overflow-hidden rounded-3xl bg-teal-50 p-6 transition focus-within:border-green-500'>
         <h3 className='mb-4 text-lg font-semibold'>정보</h3>
         <div className='grid grid-cols-1 gap-4 sm:grid-cols-3'>
           {/* 식물이름 (필수) */}
@@ -221,22 +221,32 @@ export default function ClientEdit({ postId }: ClientEditProps) {
         </div>
 
         {/* 글쓰기 폼 영역 */}
-        <div className='flex-1 space-y-6'>
-          {postForms.map((form) => (
-            <section key={form.id} className='rounded-lg border border-gray-200 p-4 transition hover:shadow-md'>
+        <div className='flex-1 space-y-6 bg-teal-50'>
+          {postForms.map((form, idx) => (
+            <section key={form.id || idx} className='rounded-lg border border-gray-200 p-4 transition hover:shadow-md'>
               <div className='mb-6 flex items-center gap-4'>
-                <input
-                  type='text'
-                  placeholder='제목을 입력해주세요.'
-                  maxLength={80}
-                  value={form.title}
-                  onChange={(e) => updatePostForm(form.id, 'title', e.target.value)}
-                  className='h-12 flex-1 rounded-lg border border-gray-300 px-4 transition hover:border-green-500 focus:ring-2 focus:ring-green-400 focus:outline-none'
-                  disabled={isSubmitting}
-                />
-                <Button variant='destructive' onClick={() => removePostForm(form.id)} disabled={isSubmitting || postForms.length === 1} className='transition hover:brightness-105 active:scale-95'>
-                  삭제
-                </Button>
+                {idx === 0 ? (
+                  <>
+                    <input
+                      type='text'
+                      placeholder='제목을 입력해주세요.'
+                      maxLength={80}
+                      value={form.title}
+                      onChange={(e) => updatePostForm(form.id, 'title', e.target.value)}
+                      className='h-12 flex-1 rounded-lg border border-gray-300 px-4 transition hover:border-green-500 focus:ring-2 focus:ring-green-400 focus:outline-none'
+                      disabled={isSubmitting}
+                    />
+                    <Button variant='destructive' onClick={() => removePostForm(form.id)} disabled={isSubmitting || postForms.length === 1} className='transition hover:brightness-105 active:scale-95'>
+                      삭제
+                    </Button>
+                  </>
+                ) : (
+                  <div className='flex w-full justify-end'>
+                    <Button variant='destructive' onClick={() => removePostForm(form.id)} disabled={isSubmitting} className='transition hover:brightness-105 active:scale-95'>
+                      삭제
+                    </Button>
+                  </div>
+                )}
               </div>
 
               <div className='grid grid-cols-1 gap-6 md:grid-cols-2'>

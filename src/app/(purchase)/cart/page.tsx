@@ -1,5 +1,7 @@
 // src/app/(purchase)/cart/page.tsx (서버 컴포넌트)
+import { Button } from '@/components/ui/Button';
 import { getCartItemsActionOptimized } from '@/lib/actions/cartServerActions';
+import Link from 'next/link';
 import CartClientSection from './_components/CartClient';
 
 export default async function CartPage() {
@@ -24,9 +26,9 @@ export default async function CartPage() {
         {/* 빈 장바구니 메시지 */}
         <div className='flex min-h-[400px] flex-col items-center justify-center'>
           <p className='mb-8 text-xl text-gray-600'>장바구니가 비어있습니다.</p>
-          <a href='/shop?page=1' className='bg-primary hover:bg-primary/90 rounded-lg px-6 py-3 text-white transition-colors'>
-            쇼핑 계속하기
-          </a>
+          <Button asChild variant='primary' size='lg'>
+            <Link href='/shop?page=1'>쇼핑 계속하기</Link>
+          </Button>
         </div>
       </div>
     );

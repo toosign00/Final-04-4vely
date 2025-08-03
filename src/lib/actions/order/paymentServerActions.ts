@@ -2,7 +2,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { cookies } from 'next/headers';
+import { getAuthInfo } from '@/lib/utils/auth.server';
 
 const API_URL = process.env.API_URL || 'https://fesp-api.koyeb.app/market';
 const CLIENT_ID = process.env.CLIENT_ID || 'febc13-final04-emjf';
@@ -65,25 +65,6 @@ async function getPortOnePayment(paymentId: string): Promise<PortOnePayment> {
   }
 }
 
-/**
- * 서버에서 사용자의 액세스 토큰을 가져옵니다
- * @private
- * @returns {Promise<string | null>} 액세스 토큰 또는 null
- */
-async function getServerAccessToken(): Promise<string | null> {
-  try {
-    const cookieStore = await cookies();
-    const userAuthCookie = cookieStore.get('user-auth')?.value;
-
-    if (!userAuthCookie) return null;
-
-    const userData = JSON.parse(userAuthCookie);
-    return userData?.state?.user?.token?.accessToken || null;
-  } catch (error) {
-    console.error('[Payment 서버 액션] 토큰 파싱 오류:', error);
-    return null;
-  }
-}
 
 /**
  * 결제 검증 및 주문 완료 처리 서버 액션
@@ -102,13 +83,14 @@ export async function verifyPaymentAndCompleteOrderAction(paymentId: string, ord
     console.log('[Payment 서버 액션] 결제 검증 시작:', { paymentId, orderIdFromClient });
 
     // 1. 사용자 액세스 토큰 확인
-    const accessToken = await getServerAccessToken();
-    if (!accessToken) {
+    const authInfo = await getAuthInfo();
+    if (!authInfo) {
       return {
         success: false,
         message: '로그인이 필요합니다.',
       };
     }
+    const { accessToken } = authInfo;
 
     // 2. PortOne에서 결제 정보 조회
     const portonePayment = await getPortOnePayment(paymentId);

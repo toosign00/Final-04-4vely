@@ -9,7 +9,7 @@
 
 import { BookmarkActionApiResponse, BookmarkType } from '@/types/bookmark.types';
 import { revalidatePath } from 'next/cache';
-import { cookies } from 'next/headers';
+import { getAuthInfo } from '@/lib/utils/auth.server';
 
 const API_URL = process.env.API_URL || 'https://fesp-api.koyeb.app/market';
 const CLIENT_ID = process.env.CLIENT_ID || 'febc13-final04-emjf';
@@ -34,25 +34,16 @@ interface ToggleBookmarkOptions {
 export async function toggleBookmarkAction(targetId: number, type: BookmarkType = 'product', options: ToggleBookmarkOptions = { revalidate: true }): Promise<BookmarkActionApiResponse> {
   try {
     // 1. 인증 토큰 확인
-    const cookieStore = await cookies();
-    const userAuthCookie = cookieStore.get('user-auth')?.value;
+    const authInfo = await getAuthInfo();
 
-    if (!userAuthCookie) {
+    if (!authInfo) {
       return {
         ok: 0,
         message: '로그인이 필요한 기능입니다.',
       };
     }
 
-    const userData = JSON.parse(userAuthCookie);
-    const accessToken = userData?.state?.user?.token?.accessToken;
-
-    if (!accessToken) {
-      return {
-        ok: 0,
-        message: '인증 토큰이 없습니다.',
-      };
-    }
+    const { accessToken } = authInfo;
 
     console.log(`[북마크 토글] ${type} ID: ${targetId} 처리 시작`);
 

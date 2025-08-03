@@ -1,7 +1,8 @@
 'use server';
 
 import { GreenMagazineRes, MagazinePostData } from '@/app/green-magazine/_types/magazine.types';
-import { getBulkBookmarks, getServerAccessToken } from '@/lib/functions/bookmarkServerFunctions';
+import { getBulkBookmarks } from '@/lib/functions/shop/bookmarkServerFunctions';
+import { getAuthInfo } from '@/lib/utils/auth.server';
 
 const API_URL = process.env.API_URL;
 const CLIENT_ID = process.env.CLIENT_ID || '';
@@ -19,8 +20,9 @@ export async function fetchMagazine(type: string, page: number, limit: number): 
     if (!data.ok || !data.item) return data;
 
     // 로그인한 경우에만 북마크 여부 조회
-    const accessToken = await getServerAccessToken();
-    if (!accessToken) return data;
+    const authInfo = await getAuthInfo();
+    if (!authInfo) return data;
+    const { accessToken } = authInfo;
 
     // 북마크 대상 리스트 생성
     const targets = data.item.map((post) => ({

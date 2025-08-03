@@ -5,30 +5,11 @@
 import { ApiRes } from '@/types/api.types';
 import { ProductReply, ReplyActionResult, UpdateReplyRequest } from '@/types/review.types';
 import { revalidatePath } from 'next/cache';
-import { cookies } from 'next/headers';
+import { getAuthInfo } from '@/lib/utils/auth.server';
 
 const API_URL = process.env.API_URL || 'https://fesp-api.koyeb.app/market';
 const CLIENT_ID = process.env.CLIENT_ID || 'febc13-final04-emjf';
 
-/**
- * 서버에서 사용자의 액세스 토큰을 가져옵니다
- * @private
- * @returns {Promise<string | null>} 액세스 토큰 또는 null
- */
-async function getServerAccessToken(): Promise<string | null> {
-  try {
-    const cookieStore = await cookies();
-    const userAuthCookie = cookieStore.get('user-auth')?.value;
-
-    if (!userAuthCookie) return null;
-
-    const userData = JSON.parse(userAuthCookie);
-    return userData?.state?.user?.token?.accessToken || null;
-  } catch (error) {
-    console.error('[Reply 서버 액션] 토큰 파싱 오류:', error);
-    return null;
-  }
-}
 
 /**
  * 리뷰를 수정하는 서버 액션
@@ -41,14 +22,15 @@ export async function updateReplyAction(replyId: number, updateData: UpdateReply
     console.log('[Reply 서버 액션] 리뷰 수정 시작:', { replyId, updateData });
 
     // 액세스 토큰 확인
-    const accessToken = await getServerAccessToken();
-    if (!accessToken) {
+    const authInfo = await getAuthInfo();
+    if (!authInfo) {
       console.log('[Reply 서버 액션] 로그인 필요');
       return {
         success: false,
         message: '로그인이 필요합니다.',
       };
     }
+    const { accessToken } = authInfo;
 
     // API 요청
     const res = await fetch(`${API_URL}/replies/${replyId}`, {
@@ -102,14 +84,15 @@ export async function deleteReplyAction(replyId: number, productId: number): Pro
     console.log('[Reply 서버 액션] 리뷰 삭제 시작:', { replyId, productId });
 
     // 액세스 토큰 확인
-    const accessToken = await getServerAccessToken();
-    if (!accessToken) {
+    const authInfo = await getAuthInfo();
+    if (!authInfo) {
       console.log('[Reply 서버 액션] 로그인 필요');
       return {
         success: false,
         message: '로그인이 필요합니다.',
       };
     }
+    const { accessToken } = authInfo;
 
     // API 요청
     const res = await fetch(`${API_URL}/replies/${replyId}`, {

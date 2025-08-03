@@ -3,7 +3,7 @@
 import { uploadFile } from '@/lib/actions/fileActions';
 import { ApiRes } from '@/types/api.types';
 import { User } from '@/types/user.types';
-import { cookies } from 'next/headers';
+import { getAuthInfo } from '@/lib/utils/auth.server';
 
 const API_URL = process.env.API_URL || '';
 const CLIENT_ID = process.env.CLIENT_ID || '';
@@ -83,26 +83,13 @@ export async function updateUserProfile(formData: FormData): Promise<ApiRes<User
 
 // 인증 정보 검증 헬퍼 함수
 async function validateAuth(): Promise<{ success: false; message: string } | { success: true; accessToken: string; userId: string }> {
-  const cookieStore = await cookies();
-  const userAuthCookie = cookieStore.get('user-auth')?.value;
+  const authInfo = await getAuthInfo();
 
-  if (!userAuthCookie) {
+  if (!authInfo) {
     return { success: false, message: '로그인이 필요합니다.' };
   }
 
-  const userData = JSON.parse(userAuthCookie);
-  const accessToken = userData.state?.user?.token?.accessToken;
-  const userId = userData.state?.user?._id;
-
-  if (!accessToken) {
-    return { success: false, message: '인증 토큰이 없습니다.' };
-  }
-
-  if (!userId) {
-    return { success: false, message: '사용자 id가 없습니다.' };
-  }
-
-  return { success: true, accessToken, userId };
+  return { success: true, accessToken: authInfo.accessToken, userId: String(authInfo.userId) };
 }
 
 // FormData에서 데이터 추출 헬퍼 함수

@@ -100,12 +100,14 @@ export default function ClientCommunity({ initialPosts, initialPagination }: Pro
               <Switch
                 checked={showMine}
                 onCheckedChange={(checked) => {
+                  if (!isLoggedIn) return;
                   setShowMine(checked);
                   setPagination((prev) => ({ ...prev, page: 1 }));
                 }}
+                disabled={!isLoggedIn}
               />
             </label>
-            <Button variant='primary' onClick={() => router.push('/community/write')} className='h-8 w-25 px-5'>
+            <Button variant='primary' onClick={() => router.push('/community/write')} className='h-8 w-25 px-5' disabled={!isLoggedIn}>
               글쓰기
             </Button>
           </div>

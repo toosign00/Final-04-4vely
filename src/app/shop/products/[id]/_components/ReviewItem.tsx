@@ -318,7 +318,15 @@ export default function ReviewItem({ review, isAuthor, productId }: ReviewItemPr
           ) : (
             <div>
               <p className='whitespace-pre-wrap text-gray-700' role='text'>
-                {review.content}
+                {review.content
+                  .split('.')
+                  .filter((s) => s.trim().length > 0)
+                  .map((sentence, idx) => (
+                    <span key={idx}>
+                      {sentence.trim()}.
+                      <br />
+                    </span>
+                  ))}
               </p>
               {review.extra?.potColor && (
                 <p className='mt-2 text-sm text-gray-500' role='note'>

@@ -400,10 +400,10 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
               </Button>
             </div>
           ) : (
-            <div className='grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-2 md:gap-8' role='grid' aria-label={`상품 목록, ${products.length}개 상품`}>
+            <div className='grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-2 md:gap-8 ' role='grid' aria-label={`상품 목록, ${products.length}개 상품`}>
               {products.map((product) => (
                 <div key={product._id} role='gridcell'>
-                  <ProductCard product={product} onClick={handleProductClick} isMobile={false} />
+                  <ProductCard product={product} onClick={handleProductClick} isMobile={true} />
                 </div>
               ))}
             </div>

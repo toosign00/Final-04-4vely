@@ -347,11 +347,13 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
                 필터
               </Button>
             </SheetTrigger>
-            <SheetContent side='left' className='w-[280px] sm:w-[350px]'>
-              <SheetHeader>
+            <SheetContent side='left' className='mt-[60px] flex h-[calc(100vh-60px)] w-[280px] flex-col p-0 sm:w-[350px]'>
+              <SheetHeader className='flex-shrink-0 p-6 pb-4'>
                 <SheetTitle>필터</SheetTitle>
               </SheetHeader>
-              <CategoryFilterSidebar filters={filters} onFilterChange={handleFilterChange} selectedCategory={selectedCategory} onCategoryChange={handleCategoryChange} />
+              <div className='flex-1 overflow-y-auto overscroll-contain'>
+                <CategoryFilterSidebar filters={filters} onFilterChange={handleFilterChange} selectedCategory={selectedCategory} onCategoryChange={handleCategoryChange} isMobile={true} />
+              </div>
             </SheetContent>
           </Sheet>
 
@@ -400,7 +402,7 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
               </Button>
             </div>
           ) : (
-            <div className='grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-2 md:gap-8 ' role='grid' aria-label={`상품 목록, ${products.length}개 상품`}>
+            <div className='grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-2 md:gap-8' role='grid' aria-label={`상품 목록, ${products.length}개 상품`}>
               {products.map((product) => (
                 <div key={product._id} role='gridcell'>
                   <ProductCard product={product} onClick={handleProductClick} isMobile={true} />

@@ -9,7 +9,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { CategoryFilter, Product, SortOption } from '@/types/product.types';
 import { Filter, Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useRef, useState, useTransition } from 'react';
+import { useCallback, useEffect, useId, useRef, useState, useTransition } from 'react';
 import CategoryFilterSidebar from './CategoryFilter';
 import ProductCard from './ProductCard';
 
@@ -39,6 +39,9 @@ interface ShopClientContentProps {
 export default function ShopClientContent({ initialProducts, pagination, urlParams }: ShopClientContentProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+
+  // 고유 ID 생성 (접근성 개선)
+  const filterSheetTitleId = useId();
 
   // 상태 관리
   const [products, setProducts] = useState<Product[]>(initialProducts);
@@ -342,14 +345,14 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
         <div className='mb-4 flex items-center justify-between px-4' role='toolbar' aria-label='상품 필터 및 정렬'>
           <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
             <SheetTrigger asChild>
-              <Button variant='outline' size='sm' aria-label='필터 열기'>
+              <Button variant='outline' size='sm' aria-label='상품 필터 열기 - 카테고리, 크기, 난이도 등으로 상품을 필터링할 수 있습니다'>
                 <Filter className='mr-2 h-4 w-4' aria-hidden='true' />
                 필터
               </Button>
             </SheetTrigger>
-            <SheetContent side='left' className='mt-[60px] flex h-[calc(100vh-60px)] w-[280px] flex-col p-0 sm:w-[350px] md:mt-[80px] md:h-[calc(100vh-80px)]'>
+            <SheetContent side='left' className='mt-[60px] flex h-[calc(100vh-60px)] w-[280px] flex-col p-0 sm:w-[350px] md:mt-[80px] md:h-[calc(100vh-80px)]' aria-labelledby={filterSheetTitleId}>
               <SheetHeader className='flex-shrink-0 p-6 pb-4'>
-                <SheetTitle>필터</SheetTitle>
+                <SheetTitle id={filterSheetTitleId}>상품 필터</SheetTitle>
               </SheetHeader>
               <div className='flex-1 overflow-y-auto overscroll-contain'>
                 <CategoryFilterSidebar filters={filters} onFilterChange={handleFilterChange} selectedCategory={selectedCategory} onCategoryChange={handleCategoryChange} isMobile={true} />

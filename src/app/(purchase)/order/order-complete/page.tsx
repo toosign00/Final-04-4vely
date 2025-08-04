@@ -3,8 +3,8 @@
 
 import { Button } from '@/components/ui/Button';
 import { getOrderByIdAction } from '@/lib/actions/order/orderServerActions';
+import { getImageUrl } from '@/lib/utils/product.utils';
 import { Order } from '@/types/order.types';
-import { getImageUrl } from '@/types/product.types';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';

@@ -536,7 +536,7 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
             <h2 id='product-description-title' className='text-secondary t-h2 sm:t-h1 mb-4 sm:mb-5'>
               Description
             </h2>
-            <div className='text-secondary t-body space-y-3 sm:space-y-4' role='region' aria-labelledby='product-description-title'>
+            <div className='text-secondary t-body space-y-3 leading-relaxed sm:space-y-4' role='region' aria-labelledby='product-description-title'>
               {productData.content ? <div dangerouslySetInnerHTML={{ __html: productData.content }} /> : <p>상품 설명이 없습니다.</p>}
             </div>
           </section>
@@ -716,7 +716,7 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
             <h2 id='desktop-product-description-title' className='text-secondary t-h1 mb-6 xl:mb-8 xl:text-3xl'>
               Description
             </h2>
-            <div className='text-secondary space-y-4 text-2xl xl:space-y-6' role='region' aria-labelledby='desktop-product-description-title'>
+            <div className='text-secondary max-w-[123ch] space-y-4 text-2xl leading-relaxed xl:space-y-6' role='region' aria-labelledby='desktop-product-description-title'>
               {productData.content ? <div dangerouslySetInnerHTML={{ __html: productData.content }} /> : <p>상품 설명이 없습니다.</p>}
             </div>
           </section>

@@ -1,7 +1,7 @@
 'use client';
 
 import { uploadFile } from '@/lib/actions/fileActions';
-import { checkEmailAction, checkNicknameAction, signUpAction } from '@/lib/functions/authFunctions';
+import { checkEmailAction, checkNicknameAction, signUpAction } from '@/lib/actions/authActions';
 import { useSignUpStore } from '@/store/signUpStore';
 import { useCallback } from 'react';
 import { useForm } from 'react-hook-form';

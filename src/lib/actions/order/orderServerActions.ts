@@ -2,32 +2,13 @@
 
 'use server';
 
+import { getAuthInfo } from '@/lib/utils/auth.server';
 import { CreateOrderApiResponse, CreateOrderRequest, DirectPurchaseItem, Order, OrderPageData, PurchaseActionResult } from '@/types/order.types';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 
 const API_URL = process.env.API_URL || 'https://fesp-api.koyeb.app/market';
 const CLIENT_ID = process.env.CLIENT_ID || 'febc13-final04-emjf';
-
-/**
- * 서버에서 사용자의 액세스 토큰을 가져옵니다
- * @private
- * @returns {Promise<string | null>} 액세스 토큰 또는 null
- */
-async function getServerAccessToken(): Promise<string | null> {
-  try {
-    const cookieStore = await cookies();
-    const userAuthCookie = cookieStore.get('user-auth')?.value;
-
-    if (!userAuthCookie) return null;
-
-    const userData = JSON.parse(userAuthCookie);
-    return userData?.state?.user?.token?.accessToken || null;
-  } catch (error) {
-    console.error('[Order 서버 액션] 토큰 파싱 오류:', error);
-    return null;
-  }
-}
 
 /**
  * 임시 주문 데이터를 쿠키에 저장 (1시간 유효)
@@ -134,8 +115,8 @@ export async function createCartPurchaseTempOrderAction(selectedCartIds: number[
     console.log('[Order 서버 액션] 장바구니 구매 임시 주문 생성 시작:', selectedCartIds);
 
     // 액세스 토큰 확인
-    const accessToken = await getServerAccessToken();
-    if (!accessToken) {
+    const authInfo = await getAuthInfo();
+    if (!authInfo) {
       console.log('[Order 서버 액션] 로그인 필요');
       return false;
     }
@@ -269,14 +250,15 @@ export async function createOrderAction(orderData: CreateOrderRequest): Promise<
     console.log('[Order 서버 액션] 주문 생성 시작:', orderData);
 
     // 액세스 토큰 확인
-    const accessToken = await getServerAccessToken();
-    if (!accessToken) {
+    const authInfo = await getAuthInfo();
+    if (!authInfo) {
       console.log('[Order 서버 액션] 로그인 필요');
       return {
         success: false,
         message: '로그인이 필요합니다.',
       };
     }
+    const { accessToken } = authInfo;
 
     // 임시 주문 타입 확인 (삭제 전에 먼저 확인)
     const tempOrder = await getTempOrderAction();
@@ -376,14 +358,15 @@ export async function getOrderByIdAction(orderId: number): Promise<PurchaseActio
     console.log('[Order 서버 액션] 주문 조회 시작:', orderId);
 
     // 액세스 토큰 확인
-    const accessToken = await getServerAccessToken();
-    if (!accessToken) {
+    const authInfo = await getAuthInfo();
+    if (!authInfo) {
       console.log('[Order 서버 액션] 로그인 필요');
       return {
         success: false,
         message: '로그인이 필요합니다.',
       };
     }
+    const { accessToken } = authInfo;
 
     // API 요청
     const res = await fetch(`${API_URL}/orders/${orderId}?populate=products.product`, {
@@ -454,27 +437,19 @@ export async function getUserAddressAction(): Promise<{
   userId: number | null;
 }> {
   try {
-    const cookieStore = await cookies();
-    const userAuthCookie = cookieStore.get('user-auth')?.value;
-
-    if (!userAuthCookie) {
+    // getAuthInfo를 사용하여 인증 정보 가져오기
+    const authInfo = await getAuthInfo();
+    if (!authInfo) {
       console.log('[getUserAddressAction] 로그인되지 않은 사용자');
       return { address: null, name: null, phone: null, userId: null };
     }
 
-    const userData = JSON.parse(userAuthCookie);
-    const userId = userData?.state?.user?._id;
-    const accessToken = userData?.state?.user?.token?.accessToken;
+    const { accessToken, userId } = authInfo;
 
     console.log('[getUserAddressAction] 사용자 정보:', {
       userId,
       hasToken: !!accessToken,
     });
-
-    if (!userId || !accessToken) {
-      console.log('[getUserAddressAction] 사용자 정보 불완전');
-      return { address: null, name: null, phone: null, userId: null };
-    }
 
     // API 요청
     const apiUrl = `${API_URL}/users/${userId}`;
@@ -533,8 +508,8 @@ export async function getUserAddressAction(): Promise<{
  */
 export async function checkOrderLoginStatusAction(): Promise<boolean> {
   try {
-    const accessToken = await getServerAccessToken();
-    return !!accessToken;
+    const authInfo = await getAuthInfo();
+    return !!authInfo;
   } catch (error) {
     console.error('[Order 서버 액션] 로그인 상태 확인 오류:', error);
     return false;

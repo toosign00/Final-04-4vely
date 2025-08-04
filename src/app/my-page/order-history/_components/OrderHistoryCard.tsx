@@ -145,7 +145,13 @@ export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
                       <div key={product.id} className='flex gap-3 rounded-lg border border-gray-100 bg-gray-50 p-3 transition-colors hover:bg-gray-100'>
                         <div className='flex-shrink-0'>
                           <div className='h-14 w-14 overflow-hidden rounded-lg border border-gray-200 bg-white'>
-                            <Image src={product.image || product.imageUrl || (order.memo?.selectedImage && order.memo.selectedImage[order.products?.indexOf(product) || 0]) || ''} alt={product.name} width={56} height={56} className='h-full w-full object-cover' />
+                            <Image
+                              src={product.image || product.imageUrl || (order.memo?.selectedImage && order.memo.selectedImage[order.products?.indexOf(product) || 0]) || ''}
+                              alt={product.name}
+                              width={56}
+                              height={56}
+                              className='h-full w-full object-cover'
+                            />
                           </div>
                         </div>
                         <div className='min-w-0 flex-1'>
@@ -180,7 +186,13 @@ export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
                         <div key={product.id} className='flex gap-3 rounded-lg border border-gray-100 bg-gray-50 p-3 transition-colors hover:bg-gray-100'>
                           <div className='flex-shrink-0'>
                             <div className='h-14 w-14 overflow-hidden rounded-lg border border-gray-200 bg-white'>
-                              <Image src={product.image || product.imageUrl || (order.memo?.selectedImage && order.memo.selectedImage[order.products?.indexOf(product) || 0]) || ''} alt={product.name} width={56} height={56} className='h-full w-full object-cover' />
+                              <Image
+                                src={product.image || product.imageUrl || (order.memo?.selectedImage && order.memo.selectedImage[order.products?.indexOf(product) || 0]) || ''}
+                                alt={product.name}
+                                width={56}
+                                height={56}
+                                className='h-full w-full object-cover'
+                              />
                             </div>
                           </div>
                           <div className='min-w-0 flex-1'>

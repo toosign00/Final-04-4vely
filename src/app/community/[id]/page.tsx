@@ -1,5 +1,4 @@
 import ClientDetail from '@/app/community/[id]/_components/ClientDetail';
-
 import { fetchPostById } from '@/lib/functions/communityFunctions';
 import { getBookmarkByTarget } from '@/lib/functions/shop/bookmarkServerFunctions';
 import { notFound } from 'next/navigation';

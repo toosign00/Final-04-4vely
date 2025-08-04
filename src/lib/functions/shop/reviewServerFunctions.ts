@@ -2,7 +2,7 @@
 
 import { ApiResPromise } from '@/types/api.types';
 import { ProductReply } from '@/types/review.types';
-import { cookies } from 'next/headers';
+import { getAuthInfo } from '@/lib/utils/auth.server';
 
 const API_URL = process.env.API_URL || 'https://fesp-api.koyeb.app/market';
 const CLIENT_ID = process.env.CLIENT_ID || 'febc13-final04-emjf';
@@ -94,15 +94,11 @@ export async function getReply(replyId: number): ApiResPromise<ProductReply> {
  */
 export async function isReplyAuthor(replyUserId: number): Promise<boolean> {
   try {
-    const cookieStore = await cookies();
-    const userAuthCookie = cookieStore.get('user-auth')?.value;
+    const authInfo = await getAuthInfo();
 
-    if (!userAuthCookie) return false;
+    if (!authInfo) return false;
 
-    const userData = JSON.parse(userAuthCookie);
-    const currentUserId = userData?.state?.user?.user?._id;
-
-    return currentUserId === replyUserId;
+    return authInfo.userId === replyUserId;
   } catch (error) {
     console.error('[리뷰 작성자 확인] 오류:', error);
     return false;

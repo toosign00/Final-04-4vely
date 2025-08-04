@@ -6,31 +6,11 @@
  * @module bookmarkServerFunctions
  */
 
+import { getAuthInfo } from '@/lib/utils/auth.server';
 import { Bookmark, BookmarkListApiResponse, BookmarkType } from '@/types/bookmark.types';
-import { cookies } from 'next/headers';
 
 const API_URL = process.env.API_URL || 'https://fesp-api.koyeb.app/market';
 const CLIENT_ID = process.env.CLIENT_ID || 'febc13-final04-emjf';
-
-/**
- * 서버에서 사용자의 액세스 토큰을 가져옵니다
- * @private
- * @returns {Promise<string | null>} 액세스 토큰 또는 null
- */
-async function getServerAccessToken(): Promise<string | null> {
-  try {
-    const cookieStore = await cookies();
-    const userAuthCookie = cookieStore.get('user-auth')?.value;
-
-    if (!userAuthCookie) return null;
-
-    const userData = JSON.parse(userAuthCookie);
-    return userData?.state?.user?.token?.accessToken || null;
-  } catch (error) {
-    console.error('서버 토큰 파싱 오류:', error);
-    return null;
-  }
-}
 
 /**
  * 특정 대상의 북마크 정보를 조회합니다
@@ -46,8 +26,12 @@ async function getServerAccessToken(): Promise<string | null> {
  */
 export async function getBookmarkByTarget(targetId: number, type: BookmarkType): Promise<Bookmark | null> {
   try {
-    const accessToken = await getServerAccessToken();
-    if (!accessToken) return null;
+    const authInfo = await getAuthInfo();
+    if (!authInfo) {
+      console.log(`서버 북마크 조회: ${type} 인증 정보 없음 - 로그인 필요`);
+      return null;
+    }
+    const { accessToken } = authInfo;
 
     console.log(`[서버 북마크 조회] ${type} ID: ${targetId}`);
 
@@ -94,14 +78,9 @@ export async function getBookmarkByTarget(targetId: number, type: BookmarkType):
  */
 export async function getBookmarks(type: BookmarkType, options?: { page?: number; limit?: number }): Promise<BookmarkListApiResponse> {
   try {
-    const accessToken = await getServerAccessToken();
-
-    if (!accessToken) {
-      return {
-        ok: 0,
-        message: '로그인이 필요합니다.',
-      };
-    }
+    const authInfo = await getAuthInfo();
+    if (!authInfo) return { ok: 0, message: '로그인이 필요합니다.' };
+    const { accessToken } = authInfo;
 
     const queryParams = new URLSearchParams();
     if (options?.page) queryParams.append('page', options.page.toString());
@@ -174,8 +153,8 @@ export async function getPostBookmarks(options?: { page?: number; limit?: number
  * const productBookmark = bookmarkMap.get('product-1');
  */
 export async function getBulkBookmarks(targets: Array<{ id: number; type: BookmarkType }>): Promise<Map<string, Bookmark>> {
-  const accessToken = await getServerAccessToken();
-  if (!accessToken) return new Map();
+  const authInfo = await getAuthInfo();
+  if (!authInfo) return new Map();
 
   const bookmarkPromises = targets.map(({ id, type }) =>
     getBookmarkByTarget(id, type).then((bookmark) => ({
@@ -207,5 +186,3 @@ export async function isBookmarked(targetId: number, type: BookmarkType): Promis
   const bookmark = await getBookmarkByTarget(targetId, type);
   return !!bookmark;
 }
-
-export { getServerAccessToken };

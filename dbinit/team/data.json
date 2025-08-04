@@ -2104,14 +2104,14 @@
         "memoTitle": "산세베리아를 분양받았어요♡",
         "date": "2025-08-01"
       },
-      "image": "https://res.cloudinary.com/ddedslqvv/image/upload/v1754124729/febc13-final04-emjf/9giOXXFC1.png",
+      "image": "uploadFiles/plant_sansevieria_01.webp",
       "views": 8,
       "user": {
         "_id": 2,
         "type": "user",
         "name": "테스트 유저 1",
         "email": "test@test.com",
-        "image": "https://res.cloudinary.com/ddedslqvv/image/upload/v1754104686/febc13-final04-emjf/327cn520Q.webp"
+        "image": "uploadFiles/user_test01.webp"
       },
       "seller_id": null,
       "replies": [
@@ -2120,13 +2120,13 @@
           "extra": {
             "title": "새 순을 분리해서 심었어요!",
             "date": "2025-08-02",
-            "images": ["https://res.cloudinary.com/ddedslqvv/image/upload/v1754124813/febc13-final04-emjf/SS30gI_M3.png"]
+            "images": ["uploadFiles/plant_sansevieria_02.webp"]
           },
           "user": {
             "_id": 2,
             "name": "테스트 유저 1",
             "email": "test@test.com",
-            "image": "https://res.cloudinary.com/ddedslqvv/image/upload/v1754104686/febc13-final04-emjf/327cn520Q.webp"
+            "image": "uploadFiles/user_test01.webp"
           },
           "_id": 3
         }
@@ -2142,14 +2142,14 @@
         "memoTitle": "잘 자라주었으면 해요~~",
         "date": "2025-07-11"
       },
-      "image": "https://res.cloudinary.com/ddedslqvv/image/upload/v1754125263/febc13-final04-emjf/osDOiYC62.jpg",
+      "image": "uploadFiles/plant_rubber_tree_01.webp",
       "views": 28,
       "user": {
         "_id": 2,
         "type": "user",
         "name": "테스트 유저 1",
         "email": "test@test.com",
-        "image": "https://res.cloudinary.com/ddedslqvv/image/upload/v1754104686/febc13-final04-emjf/327cn520Q.webp"
+        "image": "uploadFiles/user_test01.webp"
       },
       "seller_id": null,
       "replies": [
@@ -2158,13 +2158,13 @@
           "extra": {
             "title": "물을 자주 주니 잎이 생긋하게 살아났어요!",
             "date": "2025.07.23",
-            "images": ["https://res.cloudinary.com/ddedslqvv/image/upload/v1754125566/febc13-final04-emjf/YICUxQTPe.jpg"]
+            "images": ["uploadFiles/plant_rubber_tree_02.webp"]
           },
           "user": {
             "_id": 2,
             "name": "테스트 유저 1",
             "email": "test@test.com",
-            "image": "https://res.cloudinary.com/ddedslqvv/image/upload/v1754104686/febc13-final04-emjf/327cn520Q.webp"
+            "image": "uploadFiles/user_test01.webp"
           },
           "_id": 5
         },
@@ -2173,13 +2173,13 @@
           "extra": {
             "title": "오늘 낮에는 햇빛을 잘 받으라고 베란다에 잠깐 내놨어요.",
             "date": "2025-07-26",
-            "images": ["https://res.cloudinary.com/ddedslqvv/image/upload/v1754126460/febc13-final04-emjf/AF3mGWwtU.jpg"]
+            "images": ["uploadFiles/plant_rubber_tree_03.webp"]
           },
           "user": {
             "_id": 2,
             "name": "테스트 유저 1",
             "email": "test@test.com",
-            "image": "https://res.cloudinary.com/ddedslqvv/image/upload/v1754104686/febc13-final04-emjf/327cn520Q.webp"
+            "image": "uploadFiles/user_test01.webp"
           },
           "_id": 7
         }
@@ -2195,14 +2195,14 @@
         "memoTitle": "벌레들을 잘 처리해 줄 거 같아요",
         "date": "2025-07-01"
       },
-      "image": "https://res.cloudinary.com/ddedslqvv/image/upload/v1754126818/febc13-final04-emjf/-uYgZPy_Y.jpg",
+      "image": "uploadFiles/plant_venus_flytrap_01.webp",
       "views": 0,
       "user": {
         "_id": 2,
         "type": "user",
         "name": "테스트 유저 1",
         "email": "test@test.com",
-        "image": "https://res.cloudinary.com/ddedslqvv/image/upload/v1754104686/febc13-final04-emjf/327cn520Q.webp"
+        "image": "uploadFiles/user_test01.webp"
       },
       "seller_id": null
     },

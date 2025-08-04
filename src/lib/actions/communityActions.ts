@@ -1,7 +1,7 @@
 'use server';
 
 import { deletePostById, fetchPostById, updatePostById } from '@/lib/functions/communityFunctions';
-import { cookies } from 'next/headers';
+import { getAuthInfo } from '@/lib/utils/auth.server';
 import { redirect } from 'next/navigation';
 
 //게시물 삭제
@@ -9,14 +9,11 @@ export async function handleDelete(formData: FormData) {
   const id = formData.get('id');
   if (typeof id !== 'string') throw new Error('유효하지 않은 게시글 ID입니다.');
 
-  // 1) 쿠키에서 user-auth 파싱
-  const cookieStore = await cookies();
-  const raw = cookieStore.get('user-auth')?.value;
-  if (!raw) throw new Error('로그인이 필요합니다.');
+  // 1) 인증 정보 가져오기
+  const authInfo = await getAuthInfo();
+  if (!authInfo) throw new Error('로그인이 필요합니다.');
 
-  const { state: { user: { _id: currentUserId, token: { accessToken } = {} } = {} } = {} } = JSON.parse(raw);
-  if (!currentUserId) throw new Error('유저 정보가 없습니다.');
-  if (!accessToken) throw new Error('토큰이 없습니다.');
+  const { accessToken, userId: currentUserId } = authInfo;
 
   // 2) 삭제 전, 포스트 불러와 작성자 검증
   const post = await fetchPostById(id);
@@ -37,11 +34,10 @@ export async function handleUpdate(formData: FormData) {
   if (typeof id !== 'string') throw new Error('유효하지 않은 ID');
 
   // 1) 사용자 인증
-  const cookieStore = await cookies();
-  const raw = cookieStore.get('user-auth')?.value;
-  if (!raw) throw new Error('로그인이 필요합니다.');
-  const { state: { user: { _id: currentUserId, token: { accessToken } = {} } = {} } = {} } = JSON.parse(raw);
-  if (!accessToken) throw new Error('토큰이 없습니다.');
+  const authInfo = await getAuthInfo();
+  if (!authInfo) throw new Error('로그인이 필요합니다.');
+
+  const { accessToken, userId: currentUserId } = authInfo;
 
   // 2) 기존 게시물 조회 및 작성자 확인
   const existing = await fetchPostById(id);

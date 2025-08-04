@@ -5,7 +5,7 @@ export interface User {
   phone?: string; // 전화번호
   address?: string; // 주소
   type: 'user' | 'seller' | 'admin'; // 사용자 유형
-  loginType?: 'email' | 'kakao' | 'naver'; // 로그인 방식
+  loginType?: 'email' | 'kakao' | 'google' | 'github' | 'naver'; // 로그인 방식
   image?: string; // 프로필 이미지
   token?: {
     accessToken: string; // 액세스 토큰
@@ -20,3 +20,10 @@ export interface UserState {
   setUser: (user: User) => void;
   resetUser: () => void;
 }
+
+export type OAuthUser = Required<Pick<User, 'type' | 'loginType'>> &
+  Partial<Pick<User, 'name' | 'email' | 'image'>> & {
+    extra: {
+      providerAccountId: string;
+    };
+  };

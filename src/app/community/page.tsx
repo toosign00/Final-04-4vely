@@ -1,6 +1,5 @@
 // src/app/community/page.tsx
 import ClientCommunity from '@/app/community/_components/ClientCommunity';
-
 import { fetchPosts } from '@/lib/functions/communityFunctions';
 import { getBulkBookmarks } from '@/lib/functions/shop/bookmarkServerFunctions';
 

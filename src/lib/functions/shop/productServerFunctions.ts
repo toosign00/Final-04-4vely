@@ -1,6 +1,7 @@
 // src/lib/functions/shop/productServerFunctions.ts
 
-import { getBulkBookmarks, getServerAccessToken } from '@/lib/functions/shop/bookmarkServerFunctions';
+import { getBulkBookmarks } from '@/lib/functions/shop/bookmarkServerFunctions';
+import { getAuthInfo } from '@/lib/utils/auth.server';
 import { ApiResPromise } from '@/types/api.types';
 import { Product } from '@/types/product.types';
 
@@ -210,7 +211,8 @@ export async function getFilteredProductsWithPagination(params: {
 
     // 북마크 정보 추가
     let finalProducts = products;
-    const accessToken = await getServerAccessToken();
+    const authInfo = await getAuthInfo();
+    const accessToken = authInfo?.accessToken;
 
     if (accessToken && products.length > 0) {
       console.log(`[북마크 정보 조회] ${products.length}개 상품`);
@@ -283,7 +285,8 @@ export async function getServerProductById(id: number): ApiResPromise<Product> {
     }
 
     // 로그인된 사용자인 경우 북마크 정보 추가
-    const accessToken = await getServerAccessToken();
+    const authInfo = await getAuthInfo();
+    const accessToken = authInfo?.accessToken;
     if (accessToken) {
       try {
         const targets = [{ id: data.item._id, type: 'product' as const }];
@@ -358,7 +361,8 @@ export async function getBestProducts(limit: number = 4): ApiResPromise<Product[
     let bestProducts = data.item || [];
 
     // 북마크 정보 추가
-    const accessToken = await getServerAccessToken();
+    const authInfo = await getAuthInfo();
+    const accessToken = authInfo?.accessToken;
     if (accessToken && bestProducts.length > 0) {
       const targets = bestProducts.map((product: Product) => ({
         id: product._id,

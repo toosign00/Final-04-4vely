@@ -1,38 +1,64 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
-// 쿠키에서 사용자 타입을 추출하는 함수
-function getUserTypeFromCookie(request: NextRequest): string | null {
-  const authCookie = request.cookies.get('user-auth');
+// 쿠키 이름 상수
+const COOKIE_NAMES = {
+  NEXT_AUTH_SESSION: 'authjs.session-token',
+  NEXT_AUTH_SESSION_SECURE: '__Secure-authjs.session-token',
+  USER_AUTH: 'user-auth',
+} as const;
 
-  if (!authCookie?.value) return null;
+// Zustand 인증 쿠키 데이터 타입 정의
+interface AuthCookieData {
+  state: {
+    user: {
+      _id: string;
+      type: string;
+      token: {
+        accessToken: string;
+      };
+    } | null;
+  };
+}
+
+// 공통 쿠키 파싱 함수
+function parseAuthCookie(request: NextRequest): AuthCookieData | null {
+  const authCookie = request.cookies.get(COOKIE_NAMES.USER_AUTH);
+
+  if (!authCookie?.value || authCookie.value === 'undefined' || authCookie.value === 'null' || authCookie.value.trim() === '') {
+    return null;
+  }
 
   try {
-    const authData = JSON.parse(authCookie.value);
-    // 쿠키에서 사용자 타입 추출, 존재하지 않으면 null 반환
-    return authData?.state?.user?.type || null;
+    return JSON.parse(authCookie.value) as AuthCookieData;
   } catch (error) {
-    console.error('쿠키 파싱 오류:', error);
+    console.error('[Middleware] 쿠키 파싱 오류:', error);
     return null;
   }
 }
 
-// 인증 상태 검증 함수
+// 쿠키에서 사용자 타입을 추출하는 함수
+function getUserTypeFromCookie(request: NextRequest): string | null {
+  const authData = parseAuthCookie(request);
+  return authData?.state?.user?.type || null;
+}
+
+// 인증 상태 검증 함수 - NextAuth와 Zustand 모두 확인
 function isAuthenticated(request: NextRequest): boolean {
-  const authCookie = request.cookies.get('user-auth');
+  // 1. NextAuth 세션 쿠키 확인
+  const nextAuthSessionToken = request.cookies.get(COOKIE_NAMES.NEXT_AUTH_SESSION) || request.cookies.get(COOKIE_NAMES.NEXT_AUTH_SESSION_SECURE);
+  if (nextAuthSessionToken?.value) {
+    return true; // NextAuth 세션이 있으면 인증된 것으로 간주
+  }
 
-  if (!authCookie?.value || authCookie.value === 'undefined' || authCookie.value === 'null' || authCookie.value.trim() === '') {
+  // 2. Zustand 쿠키 확인 (공통 파싱 함수 사용)
+  const authData = parseAuthCookie(request);
+  if (!authData) {
     return false;
   }
 
-  try {
-    const authData = JSON.parse(authCookie.value);
-    // 실제로 user 객체가 존재하고 accessToken이 있는지 확인
-    return !!(authData?.state?.user?._id && authData?.state?.user?.token?.accessToken);
-  } catch (error) {
-    console.error('인증 쿠키 파싱 오류:', error);
-    return false;
-  }
+  // 실제로 user 객체가 존재하고 accessToken이 있는지 확인
+  return !!(authData?.state?.user?._id && authData?.state?.user?.token?.accessToken);
 }
 
 // 권한 검증 함수

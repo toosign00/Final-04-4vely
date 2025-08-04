@@ -2,32 +2,12 @@
 
 'use server';
 
+import { getAuthInfo } from '@/lib/utils/auth.server';
 import { AddToCartRequest, CartActionResult, CartApiResponse, CartItem, CartListApiResponse } from '@/types/cart.types';
 import { revalidatePath } from 'next/cache';
-import { cookies } from 'next/headers';
 
 const API_URL = process.env.API_URL || 'https://fesp-api.koyeb.app/market';
 const CLIENT_ID = process.env.CLIENT_ID || 'febc13-final04-emjf';
-
-/**
- * 서버에서 사용자의 액세스 토큰을 가져옵니다
- * @private
- * @returns {Promise<string | null>} 액세스 토큰 또는 null
- */
-async function getServerAccessToken(): Promise<string | null> {
-  try {
-    const cookieStore = await cookies();
-    const userAuthCookie = cookieStore.get('user-auth')?.value;
-
-    if (!userAuthCookie) return null;
-
-    const userData = JSON.parse(userAuthCookie);
-    return userData?.state?.user?.token?.accessToken || null;
-  } catch (error) {
-    console.error('[Cart 서버 액션] 토큰 파싱 오류:', error);
-    return null;
-  }
-}
 
 /**
  * 장바구니 목록을 조회하는 서버 액션
@@ -37,11 +17,12 @@ export async function getCartItemsActionOptimized(): Promise<CartItem[]> {
   try {
     console.log('[Cart 서버 액션] 장바구니 목록 조회 시작');
 
-    const accessToken = await getServerAccessToken();
-    if (!accessToken) {
+    const authInfo = await getAuthInfo();
+    if (!authInfo) {
       console.log('[Cart 서버 액션] 로그인되지 않은 사용자');
       return [];
     }
+    const { accessToken } = authInfo;
 
     const res = await fetch(`${API_URL}/carts`, {
       method: 'GET',
@@ -132,14 +113,15 @@ export async function addToCartAction(cartData: AddToCartRequest): Promise<CartA
     console.log('[Cart 서버 액션] 장바구니 추가 시작:', cartData);
 
     // 액세스 토큰 확인
-    const accessToken = await getServerAccessToken();
-    if (!accessToken) {
+    const authInfo = await getAuthInfo();
+    if (!authInfo) {
       console.log('[Cart 서버 액션] 로그인 필요');
       return {
         success: false,
         message: '로그인이 필요합니다.',
       };
     }
+    const { accessToken } = authInfo;
 
     // API 요청
     const res = await fetch(`${API_URL}/carts`, {
@@ -194,14 +176,15 @@ export async function removeFromCartAction(cartId: number): Promise<CartActionRe
     console.log('[Cart 서버 액션] 장바구니 삭제 시작:', cartId);
 
     // 액세스 토큰 확인
-    const accessToken = await getServerAccessToken();
-    if (!accessToken) {
+    const authInfo = await getAuthInfo();
+    if (!authInfo) {
       console.log('[Cart 서버 액션] 로그인 필요');
       return {
         success: false,
         message: '로그인이 필요합니다.',
       };
     }
+    const { accessToken } = authInfo;
 
     // API 요청
     const res = await fetch(`${API_URL}/carts/${cartId}`, {
@@ -251,14 +234,15 @@ export async function updateCartQuantityAction(cartId: number, quantity: number)
     console.log('[Cart 서버 액션] 수량 업데이트 시작:', { cartId, quantity });
 
     // 액세스 토큰 확인
-    const accessToken = await getServerAccessToken();
-    if (!accessToken) {
+    const authInfo = await getAuthInfo();
+    if (!authInfo) {
       console.log('[Cart 서버 액션] 로그인 필요');
       return {
         success: false,
         message: '로그인이 필요합니다.',
       };
     }
+    const { accessToken } = authInfo;
 
     // API 요청
     const res = await fetch(`${API_URL}/carts/${cartId}`, {
@@ -313,14 +297,15 @@ export async function updateCartOptionAction(cartId: number, productId: number, 
     console.log('[Cart 서버 액션] 옵션 업데이트 시작:', { cartId, productId, quantity, color });
 
     // 액세스 토큰 확인
-    const accessToken = await getServerAccessToken();
-    if (!accessToken) {
+    const authInfo = await getAuthInfo();
+    if (!authInfo) {
       console.log('[Cart 서버 액션] 로그인 필요');
       return {
         success: false,
         message: '로그인이 필요합니다.',
       };
     }
+    const { accessToken } = authInfo;
 
     // 1. 기존 아이템 삭제
     const deleteRes = await fetch(`${API_URL}/carts/${cartId}`, {
@@ -392,6 +377,6 @@ export async function updateCartOptionAction(cartId: number, productId: number, 
  * @returns {Promise<boolean>} 로그인 여부
  */
 export async function checkLoginStatusAction(): Promise<boolean> {
-  const accessToken = await getServerAccessToken();
-  return !!accessToken;
+  const authInfo = await getAuthInfo();
+  return !!authInfo;
 }

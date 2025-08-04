@@ -2,8 +2,7 @@
 
 import { Button } from '@/components/ui/Button';
 import { deletePostById } from '@/lib/functions/communityFunctions';
-
-import useUserStore from '@/store/authStore';
+import { useAuth } from '@/store/authStore';
 import { Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -13,13 +12,14 @@ interface Props {
 
 export default function DeleteButton({ postId }: Props) {
   const router = useRouter();
-  const token = useUserStore((s) => s.user?.token?.accessToken);
+  const { isLoggedIn, zustandUser, session } = useAuth();
+  const token = zustandUser?.token?.accessToken || session?.accessToken;
 
   const handleDelete = async () => {
     if (!confirm('정말 이 게시글을 삭제하시겠습니까?')) return;
 
     try {
-      if (!token) throw new Error('인증이 필요합니다.');
+      if (!isLoggedIn || !token) throw new Error('인증이 필요합니다.');
       await deletePostById(postId, token);
       alert('게시글이 삭제되었습니다.');
       router.push('/community');

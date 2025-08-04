@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/Input';
 import { useLoginForm } from '@/hooks/useLoginForm';
 import { Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
-import SocialKakao from './SocialKakao';
+import SocialLogin from './SocialLogin';
 
 export default function LoginForm() {
   // useLoginForm hook
@@ -130,14 +130,11 @@ export default function LoginForm() {
               회원가입
             </Link>
           </div>
-
-          {/* 소셜 로그인 버튼들 */}
-          <Button asChild className='mb-4 bg-green-500 hover:bg-green-700' fullWidth variant='primary' size='lg'>
-            <Link href='/'>네이버 로그인</Link>
-          </Button>
-          <SocialKakao />
         </form>
       </Form>
+
+      {/* 소셜 로그인 버튼들 */}
+      <SocialLogin />
     </div>
   );
 }

@@ -1,8 +1,7 @@
 'use client';
 import { Button } from '@/components/ui/Button';
 import { createPost, uploadFile } from '@/lib/functions/communityFunctions';
-
-import useUserStore from '@/store/authStore';
+import { useAuth } from '@/store/authStore';
 import { Plus, X } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -20,8 +19,8 @@ const MAX_FORMS = 10;
 
 export default function ClientWrite() {
   const router = useRouter();
-  const user = useUserStore((state) => state.user); // 로그인한 유저 정보 가져오기
-  const token = user?.token?.accessToken;
+  const { zustandUser, session } = useAuth();
+  const token = zustandUser?.token?.accessToken || session?.accessToken;
 
   const [cover, setCover] = useState<File | null>(null);
   const [postForms, setPostForms] = useState<PostForm[]>([{ id: '1', title: '', content: '', postImage: null, thumbnailImage: null }]);

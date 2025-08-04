@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/Button';
 
 import { toggleBookmarkAction } from '@/lib/actions/shop/bookmarkServerActions';
 import { cn } from '@/lib/utils';
-import useUserStore from '@/store/authStore';
+import { useAuth } from '@/store/authStore';
 import { BookmarkType } from '@/types/bookmark.types';
 import { Bookmark } from 'lucide-react';
 import { useEffect, useState, useTransition } from 'react';
@@ -62,7 +62,7 @@ export default function BookmarkButton({ targetId: propTargetId, type = 'product
   // 모든 Hook을 최상위에서 호출 (조건문 이전)
   const [isPending, startTransition] = useTransition();
   const [isProcessing, setIsProcessing] = useState(false);
-  const { user } = useUserStore();
+  const { isLoggedIn } = useAuth();
 
   // 북마크 상태를 로컬 state로 관리
   const [localBookmarkId, setLocalBookmarkId] = useState<number | undefined>(myBookmarkId);
@@ -70,9 +70,8 @@ export default function BookmarkButton({ targetId: propTargetId, type = 'product
 
   // Hook 호출 이후에 조건 체크
   const targetId = propTargetId || productId;
-  const isLoggedIn = !!user;
 
-  // 로그아웃 감지 - user가 null이 되면 북마크 상태 초기화
+  // 로그아웃 감지 - 인증 상태가 변경되면 북마크 상태 초기화
   useEffect(() => {
     if (!isLoggedIn) {
       setLocalBookmarkId(undefined);

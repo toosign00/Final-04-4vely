@@ -2,7 +2,7 @@
 
 import { uploadFile } from '@/lib/actions/fileActions';
 import { ApiRes } from '@/types/api.types';
-import { cookies } from 'next/headers';
+import { getAuthInfo } from '@/lib/utils/auth.server';
 
 // 환경 변수를 통해 API URL과 클라이언트 ID 설정
 const API_URL = process.env.API_URL || '';
@@ -105,34 +105,16 @@ export async function getDiariesByPlantId(plantId: number): Promise<ApiRes<Diary
   }
 
   // 인증 정보 추출 및 검증
-  let accessToken: string;
-  try {
-    const cookieStore = await cookies();
-    const userAuthCookie = cookieStore.get('user-auth')?.value;
+  const authInfo = await getAuthInfo();
 
-    if (!userAuthCookie) {
-      return {
-        ok: 0,
-        message: '로그인이 필요합니다.',
-      };
-    }
-
-    const userData = JSON.parse(userAuthCookie);
-    accessToken = userData.state?.user?.token?.accessToken;
-
-    if (!accessToken) {
-      return {
-        ok: 0,
-        message: '인증 토큰이 없습니다.',
-      };
-    }
-  } catch (error) {
-    console.error('인증 정보 파싱 중 오류:', error);
+  if (!authInfo) {
     return {
       ok: 0,
-      message: '인증 정보를 확인할 수 없습니다.',
+      message: '로그인이 필요합니다.',
     };
   }
+
+  const { accessToken } = authInfo;
 
   try {
     // 일지 목록 조회 API 호출 (최신순 정렬)
@@ -187,34 +169,16 @@ export async function createDiary(plantId: number, formData: FormData): Promise<
   }
 
   // 인증 정보 추출 및 검증
-  let accessToken: string;
-  try {
-    const cookieStore = await cookies();
-    const userAuthCookie = cookieStore.get('user-auth')?.value;
+  const authInfo = await getAuthInfo();
 
-    if (!userAuthCookie) {
-      return {
-        ok: 0,
-        message: '로그인이 필요합니다.',
-      };
-    }
-
-    const userData = JSON.parse(userAuthCookie);
-    accessToken = userData.state?.user?.token?.accessToken;
-
-    if (!accessToken) {
-      return {
-        ok: 0,
-        message: '인증 토큰이 없습니다.',
-      };
-    }
-  } catch (error) {
-    console.error('인증 정보 파싱 중 오류:', error);
+  if (!authInfo) {
     return {
       ok: 0,
-      message: '인증 정보를 확인할 수 없습니다.',
+      message: '로그인이 필요합니다.',
     };
   }
+
+  const { accessToken } = authInfo;
 
   // FormData에서 필수 필드 추출 및 검증
   const title = formData.get('title') as string;
@@ -302,25 +266,16 @@ export async function createDiary(plantId: number, formData: FormData): Promise<
  * @returns ApiRes<DiaryReply> 원본 API 데이터
  */
 export async function updateDiary(plantId: number, diaryId: number, formData: FormData): Promise<ApiRes<DiaryReply>> {
-  const cookieStore = await cookies();
-  const userAuthCookie = cookieStore.get('user-auth')?.value;
+  const authInfo = await getAuthInfo();
 
-  if (!userAuthCookie) {
+  if (!authInfo) {
     return {
       ok: 0,
       message: '로그인이 필요합니다.',
     };
   }
 
-  const userData = JSON.parse(userAuthCookie);
-  const accessToken = userData.state?.user?.token?.accessToken;
-
-  if (!accessToken) {
-    return {
-      ok: 0,
-      message: '인증 토큰이 없습니다.',
-    };
-  }
+  const { accessToken } = authInfo;
 
   // 기존 이미지 처리 (삭제되지 않고 남겨둘 이미지들)
   const existingImages: string[] = [];
@@ -464,34 +419,16 @@ export async function deleteDiary(plantId: number, diaryId: number): Promise<Api
   }
 
   // 인증 정보 추출 및 검증
-  let accessToken: string;
-  try {
-    const cookieStore = await cookies();
-    const userAuthCookie = cookieStore.get('user-auth')?.value;
+  const authInfo = await getAuthInfo();
 
-    if (!userAuthCookie) {
-      return {
-        ok: 0,
-        message: '로그인이 필요합니다.',
-      };
-    }
-
-    const userData = JSON.parse(userAuthCookie);
-    accessToken = userData.state?.user?.token?.accessToken;
-
-    if (!accessToken) {
-      return {
-        ok: 0,
-        message: '인증 토큰이 없습니다.',
-      };
-    }
-  } catch (error) {
-    console.error('인증 정보 파싱 중 오류:', error);
+  if (!authInfo) {
     return {
       ok: 0,
-      message: '인증 정보를 확인할 수 없습니다.',
+      message: '로그인이 필요합니다.',
     };
   }
+
+  const { accessToken } = authInfo;
 
   try {
     // 일지 삭제 API 호출

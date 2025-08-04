@@ -347,7 +347,7 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
                 필터
               </Button>
             </SheetTrigger>
-            <SheetContent side='left' className='mt-[60px] flex h-[calc(100vh-60px)] w-[280px] flex-col p-0 sm:w-[350px]'>
+            <SheetContent side='left' className='mt-[60px] flex h-[calc(100vh-60px)] w-[280px] flex-col p-0 sm:w-[350px] md:mt-[80px] md:h-[calc(100vh-80px)]'>
               <SheetHeader className='flex-shrink-0 p-6 pb-4'>
                 <SheetTitle>필터</SheetTitle>
               </SheetHeader>

@@ -8,7 +8,6 @@ export const menuLinks = [
   { name: 'Green Magazine', href: '/green-magazine?page=1', showOn: ['desktop', 'mobile'] },
   { name: '쇼핑하기', href: '/shop?page=1', showOn: ['desktop', 'mobile'] },
   { name: '커뮤니티', href: '/community', showOn: ['desktop', 'mobile'] },
-  { name: 'FAQ', href: '/faq', showOn: ['desktop', 'mobile'] },
   { name: '마이페이지', href: '/my-page', showOn: ['mobile'] },
   { name: '장바구니', href: '/cart', showOn: ['mobile'] },
   { name: '로그인', href: '/login', showOn: ['mobile'] },

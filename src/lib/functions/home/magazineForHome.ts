@@ -12,7 +12,7 @@ export async function magazineForHome(type: string, limit = 5): Promise<Magazine
       headers: {
         'Client-Id': CLIENT_ID,
       },
-      cache: 'force-cache',
+      cache: 'no-cache',
     });
 
     const data: GreenMagazineRes = await res.json();

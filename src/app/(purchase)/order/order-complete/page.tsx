@@ -368,7 +368,7 @@ export default function OrderComplete() {
             </div>
             <div className='mt-2 flex justify-between border-t pt-2 font-semibold' role='listitem'>
               <span>총 결제 금액</span>
-              <span className='text-primary' aria-label={`총 결제 금액 ${orderInfo.cost.total.toLocaleString()}원`}>
+              <span className='text-secondary' aria-label={`총 결제 금액 ${orderInfo.cost.total.toLocaleString()}원`}>
                 {orderInfo.cost.total.toLocaleString()}원
               </span>
             </div>

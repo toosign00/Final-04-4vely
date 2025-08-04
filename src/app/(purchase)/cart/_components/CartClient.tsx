@@ -616,18 +616,18 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className='mt-6 gap-3 sm:justify-between'>
-            <AlertDialogAction onClick={confirmRemoveSingleItem} className='bg-primary text-secondary active:bg-primary px-10 shadow-sm hover:bg-[#AEBB2E]'>
-              삭제
-            </AlertDialogAction>
             <AlertDialogCancel
               onClick={() => {
                 setShowDeleteSingleAlert(false);
                 setDeleteTargetId(null);
               }}
-              className='text-secondary hover:bg-secondary border-[0.5px] border-gray-300 bg-white px-7 shadow-sm hover:text-white'
+              className='text-secondary hover:bg-secondary border-[0.5px] border-gray-300 bg-white px-10 shadow-sm hover:text-white'
             >
               취소
             </AlertDialogCancel>
+            <AlertDialogAction onClick={confirmRemoveSingleItem} className='bg-primary text-secondary active:bg-primary px-10 shadow-sm hover:bg-[#AEBB2E]'>
+              삭제
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

@@ -34,7 +34,7 @@ export default function RootLayout({
           <Notice />
           <Header />
           <ActivityTracker />
-          <main className='pt-[68px] md:pt-[84px]'>
+          <main>
             <Toaster
               position='top-center'
               richColors={true}

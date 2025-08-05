@@ -1,22 +1,34 @@
 'use server';
 
+/**
+ * 인증 관련 서버 액션 함수들
+ *
+ * - 로그인 처리 및 토큰 저장
+ * - 토큰 갱신 (refresh token 사용)
+ * - 로그아웃 및 쿠키 정리
+ * - 자동 로그인 설정에 따른 토큰 만료 시간 조정
+ */
+
 import { ApiRes } from '@/types/api.types';
-import { LoginCredentials, LoginResult } from '@/types/auth.types';
+import { LoginCredentials, LoginResult, RefreshTokenResult } from '@/types/auth.types';
 import { User } from '@/types/user.types';
 import { cookies } from 'next/headers';
 
+// 환경 변수에서 API 설정 가져오기
 const API_URL = process.env.API_URL || '';
 const CLIENT_ID = process.env.CLIENT_ID || '';
 
-// ============================================================================
-// 서버 액션 (클라이언트에서 호출 가능)
-// ============================================================================
-
 /**
  * 로그인 서버 액션
- * 폼 제출을 처리하고 사용자 인터랙션에 응답
- * @param credentials - 로그인 자격 증명
- * @returns 표준화된 API 응답 형태
+ *
+ * 사용자 로그인을 처리하고 성공 시 안전한 쿠키에 인증 정보를 저장
+ *
+ * 토큰 만료 시간:
+ * - 자동 로그인 체크: user-auth 7일, refresh-token 14일
+ * - 자동 로그인 미체크: user-auth 30분, refresh-token 2시간
+ *
+ * @param credentials - 로그인 자격 증명 (이메일, 비밀번호, 자동로그인 여부)
+ * @returns 표준화된 API 응답 형태 (성공/실패 상태, 사용자 정보, 토큰)
  */
 export async function loginAction(credentials: LoginCredentials): Promise<LoginResult> {
   try {
@@ -27,51 +39,50 @@ export async function loginAction(credentials: LoginCredentials): Promise<LoginR
     if (result.ok === 1) {
       const cookieStore = await cookies();
 
-      // rememberLogin 값에 따라 만료시간 분기
-      const userAuthMaxAge = credentials.rememberLogin ? 60 * 60 * 24 * 7 : 60 * 60 * 24; // 7일 or 1일
-      const refreshTokenMaxAge = credentials.rememberLogin ? 60 * 60 * 24 * 14 : 60 * 60 * 24 * 7; // 14일 or 7일
+      // 자동 로그인 설정에 따른 토큰 만료시간 분기 설정
+      // 자동 로그인 체크: 장기간 보관
+      // 자동 로그인 미체크: 단기간 보관
+      const userAuthMaxAge = credentials.rememberLogin ? 60 * 60 * 24 * 7 : 60 * 30; // 7일 or 30분
+      const refreshTokenMaxAge = credentials.rememberLogin ? 60 * 60 * 24 * 14 : 60 * 60 * 2; // 14일 or 2시간
 
-      // 만료시간을 일(day) 단위로 콘솔에 출력
-      console.log('[쿠키 만료시간] user-auth:', userAuthMaxAge / (60 * 60 * 24), '일');
-      console.log('[쿠키 만료시간] refresh-token:', refreshTokenMaxAge / (60 * 60 * 24), '일');
-
-      // 사용자 정보를 안전하게 쿠키에 저장 (httpOnly 옵션으로 XSS 방지)
-      cookieStore.set(
-        'user-auth',
-        JSON.stringify({
-          state: {
-            user: {
-              _id: result.item.user._id,
-              email: result.item.user.email,
-              name: result.item.user.name,
-              type: result.item.user.type,
-              createdAt: result.item.user.createdAt,
-              updatedAt: result.item.user.updatedAt,
-              token: {
-                accessToken: result.item.user.token?.accessToken,
-              },
+      // 인증 데이터 구조 생성
+      const authData = {
+        state: {
+          user: {
+            _id: result.item.user._id,
+            email: result.item.user.email,
+            name: result.item.user.name,
+            type: result.item.user.type,
+            createdAt: result.item.user.createdAt,
+            updatedAt: result.item.user.updatedAt,
+            token: {
+              accessToken: result.item.user.token?.accessToken,
             },
-            isLoading: false,
-            lastTokenRefresh: Date.now(),
           },
-        }),
-        {
-          httpOnly: false, // zustand에서 접근해야 하므로 false
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict',
-          maxAge: userAuthMaxAge, // 7일 or 1일
-          path: '/',
+          isLoading: false,
+          lastTokenRefresh: Date.now(), // 토큰 갱신 시간 기록
+          sessionStartTime: Date.now(), // 세션 시작 시간 (비자동 로그인 시 만료 검증용)
+          rememberLogin: credentials.rememberLogin, // 자동 로그인 설정 저장
         },
-      );
+      };
 
-      // 리프레시 토큰은 별도의 httpOnly 쿠키로 저장 (보안 강화)
+      // 사용자 정보를 쿠키에 저장
+      cookieStore.set('user-auth', JSON.stringify(authData), {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === 'production', // HTTPS에서만 전송
+        sameSite: 'strict', // CSRF 공격 방지
+        maxAge: userAuthMaxAge, // 자동 로그인 설정에 따른 만료 시간
+        path: '/', // 모든 경로에서 접근 가능
+      });
+
+      // 리프레시 토큰은 별도의 httpOnly 쿠키로 저장
       if (result.item.user.token?.refreshToken) {
         cookieStore.set('refresh-token', result.item.user.token.refreshToken, {
-          httpOnly: true, // 클라이언트에서 접근 불가 (보안 강화)
+          httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'strict',
-          maxAge: refreshTokenMaxAge, // 14일 or 7일
-          path: '/',
+          maxAge: refreshTokenMaxAge, // 사용자 토큰보다 긴 만료 시간
+          path: '/', // 모든 경로에서 접근 가능
         });
       }
     }
@@ -88,10 +99,18 @@ export async function loginAction(credentials: LoginCredentials): Promise<LoginR
 
 /**
  * 토큰 갱신 서버 액션
- * @param refreshToken - 리프레시 토큰 (선택사항, 없으면 쿠키에서 가져옴)
- * @returns 표준화된 API 응답 형태
+ *
+ * 만료된 액세스 토큰을 새로운 토큰으로 갱신하는 서버 액션
+ * httpOnly 쿠키에 저장된 리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급받고
+ * 사용자 인증 쿠키의 토큰 정보를 업데이트
+ *
+ * @param {string} [refreshToken] - 리프레시 토큰 (선택사항, 없으면 쿠키에서 가져옴)
+ * @returns {Promise<RefreshTokenResult>} API 응답 형태
+ * @returns {RefreshTokenResult.ok} 1: 성공, 0: 실패
+ * @returns {RefreshTokenResult.message} 처리 결과 메시지
+ * @returns {RefreshTokenResult.item.accessToken} 새로 발급받은 액세스 토큰
  */
-export async function refreshTokenAction(refreshToken?: string): Promise<ApiRes<{ accessToken: string }>> {
+export async function refreshTokenAction(refreshToken?: string): Promise<RefreshTokenResult> {
   try {
     const cookieStore = await cookies();
 
@@ -102,11 +121,26 @@ export async function refreshTokenAction(refreshToken?: string): Promise<ApiRes<
       return {
         ok: 0,
         message: '리프레시 토큰이 없습니다.',
+        item: {
+          accessToken: '',
+        },
       };
     }
 
-    // 내부 함수 호출
-    const result = await refreshAccessToken(tokenToUse);
+    const response = await fetch(`${API_URL}/auth/refresh`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Client-Id': CLIENT_ID,
+      },
+      credentials: 'include', // 쿠키 포함
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
 
     // 토큰 갱신 성공 시 사용자 쿠키 업데이트
     if (result.ok === 1) {
@@ -139,14 +173,27 @@ export async function refreshTokenAction(refreshToken?: string): Promise<ApiRes<
     return {
       ok: 0,
       message: '토큰 갱신 처리 중 오류가 발생했습니다.',
+      item: {
+        accessToken: '',
+      },
     };
   }
 }
 
 /**
  * 로그아웃 서버 액션
- * @param token - 인증 토큰 (선택사항, 없으면 쿠키에서 가져옴)
- * @returns 표준화된 API 응답 형태
+ *
+ * 사용자 로그아웃을 처리하는 서버 액션으로, 클라이언트의 모든 인증 정보를 안전하게 삭제
+ *
+ * @returns {Promise<ApiRes<{message: string}>>} API 응답 형태
+ * @returns {ApiRes.ok} 1: 성공, 0: 실패 (쿠키는 삭제됨)
+ * @returns {ApiRes.item.message} 로그아웃 처리 결과 메시지
+ * @returns {ApiRes.message} 실패 시 오류 메시지
+ *
+ * @returns {Promise<ApiRes<{message: string}>>} API 응답 형태
+ * @returns {ApiRes.ok} 1: 성공, 0: 실패 (쿠키는 삭제됨)
+ * @returns {ApiRes.item.message} 로그아웃 처리 결과 메시지
+ * @returns {ApiRes.message} 실패 시 오류 메시지
  */
 export async function logoutAction(): Promise<ApiRes<{ message: string }>> {
   try {
@@ -175,18 +222,32 @@ export async function logoutAction(): Promise<ApiRes<{ message: string }>> {
   }
 }
 
-// ============================================================================
-// 내부 함수들 (서버 액션에서만 사용)
-// ============================================================================
-
 /**
- * 로그인 API 호출 함수
- * @param credentials - 로그인 자격 증명
- * @returns 표준화된 API 응답 형태
+ * 로그인 API 호출 내부 함수
+ *
+ * 외부 인증 API에 로그인 요청을 수행하는 내부 함수
+ *
+ * 에러 처리:
+ * - 네트워크 오류: 사용자 친화적 메시지 제공
+ * - API 오류: 서버에서 제공한 오류 메시지 전달
+ * - 데이터 검증 오류: 상세한 오류 로깅과 안전한 메시지 반환
+ *
+ * @param {LoginCredentials} credentials - 로그인 자격 증명 객체
+ * @param {string} credentials.email - 사용자 이메일 주소
+ * @param {string} credentials.password - 사용자 비밀번호
+ * @param {boolean} credentials.rememberLogin - 자동 로그인 유지 여부
+ * @returns {Promise<LoginResult>} 표준화된 API 응답 형태
+ * @returns {LoginResult.ok} 1: 성공, 0: 실패
+ * @returns {LoginResult.message} 실패 시 오류 메시지
+ * @returns {LoginResult.errors} API 검증 오류 목록 (있는 경우)
+ * @returns {LoginResult.item.user} 로그인된 사용자 정보
+ * @returns {LoginResult.item.token} 인증 토큰 (액세스/리프레시)
+ *
+ * @private
  */
 async function loginUser(credentials: LoginCredentials): Promise<LoginResult> {
   try {
-    // 외부 API에 로그인 요청 (만료 시간 1일)
+    // API에 로그인 요청
     const res = await fetch(`${API_URL}/users/login?expiresIn=1d`, {
       method: 'POST',
       headers: {
@@ -245,61 +306,6 @@ async function loginUser(credentials: LoginCredentials): Promise<LoginResult> {
     return {
       ok: 0,
       message: '네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
-    };
-  }
-}
-
-/**
- * 토큰 갱신 API 호출 함수
- * @param refreshToken - 리프레시 토큰
- * @returns 표준화된 API 응답 형태
- */
-async function refreshAccessToken(refreshToken: string): Promise<ApiRes<{ accessToken: string }>> {
-  try {
-    if (!refreshToken) {
-      return {
-        ok: 0,
-        message: '리프레시 토큰이 제공되지 않았습니다.',
-      };
-    }
-
-    const res = await fetch(`${API_URL}/users/refresh`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Client-Id': CLIENT_ID,
-        Authorization: `Bearer ${refreshToken}`,
-      },
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      console.error('[토큰 갱신 함수] API 오류:', data);
-      return {
-        ok: 0,
-        message: data.message || '토큰 갱신에 실패했습니다.',
-      };
-    }
-
-    const newAccessToken = data.item?.accessToken;
-    if (!newAccessToken) {
-      return {
-        ok: 0,
-        message: '새로운 액세스 토큰을 가져올 수 없습니다.',
-      };
-    }
-
-    console.log('[토큰 갱신 함수] 성공');
-    return {
-      ok: 1,
-      item: { accessToken: newAccessToken },
-    };
-  } catch (error) {
-    console.error('[토큰 갱신 함수] 오류:', error);
-    return {
-      ok: 0,
-      message: '토큰 갱신 중 서버 오류가 발생했습니다.',
     };
   }
 }

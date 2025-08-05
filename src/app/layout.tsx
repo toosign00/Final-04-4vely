@@ -1,4 +1,5 @@
 import Notice from '@/app/notice';
+import ActivityTracker from '@/components/layout/ActivityTracker';
 import Footer from '@/components/layout/Footer';
 import Header from '@/components/layout/Header';
 import '@/styles/globals.css';
@@ -32,6 +33,7 @@ export default function RootLayout({
         <body className={`${pretendard.className} bg-surface`}>
           <Notice />
           <Header />
+          <ActivityTracker />
           <main className='pt-[68px] md:pt-[84px]'>
             <Toaster
               position='top-center'

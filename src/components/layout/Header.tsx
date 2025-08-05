@@ -43,7 +43,7 @@ export default function Header() {
   };
 
   return (
-    <header className='bg-surface text-secondary border-secondary/30 fixed z-999 w-full border-b transition-all duration-300'>
+    <header className='bg-surface text-secondary border-secondary/30 fixed z-990 w-screen overflow-hidden border-b transition-all duration-300'>
       <div className={HEADER_CONTAINER}>
         {/* 로고 */}
         <Link href='/' aria-label='홈으로' className='flex items-center'>

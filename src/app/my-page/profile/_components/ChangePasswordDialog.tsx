@@ -73,6 +73,9 @@ export default function ChangePasswordDialog({ isOpen, onClose }: ChangePassword
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+          {/* 숨겨진 username 필드 (접근성을 위해 추가) */}
+          <input type='text' name='username' autoComplete='username' style={{ display: 'none' }} />
+
           {/* 현재 비밀번호 */}
           <div>
             <Label className='text-secondary/70 mb-2'>현재 비밀번호</Label>
@@ -80,6 +83,7 @@ export default function ChangePasswordDialog({ isOpen, onClose }: ChangePassword
               <Input
                 type={showCurrentPassword ? 'text' : 'password'}
                 className='pr-12'
+                autoComplete='current-password'
                 {...register('currentPassword', {
                   required: '현재 비밀번호를 입력해 주세요.',
                   minLength: { value: 4, message: '비밀번호는 최소 4자 이상이어야 합니다.' },
@@ -101,6 +105,7 @@ export default function ChangePasswordDialog({ isOpen, onClose }: ChangePassword
               <Input
                 type={showNewPassword ? 'text' : 'password'}
                 className='pr-12'
+                autoComplete='new-password'
                 {...register('newPassword', {
                   required: '새 비밀번호를 입력해 주세요.',
                   minLength: { value: 4, message: '비밀번호는 최소 4자 이상이어야 합니다.' },
@@ -126,6 +131,7 @@ export default function ChangePasswordDialog({ isOpen, onClose }: ChangePassword
               <Input
                 type={showConfirmPassword ? 'text' : 'password'}
                 className='pr-12'
+                autoComplete='new-password'
                 {...register('confirmPassword', {
                   required: '비밀번호 확인을 입력해 주세요.',
                   validate: (value) => value === watchNewPassword || '비밀번호가 일치하지 않습니다.',

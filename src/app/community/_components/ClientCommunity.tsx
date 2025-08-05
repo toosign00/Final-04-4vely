@@ -78,7 +78,7 @@ export default function ClientCommunity({ initialPosts, initialPagination }: Pro
         case 'oldest': // 오래된순
           return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
         case 'popular': // 인기순
-          return (b.stats.likes ?? 0) - (a.stats.likes ?? 0);
+          return (b.stats.views ?? 0) - (a.stats.views ?? 0);
         default:
           return 0;
       }
@@ -130,7 +130,9 @@ export default function ClientCommunity({ initialPosts, initialPagination }: Pro
       {!loading && !error && (
         <>
           {!sortedPosts.length ? (
-            <div className='py-8 text-center text-gray-500'>등록된 글이 없습니다.</div>
+            <div className='flex h-[60vh] w-full items-center justify-center'>
+              <span className='text-2xl text-gray-500'>등록된 글이 없습니다.</span>
+            </div>
           ) : (
             <div className='grid grid-cols-1 justify-items-center gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
               {sortedPosts.map((post) => {

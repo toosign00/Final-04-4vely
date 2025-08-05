@@ -8,17 +8,17 @@ const CLIENT_ID = process.env.CLIENT_ID || '';
 // 홈 화면 인기 리뷰 데이터 조회
 export async function getReviewPopPosts(): Promise<ReviewPopCard[]> {
   try {
-    const res = await fetch(`${API_URL}/replies/all`, {
+    const res = await fetch(`${API_URL}/replies/all?full_name=true`, {
       headers: {
         'client-id': CLIENT_ID,
       },
-      cache: 'force-cache',
+      cache: 'no-cache',
     });
 
     const data = await res.json();
 
     if (!res.ok || !data?.ok) {
-      console.error('[getReviewPopPosts] 리뷰 전체 조회 실패');
+      console.error('[getReviewPopPosts] 리뷰 전체 조회 실패', res.status);
       return [];
     }
 
@@ -66,7 +66,8 @@ export async function getReviewPopPosts(): Promise<ReviewPopCard[]> {
     });
 
     return result;
-  } catch {
-    throw new Error('홈의 인기 리뷰글을 불러오는 데 실패했습니다.');
+  } catch (err) {
+    console.error('홈의 인기 리뷰글을 불러오는 데 실패했습니다.', err);
+    return [];
   }
 }

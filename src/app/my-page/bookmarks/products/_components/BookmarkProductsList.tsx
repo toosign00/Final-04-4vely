@@ -110,10 +110,8 @@ export default function BookmarkProductsList({ bookmarks: initialBookmarks, init
    */
   useEffect(() => {
     const page = parseInt(searchParams.get('page') || '1', 10);
-    if (page !== currentPage) {
-      setCurrentPage(page);
-    }
-  }, [searchParams, currentPage]);
+    setCurrentPage(page);
+  }, [searchParams]);
 
   /**
    * @memo paginationData

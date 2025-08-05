@@ -114,10 +114,8 @@ export default function BookmarkPostsList({ bookmarks: initialBookmarks, initial
    */
   useEffect(() => {
     const page = parseInt(searchParams.get('page') || '1', 10);
-    if (page !== currentPage) {
-      setCurrentPage(page);
-    }
-  }, [searchParams, currentPage]);
+    setCurrentPage(page);
+  }, [searchParams]);
 
   /**
    * @memo paginationData

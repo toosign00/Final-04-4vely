@@ -35,8 +35,8 @@ export function GreenMagazineCarousel({ greenMagazineItems }: HomeMagazineProps)
 
                       {/* 글 제목 & 내용 */}
                       <div className='absolute bottom-0 left-0 flex w-full flex-col justify-center bg-white/80 px-4 py-3'>
-                        <h3 className='text-secondary mb-2 line-clamp-1 text-base font-semibold md:text-lg'>[ 제목 ] {item.title}</h3>
-                        <p className='text-muted line-clamp-2 text-sm md:text-base'>[ 본문 내용 ] {item.extra?.contents?.[0].content ?? item.content}</p>
+                        <h3 className='text-secondary mb-2 line-clamp-1 text-base font-semibold md:text-lg'>{item.title}</h3>
+                        <p className='text-muted line-clamp-2 text-sm md:text-base'>{item.extra?.contents?.[0].content ?? item.content}</p>
                       </div>
                     </article>
                   </Link>

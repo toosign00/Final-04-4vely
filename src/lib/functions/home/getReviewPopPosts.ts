@@ -12,7 +12,7 @@ export async function getReviewPopPosts(): Promise<ReviewPopCard[]> {
       headers: {
         'client-id': CLIENT_ID,
       },
-      cache: 'force-cache',
+      cache: 'no-cache',
     });
 
     const data = await res.json();

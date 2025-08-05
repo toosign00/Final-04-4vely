@@ -55,8 +55,8 @@ export default function CommunityPop() {
                     <CardImage src={post.image ?? '/images/default_image.webp'} alt={post.title} priority />
                     {/* 콘텐츠 - 제목 & 본문 */}
                     <CardContent>
-                      <CardTitle title={`[ 제목 ] ${post.title}`} className='text-secondary text-base font-semibold sm:line-clamp-1 md:text-lg' />
-                      <CardDescription description={`[ 본문 내용 ] ${post.content}`} className='text-muted mr-3 line-clamp-2 text-sm md:mr-0 md:text-base' />
+                      <CardTitle title={post.title} className='text-secondary mt-3 text-base font-semibold sm:line-clamp-1 md:text-lg' />
+                      <CardDescription description={post.content} className='text-muted mr-3 line-clamp-2 text-sm md:mr-0 md:text-base' />
                     </CardContent>
                   </Link>
                   {/* 아바타 이미지 & 닉네임 */}

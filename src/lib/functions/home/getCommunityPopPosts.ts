@@ -12,7 +12,7 @@ export async function getCommunityPopPosts(type: string, page = 1, limit = 4): P
       headers: {
         'Client-Id': CLIENT_ID,
       },
-      cache: 'force-cache',
+      cache: 'no-cache',
     });
 
     const data: CommunityPostServerRes = await res.json();

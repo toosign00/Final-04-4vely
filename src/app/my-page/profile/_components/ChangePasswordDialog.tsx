@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/Button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/Dialog';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
-import { updateUserProfile } from '@/lib/actions/mypage/profile/userActions';
+import { changePassword } from '@/lib/actions/mypage/profile/userActions';
 import { Eye, EyeOff, Lock } from 'lucide-react';
 import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
@@ -41,11 +41,7 @@ export default function ChangePasswordDialog({ isOpen, onClose }: ChangePassword
 
   const onSubmit = (values: PasswordFormValues) => {
     startTransition(async () => {
-      const formData = new FormData();
-      formData.append('currentPassword', values.currentPassword);
-      formData.append('newPassword', values.newPassword);
-
-      const res = await updateUserProfile(formData);
+      const res = await changePassword(values.currentPassword, values.newPassword);
 
       if (res.ok) {
         toast.success('비밀번호가 성공적으로 변경되었습니다!');
@@ -59,6 +55,9 @@ export default function ChangePasswordDialog({ isOpen, onClose }: ChangePassword
 
   const handleClose = () => {
     reset();
+    setShowCurrentPassword(false);
+    setShowNewPassword(false);
+    setShowConfirmPassword(false);
     onClose();
   };
 

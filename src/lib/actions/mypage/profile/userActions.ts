@@ -1,16 +1,16 @@
 'use server';
 
 import { uploadFile } from '@/lib/actions/fileActions';
+import { getAuthInfo } from '@/lib/utils/auth.server';
 import { ApiRes } from '@/types/api.types';
 import { User } from '@/types/user.types';
-import { getAuthInfo } from '@/lib/utils/auth.server';
 
 const API_URL = process.env.API_URL || '';
 const CLIENT_ID = process.env.CLIENT_ID || '';
 
 /**
- * 프로필 이미지 업로드를 지원하는 회원 정보 수정 및 비밀번호 변경
- * @param formData - 수정할 정보가 담긴 FormData 객체 (name, email, phone, address, attach, currentPassword, newPassword)
+ * 프로필 이미지 업로드를 지원하는 회원 정보 수정
+ * @param formData - 수정할 정보가 담긴 FormData 객체 (name, email, phone, address, attach)
  * @returns ApiRes<User>
  */
 export async function updateUserProfile(formData: FormData): Promise<ApiRes<User>> {
@@ -27,7 +27,6 @@ export async function updateUserProfile(formData: FormData): Promise<ApiRes<User
 
   // FormData에서 데이터 추출
   const profileData = extractFormData(formData);
-  const isPasswordChange = profileData.currentPassword && profileData.newPassword;
 
   // 이미지 파일 처리
   let image: string | undefined;
@@ -41,7 +40,7 @@ export async function updateUserProfile(formData: FormData): Promise<ApiRes<User
   }
 
   // 요청 본문 구성
-  const requestBody = isPasswordChange ? buildPasswordChangeBody(profileData.currentPassword!, profileData.newPassword!) : buildProfileUpdateBody(profileData, image);
+  const requestBody = buildProfileUpdateBody(profileData, image);
 
   // API 요청 실행
   try {
@@ -60,15 +59,7 @@ export async function updateUserProfile(formData: FormData): Promise<ApiRes<User
     if (!response.ok) {
       return {
         ok: 0,
-        message: data.message || getErrorMessage(!!isPasswordChange),
-      };
-    }
-
-    // 비밀번호 변경인 경우 성공 메시지 반환
-    if (isPasswordChange) {
-      return {
-        ok: 1,
-        item: { message: '비밀번호가 성공적으로 변경되었습니다.' } as User & { message: string },
+        message: data.message || '회원 정보 수정에 실패했습니다.',
       };
     }
 
@@ -76,7 +67,7 @@ export async function updateUserProfile(formData: FormData): Promise<ApiRes<User
   } catch {
     return {
       ok: 0,
-      message: getServerErrorMessage(!!isPasswordChange),
+      message: '서버 오류로 회원 정보를 수정하지 못했습니다.',
     };
   }
 }
@@ -99,17 +90,7 @@ function extractFormData(formData: FormData) {
     email: formData.get('email') as string | undefined,
     address: formData.get('address') as string | undefined,
     phone: formData.get('phone') as string | undefined,
-    currentPassword: formData.get('currentPassword') as string | undefined,
-    newPassword: formData.get('newPassword') as string | undefined,
     attach: formData.get('attach') as File | undefined,
-  };
-}
-
-// 비밀번호 변경 요청 본문 구성
-function buildPasswordChangeBody(currentPassword: string, newPassword: string) {
-  return {
-    currentPassword,
-    password: newPassword,
   };
 }
 
@@ -124,11 +105,105 @@ function buildProfileUpdateBody(data: ReturnType<typeof extractFormData>, image?
   };
 }
 
-// 에러 메시지 헬퍼 함수들
-function getErrorMessage(isPasswordChange: boolean) {
-  return isPasswordChange ? '비밀번호 변경에 실패했습니다.' : '회원 정보 수정에 실패했습니다.';
-}
+/**
+ * 비밀번호 변경 전용 함수 - 현재 비밀번호 검증 후 변경
+ * @param currentPassword - 현재 비밀번호
+ * @param newPassword - 새 비밀번호
+ * @returns ApiRes<{ message: string }>
+ */
+export async function changePassword(currentPassword: string, newPassword: string): Promise<ApiRes<{ message: string }>> {
+  // 인증 정보 검증
+  const authResult = await validateAuth();
+  if (!authResult.success) {
+    return {
+      ok: 0,
+      message: authResult.message,
+    };
+  }
 
-function getServerErrorMessage(isPasswordChange: boolean) {
-  return isPasswordChange ? '서버 오류로 비밀번호를 변경하지 못했습니다.' : '서버 오류로 회원 정보를 수정하지 못했습니다.';
+  const { accessToken, userId } = authResult;
+
+  try {
+    // 1. 사용자 정보 가져오기 (이메일 확인용)
+    const userResponse = await fetch(`${API_URL}/users/${userId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Client-Id': CLIENT_ID,
+      },
+    });
+
+    if (!userResponse.ok) {
+      return {
+        ok: 0,
+        message: '사용자 정보를 가져올 수 없습니다.',
+      };
+    }
+
+    const userData = await userResponse.json();
+    const userEmail = userData.item?.email;
+
+    if (!userEmail) {
+      return {
+        ok: 0,
+        message: '사용자 이메일 정보를 찾을 수 없습니다.',
+      };
+    }
+
+    // 2. 현재 비밀번호 검증 (로그인 API 사용)
+    const loginResponse = await fetch(`${API_URL}/users/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Client-Id': CLIENT_ID,
+      },
+      body: JSON.stringify({
+        email: userEmail,
+        password: currentPassword,
+      }),
+    });
+
+    const loginData = await loginResponse.json();
+
+    // 현재 비밀번호가 틀린 경우
+    if (!loginData.ok) {
+      return {
+        ok: 0,
+        message: '현재 비밀번호가 일치하지 않습니다.',
+      };
+    }
+
+    // 3. 비밀번호 변경
+    const changeResponse = await fetch(`${API_URL}/users/${userId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Client-Id': CLIENT_ID,
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({
+        currentPassword,
+        password: newPassword,
+      }),
+    });
+
+    const changeData = await changeResponse.json();
+
+    if (!changeResponse.ok) {
+      return {
+        ok: 0,
+        message: changeData.message || '비밀번호 변경에 실패했습니다.',
+      };
+    }
+
+    return {
+      ok: 1,
+      item: { message: '비밀번호가 성공적으로 변경되었습니다.' },
+    };
+  } catch {
+    return {
+      ok: 0,
+      message: '서버 오류로 비밀번호를 변경하지 못했습니다.',
+    };
+  }
 }

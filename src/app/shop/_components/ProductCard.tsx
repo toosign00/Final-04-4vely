@@ -2,7 +2,8 @@
 'use client';
 
 import { Card } from '@/components/ui/Card';
-import { Product, getProductId, getProductImageUrl, isNewProduct } from '@/types/product.types';
+import { getProductId, getProductImageUrl, isNewProduct } from '@/lib/utils/product.utils';
+import { Product } from '@/types/product.types';
 import Image from 'next/image';
 import BookmarkButton from '../../../components/ui/BookmarkButton';
 

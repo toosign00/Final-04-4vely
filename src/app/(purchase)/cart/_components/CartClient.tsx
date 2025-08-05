@@ -7,9 +7,9 @@ import { Checkbox } from '@/components/ui/Checkbox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/Dialog';
 import { removeFromCartAction, updateCartOptionAction, updateCartQuantityAction } from '@/lib/actions/cartServerActions';
 import { createCartPurchaseTempOrderAction } from '@/lib/actions/order/orderServerActions';
+import { getImageUrl } from '@/lib/utils/product.utils';
 import { CartItem } from '@/types/cart.types';
-import { getImageUrl } from '@/types/product.types';
-import { Trash2 } from 'lucide-react';
+import { Minus, Plus, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useCallback, useRef, useState } from 'react';
@@ -364,7 +364,7 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
             {/* 선택 영역 */}
             <div className='flex items-center justify-start border-b-2 pb-3 text-base lg:text-xl' role='toolbar' aria-label='장바구니 아이템 관리'>
               <div className='flex items-center gap-2'>
-                <Checkbox id='select-all' className='ml-1 bg-white md:ml-2 lg:ml-0' checked={isAllSelected} onCheckedChange={handleSelectAll} aria-describedby='select-all-description' />
+                <Checkbox id='select-all' className='ml-1 bg-white md:ml-2 lg:ml-0' checked={isAllSelected} onCheckedChange={handleSelectAll} aria-label='모든 상품 선택' aria-describedby='select-all-description' />
                 <label htmlFor='select-all' className='cursor-pointer'>
                   모두 선택
                 </label>
@@ -403,7 +403,7 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
                             checked={selectedItems.has(item._id)}
                             onCheckedChange={(checked) => handleSelectItem(item._id, checked as boolean)}
                             disabled={isLoading === item._id}
-                            aria-label={`${item.product.name} 선택${selectedItems.has(item._id) ? ', 현재 선택됨' : ''}`}
+                            aria-label={`${item.product.name} 상품 선택`}
                           />
                         </div>
                         <div className='flex h-28 flex-col justify-between py-1 sm:h-32 md:h-36 lg:h-40'>
@@ -515,7 +515,7 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
                           </Button>
                         </div>
 
-                        {/* 수량 버튼 */}
+                        {/* 수량 버튼 - 아이콘 사용으로 수정 */}
                         <div className='mt-2 flex h-10 w-20 items-center rounded-4xl border bg-white sm:mt-3 md:mt-4 md:h-10 md:w-24 lg:mt-0 lg:h-12 lg:w-28' role='group' aria-labelledby={`quantity-label-${item._id}`}>
                           <span id={`quantity-label-${item._id}`} className='sr-only'>
                             수량 조절
@@ -528,7 +528,7 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
                             disabled={item.quantity <= 1 || isLoading === item._id}
                             aria-label={`${item.product.name} 수량 1개 감소. 현재 ${item.quantity}개`}
                           >
-                            <span aria-hidden='true'>-</span>
+                            <Minus size={16} />
                           </Button>
                           <span className='flex-1 text-center text-sm md:text-base' aria-label={`현재 수량 ${item.quantity}개`} role='status'>
                             {item.quantity}
@@ -541,7 +541,7 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
                             disabled={isLoading === item._id}
                             aria-label={`${item.product.name} 수량 1개 증가. 현재 ${item.quantity}개`}
                           >
-                            <span aria-hidden='true'>+</span>
+                            <Plus size={16} />
                           </Button>
                         </div>
                       </div>
@@ -616,18 +616,18 @@ export default function CartClientSection({ initialCartItems }: CartClientSectio
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className='mt-6 gap-3 sm:justify-between'>
-            <AlertDialogAction onClick={confirmRemoveSingleItem} className='bg-primary text-secondary active:bg-primary px-10 shadow-sm hover:bg-[#AEBB2E]'>
-              삭제
-            </AlertDialogAction>
             <AlertDialogCancel
               onClick={() => {
                 setShowDeleteSingleAlert(false);
                 setDeleteTargetId(null);
               }}
-              className='text-secondary hover:bg-secondary border-[0.5px] border-gray-300 bg-white px-7 shadow-sm hover:text-white'
+              className='text-secondary hover:bg-secondary border-[0.5px] border-gray-300 bg-white px-10 shadow-sm hover:text-white'
             >
               취소
             </AlertDialogCancel>
+            <AlertDialogAction onClick={confirmRemoveSingleItem} className='bg-primary text-secondary active:bg-primary px-10 shadow-sm hover:bg-[#AEBB2E]'>
+              삭제
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

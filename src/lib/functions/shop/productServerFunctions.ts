@@ -39,15 +39,6 @@ export async function getFilteredProductsWithPagination(params: {
     const page = params.page || 1;
     const limit = params.limit || 12;
 
-    console.log('[서버 상품 조회] 시작:', {
-      page,
-      limit,
-      search: params.search,
-      sort: params.sort,
-      category: params.category,
-      filters: params.filters,
-    });
-
     // API 쿼리 파라미터 구성
     const queryParams = new URLSearchParams();
 
@@ -84,7 +75,6 @@ export async function getFilteredProductsWithPagination(params: {
 
       if (sortValue) {
         queryParams.append('sort', sortValue);
-        console.log('[정렬 적용]:', params.sort, '→', sortValue);
       }
     }
 
@@ -158,12 +148,10 @@ export async function getFilteredProductsWithPagination(params: {
     // custom 파라미터 추가 (값이 있을 때만)
     if (customFilterString) {
       queryParams.append('custom', customFilterString);
-      console.log('[custom 파라미터]:', customFilterString);
     }
 
     // API 호출
     const apiUrl = `${API_URL}/products?${queryParams.toString()}`;
-    console.log('[API 호출]:', apiUrl);
 
     const res = await fetch(apiUrl, {
       headers: {
@@ -175,7 +163,6 @@ export async function getFilteredProductsWithPagination(params: {
     const data = await res.json();
 
     if (!res.ok || !data.ok) {
-      console.error('[API 오류]:', data.message);
       return {
         products: [],
         pagination: {
@@ -188,15 +175,6 @@ export async function getFilteredProductsWithPagination(params: {
     }
 
     const products = data.item || [];
-
-    console.log('[API 응답]:', {
-      상태: 'OK',
-      받은상품수: products.length,
-      전체상품수: data.pagination?.total,
-      현재페이지: data.pagination?.page,
-      전체페이지: data.pagination?.totalPages,
-      적용된필터: customFilterString ? JSON.parse(customFilterString) : '없음',
-    });
 
     // 추천순 정렬 보완 (클라이언트 사이드)
     if (!params.sort || params.sort === 'recommend') {
@@ -231,8 +209,6 @@ export async function getFilteredProductsWithPagination(params: {
         const bCreatedAt = new Date(b.createdAt).getTime();
         return bCreatedAt - aCreatedAt;
       });
-
-      console.log('[최신순 정렬 보완] NEW 태그 상품 우선 배치 완료');
     }
 
     // 북마크 정보 추가
@@ -241,8 +217,6 @@ export async function getFilteredProductsWithPagination(params: {
     const accessToken = authInfo?.accessToken;
 
     if (accessToken && products.length > 0) {
-      console.log(`[북마크 정보 조회] ${products.length}개 상품`);
-
       const targets = products.map((product: Product) => ({
         id: product._id,
         type: 'product' as const,
@@ -269,17 +243,11 @@ export async function getFilteredProductsWithPagination(params: {
       totalPages: data.pagination?.totalPages || 0,
     };
 
-    console.log('[서버 상품 조회] 완료:', {
-      필터후상품수: finalProducts.length,
-      페이지정보: pagination,
-    });
-
     return {
       products: finalProducts,
       pagination,
     };
-  } catch (error) {
-    console.error('상품 조회 실패:', error);
+  } catch {
     return {
       products: [],
       pagination: {
@@ -324,14 +292,13 @@ export async function getServerProductById(id: number): ApiResPromise<Product> {
           myBookmarkId: bookmark?._id,
           isBookmarked: !!bookmark,
         };
-      } catch (error) {
-        console.error('북마크 정보 조회 실패:', error);
+      } catch {
+        // 북마크 정보 조회 실패해도 계속 진행
       }
     }
 
     return data;
-  } catch (error) {
-    console.error('서버 상품 상세 조회 실패:', error);
+  } catch {
     return {
       ok: 0,
       message: '일시적인 네트워크 문제로 상품 상세 조회에 실패했습니다.',
@@ -363,7 +330,6 @@ export async function getBestProducts(limit: number = 4): ApiResPromise<Product[
 
     if (!data.ok || !data.item || data.item.length === 0) {
       // custom 파라미터가 작동하지 않으면 일반 조회
-      console.warn('[베스트 상품] custom 필터 미작동, 일반 조회 시도');
       const fallbackRes = await fetch(`${API_URL}/products?limit=${limit}&sort={"createdAt": -1}`, {
         headers: {
           'Client-Id': CLIENT_ID,
@@ -411,8 +377,7 @@ export async function getBestProducts(limit: number = 4): ApiResPromise<Product[
       ok: 1,
       item: bestProducts,
     };
-  } catch (error) {
-    console.error('베스트 상품 조회 실패:', error);
+  } catch {
     return {
       ok: 0,
       message: '일시적인 네트워크 문제로 베스트 상품 조회에 실패했습니다.',
@@ -531,8 +496,7 @@ export async function getProductDetailWithRecommendations(productId: string): Pr
       product,
       recommendProducts: shuffleArray(recommendProducts).slice(0, 4),
     };
-  } catch (error) {
-    console.error('상품 상세 정보 로딩 실패:', error);
+  } catch {
     return {
       product: null,
       recommendProducts: [],

@@ -28,12 +28,9 @@ export async function getBookmarkByTarget(targetId: number, type: BookmarkType):
   try {
     const authInfo = await getAuthInfo();
     if (!authInfo) {
-      console.log(`서버 북마크 조회: ${type} 인증 정보 없음 - 로그인 필요`);
       return null;
     }
     const { accessToken } = authInfo;
-
-    console.log(`[서버 북마크 조회] ${type} ID: ${targetId}`);
 
     const res = await fetch(`${API_URL}/bookmarks/${type}/${targetId}`, {
       method: 'GET',
@@ -48,16 +45,14 @@ export async function getBookmarkByTarget(targetId: number, type: BookmarkType):
     if (res.ok) {
       const data = await res.json();
       if (data.ok && data.item) {
-        console.log(`[서버 북마크 조회] ${type} 북마크 발견:`, data.item._id);
         return data.item;
       }
     } else if (res.status === 404) {
-      console.log(`[서버 북마크 조회] ${type} 북마크 없음`);
+      return null;
     }
 
     return null;
-  } catch (error) {
-    console.error(`[서버 북마크 조회] ${type} 오류:`, error);
+  } catch {
     return null;
   }
 }
@@ -107,14 +102,11 @@ export async function getBookmarks(type: BookmarkType, options?: { page?: number
       };
     }
 
-    console.log(`[서버 북마크 목록] ${type} 북마크 ${data.item?.length || 0}개 조회됨`);
-
     return {
       ok: 1,
       item: data.item || [],
     };
-  } catch (error) {
-    console.error(`[서버 북마크 목록] ${type} 오류:`, error);
+  } catch {
     return {
       ok: 0,
       message: '일시적인 네트워크 문제로 북마크 목록 조회에 실패했습니다.',
@@ -172,7 +164,6 @@ export async function getBulkBookmarks(targets: Array<{ id: number; type: Bookma
     }
   });
 
-  console.log(`[서버 벌크 북마크] ${bookmarkMap.size}/${targets.length}개 북마크 조회됨`);
   return bookmarkMap;
 }
 

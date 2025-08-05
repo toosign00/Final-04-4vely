@@ -16,7 +16,8 @@ export async function getProductReplies(productId: number): ApiResPromise<Produc
   try {
     console.log(`[리뷰 조회] 상품 ID: ${productId}`);
 
-    const res = await fetch(`${API_URL}/replies/products/${productId}?full_name=true`, { // full_name을 사용하여 작성자명의 마스킹 해제
+    const res = await fetch(`${API_URL}/replies/products/${productId}?full_name=true`, {
+      // full_name을 사용하여 작성자명의 마스킹 해제
       headers: {
         'Content-Type': 'application/json',
         'client-id': CLIENT_ID,

@@ -8,7 +8,7 @@ import { useActivityTracker } from '@/hooks/useActivityTracker';
  */
 export default function ActivityTracker() {
   useActivityTracker();
-  
+
   // UI를 렌더링하지 않는 컴포넌트
   return null;
 }

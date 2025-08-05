@@ -29,10 +29,13 @@ export function useActivityTracker() {
 
     // 새로운 2시간 타이머 설정 (자동 로그인이 아닌 경우만)
     if (zustandUser && !zustandUser.rememberLogin) {
-      timeoutRef.current = setTimeout(() => {
-        console.log('[Activity Tracker] 2시간 비활성으로 자동 로그아웃');
-        zustandLogout();
-      }, 2 * 60 * 60 * 1000); // 2시간
+      timeoutRef.current = setTimeout(
+        () => {
+          console.log('[Activity Tracker] 2시간 비활성으로 자동 로그아웃');
+          zustandLogout();
+        },
+        2 * 60 * 60 * 1000,
+      ); // 2시간
     }
   }, [zustandUser, updateActivity, zustandLogout]);
 
@@ -48,7 +51,7 @@ export function useActivityTracker() {
     }
 
     // 이벤트 리스너 등록
-    activityEvents.forEach(event => {
+    activityEvents.forEach((event) => {
       document.addEventListener(event, handleActivity, true);
     });
 
@@ -57,10 +60,10 @@ export function useActivityTracker() {
 
     // 컴포넌트 언마운트 시 정리
     return () => {
-      activityEvents.forEach(event => {
+      activityEvents.forEach((event) => {
         document.removeEventListener(event, handleActivity, true);
       });
-      
+
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }

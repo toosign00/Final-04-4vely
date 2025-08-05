@@ -173,8 +173,6 @@ export async function getBookmarksFromServer(
     const allBookmarks = response.item || [];
     const total = allBookmarks.length;
 
-    console.log(`[${type} 북마크] 전체: ${total}개, 페이지: ${page}, 페이지당: ${limit}개`);
-
     // 현재 페이지에 해당하는 북마크만 선택
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;

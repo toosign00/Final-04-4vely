@@ -7,7 +7,7 @@
 import { ApiRes } from '@/types/api.types';
 import { BookmarkItem, PostDetail, ProductDetail } from '@/types/mypageBookmark.types';
 
-const API_BASE_URL = process.env.API_SERVER || '';
+const API_URL = process.env.API_URL || '';
 const CLIENT_ID = process.env.CLIENT_ID || '';
 
 /**
@@ -15,7 +15,7 @@ const CLIENT_ID = process.env.CLIENT_ID || '';
  */
 async function apiRequest<T>(endpoint: string, headers: Record<string, string> = {}): Promise<ApiRes<T> | null> {
   try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const response = await fetch(`${API_URL}${endpoint}`, {
       headers: {
         'Content-Type': 'application/json',
         'client-id': CLIENT_ID,

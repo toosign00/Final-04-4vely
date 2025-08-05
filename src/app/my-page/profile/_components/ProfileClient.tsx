@@ -231,7 +231,7 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                 <div className='t-small text-secondary/70 mb-1 flex items-center gap-2'>
                   <Mail className='size-4' />
                   이메일
-                  <span className='t-caption text-secondary/50 ml-2'>* 이메일 변경 시 로그인 정보가 변경됩니다</span>
+                  <span className='text-secondary/50 ml-2 text-sm'>* 이메일 변경 시 로그인 정보가 변경됩니다</span>
                 </div>
                 <input
                   className={`t-body text-secondary focus:ring-primary flex h-12 w-full items-center rounded-xl border border-gray-200 bg-gray-50 px-4 outline-none focus:ring-2 ${isSocialLogin ? 'cursor-not-allowed' : ''}`}

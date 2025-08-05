@@ -116,7 +116,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
     if (!name.trim()) return '이름을 입력해주세요.';
     if (name.trim().length < 2) return '이름은 2자 이상 입력해주세요.';
     if (name.trim().length > 20) return '이름은 20자 이하로 입력해주세요.';
-    if (!/^[가-힣a-zA-Z\s]+$/.test(name)) return '이름은 한글, 영문, 공백만 입력 가능합니다.';
+    if (!/^[가-힣a-zA-Z0-9\s]+$/.test(name)) return '이름은 한글, 영문, 숫자, 공백만 입력 가능합니다.';
     return undefined;
   };
 

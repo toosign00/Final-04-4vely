@@ -5,14 +5,15 @@ import { CommunityPost, CommunityPostServerRes } from '@/types/homeCommunityPop.
 const API_URL = process.env.API_URL;
 const CLIENT_ID = process.env.CLIENT_ID || '';
 
-// 조회수 기준으로 커뮤니티 인기글 가져옴
+// 북마크 많은 순으로 커뮤니티 인기글 가져옴
 export async function getCommunityPopPosts(type: string, page = 1, limit = 4): Promise<CommunityPost[]> {
+  const bookmarks = JSON.stringify({ bookmarks: -1 });
   try {
-    const res = await fetch(`${API_URL}/posts?type=${type}&page=${page}&limit=${limit}`, {
+    const res = await fetch(`${API_URL}/posts?type=${type}&page=${page}&limit=${limit}&sort=${bookmarks}`, {
       headers: {
         'Client-Id': CLIENT_ID,
       },
-      cache: 'no-cache',
+      cache: 'no-store',
     });
 
     const data: CommunityPostServerRes = await res.json();

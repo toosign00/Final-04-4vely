@@ -12,8 +12,6 @@ import { useEffect, useState } from 'react';
 // 커뮤니티 인기글
 export default function CommunityPop() {
   const [popularPosts, setPopularPosts] = useState<CommunityPost[]>([]);
-  // 좋아요 상태 개별 관리
-  const [isLiked, setIsLiked] = useState<{ [id: number]: boolean }>({});
 
   useEffect(() => {
     getCommunityPopPosts('community')
@@ -22,14 +20,6 @@ export default function CommunityPop() {
       })
       .catch((err) => console.error('인기 커뮤니티 글 불러오기 실패:', err));
   }, []);
-
-  const handleLike = (id: number) => {
-    setIsLiked((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-    console.log('좋아요');
-  };
 
   if (popularPosts.length === 0) return null;
 
@@ -48,8 +38,8 @@ export default function CommunityPop() {
         >
           <CarouselContent>
             {popularPosts.map((post) => (
-              <CarouselItem key={post._id} className='mb-3 w-full px-5 sm:px-7'>
-                <Card className='max-w-none justify-between shadow-md'>
+              <CarouselItem key={post._id} className='w-full px-5 pb-6 sm:px-7'>
+                <Card className='max-w-none justify-between'>
                   <Link href={`/community/${post._id}`} className='block'>
                     {/* 인기 반려식물 이미지 */}
                     <CardImage src={post.image ?? '/images/default_image.webp'} alt={post.title} priority />
@@ -70,7 +60,7 @@ export default function CommunityPop() {
                     </div>
 
                     {/* 카드 하단 좋아요 & 댓글 & 조회수 */}
-                    <CardFooter likes={post.bookmarks} comments={post.repliesCount} views={post.views} timeAgo={getRelativeTime(post.createdAt)} isLiked={isLiked[post._id] ?? false} onLike={() => handleLike(post._id)} />
+                    <CardFooter likes={post.bookmarks} comments={post.repliesCount} views={post.views} timeAgo={getRelativeTime(post.createdAt)} />
                   </div>
                 </Card>
               </CarouselItem>

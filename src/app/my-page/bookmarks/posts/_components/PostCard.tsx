@@ -49,7 +49,7 @@ export default function PostCard({ post, bookmarkId, onDetailClick, onDelete }: 
   };
 
   return (
-    <div className='group relative mx-auto w-full max-w-6xl cursor-pointer rounded-2xl bg-white p-3 shadow-sm transition-shadow duration-300 hover:shadow-lg'>
+    <div className='group relative mx-auto w-full max-w-6xl rounded-2xl bg-white p-3 shadow-sm transition-shadow duration-300 hover:shadow-lg'>
       {/* 삭제버튼 */}
       <div className='absolute top-3 right-3 z-10 md:hidden'>
         <Button variant='destructive' size='sm' onClick={handleDelete} disabled={isDeleting}>

@@ -68,7 +68,7 @@ export default function ProductCard({ order, bookmarkId, onDetailClick, onDelete
   };
 
   return (
-    <div className='group relative mx-auto w-full max-w-6xl cursor-pointer rounded-2xl bg-white p-3 shadow-sm transition-shadow duration-300 hover:shadow-lg'>
+    <div className='group relative mx-auto w-full max-w-6xl rounded-2xl bg-white p-3 shadow-sm transition-shadow duration-300 hover:shadow-lg'>
       {/* 모바일 화면에서 표시되는 삭제 버튼 */}
       <div className='absolute top-3 right-3 z-10 md:hidden'>
         <Button variant='destructive' size='sm' onClick={handleDelete} disabled={isDeleting}>

@@ -94,6 +94,41 @@ export default function MyPlantsClient({ initialPlants, initialError, initialLat
     return <ErrorDisplay title='나의 식물을 불러오지 못했습니다' message='일시적인 오류가 발생했어요.' />;
   }
 
+  // 등록된 식물이 없을 경우 빈 상태 메시지 표시
+  if (displayItems.length === 0) {
+    return (
+      <>
+        <div className='mx-auto max-w-4xl px-4 md:px-5 lg:px-6'>
+          <div className='mt-4 flex items-center justify-between'>
+            <Button onClick={() => setOpen(true)} variant='primary' className='flex items-center gap-2'>
+              <PlusCircle className='h-4 w-4' />
+              반려식물 등록
+            </Button>
+          </div>
+        </div>
+        <section className='flex min-h-[25rem] flex-col items-center justify-center px-4 text-center' aria-labelledby='empty-plants-title' role='region'>
+          <div className='mb-6' aria-hidden='true'>
+            <PlusCircle className='mx-auto h-16 w-16 text-gray-300' />
+          </div>
+          <div className='mb-8 max-w-md'>
+            <h3 id='empty-plants-title' className='t-h3 text-secondary mb-3 font-bold'>
+              아직 등록한 식물이 없습니다
+            </h3>
+            <p className='t-body text-muted leading-relaxed'>
+              첫 번째 반려식물을 등록해보세요!
+              <br />
+              식물의 성장 과정을 기록하고 관리할 수 있어요.
+            </p>
+          </div>
+          <div className='text-center'>
+            <p className='t-small text-muted/80'>💡 위의 반려식물 등록 버튼을 눌러 시작해보세요</p>
+          </div>
+        </section>
+        <PlantRegisterModal open={open} onClose={() => setOpen(false)} onSuccess={handlePlantRegistered} />
+      </>
+    );
+  }
+
   return (
     <>
       <div className='mx-auto max-w-4xl px-4 md:px-5 lg:px-6'>

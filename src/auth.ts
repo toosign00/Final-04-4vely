@@ -23,6 +23,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   secret: process.env.AUTH_SECRET,
 
   /**
+   * 세션 전략 및 만료시간 설정
+   */
+  session: {
+    strategy: 'jwt', // JWT 전략 사용
+    maxAge: 5 * 24 * 60 * 60, // 5일 (초 단위)
+    updateAge: 24 * 60 * 60, // 24시간마다 세션 갱신
+  },
+
+  /**
    * 인증 제공자 설정
    * @description Google, GitHub, Kakao, Naver OAuth 제공자와 Credentials(email/password) 제공자를 설정
    */
@@ -71,7 +80,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         case 'google':
         case 'github':
           console.log('OAuth 로그인', user);
-          // TODO OAuth 인증이 완료된 후 자동으로 회원 가입을 하고 로그인 처리
           let userInfo: User | null = null;
           try {
             // 자동 회원 가입
@@ -107,7 +115,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           user.accessToken = userInfo.token!.accessToken;
           user.refreshToken = userInfo.token!.refreshToken;
           break;
-
       }
       return true;
     },

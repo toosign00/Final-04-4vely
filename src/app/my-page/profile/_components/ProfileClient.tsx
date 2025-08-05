@@ -30,6 +30,39 @@ export default function ProfileClient({ user }: ProfileClientProps) {
   const [displayName, setDisplayName] = useState(user?.name || '');
   const [displayEmail, setDisplayEmail] = useState(user?.email || '');
 
+  // 소셜 로그인 여부 확인
+  const isSocialLogin = user?.loginType && user.loginType !== 'email';
+
+  // 네이버 전화번호 형식 변환 함수 (010-1234-5678 -> 01012345678)
+  const formatPhoneForApi = (phone: string): string => {
+    if (!phone) return '';
+    return phone.replace(/-/g, '');
+  };
+
+  // 소셜 로그인 사용자의 추가 정보 추출
+  const getSocialUserData = () => {
+    if (!isSocialLogin || !user?.extra) return null;
+
+    const extraData = user.extra;
+    let socialEmail = user.email;
+    let socialPhone = user.phone;
+
+    // Naver 및 기타 소셜 로그인에서 추가 정보 추출
+    if (extraData.response) {
+      socialEmail = socialEmail || extraData.response.email || '';
+      // 네이버 전화번호 형식 변환
+      const rawPhone = socialPhone || extraData.response.mobile || '';
+      socialPhone = rawPhone ? formatPhoneForApi(rawPhone) : '';
+    }
+
+    return {
+      email: socialEmail,
+      phone: socialPhone,
+    };
+  };
+
+  const socialData = getSocialUserData();
+
   const {
     register,
     handleSubmit,
@@ -38,8 +71,8 @@ export default function ProfileClient({ user }: ProfileClientProps) {
   } = useForm<ProfileFormValues>({
     defaultValues: {
       name: user?.name || '',
-      email: user?.email || '',
-      phone: user?.phone || '',
+      email: socialData?.email || user?.email || '',
+      phone: socialData?.phone || user?.phone || '',
       address: user?.address || '',
     },
     mode: 'onBlur',
@@ -48,16 +81,39 @@ export default function ProfileClient({ user }: ProfileClientProps) {
   // user가 바뀔 때마다 reset을 호출하여 폼 초기값을 맞춰줌
   useEffect(() => {
     if (user) {
+      // 소셜 로그인 사용자의 추가 정보 추출 (함수를 useEffect 내부로 이동)
+      const getUpdatedSocialData = () => {
+        if (!isSocialLogin || !user?.extra) return null;
+
+        const extraData = user.extra;
+        let socialEmail = user.email;
+        let socialPhone = user.phone;
+
+        // Naver 및 기타 소셜 로그인에서 추가 정보 추출
+        if (extraData.response) {
+          socialEmail = socialEmail || extraData.response.email || '';
+          // 네이버 전화번호 형식 변환 (010-1234-5678 -> 01012345678)
+          const rawPhone = socialPhone || extraData.response.mobile || '';
+          socialPhone = rawPhone ? formatPhoneForApi(rawPhone) : '';
+        }
+
+        return {
+          email: socialEmail,
+          phone: socialPhone,
+        };
+      };
+
+      const updatedSocialData = getUpdatedSocialData();
       reset({
         name: user.name || '',
-        email: user.email || '',
-        phone: user.phone || '',
+        email: updatedSocialData?.email || user.email || '',
+        phone: updatedSocialData?.phone || user.phone || '',
         address: user.address || '',
       });
       setDisplayName(user.name || '');
-      setDisplayEmail(user.email || '');
+      setDisplayEmail(updatedSocialData?.email || user.email || '');
     }
-  }, [user, reset]);
+  }, [user, reset, isSocialLogin]);
 
   // 파일 변경 시 미리보기
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -167,6 +223,7 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                   className='t-body text-secondary focus:ring-primary flex h-12 w-full items-center rounded-xl border border-gray-200 bg-gray-50 px-4 outline-none focus:ring-2'
                   {...register('name', { required: true, maxLength: 20 })}
                   disabled={isPending}
+                  placeholder='이름을 입력하세요'
                 />
                 <div className='min-h-[1.5rem]'>{errors.name ? <span className='text-error text-sm'>이름을 입력해 주세요.</span> : null}</div>
               </div>
@@ -180,6 +237,7 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                   {...register('email', { required: true, minLength: 10, maxLength: 30 })}
                   disabled={isPending}
                   type='email'
+                  placeholder='이메일을 입력하세요'
                 />
                 <div className='min-h-[1.5rem]'>
                   {errors.email?.type === 'required' && <span className='text-error text-sm'>이메일을 입력해 주세요.</span>}
@@ -196,7 +254,7 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                 <input
                   className='t-body text-secondary focus:ring-primary flex h-12 w-full items-center rounded-xl border border-gray-200 bg-gray-50 px-4 outline-none focus:ring-2'
                   {...register('phone', {
-                    required: true,
+                    required: !isSocialLogin || !!socialData?.phone,
                     minLength: 10,
                     maxLength: 11,
                     pattern: { value: /^[0-9]*$/, message: '숫자만 입력하세요.' },
@@ -221,6 +279,7 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                   className='t-body text-secondary focus:ring-primary flex h-12 w-full items-center rounded-xl border border-gray-200 bg-gray-50 px-4 outline-none focus:ring-2'
                   {...register('address', { required: true, minLength: 3, maxLength: 50 })}
                   disabled={isPending}
+                  placeholder='주소를 입력하세요'
                 />
                 <div className='min-h-[1.5rem]'>{errors.address ? <span className='text-error text-sm'>주소를 입력해 주세요.</span> : null}</div>
               </div>
@@ -240,14 +299,26 @@ export default function ProfileClient({ user }: ProfileClientProps) {
           </div>
 
           <div className='divide-y divide-gray-200 bg-white'>
-            {/* 비밀번호 변경 */}
-            <button type='button' onClick={() => setIsPasswordDialogOpen(true)} className='flex h-auto w-full cursor-pointer items-center justify-between rounded-none px-8 py-6 text-left transition-colors hover:bg-gray-50'>
-              <div className='flex-1'>
-                <h4 className='t-body text-secondary mb-1 font-semibold'>비밀번호 변경</h4>
-                <p className='t-small text-secondary/70'>계정 보안을 위해 주기적으로 비밀번호를 변경하세요</p>
+            {/* 비밀번호 변경 - 이메일 로그인 사용자만 표시 */}
+            {!isSocialLogin && (
+              <button type='button' onClick={() => setIsPasswordDialogOpen(true)} className='flex h-auto w-full cursor-pointer items-center justify-between rounded-none px-8 py-6 text-left transition-colors hover:bg-gray-50'>
+                <div className='flex-1'>
+                  <h4 className='t-body text-secondary mb-1 font-semibold'>비밀번호 변경</h4>
+                  <p className='t-small text-secondary/70'>계정 보안을 위해 주기적으로 비밀번호를 변경하세요</p>
+                </div>
+                <ChevronRight className='text-secondary/50 size-5' />
+              </button>
+            )}
+
+            {/* 소셜 로그인 사용자를 위한 안내 */}
+            {isSocialLogin && (
+              <div className='flex h-auto w-full items-center justify-between rounded-none px-8 py-6 text-left opacity-50'>
+                <div className='flex-1'>
+                  <h4 className='t-body text-secondary mb-1 font-semibold'>소셜 로그인 계정</h4>
+                  <p className='t-small text-secondary/70'>{user?.loginType} 계정으로 로그인하셨습니다. 비밀번호 변경은 해당 서비스에서 진행해주세요.</p>
+                </div>
               </div>
-              <ChevronRight className='text-secondary/50 size-5' />
-            </button>
+            )}
 
             {/* 이메일 알림 */}
             <div className='flex h-auto w-full cursor-not-allowed items-center justify-between rounded-none border-t border-gray-100 px-8 py-6 text-left opacity-50'>

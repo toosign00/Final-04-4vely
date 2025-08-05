@@ -1,0 +1,21 @@
+meta {
+  name: 게시물 목록 조회
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{url}}/posts?page=1&limit=4&type=community&sort={"views":-1}
+  body: none
+  auth: inherit
+}
+
+params:query {
+  page: 1
+  limit: 4
+  type: community
+  sort: {"views":-1}
+  ~type: magazine
+  ~sort: {"createdAt":-1}
+  ~type: plant
+}

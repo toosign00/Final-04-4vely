@@ -1,140 +1,135 @@
-'use client';
-
-import { Button } from '@/components/ui/Button';
-import { ArrowLeft } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { useDiaryData } from '../_hooks/useDiaryData';
-import { usePlantData } from '../_hooks/usePlantData';
-import { Diary } from '../_types/diary.types';
-import DiaryList from './_components/DiaryList';
-import DiaryModal from './_components/DiaryModal';
-import EmptyDiaryState from './_components/EmptyDiaryState';
-import PlantHeader from './_components/PlantHeader';
-import PlantNotFound from './_components/PlantNotFound';
+import { getDiariesByPlantId } from '@/lib/actions/mypage/myPlant/diaryActions';
+import { getPlantById } from '@/lib/actions/mypage/myPlant/plantActions';
+import { notFound } from 'next/navigation';
+import { Diary, mapDiaryReplyToDiary } from '../_types/diary.types';
+import { mapPlantPostToPlant } from '../_utils/plantUtils';
+import PlantDiaryClientWrapper from './_components/PlantDiaryClientWrapper';
 
 /**
- * 식물 일지 목록 페이지
+ * 동적 라우트 파라미터 타입 정의
+ * @interface PageParams
  */
-export default function PlantDiaryListPage() {
-  const router = useRouter();
-  const params = useParams();
-  const plantId = Number(params.plantId);
+interface PageParams {
+  /** 식물 ID (URL 파라미터) */
+  plantId: string;
+}
 
-  // 식물 데이터 관리
-  const { plant, loading: plantLoading, error: plantError } = usePlantData(plantId);
+/**
+ * 페이지 컴포넌트 Props 타입 정의
+ * @interface PlantDiaryPageProps
+ */
+interface PlantDiaryPageProps {
+  /** 동적 라우트 파라미터 (Next.js 15부터 Promise 타입) */
+  params: Promise<PageParams>;
+}
 
-  // 일지 데이터 관리
-  const { displayDiaries, loading: diaryLoading, error: diaryError, currentPage, createDiary, updateDiary, deleteDiary, handlePageChange } = useDiaryData(plantId);
+/**
+ * 식물 상세 페이지 - 식물 정보와 일지 목록을 표시하는 서버 컴포넌트
+ *
+ * @description
+ * - 서버에서 식물 데이터와 일지 데이터를 미리 페칭하여 초기 로딩 성능 최적화
+ * - 클라이언트 상호작용이 필요한 부분은 별도 클라이언트 컴포넌트로 분리
+ * - SEO 최적화를 위한 서버 사이드 렌더링 활용
+ *
+ * @param {PlantDiaryPageProps} props - 페이지 props
+ * @returns {Promise<JSX.Element>} 렌더링된 페이지 컴포넌트
+ *
+ * @example
+ * // URL: /my-page/my-plants/123
+ * // params.plantId = "123"
+ *
+ * @performance
+ * - 서버에서 데이터 프리페칭으로 초기 로딩 시간 단축
+ * - 클라이언트 hydration 최적화
+ * - 불필요한 클라이언트 번들 크기 감소
+ *
+ * @error_handling
+ * - 잘못된 plantId 형식 시 404 페이지 리다이렉트
+ * - 존재하지 않는 식물 시 404 처리
+ * - API 오류 시 에러 상태를 클라이언트로 전달
+ */
+export default async function PlantDiaryPage({ params }: PlantDiaryPageProps) {
+  // URL 파라미터 await 및 식물 ID 추출
+  const resolvedParams = await params;
+  const plantId = Number(resolvedParams.plantId);
 
-  // 일지 작성 모달 상태
-  const [isWriteModalOpen, setIsWriteModalOpen] = useState(false);
-
-  // 뒤로 가기
-  const handleBack = () => {
-    router.push('/my-page/my-plants');
-  };
-
-  // 일지 작성 모달 열기
-  const handleWriteDiary = () => {
-    setIsWriteModalOpen(true);
-  };
-
-  // 일지 생성 처리
-  const handleCreateDiary = async (newDiary: Diary) => {
-    try {
-      await createDiary({
-        plantId,
-        title: newDiary.title,
-        content: newDiary.content,
-        images: newDiary.images,
-        date: newDiary.date,
-      });
-      setIsWriteModalOpen(false);
-    } catch (error) {
-      console.error('일지 생성 실패:', error);
-    }
-  };
-
-  // 일지 삭제 처리
-  const handleDeleteDiary = async (diaryId: number) => {
-    if (confirm('정말로 이 일지를 삭제하시겠습니까?')) {
-      try {
-        await deleteDiary(diaryId);
-      } catch (error) {
-        console.error('일지 삭제 실패:', error);
-      }
-    }
-  };
-
-  // 일지 수정 처리
-  const handleUpdateDiary = async (updatedDiary: Diary) => {
-    try {
-      await updateDiary(updatedDiary);
-    } catch (error) {
-      console.error('일지 수정 실패:', error);
-    }
-  };
-
-  // 로딩 상태
-  if (plantLoading || diaryLoading) {
-    return (
-      <div className='bg-surface min-h-screen'>
-        <div className='flex min-h-[25rem] items-center justify-center'>
-          <div className='text-center'>
-            <p className='t-body text-muted'>로딩 중...</p>
-          </div>
-        </div>
-      </div>
-    );
+  // 잘못된 ID 형식인 경우 404 처리
+  if (isNaN(plantId) || plantId <= 0) {
+    notFound();
   }
 
-  // 에러 상태
-  if (plantError || diaryError) {
-    return (
-      <div className='bg-surface min-h-screen'>
-        <div className='flex min-h-[25rem] items-center justify-center'>
-          <div className='text-center'>
-            <p className='t-body text-muted mb-4'>{plantError || diaryError}</p>
-            <Button onClick={handleBack} variant='primary'>
-              <ArrowLeft className='mr-2 h-4 w-4' />
-              목록으로 돌아가기
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
+  // 서버에서 식물 데이터와 일지 데이터를 병렬로 페칭
+  const [plantResult, diariesResult] = await Promise.allSettled([getPlantById(plantId), getDiariesByPlantId(plantId)]);
+
+  // 식물 데이터 처리
+  let plant = null;
+  let plantError: string | null = null;
+
+  if (plantResult.status === 'fulfilled') {
+    if (plantResult.value.ok && plantResult.value.item) {
+      // PlantPost를 Plant로 변환
+      plant = mapPlantPostToPlant(plantResult.value.item);
+    } else {
+      plantError = '식물 정보를 불러올 수 없습니다.';
+    }
+  } else {
+    plantError = '식물 정보를 불러오는 중 오류가 발생했습니다.';
   }
 
-  // 식물을 찾을 수 없는 경우
-  if (!plant) {
-    return <PlantNotFound onBack={handleBack} />;
+  // 식물이 존재하지 않는 경우 404 처리
+  if (!plant && !plantError) {
+    notFound();
   }
 
-  return (
-    <div className='bg-surface min-h-screen'>
-      {/* 목록으로 돌아가기 버튼 */}
-      <div className='mx-auto max-w-4xl py-4'>
-        <Button variant='ghost' size='lg' className='text-base' style={{ paddingLeft: '0px' }} onClick={handleBack}>
-          <ArrowLeft className='size-5' />
-          목록으로 돌아가기
-        </Button>
-      </div>
+  // 일지 데이터 처리
+  let diaries: Diary[] = [];
+  let diaryError: string | null = null;
 
-      {/* 식물 헤더 */}
-      <PlantHeader plant={plant} onWriteDiary={handleWriteDiary} />
+  if (diariesResult.status === 'fulfilled') {
+    if (diariesResult.value.ok && diariesResult.value.item) {
+      // DiaryReply[]를 Diary[]로 변환
+      diaries = diariesResult.value.item.map((reply) => mapDiaryReplyToDiary(reply, plantId));
+    } else {
+      diaryError = '일지 목록을 불러올 수 없습니다.';
+    }
+  } else {
+    diaryError = '일지 목록을 불러오는 중 오류가 발생했습니다.';
+  }
 
-      {/* 메인 콘텐츠 */}
-      <div className='mx-auto max-w-4xl pb-6'>
-        {displayDiaries.length > 0 ? (
-          <DiaryList diaries={displayDiaries} currentPage={currentPage} onPageChange={handlePageChange} onUpdate={handleUpdateDiary} onDelete={handleDeleteDiary} />
-        ) : (
-          <EmptyDiaryState plantName={plant.name} onWriteDiary={handleWriteDiary} />
-        )}
-      </div>
+  // 클라이언트 컴포넌트에 초기 데이터 전달
+  return <PlantDiaryClientWrapper plantId={plantId} initialPlant={plant} initialDiaries={diaries} plantError={plantError} diaryError={diaryError} />;
+}
 
-      {/* 일지 작성 모달 */}
-      <DiaryModal isOpen={isWriteModalOpen} onClose={() => setIsWriteModalOpen(false)} onSave={handleCreateDiary} mode='create' plantId={plantId} />
-    </div>
-  );
+/**
+ * 메타데이터 생성 함수
+ * @description SEO 최적화를 위한 동적 메타데이터 생성
+ */
+export async function generateMetadata({ params }: PlantDiaryPageProps) {
+  const resolvedParams = await params;
+  const plantId = Number(resolvedParams.plantId);
+
+  if (isNaN(plantId) || plantId <= 0) {
+    return {
+      title: '식물을 찾을 수 없습니다 | 4vely',
+    };
+  }
+
+  try {
+    const result = await getPlantById(plantId);
+
+    if (result.ok && result.item) {
+      const plant = mapPlantPostToPlant(result.item);
+      return {
+        title: `${plant.name} 일지 | 4vely`,
+        description: `${plant.name} (${plant.species})의 성장 일지를 확인해보세요.`,
+      };
+    }
+  } catch (error) {
+    console.error('메타데이터 생성 오류:', error);
+  }
+
+  return {
+    title: '식물 일지 | 4vely',
+    description: '식물의 성장 일지를 확인해보세요.',
+  };
 }

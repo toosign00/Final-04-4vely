@@ -74,9 +74,6 @@ export async function getFilteredProductsWithPagination(params: {
           // NEW 태그 상품을 우선적으로 배치하되, 그 다음은 최신순
           sortValue = '{"extra.isNew": -1, "createdAt": -1}';
           break;
-        case 'old':
-          sortValue = '{"createdAt": 1}';
-          break;
         case 'name':
           sortValue = '{"name": 1}';
           break;

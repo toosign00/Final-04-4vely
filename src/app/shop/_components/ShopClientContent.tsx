@@ -74,7 +74,6 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
     { value: 'recommend', label: '추천순' },
     { value: 'name', label: '이름순' },
     { value: 'new', label: '최신순' },
-    { value: 'old', label: '오래된순' },
     { value: 'price-low', label: '가격 낮은 순' },
     { value: 'price-high', label: '가격 높은 순' },
   ];

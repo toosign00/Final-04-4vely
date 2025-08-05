@@ -104,18 +104,20 @@ export async function getFilteredProductsWithPagination(params: {
       customFilterString = JSON.stringify({ 'extra.category': '식물' });
     }
 
-    // 세부 필터 추가
+    // 세부 필터 추가 - 수정된 로직
     if (params.filters) {
-      const allFilterValues: string[] = [];
+      const andConditions: Array<{ 'extra.category': { $in: string[] } }> = [];
 
-      Object.values(params.filters).forEach((filterArray) => {
+      // 각 필터 카테고리별로 OR 조건 생성
+      Object.entries(params.filters).forEach(([, filterArray]) => {
         if (filterArray && filterArray.length > 0) {
-          allFilterValues.push(...filterArray);
+          // 각 필터 카테고리 내부에서는 OR 조건 ($in 사용)
+          andConditions.push({ 'extra.category': { $in: filterArray } });
         }
       });
 
-      if (allFilterValues.length > 0) {
-        // 세부 필터와 카테고리 필터를 AND로 결합
+      if (andConditions.length > 0) {
+        // 기존 카테고리 필터와 세부 필터를 AND로 결합
         if (category === 'supplies') {
           // 원예용품 + 세부 필터
           customFilterString = JSON.stringify({
@@ -123,22 +125,32 @@ export async function getFilteredProductsWithPagination(params: {
               {
                 $or: [{ 'extra.category': '원예 용품' }, { 'extra.category': '화분' }, { 'extra.category': '도구' }, { 'extra.category': '조명' }],
               },
-              { 'extra.category': { $in: allFilterValues } },
+              ...andConditions, // 각 필터 카테고리의 OR 조건들을 AND로 연결
             ],
           });
         } else if (category === 'plant') {
           // 식물 + 세부 필터
           customFilterString = JSON.stringify({
-            $and: [{ 'extra.category': '식물' }, { 'extra.category': { $in: allFilterValues } }],
+            $and: [
+              { 'extra.category': '식물' },
+              ...andConditions, // 각 필터 카테고리의 OR 조건들을 AND로 연결
+            ],
           });
         } else if (category === 'new') {
           // 신상품 + 세부 필터
           customFilterString = JSON.stringify({
-            $and: [{ 'extra.isNew': true }, { 'extra.category': { $in: allFilterValues } }],
+            $and: [
+              { 'extra.isNew': true },
+              ...andConditions, // 각 필터 카테고리의 OR 조건들을 AND로 연결
+            ],
           });
         } else {
-          // 세부 필터만
-          customFilterString = JSON.stringify({ 'extra.category': { $in: allFilterValues } });
+          // 세부 필터만 (카테고리 필터 없이)
+          if (andConditions.length === 1) {
+            customFilterString = JSON.stringify(andConditions[0]);
+          } else {
+            customFilterString = JSON.stringify({ $and: andConditions });
+          }
         }
       }
     }
@@ -183,6 +195,7 @@ export async function getFilteredProductsWithPagination(params: {
       전체상품수: data.pagination?.total,
       현재페이지: data.pagination?.page,
       전체페이지: data.pagination?.totalPages,
+      적용된필터: customFilterString ? JSON.parse(customFilterString) : '없음',
     });
 
     // 추천순 정렬 보완 (클라이언트 사이드)

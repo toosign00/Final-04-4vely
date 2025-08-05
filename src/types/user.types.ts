@@ -13,6 +13,9 @@ export interface User {
   };
   createdAt?: string; // 생성일
   updatedAt?: string; // 수정일
+  rememberLogin?: boolean; // 자동 로그인 설정 (클라이언트에서만 사용)
+  sessionStartTime?: number; // 세션 시작 시간 (클라이언트에서만 사용)
+  lastActivityTime?: number; // 마지막 활동 시간 (클라이언트에서만 사용)
 }
 
 export interface UserState {

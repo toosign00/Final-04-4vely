@@ -515,7 +515,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
       }
 
       // 결제 ID 생성
-      const paymentId = `payment-${crypto.randomUUID()}`;
+      const paymentId = `payment-${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
 
       // 주문명 생성
       const orderName = orderData.items.length === 1 ? orderData.items[0].productName : `${orderData.items[0].productName} 외 ${orderData.items.length - 1}건`;
@@ -533,7 +533,9 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
       });
 
       // PortOne 결제창 호출
-      const response = await PortOne.requestPayment({
+      const isMobile = /Mobile|Android|iPhone|iPad/.test(navigator.userAgent);
+
+      const paymentOptions = {
         storeId: storeId,
         channelKey: channelKey,
         paymentId: paymentId,
@@ -548,6 +550,41 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
         customData: {
           orderId: orderId,
         },
+        // 모바일 최적화 옵션 추가
+        ...(isMobile && {
+          appScheme: window.location.origin, // 모바일 앱 복귀용
+          bypass: {
+            // 모바일에서 특정 결제 수단 우선
+            isMobile: true,
+          },
+        }),
+      };
+
+      console.log('[결제 요청] 옵션:', paymentOptions);
+      console.log('[모바일 디버깅]', {
+        isMobile,
+        userAgent: navigator.userAgent,
+        storeId: storeId ? '존재함' : '없음',
+        channelKey: channelKey ? '존재함' : '없음',
+      });
+
+      const response = await PortOne.requestPayment({
+        storeId: storeId,
+        channelKey: channelKey,
+        paymentId: paymentId,
+        orderName: orderName,
+        totalAmount: totalAmount,
+        currency: 'CURRENCY_KRW' as const,
+        payMethod: 'CARD',
+        customer: {
+          fullName: orderData.address.name,
+          phoneNumber: orderData.address.phone,
+        },
+        customData: {
+          orderId: orderId,
+        },
+        // 모바일에서 필수: 결제 완료 후 바로 결제 완료 페이지로
+        redirectUrl: `${window.location.origin}/order/order-complete?orderId=${orderId}&paymentId=${paymentId}`,
       });
 
       console.log('[결제 처리] PortOne 응답:', response);

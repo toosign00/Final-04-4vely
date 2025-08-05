@@ -717,7 +717,7 @@ export default function ProductDetailClient({ productData, recommendProducts, ch
             <h2 id='desktop-product-description-title' className='text-secondary t-h1 mb-6 xl:mb-8 xl:text-3xl'>
               Description
             </h2>
-            <div className='text-secondary max-w-[123ch] space-y-4 text-2xl leading-relaxed xl:space-y-6' role='region' aria-labelledby='desktop-product-description-title'>
+            <div className='text-secondary max-w-[123ch] space-y-4 text-xl 2xl:text-2xl leading-relaxed xl:space-y-6' role='region' aria-labelledby='desktop-product-description-title'>
               {productData.content ? <div dangerouslySetInnerHTML={{ __html: productData.content }} /> : <p>상품 설명이 없습니다.</p>}
             </div>
           </section>

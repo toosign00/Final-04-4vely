@@ -22,7 +22,7 @@ export default function ReviewCarousel({ reviews }: ReviewCarouselProps) {
           <Carousel opts={{ loop: true, align: 'start', containScroll: 'trimSnaps' }}>
             <CarouselContent>
               {reviews.map((review, index) => (
-                <CarouselItem key={index} className='mb-3 flex basis-full place-content-center md:px-6'>
+                <CarouselItem key={index} className='mb-3 flex min-h-[14rem] basis-full place-content-center md:px-6'>
                   <Link href={`/shop/products/${review.product_id}`} className='flex w-full max-w-[60rem] items-stretch gap-6 rounded-xl bg-white shadow-md transition-all duration-300 hover:shadow-lg md:gap-8 lg:h-[20rem]'>
                     {/* 좌측 상품 이미지 */}
                     <div className='relative h-full w-[80%] overflow-hidden rounded-l-xl'>
@@ -30,10 +30,10 @@ export default function ReviewCarousel({ reviews }: ReviewCarouselProps) {
                     </div>
 
                     {/* 우측 텍스트 영역 */}
-                    <div className='flex w-full flex-col justify-between gap-2 py-4 pr-4 md:gap-4'>
+                    <div className='flex w-full flex-col justify-between py-4 pr-4 md:gap-4 lg:pt-6 lg:pr-8'>
                       <div className='flex flex-col gap-1 md:gap-4'>
-                        <h3 className='mb-2 text-lg font-semibold md:mb-0 lg:text-2xl'>[ 상품명 ] {review.product?.name}</h3>
-                        <p className='text-muted line-clamp-3 text-sm leading-relaxed md:text-base lg:text-lg'>[ 후기 내용 ] {review.content}</p>
+                        <h3 className='mb-2 text-lg font-semibold md:mb-0 lg:text-2xl'>{review.product?.name}</h3>
+                        <p className='text-muted line-clamp-3 max-w-[43ch] text-sm leading-relaxed md:text-base lg:line-clamp-4 lg:text-lg'>{review.content}</p>
                       </div>
 
                       <div className='mt-4 flex items-center gap-2 border-t pt-4'>

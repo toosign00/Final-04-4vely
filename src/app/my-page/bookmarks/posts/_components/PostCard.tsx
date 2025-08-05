@@ -18,9 +18,10 @@ interface PostCardProps {
   bookmarkId: number;
   onDetailClick?: (postId: number, postType: 'community' | 'magazine') => void;
   onDelete?: () => void;
+  priority?: boolean;
 }
 
-export default function PostCard({ post, bookmarkId, onDetailClick, onDelete }: PostCardProps) {
+export default function PostCard({ post, bookmarkId, onDetailClick, onDelete, priority = false }: PostCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
@@ -69,7 +70,7 @@ export default function PostCard({ post, bookmarkId, onDetailClick, onDelete }: 
                 {post.type === 'magazine' ? '매거진' : '커뮤니티'}
               </span>
             </div>
-            <Image src={post.imageUrl} alt='post-image' width={200} height={200} className='h-full w-full rounded-xl border bg-gray-100 object-cover' sizes='(max-width: 640px) 110px, 170px' priority />
+            <Image src={post.imageUrl} alt='post-image' width={200} height={200} className='h-full w-full rounded-xl border bg-gray-100 object-cover' sizes='(max-width: 640px) 110px, 170px' priority={priority} loading={priority ? 'eager' : 'lazy'} />
           </div>
         </div>
         {/* 게시글 정보 */}

@@ -1,6 +1,6 @@
 /**
  * @fileoverview 개별 북마크 상품 카드를 표시하는 UI 컴포넌트
- * @description 상품 이미지, 이름, 가격, 설명 및 관련 액션 버튼(삭제, 상세보기, 장바구니 담기)을 포함합니다.
+ * @description 상품 이미지, 이름, 가격, 설명 및 관련 액션 버튼(삭제, 상세보기, 장바구니 담기)을 포함
  */
 'use client';
 
@@ -14,16 +14,16 @@ import AddToCartDialog from './AddToCartDialog';
 
 /**
  * @interface ProductCardProps
- * @description ProductCard 컴포넌트가 받는 props의 타입을 정의합니다.
- * @property {object} order - 상품 정보를 담고 있는 객체입니다.
- * @property {number} order.id - 상품의 고유 ID.
- * @property {string} order.imageUrl - 상품 이미지 URL.
- * @property {string} order.name - 상품명.
- * @property {string} order.description - 상품 설명.
- * @property {number} order.price - 상품 가격.
- * @property {number} bookmarkId - 북마크 ID (삭제용).
- * @property {function} onDetailClick - 상세보기 클릭 핸들러.
- * @property {function} onDelete - 삭제 완료 후 콜백.
+ * @description ProductCard 컴포넌트가 받는 props의 타입을 정의
+ * @property {object} order - 상품 정보를 담고 있는 객체
+ * @property {number} order.id - 상품의 고유 ID
+ * @property {string} order.imageUrl - 상품 이미지 URL
+ * @property {string} order.name - 상품명
+ * @property {string} order.description - 상품 설명
+ * @property {number} order.price - 상품 가격
+ * @property {number} bookmarkId - 북마크 ID (삭제용)
+ * @property {function} onDetailClick - 상세보기 클릭 핸들러
+ * @property {function} onDelete - 삭제 완료 후 콜백
  */
 interface ProductCardProps {
   order: {
@@ -36,15 +36,16 @@ interface ProductCardProps {
   bookmarkId: number;
   onDetailClick?: (id: number) => void;
   onDelete?: () => void;
+  priority?: boolean;
 }
 
 /**
  * @function ProductCard
- * @description 개별 북마크 상품의 상세 정보를 시각적으로 표시하는 카드 컴포넌트입니다.
- * @param {ProductCardProps} props - 컴포넌트 props.
- * @returns {JSX.Element} 렌더링된 상품 카드 컴포넌트를 반환합니다.
+ * @description 개별 북마크 상품의 상세 정보를 시각적으로 표시하는 카드 컴포넌트
+ * @param {ProductCardProps} props - 컴포넌트 props
+ * @returns {JSX.Element} 렌더링된 상품 카드 컴포넌트를 반환
  */
-export default function ProductCard({ order, bookmarkId, onDetailClick, onDelete }: ProductCardProps) {
+export default function ProductCard({ order, bookmarkId, onDetailClick, onDelete, priority = false }: ProductCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isCartDialogOpen, setIsCartDialogOpen] = useState(false);
 
@@ -77,7 +78,6 @@ export default function ProductCard({ order, bookmarkId, onDetailClick, onDelete
       </div>
 
       <div className='grid grid-cols-1 items-center gap-4 md:grid-cols-[auto_1fr_auto] md:gap-6'>
-        {/* 상품 이미지: Next.js의 Image 컴포넌트를 사용하여 이미지 로딩을 최적화하고, webp 형식 사용을 권장합니다. */}
         <div className='grid place-items-center'>
           <div className='aspect-square w-[12.5rem]'>
             <Image
@@ -86,10 +86,9 @@ export default function ProductCard({ order, bookmarkId, onDetailClick, onDelete
               width={200}
               height={200}
               className='h-full w-full rounded-xl border bg-gray-100 object-cover'
-              // `sizes` 속성을 통해 다양한 화면 크기에 맞는 이미지 크기를 브라우저에 알려주어 로딩 성능을 개선합니다.
               sizes='(max-width: 640px) 110px, 170px'
-              // `priority` 속성은 페이지에서 가장 중요한 이미지(예: LCP 요소)에 사용하여 우선적으로 로드하도록 합니다.
-              priority
+              priority={priority}
+              loading={priority ? 'eager' : 'lazy'}
             />
           </div>
         </div>
@@ -104,7 +103,6 @@ export default function ProductCard({ order, bookmarkId, onDetailClick, onDelete
             </h3>
           </div>
 
-          {/* 상품 가격: toLocaleString()을 사용하여 현지화된 가격 형식을 제공합니다. */}
           <div className='grid justify-items-start'>
             <span className='t-desc text-secondary/70'>가격</span>
             <p className='t-small text-gray-secondary line-clamp-2 font-medium'>{order.price.toLocaleString()}원</p>

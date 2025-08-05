@@ -27,8 +27,7 @@ async function getPortOneAccessToken(): Promise<string | null> {
 
     const data = await response.json();
     return data.accessToken || null;
-  } catch (error) {
-    console.error('[PortOne] 토큰 발급 오류:', error);
+  } catch {
     return null;
   }
 }
@@ -59,9 +58,8 @@ async function getPortOnePayment(paymentId: string): Promise<PortOnePayment> {
     });
 
     return await response.json();
-  } catch (error) {
-    console.error('[PortOne] 결제 정보 조회 오류:', error);
-    throw error;
+  } catch {
+    throw Error;
   }
 }
 
@@ -79,8 +77,6 @@ interface PaymentActionResult {
 
 export async function verifyPaymentAndCompleteOrderAction(paymentId: string, orderIdFromClient: string): Promise<{ success: boolean; message: string; data?: PaymentActionResult }> {
   try {
-    console.log('[Payment 서버 액션] 결제 검증 시작:', { paymentId, orderIdFromClient });
-
     // 1. 사용자 액세스 토큰 확인
     const authInfo = await getAuthInfo();
     if (!authInfo) {
@@ -124,7 +120,6 @@ export async function verifyPaymentAndCompleteOrderAction(paymentId: string, ord
     const paymentAmount = portonePayment.amount?.total || 0;
 
     if (orderAmount !== paymentAmount) {
-      console.error('[Payment 서버 액션] 금액 불일치:', { orderAmount, paymentAmount });
       return {
         success: false,
         message: '결제 금액이 주문 금액과 일치하지 않습니다.',
@@ -176,8 +171,8 @@ export async function verifyPaymentAndCompleteOrderAction(paymentId: string, ord
         }
         // 임시 장바구니 ID 쿠키 삭제
         cookieStore.delete('temp-cart-ids');
-      } catch (error) {
-        console.error('[Payment 서버 액션] 장바구니 정리 오류:', error);
+      } catch {
+        // 장바구니 정리 실패해도 계속 진행
       }
     }
 
@@ -189,8 +184,6 @@ export async function verifyPaymentAndCompleteOrderAction(paymentId: string, ord
     revalidatePath('/cart');
     revalidatePath('/my-page/order-history');
 
-    console.log('[Payment 서버 액션] 결제 검증 및 주문 완료 성공');
-
     return {
       success: true,
       message: '결제가 완료되었습니다.',
@@ -200,8 +193,7 @@ export async function verifyPaymentAndCompleteOrderAction(paymentId: string, ord
         redirectUrl: `/order/order-complete?orderId=${orderIdFromClient}`,
       },
     };
-  } catch (error) {
-    console.error('[Payment 서버 액션] 결제 검증 오류:', error);
+  } catch {
     return {
       success: false,
       message: '결제 검증 중 오류가 발생했습니다.',
@@ -216,8 +208,6 @@ export async function verifyPaymentAndCompleteOrderAction(paymentId: string, ord
  */
 export async function cancelPaymentAction(paymentId: string): Promise<{ success: boolean; message: string }> {
   try {
-    console.log('[Payment 서버 액션] 결제 취소 시작:', paymentId);
-
     const accessToken = await getPortOneAccessToken();
     if (!accessToken) {
       return {
@@ -238,21 +228,17 @@ export async function cancelPaymentAction(paymentId: string): Promise<{ success:
     });
 
     if (response.ok) {
-      console.log('[Payment 서버 액션] 결제 취소 성공');
       return {
         success: true,
         message: '결제가 취소되었습니다.',
       };
     } else {
-      const errorData = await response.json();
-      console.error('[Payment 서버 액션] 결제 취소 실패:', errorData);
       return {
         success: false,
         message: '결제 취소에 실패했습니다.',
       };
     }
-  } catch (error) {
-    console.error('[Payment 서버 액션] 결제 취소 오류:', error);
+  } catch {
     return {
       success: false,
       message: '결제 취소 중 오류가 발생했습니다.',

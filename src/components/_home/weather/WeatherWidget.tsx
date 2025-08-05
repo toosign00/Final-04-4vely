@@ -7,7 +7,7 @@ import { mapWeatherToTips } from '@/lib/functions/weather/mapWeatherToTips';
 import { weatherImage } from '@/lib/utils/weaterImage';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FiMapPin, FiWind } from 'react-icons/fi';
 import { IoWaterOutline } from 'react-icons/io5';
 
@@ -33,14 +33,23 @@ export default function WeatherWidget() {
     setIsMobile(isMobileDevice());
   }, []);
 
-  // PC/태블릿인 경우 자동 위치 요청
-  useEffect(() => {
-    if (!isMobile) {
-      requestWeather();
+  // 날씨 정보 요청
+  const fetchWeatherByLocation = useCallback(async (lat: number, lon: number) => {
+    try {
+      const tips = await mapWeatherToTips(lat, lon);
+      setTipsData({
+        weather: tips.weather,
+        plants: tips.plants.map((p) => p.name),
+      });
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
     }
-  }, [isMobile]);
+  }, []);
 
-  const requestWeather = () => {
+  // 위치 요청
+  const requestWeather = useCallback(() => {
     setRequested(true);
     setLoading(true);
 
@@ -55,25 +64,17 @@ export default function WeatherWidget() {
         await fetchWeatherByLocation(37.5665, 126.978);
       },
     );
-  };
-
-  const fetchWeatherByLocation = async (lat: number, lon: number) => {
-    try {
-      const tips = await mapWeatherToTips(lat, lon);
-      setTipsData({
-        weather: tips.weather,
-        plants: tips.plants.map((p) => p.name),
-      });
-    } catch {
-      setError(true);
-    } finally {
-      setLoading(false);
+  }, [fetchWeatherByLocation]);
+  // PC/태블릿인 경우 자동 위치 요청
+  useEffect(() => {
+    if (!isMobile) {
+      requestWeather();
     }
-  };
+  }, [isMobile, requestWeather]);
 
   return (
     <section className='relative mx-auto my-14 flex w-full flex-col px-5 sm:max-w-[40rem] md:max-w-none lg:max-w-[70rem]' aria-label='현재 날씨 정보'>
-      {/* 모바일에서만 버튼 노출 */}
+      {/* 모바일에서만 위치 요청 버튼 노출 */}
       {isMobile && !requested && (
         <div className='mb-4 flex flex-col items-center gap-2 md:flex-row md:justify-center'>
           <Button onClick={requestWeather} variant='default' size='lg' className='flex items-center gap-2 px-6 py-3'>

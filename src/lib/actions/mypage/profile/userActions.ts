@@ -123,6 +123,14 @@ export async function changePassword(currentPassword: string, newPassword: strin
 
   const { accessToken, userId } = authResult;
 
+  // 현재 비밀번호와 새 비밀번호가 같은지 확인
+  if (currentPassword === newPassword) {
+    return {
+      ok: 0,
+      message: '새 비밀번호는 현재 비밀번호와 달라야 합니다.',
+    };
+  }
+
   try {
     // 1. 사용자 정보 가져오기 (이메일 확인용)
     const userResponse = await fetch(`${API_URL}/users/${userId}`, {

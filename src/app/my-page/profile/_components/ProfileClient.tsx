@@ -8,7 +8,6 @@ import { Calendar, Camera, ChevronRight, Mail, MapPin, Phone, User } from 'lucid
 import { useEffect, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import ErrorDisplay from '../../_components/ErrorDisplay';
 import ChangePasswordDialog from './ChangePasswordDialog';
 
 interface ProfileClientProps {
@@ -123,8 +122,9 @@ export default function ProfileClient({ user }: ProfileClientProps) {
     }
   };
 
+  // user가 null인 경우는 상위 컴포넌트에서 ErrorDisplay로 처리됨
   if (!user) {
-    return <ErrorDisplay title='프로필 정보를 불러오지 못했습니다' message='일시적인 오류가 발생했어요.' />;
+    return null;
   }
 
   // 저장 핸들러

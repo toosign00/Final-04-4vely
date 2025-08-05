@@ -28,7 +28,7 @@ export default async function ReviewSection({ productId }: ReviewSectionProps) {
   );
 
   return (
-    <section className='pb-8 sm:pb-10 md:pb-12'>
+    <section className='pb-2'>
       <h2 className='text-secondary mb-6 text-xl font-semibold sm:mb-8 md:text-2xl lg:text-4xl lg:font-bold'>Review</h2>
 
       {reviews.length === 0 ? (

@@ -1,7 +1,7 @@
 'use client';
 
+import { getImageUrl } from '@/lib/utils/product.utils';
 import { NewProduct } from '@/types/newproduct.types';
-import { getImageUrl } from '@/types/product.types';
 import Image from 'next/image';
 import Link from 'next/link';
 

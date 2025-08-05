@@ -71,7 +71,8 @@ export async function getFilteredProductsWithPagination(params: {
           sortValue = '{"price": -1}';
           break;
         case 'new':
-          sortValue = '{"createdAt": -1}';
+          // NEW 태그 상품을 우선적으로 배치하되, 그 다음은 최신순
+          sortValue = '{"extra.isNew": -1, "createdAt": -1}';
           break;
         case 'old':
           sortValue = '{"createdAt": 1}';
@@ -80,7 +81,6 @@ export async function getFilteredProductsWithPagination(params: {
           sortValue = '{"name": 1}';
           break;
         case 'recommend':
-          // extra.sort 필드로 정렬 (있다면)
           sortValue = '{"extra.sort": 1, "_id": 1}';
           break;
       }
@@ -207,6 +207,22 @@ export async function getFilteredProductsWithPagination(params: {
         // 4. ID 순서
         return a._id - b._id;
       });
+    }
+
+    // 최신순 정렬에서 NEW 태그 우선 배치
+    if (params.sort === 'new') {
+      products.sort((a: Product, b: Product) => {
+        // 1. 신상품(NEW 태그) 우선
+        if (a.extra?.isNew && !b.extra?.isNew) return -1;
+        if (!a.extra?.isNew && b.extra?.isNew) return 1;
+
+        // 2. 그 다음 생성일시 최신순
+        const aCreatedAt = new Date(a.createdAt).getTime();
+        const bCreatedAt = new Date(b.createdAt).getTime();
+        return bCreatedAt - aCreatedAt;
+      });
+
+      console.log('[최신순 정렬 보완] NEW 태그 상품 우선 배치 완료');
     }
 
     // 북마크 정보 추가

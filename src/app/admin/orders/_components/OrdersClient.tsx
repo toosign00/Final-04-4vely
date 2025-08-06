@@ -232,7 +232,7 @@ export default function OrdersClient({ initialOrders, initialPagination, initial
       {/* 주문 목록 */}
       <div className='overflow-hidden rounded-lg border border-gray-200 bg-white'>
         {/* 모바일 레이아웃 */}
-        <div className='block sm:hidden'>
+        <div className='block min-[840px]:hidden'>
           <div className='divide-y divide-gray-200'>
             {orders.map((order) => (
               <div key={order._id} className='p-4'>
@@ -260,7 +260,7 @@ export default function OrdersClient({ initialOrders, initialPagination, initial
         </div>
 
         {/* 데스크톱 테이블 */}
-        <div className='hidden overflow-x-auto sm:block'>
+        <div className='hidden overflow-x-auto min-[840px]:block'>
           <table className='min-w-full divide-y divide-gray-200'>
             <thead className='bg-gray-50'>
               <tr>
@@ -294,7 +294,7 @@ export default function OrdersClient({ initialOrders, initialPagination, initial
 
         {/* 페이지네이션 */}
         {initialPagination.totalPages > 1 && (
-          <div className='flex items-center justify-center border-t border-gray-200 bg-white px-3 py-3 sm:px-6'>
+          <div className='flex items-center justify-center border-t border-gray-200 bg-white px-3 py-3 min-[840px]:px-6'>
             <PaginationWrapper currentPage={initialPagination.page} totalPages={initialPagination.totalPages} setCurrentPage={handlePageChange} />
           </div>
         )}

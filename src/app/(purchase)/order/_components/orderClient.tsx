@@ -963,7 +963,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
                                   <SelectTrigger id='deliveryNote' className='w-full' aria-describedby='delivery-memo-description'>
                                     <SelectValue placeholder='배송 메모를 선택해 주세요.' />
                                   </SelectTrigger>
-                                  <SelectContent>
+                                  <SelectContent className='z-[999]'>
                                     <SelectGroup>
                                       <SelectLabel>배송 메모 선택</SelectLabel>
                                       <SelectItem value='부재 시 경비실에 맡겨주세요.'>부재 시 경비실에 맡겨주세요.</SelectItem>

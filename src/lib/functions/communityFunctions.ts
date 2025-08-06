@@ -57,6 +57,7 @@ interface RawPost {
   repliesCount?: number;
   myBookmarkId?: number | null;
   isBookmarked: boolean;
+  bookmarks?: number;
 }
 
 // ------------------------------
@@ -91,7 +92,7 @@ function mapRawPost(item: RawPost): Post {
       avatar: item.user.image ?? '',
     },
     stats: {
-      likes: 0,
+      bookmarks: item.bookmarks ?? 0,
       comments: item.repliesCount ?? 0,
       views: item.views ?? 0,
     },

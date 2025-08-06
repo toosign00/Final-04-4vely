@@ -1,7 +1,9 @@
 'use client';
 
+import { Button } from '@/components/ui/Button';
 import PaginationWrapper from '@/components/ui/PaginationWrapper';
 import { deletePlant } from '@/lib/actions/mypage/myPlant/plantActions';
+import { PlusCircle } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
@@ -23,8 +25,6 @@ interface MyPlantsClientProps {
     totalPages: number;
   };
 }
-
-const ITEMS_PER_PAGE = 4;
 
 export default function MyPlantsClient({ initialPlants, initialError, initialLatestDiaries, pagination }: MyPlantsClientProps) {
   const router = useRouter();
@@ -87,26 +87,67 @@ export default function MyPlantsClient({ initialPlants, initialError, initialLat
     });
   }, [initialPlants, initialLatestDiaries, sortBy]);
 
-  // 4개 슬롯 고정, 부족하면 null로 채움
-  const displayItems: (Plant | null)[] = [...sortedPlants, ...Array(Math.max(0, ITEMS_PER_PAGE - sortedPlants.length)).fill(null)];
+  // 실제 식물 데이터만 표시
+  const displayItems: Plant[] = sortedPlants;
 
   if (error) {
     return <ErrorDisplay title='나의 식물을 불러오지 못했습니다' message='일시적인 오류가 발생했어요.' />;
   }
 
+  // 등록된 식물이 없을 경우 빈 상태 메시지 표시
+  if (displayItems.length === 0) {
+    return (
+      <>
+        <div className='mx-auto max-w-4xl px-4 md:px-5 lg:px-6'>
+          <div className='mt-4 flex items-center justify-between'>
+            <Button onClick={() => setOpen(true)} variant='primary' className='flex items-center gap-2'>
+              <PlusCircle className='h-4 w-4' />
+              반려식물 등록
+            </Button>
+          </div>
+        </div>
+        <section className='flex min-h-[25rem] flex-col items-center justify-center px-4 text-center' aria-labelledby='empty-plants-title' role='region'>
+          <div className='mb-6' aria-hidden='true'>
+            <PlusCircle className='mx-auto h-16 w-16 text-gray-300' />
+          </div>
+          <div className='mb-8 max-w-md'>
+            <h3 id='empty-plants-title' className='t-h3 text-secondary mb-3 font-bold'>
+              아직 등록한 식물이 없습니다
+            </h3>
+            <p className='t-body text-muted leading-relaxed'>
+              첫 번째 반려식물을 등록해보세요!
+              <br />
+              식물의 성장 과정을 기록하고 관리할 수 있어요.
+            </p>
+          </div>
+          <div className='text-center'>
+            <p className='t-small text-muted/80'>💡 위의 반려식물 등록 버튼을 눌러 시작해보세요</p>
+          </div>
+        </section>
+        <PlantRegisterModal open={open} onClose={() => setOpen(false)} onSuccess={handlePlantRegistered} />
+      </>
+    );
+  }
+
   return (
     <>
       <div className='mx-auto max-w-4xl px-4 md:px-5 lg:px-6'>
-        <div className='mt-4 flex justify-end'>
+        <div className='mt-4 flex items-center justify-between'>
+          <Button onClick={() => setOpen(true)} variant='primary' className='flex items-center gap-2'>
+            <PlusCircle className='h-4 w-4' />
+            반려식물 등록
+          </Button>
           <PlantSortSelect sortBy={sortBy} onSortChange={setSortBy} />
         </div>
       </div>
       <div className='mx-auto grid max-w-4xl auto-rows-fr grid-cols-1 gap-6 p-4 md:grid-cols-2 md:p-5 lg:p-6'>
         <PlantList displayItems={displayItems} latestDiaries={initialLatestDiaries} onRegisterClick={() => setOpen(true)} onDelete={handleDelete} deletingId={deletingId} />
       </div>
-      <div className='mt-8 flex justify-center'>
-        <PaginationWrapper currentPage={currentPage} totalPages={pagination.totalPages} setCurrentPage={handlePageChange} />
-      </div>
+      {pagination.totalPages > 1 && (
+        <div className='mt-8 flex justify-center'>
+          <PaginationWrapper currentPage={currentPage} totalPages={pagination.totalPages} setCurrentPage={handlePageChange} />
+        </div>
+      )}
       <PlantRegisterModal open={open} onClose={() => setOpen(false)} onSuccess={handlePlantRegistered} />
     </>
   );

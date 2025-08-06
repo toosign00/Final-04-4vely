@@ -7,9 +7,9 @@
  * @module bookmarkServerActions
  */
 
+import { getAuthInfo } from '@/lib/utils/auth.server';
 import { BookmarkActionApiResponse, BookmarkType } from '@/types/bookmark.types';
 import { revalidatePath } from 'next/cache';
-import { getAuthInfo } from '@/lib/utils/auth.server';
 
 const API_URL = process.env.API_URL || 'https://fesp-api.koyeb.app/market';
 const CLIENT_ID = process.env.CLIENT_ID || 'febc13-final04-emjf';
@@ -45,14 +45,11 @@ export async function toggleBookmarkAction(targetId: number, type: BookmarkType 
 
     const { accessToken } = authInfo;
 
-    console.log(`[북마크 토글] ${type} ID: ${targetId} 처리 시작`);
-
     // 2. 기존 북마크 확인
     const existingBookmark = await checkExistingBookmark(targetId, type, accessToken);
 
     if (existingBookmark) {
       // 북마크 제거
-      console.log(`[북마크 토글] ${type} 북마크 삭제: ${existingBookmark._id}`);
       const deleteResult = await removeBookmark(existingBookmark._id, accessToken);
 
       if (deleteResult.ok) {
@@ -73,7 +70,6 @@ export async function toggleBookmarkAction(targetId: number, type: BookmarkType 
       }
     } else {
       // 북마크 추가
-      console.log(`[북마크 토글] ${type} 북마크 추가`);
       const addResult = await addBookmark(targetId, type, accessToken);
 
       if (addResult.ok) {
@@ -97,8 +93,7 @@ export async function toggleBookmarkAction(targetId: number, type: BookmarkType 
         };
       }
     }
-  } catch (error) {
-    console.error('[북마크 토글 액션] 오류:', error);
+  } catch {
     return {
       ok: 0,
       message: '북마크 처리 중 오류가 발생했습니다.',
@@ -116,8 +111,6 @@ export async function toggleBookmarkAction(targetId: number, type: BookmarkType 
  */
 async function checkExistingBookmark(targetId: number, type: BookmarkType, accessToken: string) {
   try {
-    console.log(`[북마크 확인] ${type} ID: ${targetId}`);
-
     const res = await fetch(`${API_URL}/bookmarks/${type}/${targetId}`, {
       method: 'GET',
       headers: {
@@ -127,22 +120,17 @@ async function checkExistingBookmark(targetId: number, type: BookmarkType, acces
       },
     });
 
-    console.log(`[북마크 확인] 응답 상태: ${res.status}`);
-
     if (res.ok) {
       const data = await res.json();
       if (data.ok && data.item) {
-        console.log(`[북마크 확인] ${type} 북마크 발견:`, data.item._id);
         return data.item;
       }
     } else if (res.status === 404) {
-      console.log(`[북마크 확인] ${type} 북마크 없음`);
       return null;
     }
 
     return null;
-  } catch (error) {
-    console.error('[북마크 확인] 오류:', error);
+  } catch {
     return null;
   }
 }
@@ -163,8 +151,6 @@ async function addBookmark(targetId: number, type: BookmarkType, accessToken: st
       memo,
     };
 
-    console.log(`[북마크 추가] ${type}:`, requestBody);
-
     const res = await fetch(`${API_URL}/bookmarks/${type}`, {
       method: 'POST',
       headers: {
@@ -178,20 +164,17 @@ async function addBookmark(targetId: number, type: BookmarkType, accessToken: st
     const data = await res.json();
 
     if (!res.ok) {
-      console.error(`[북마크 추가] ${type} 오류:`, data);
       return {
         ok: 0,
         message: data.message || '북마크 추가에 실패했습니다.',
       };
     }
 
-    console.log(`[북마크 추가] ${type} 성공:`, data.item?._id);
     return {
       ok: 1,
       item: data.item,
     };
-  } catch (error) {
-    console.error('[북마크 추가] 오류:', error);
+  } catch {
     return {
       ok: 0,
       message: '북마크 추가 중 서버 오류가 발생했습니다.',
@@ -208,8 +191,6 @@ async function addBookmark(targetId: number, type: BookmarkType, accessToken: st
  */
 async function removeBookmark(bookmarkId: number, accessToken: string) {
   try {
-    console.log(`[북마크 삭제] ID: ${bookmarkId}`);
-
     const res = await fetch(`${API_URL}/bookmarks/${bookmarkId}`, {
       method: 'DELETE',
       headers: {
@@ -222,20 +203,17 @@ async function removeBookmark(bookmarkId: number, accessToken: string) {
     const data = await res.json();
 
     if (!res.ok) {
-      console.error('[북마크 삭제] 오류:', data);
       return {
         ok: 0,
         message: data.message || '북마크 삭제에 실패했습니다.',
       };
     }
 
-    console.log('[북마크 삭제] 성공');
     return {
       ok: 1,
       item: { message: '북마크가 삭제되었습니다.' },
     };
-  } catch (error) {
-    console.error('[북마크 삭제] 오류:', error);
+  } catch {
     return {
       ok: 0,
       message: '북마크 삭제 중 서버 오류가 발생했습니다.',

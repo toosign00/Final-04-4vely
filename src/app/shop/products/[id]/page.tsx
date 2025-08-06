@@ -33,8 +33,7 @@ export async function generateMetadata({ params }: ProductDetailPageProps) {
         images: [getImageUrl(productData.mainImages?.[0] || '')],
       },
     };
-  } catch (error) {
-    console.error('메타데이터 생성 실패:', error);
+  } catch {
     return {
       title: '상품 상세 | GreenMate',
       description: '상품 상세 정보',
@@ -45,21 +44,13 @@ export async function generateMetadata({ params }: ProductDetailPageProps) {
 export default async function ProductDetailPage({ params }: ProductDetailPageProps) {
   try {
     const { id } = await params;
-    console.log(`[상품 상세 페이지] 상품 ID: ${id} 로딩 시작`);
 
     // 서버에서 상품 정보와 추천 상품 함께 가져오기
     const { product, recommendProducts } = await getProductDetailWithRecommendations(id);
 
     if (!product) {
-      console.log(`[상품 상세 페이지] 상품을 찾을 수 없음`);
       notFound();
     }
-
-    console.log(`[상품 상세 페이지] 데이터 로드 완료:`, {
-      상품명: product.name,
-      추천상품수: recommendProducts.length,
-      북마크상태: !!product.myBookmarkId,
-    });
 
     return (
       <div className='bg-surface min-h-screen'>
@@ -68,8 +59,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
         </ProductDetailClient>
       </div>
     );
-  } catch (error) {
-    console.error('상품 페이지 로딩 실패:', error);
+  } catch {
     notFound();
   }
 }

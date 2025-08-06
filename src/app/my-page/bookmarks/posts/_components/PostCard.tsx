@@ -18,9 +18,10 @@ interface PostCardProps {
   bookmarkId: number;
   onDetailClick?: (postId: number, postType: 'community' | 'magazine') => void;
   onDelete?: () => void;
+  priority?: boolean;
 }
 
-export default function PostCard({ post, bookmarkId, onDetailClick, onDelete }: PostCardProps) {
+export default function PostCard({ post, bookmarkId, onDetailClick, onDelete, priority = false }: PostCardProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
@@ -49,7 +50,7 @@ export default function PostCard({ post, bookmarkId, onDetailClick, onDelete }: 
   };
 
   return (
-    <div className='group relative mx-auto w-full max-w-6xl cursor-pointer rounded-2xl bg-white p-3 shadow-sm transition-shadow duration-300 hover:shadow-lg'>
+    <div className='group relative mx-auto w-full max-w-6xl rounded-2xl bg-white p-3 shadow-sm transition-shadow duration-300 hover:shadow-lg'>
       {/* 삭제버튼 */}
       <div className='absolute top-3 right-3 z-10 md:hidden'>
         <Button variant='destructive' size='sm' onClick={handleDelete} disabled={isDeleting}>
@@ -69,7 +70,7 @@ export default function PostCard({ post, bookmarkId, onDetailClick, onDelete }: 
                 {post.type === 'magazine' ? '매거진' : '커뮤니티'}
               </span>
             </div>
-            <Image src={post.imageUrl} alt='post-image' width={200} height={200} className='h-full w-full rounded-xl border bg-gray-100 object-cover' sizes='(max-width: 640px) 110px, 170px' priority />
+            <Image src={post.imageUrl} alt='post-image' width={200} height={200} className='h-full w-full rounded-xl border bg-gray-100 object-cover' sizes='(max-width: 640px) 110px, 170px' priority={priority} loading={priority ? 'eager' : 'lazy'} />
           </div>
         </div>
         {/* 게시글 정보 */}

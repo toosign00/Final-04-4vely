@@ -5,17 +5,17 @@ meta {
 }
 
 get {
-  url: {{url}}/posts?page=1&limit=4&type=community&sort={"views":-1}
+  url: {{url}}/posts?sort={"bookmarks":-1}
   body: none
   auth: inherit
 }
 
 params:query {
-  page: 1
-  limit: 4
-  type: community
-  sort: {"views":-1}
+  sort: {"bookmarks":-1}
   ~type: magazine
+  ~page: 1
+  ~limit: 4
+  ~type: community
   ~sort: {"createdAt":-1}
   ~type: plant
 }

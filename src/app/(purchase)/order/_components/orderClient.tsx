@@ -116,7 +116,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
     if (!name.trim()) return '이름을 입력해주세요.';
     if (name.trim().length < 2) return '이름은 2자 이상 입력해주세요.';
     if (name.trim().length > 20) return '이름은 20자 이하로 입력해주세요.';
-    if (!/^[가-힣a-zA-Z\s]+$/.test(name)) return '이름은 한글, 영문, 공백만 입력 가능합니다.';
+    if (!/^[가-힣a-zA-Z0-9\s]+$/.test(name)) return '이름은 한글, 영문, 숫자, 공백만 입력 가능합니다.';
     return undefined;
   };
 
@@ -208,9 +208,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
           zipCode: defaultAddress.zipCode || '',
         };
         setOrderData((prev) => ({ ...prev, address: addressData }));
-        updateTempOrderAddressAction(addressData).catch((error) => {
-          console.error('[초기 주소 설정] 서버 업데이트 실패:', error);
-        });
+        updateTempOrderAddressAction(addressData);
       }
     }
   }, [orderData.address, savedAddresses]);
@@ -266,8 +264,8 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
             setOrderData((prev) => ({ ...prev, address: addressData }));
           }
         }
-      } catch (error) {
-        console.error('[OrderClient] 에러 발생:', error);
+      } catch {
+        // none-debug
       }
     };
     fetchUserAddress();
@@ -364,8 +362,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
       } else {
         toast.error('배송지 정보 저장에 실패했습니다.');
       }
-    } catch (error) {
-      console.error('[배송지 저장] 오류:', error);
+    } catch {
       toast.error('배송지 정보 저장 중 오류가 발생했습니다.');
     }
   };
@@ -403,8 +400,8 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
           orderAnnouncementRef.current.textContent = `배송 메모가 설정되었습니다: ${memo}`;
         }
       }
-    } catch (error) {
-      console.error('[배송 메모 저장] 오류:', error);
+    } catch {
+      // none-debug
     }
   };
 
@@ -426,8 +423,6 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
       if (paymentStepRef.current) {
         paymentStepRef.current.textContent = '결제 처리를 시작합니다.';
       }
-
-      console.log('[결제 처리] 시작');
 
       // 결제 진행 상태 쿠키 설정 (OrderPage 리다이렉트 방지)
       document.cookie = 'payment-in-progress=true; path=/; max-age=3600'; // 1시간
@@ -463,15 +458,10 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
         },
       };
 
-      console.log('[결제 처리] 주문 생성 요청:', createOrderData);
-
       // 주문 생성 API 호출
       const result = await createOrderAction(createOrderData);
 
-      console.log('[결제 처리] createOrderAction 결과:', result);
-
       if (!result.success) {
-        console.error('[결제 처리] 주문 생성 실패:', result.message);
         toast.error('주문 생성 실패', {
           description: result.message,
           duration: 4000,
@@ -479,22 +469,15 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
         return; // 페이지 이동 없이 현재 페이지 유지
       }
 
-      console.log('[결제 처리] 주문 생성 성공:', result.data);
-
       // 주문 데이터 임시 저장
       sessionStorage.setItem('lastOrderData', JSON.stringify(orderData));
 
       // orderId 확인
       const orderId = result.data?.orderId;
       if (!orderId) {
-        console.error('[결제 처리] orderId가 없습니다');
         toast.error('주문 ID를 가져올 수 없습니다');
         return; // 페이지 이동 없이 현재 페이지 유지
       }
-
-      console.log('[결제 처리] orderId 확인:', orderId);
-
-      console.log('[결제 처리] PortOne 결제 시작');
 
       // 결제창 호출 알림
       if (paymentStepRef.current) {
@@ -506,7 +489,6 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
       const channelKey = process.env.NEXT_PUBLIC_PORTONE_CHANNEL_KEY;
 
       if (!storeId || !channelKey) {
-        console.error('[결제 처리] PortOne 환경변수 없음:', { storeId, channelKey });
         toast.error('결제 설정 오류', {
           description: '환경변수를 확인해주세요. (.env.local 파일)',
           duration: 6000,
@@ -515,7 +497,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
       }
 
       // 결제 ID 생성
-      const paymentId = `payment-${crypto.randomUUID()}`;
+      const paymentId = `payment-${Date.now()}-${Math.random().toString(36).substring(2, 15)}`;
 
       // 주문명 생성
       const orderName = orderData.items.length === 1 ? orderData.items[0].productName : `${orderData.items[0].productName} 외 ${orderData.items.length - 1}건`;
@@ -523,23 +505,13 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
       // 총 결제 금액 (finalAmount 변수 사용)
       const totalAmount = finalAmount;
 
-      console.log('[결제 처리] PortOne 결제 정보:', {
-        paymentId,
-        orderName,
-        totalAmount,
-        orderId,
-        storeId,
-        channelKey,
-      });
-
-      // PortOne 결제창 호출
       const response = await PortOne.requestPayment({
         storeId: storeId,
         channelKey: channelKey,
         paymentId: paymentId,
         orderName: orderName,
         totalAmount: totalAmount,
-        currency: 'CURRENCY_KRW',
+        currency: 'CURRENCY_KRW' as const,
         payMethod: 'CARD',
         customer: {
           fullName: orderData.address.name,
@@ -548,14 +520,12 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
         customData: {
           orderId: orderId,
         },
+        // 모바일에서 필수: 결제 완료 후 바로 결제 완료 페이지로
+        redirectUrl: `${window.location.origin}/order/order-complete?orderId=${orderId}&paymentId=${paymentId}`,
       });
-
-      console.log('[결제 처리] PortOne 응답:', response);
 
       // 결제 실패/취소 처리 - 즉시 쿠키 삭제
       if (response?.code) {
-        console.error('[결제 처리] PortOne 결제 실패/취소:', response);
-
         document.cookie = 'payment-in-progress=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
 
         // 결제 취소/실패 알림
@@ -581,9 +551,8 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
         try {
           const { saveTempOrderAction } = await import('@/lib/actions/order/orderServerActions');
           await saveTempOrderAction(orderData);
-          console.log('[결제 처리] 임시 주문 데이터 복원 완료');
-        } catch (error) {
-          console.error('[결제 처리] 임시 주문 데이터 복원 실패:', error);
+        } catch {
+          // none-debug
         }
 
         return; // 페이지 이동 없이 현재 페이지 유지
@@ -591,19 +560,12 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
 
       // 결제 성공 확인
       if (!response?.paymentId) {
-        console.error('[결제 처리] paymentId 없음:', response);
-
         // 이 경우에도 쿠키 삭제
         document.cookie = 'payment-in-progress=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
 
         toast.error('결제 정보를 가져올 수 없습니다');
         return; // 페이지 이동 없이 현재 페이지 유지
       }
-
-      console.log('[결제 처리] 결제 성공, paymentId:', response.paymentId);
-
-      // 결제 성공
-      console.log('[결제 처리] 결제 성공, 검증 시작');
 
       // 결제 검증 시작 알림
       if (paymentStepRef.current) {
@@ -621,8 +583,6 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
       toast.dismiss(verifyingToastId);
 
       if (!verificationResult.success) {
-        console.error('[결제 처리] 결제 검증 실패:', verificationResult.message);
-
         // 검증 실패 시에도 쿠키 삭제
         document.cookie = 'payment-in-progress=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
 
@@ -638,9 +598,6 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
         return; // 페이지 이동 없이 현재 페이지 유지
       }
 
-      // 결제 완료 처리
-      console.log('[결제 처리] 결제 검증 성공');
-
       // 결제 완료 시 쿠키 삭제
       document.cookie = 'payment-in-progress=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
 
@@ -653,14 +610,11 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
 
       // redirectUrl 확인 로그
       const redirectUrl = verificationResult.data?.redirectUrl || result.data?.redirectUrl;
-      console.log('[결제 처리] redirectUrl:', redirectUrl);
 
       // 결제 검증 성공한 경우에만 페이지 이동
       if (!redirectUrl) {
-        console.error('[결제 처리] redirectUrl이 없습니다');
         if (orderId) {
           const manualRedirectUrl = `/order/order-complete?orderId=${orderId}`;
-          console.log('[결제 처리] 수동 생성 redirectUrl:', manualRedirectUrl);
 
           toast.success('결제가 완료되었습니다!', {
             description: '주문 완료 페이지로 이동합니다.',
@@ -681,21 +635,18 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
       });
 
       if (redirectUrl) {
-        console.log('[결제 처리] 페이지 이동:', redirectUrl);
         setTimeout(() => {
           router.push(redirectUrl);
         }, 1000);
       } else {
         // redirectUrl이 없어도 페이지 이동하지 않고 현재 페이지 유지
-        console.log('[결제 처리] redirectUrl 없음 - 현재 페이지 유지');
+
         toast.info('주문이 완료되었습니다', {
           description: '주문 내역은 마이페이지에서 확인할 수 있습니다.',
           duration: 4000,
         });
       }
     } catch (error) {
-      console.error('[결제 처리] 예상치 못한 오류:', error);
-
       // catch 블록에서도 쿠키 삭제
       document.cookie = 'payment-in-progress=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
 
@@ -718,15 +669,12 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
       }
 
       // 오류 발생 시 현재 페이지에 머무르기
-      console.log('[결제 처리] 오류 발생 - 현재 페이지 유지');
     } finally {
       // finally에서도 페이지 이동 없이 로딩 상태만 해제
       setIsProcessingOrder(false);
 
       // finally에서도 결제 진행 쿠키 정리
       document.cookie = 'payment-in-progress=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-
-      console.log('[결제 처리] finally: 처리 완료, 현재 페이지 유지');
     }
   };
 
@@ -1015,7 +963,7 @@ export default function OrderClientSection({ initialOrderData }: OrderClientSect
                                   <SelectTrigger id='deliveryNote' className='w-full' aria-describedby='delivery-memo-description'>
                                     <SelectValue placeholder='배송 메모를 선택해 주세요.' />
                                   </SelectTrigger>
-                                  <SelectContent>
+                                  <SelectContent className='z-[999]'>
                                     <SelectGroup>
                                       <SelectLabel>배송 메모 선택</SelectLabel>
                                       <SelectItem value='부재 시 경비실에 맡겨주세요.'>부재 시 경비실에 맡겨주세요.</SelectItem>

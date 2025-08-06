@@ -13,4 +13,5 @@ export interface ReviewPopCard {
     name: string;
     image: string;
   };
+  averageRating?: number;
 }

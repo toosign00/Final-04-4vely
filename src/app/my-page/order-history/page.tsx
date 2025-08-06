@@ -123,11 +123,31 @@ export default async function OrderHistoryPage({ searchParams }: OrderHistoryPag
   // 주문 내역이 없는 경우 빈 상태 화면 표시
   if (orders.length === 0) {
     return (
-      <div className='grid w-full'>
-        <div className='py-12 text-center'>
-          <p className='text-gray-500'>주문 내역이 없습니다.</p>
+      <section className='flex min-h-[25rem] flex-col items-center justify-center px-4 text-center' aria-labelledby='empty-orders-title' role='region'>
+        {/* 아이콘 */}
+        <div className='mb-6' aria-hidden='true'>
+          <svg className='mx-auto h-16 w-16 text-gray-300' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={1.5} d='M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z' />
+          </svg>
         </div>
-      </div>
+
+        {/* 메인 메시지 */}
+        <div className='mb-8 max-w-md'>
+          <h3 id='empty-orders-title' className='t-h3 text-secondary mb-3 font-bold'>
+            아직 주문 내역이 없습니다
+          </h3>
+          <p className='t-body text-muted leading-relaxed'>
+            마음에 드는 식물을 주문해보세요!
+            <br />
+            주문 내역을 여기서 확인할 수 있어요.
+          </p>
+        </div>
+
+        {/* 추가 안내 메시지 */}
+        <div className='text-center'>
+          <p className='t-small text-muted/80'>💡 쇼핑몰에서 다양한 식물을 만나보세요</p>
+        </div>
+      </section>
     );
   }
 

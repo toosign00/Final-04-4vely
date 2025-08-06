@@ -1,4 +1,5 @@
 'use client';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/AlertDialog';
 import { Button } from '@/components/ui/Button';
 import { createPost, uploadFile } from '@/lib/functions/communityFunctions';
 import { useAuth } from '@/store/authStore';
@@ -25,11 +26,16 @@ export default function ClientWrite() {
   const [cover, setCover] = useState<File | null>(null);
   const [postForms, setPostForms] = useState<PostForm[]>([{ id: '1', title: '', content: '', postImage: null, thumbnailImage: null }]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [name, setName] = useState<string>('');
-  const [nickname, setNickname] = useState<string>('');
-  const [species, setSpecies] = useState<string>('');
-  //에러 상태들 식물이름, 제목, 이미지
+  const [name, setName] = useState('');
+  const [nickname, setNickname] = useState('');
+  const [species, setSpecies] = useState('');
   const [nameError, setNameError] = useState(false);
+  const [dialog, setDialog] = useState<{
+    open: boolean;
+    title: string;
+    description?: string;
+    onConfirm: () => void;
+  }>({ open: false, title: '', description: '', onConfirm: () => {} });
 
   const handleCoverChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
@@ -51,9 +57,24 @@ export default function ClientWrite() {
   };
 
   const handleSubmit = async () => {
+    // 이미지 최소 1개 업로드 체크 (커버 또는 본문 이미지)
+    const hasBodyImage = postForms.some((f) => f.postImage);
+    if (!cover && !hasBodyImage) {
+      setDialog({
+        open: true,
+        title: '이미지를 업로드해주세요.',
+        onConfirm: () => setDialog((d) => ({ ...d, open: false })),
+      });
+      return;
+    }
+
     const first = postForms[0];
     if (!first.title.trim()) {
-      alert('제목을 입력해주세요.');
+      setDialog({
+        open: true,
+        title: '제목을 입력해주세요.',
+        onConfirm: () => setDialog((d) => ({ ...d, open: false })),
+      });
       return;
     }
 
@@ -62,7 +83,7 @@ export default function ClientWrite() {
       // 1) 커버 업로드
       const coverUrl = cover ? await uploadFile(cover) : '';
 
-      // 2)  이미지 업로드
+      // 2) 이미지 업로드
       const contentsPayload = await Promise.all(
         postForms.map(async (f) => {
           const postImageUrl = f.postImage ? await uploadFile(f.postImage) : '';
@@ -84,230 +105,254 @@ export default function ClientWrite() {
           title: first.title,
           content: first.content,
           image: coverUrl || contentsPayload[0]?.postImage || '',
-          extra: {
-            contents: contentsPayload,
-            name,
-            nickname,
-            species,
-          },
+          extra: { contents: contentsPayload, name, nickname, species },
         },
         token,
       );
 
-      alert('글이 성공적으로 작성되었습니다!');
-      router.push('/community');
-      router.refresh();
-    } catch (err) {
-      console.error('게시글 작성 에러:', err);
-      alert(err instanceof Error ? err.message : '작성에 실패했습니다.');
+      // 4) 성공 다이얼로그
+      setDialog({
+        open: true,
+        title: '작성 완료',
+        description: '글이 성공적으로 작성되었습니다.',
+        onConfirm: () => {
+          setDialog((d) => ({ ...d, open: false }));
+          router.push('/community');
+          router.refresh();
+        },
+      });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : '작성에 실패했습니다.';
+      setDialog({
+        open: true,
+        title: '오류 발생',
+        description: msg,
+        onConfirm: () => setDialog((d) => ({ ...d, open: false })),
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <main className='flex flex-col items-center space-y-12 pb-8'>
-      {/* 대문 이미지 */}
-      <section className='w-full text-gray-500'>
-        <label htmlFor='cover-upload' className='block w-full cursor-pointer'>
-          <div className='relative flex h-64 w-full items-center justify-center overflow-hidden border border-dashed border-gray-300 bg-white'>
-            {cover ? (
-              <Image src={URL.createObjectURL(cover)} alt='cover' fill className='object-cover' priority />
-            ) : (
-              <div className='flex flex-col items-center gap-1'>
-                <h2 className='text-2xl font-semibold'>대문 이미지 추가</h2>
-                <Plus size={90} className='text-gray-500' />
-              </div>
-            )}
-          </div>
-          <input id='cover-upload' type='file' accept='image/*' onChange={handleCoverChange} className='hidden' disabled={isSubmitting} />
-        </label>
-      </section>
-
-      {/* 제목 */}
-      <h1 className='w-full max-w-4xl px-4 text-3xl font-bold'>글쓰기</h1>
-
-      {/* 정보 입력 한 줄 */}
-      <section className='mb-8 w-full max-w-4xl overflow-hidden rounded-3xl bg-teal-50 p-6'>
-        <h3 className='mb-4 text-lg font-semibold'>정보</h3>
-        <div className='grid grid-cols-1 gap-4 sm:grid-cols-3'>
-          {/* 식물이름 (필수) */}
-          <div className='flex flex-col'>
-            <label htmlFor='name' className={`flex items-center text-sm font-medium ${nameError ? 'text-red-500' : 'text-gray-700'}`}>
-              식물이름<span className='ml-1 text-red-500'>*</span>
-            </label>
-            <input
-              id='name'
-              type='text'
-              value={name}
-              onChange={(e) => {
-                setName(e.target.value);
-                if (nameError) setNameError(false);
-              }}
-              onBlur={() => {
-                if (!name.trim()) setNameError(true);
-              }}
-              placeholder='예: 안스리움'
-              disabled={isSubmitting}
-              className={`mt-1 h-10 min-w-[160px] rounded border px-3 text-sm transition focus:ring-2 focus:ring-green-400 focus:outline-none ${nameError ? 'border-red-500' : 'border-gray-300 hover:border-green-500'}`}
-            />
-            {nameError && <p className='mt-1 text-xs text-red-500'>식물 이름을 입력해주세요.</p>}
-          </div>
-
-          {/* 애칭 */}
-          <div className='flex flex-col'>
-            <label htmlFor='nickname' className='text-sm font-medium text-gray-700'>
-              애칭
-            </label>
-            <input
-              id='nickname'
-              type='text'
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
-              placeholder='애칭을 입력하세요'
-              disabled={isSubmitting}
-              className='mt-1 h-10 min-w-[140px] rounded border border-gray-300 px-3 text-sm transition hover:border-green-500 focus:ring-2 focus:ring-green-400 focus:outline-none'
-            />
-          </div>
-
-          {/* 종류 */}
-          <div className='flex flex-col'>
-            <label htmlFor='species' className='text-sm font-medium text-gray-700'>
-              종류
-            </label>
-            <input
-              id='species'
-              type='text'
-              value={species}
-              onChange={(e) => setSpecies(e.target.value)}
-              placeholder='종류를 입력하세요'
-              disabled={isSubmitting}
-              className='mt-1 h-10 min-w-[140px] rounded border border-gray-300 px-3 text-sm transition hover:border-green-500 focus:ring-2 focus:ring-green-400 focus:outline-none'
-            />
-          </div>
-        </div>
-      </section>
-
-      <div className='flex w-full max-w-4xl flex-col gap-6 px-4 md:flex-row'>
-        {/* 썸네일 섹션 */}
-        <div className='hidden flex-col items-end gap-4 md:flex'>
-          {postForms.map((form) => (
-            <div key={form.id}>
-              {form.thumbnailImage ? (
-                <div className='relative h-20 w-20 overflow-hidden rounded-lg border border-gray-300'>
-                  <Image fill src={URL.createObjectURL(form.thumbnailImage)} alt='thumb' className='object-cover' priority />
-                </div>
+    <>
+      <main className='flex flex-col items-center space-y-12 pb-8'>
+        {/* 대문 이미지 */}
+        <section className='w-full text-gray-500'>
+          <label htmlFor='cover-upload' className='block w-full cursor-pointer'>
+            <div className='relative flex h-64 w-full items-center justify-center overflow-hidden border border-dashed border-gray-300 bg-white'>
+              {cover ? (
+                <Image src={URL.createObjectURL(cover)} alt='cover' fill className='object-cover' priority />
               ) : (
-                <div className='flex h-20 w-20 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-400'>
-                  <Plus size={24} />
+                <div className='flex flex-col items-center gap-1'>
+                  <h2 className='text-2xl font-semibold'>대문 이미지 추가</h2>
+                  <Plus size={90} className='text-gray-500' />
                 </div>
               )}
             </div>
-          ))}
-        </div>
+            <input id='cover-upload' type='file' accept='image/*' onChange={handleCoverChange} className='hidden' disabled={isSubmitting} />
+          </label>
+        </section>
 
-        {/* 글쓰기 폼 영역 */}
-        <div className='flex-1 space-y-6 bg-teal-50'>
-          {postForms.map((form, idx) => (
-            <section key={form.id} className='rounded-lg border p-4 transition hover:shadow-md'>
-              {/* 첫 번째 폼: 제목 + 삭제 */}
-              {idx === 0 ? (
-                <div className='mb-6 flex items-center gap-4'>
-                  <input
-                    type='text'
-                    placeholder='제목을 입력해주세요.'
-                    maxLength={80}
-                    value={form.title}
-                    onChange={(e) => updatePostForm(form.id, 'title', e.target.value)}
-                    className='h-12 flex-1 rounded-lg border border-gray-300 px-4 transition hover:border-green-500 focus:ring-2 focus:ring-green-400 focus:outline-none'
-                    disabled={isSubmitting}
-                  />
-                  <Button variant='destructive' onClick={() => removePostForm(form.id)} disabled={isSubmitting || postForms.length === 1}>
-                    삭제
-                  </Button>
-                </div>
-              ) : (
-                <div className='mb-4 flex justify-end'>
-                  <Button variant='destructive' onClick={() => removePostForm(form.id)} disabled={isSubmitting}>
-                    삭제
-                  </Button>
-                </div>
-              )}
+        {/* 제목 */}
+        <h1 className='w-full max-w-4xl px-4 text-3xl font-bold'>글쓰기</h1>
 
-              <div className='grid grid-cols-1 gap-6 md:grid-cols-2'>
-                {/* 이미지 업로드 */}
-                <div className='relative min-h-[200px] overflow-hidden rounded-lg border border-gray-300 bg-gray-100 transition hover:border-green-500'>
-                  <label htmlFor={`post-upload-${form.id}`} className='absolute inset-0 flex cursor-pointer items-center justify-center text-gray-400'>
-                    {!form.postImage && (
-                      <div className='text-center'>
-                        <h1 className='mb-2 text-lg font-medium'>사진 첨부</h1>
-                        <Plus size={58} />
-                      </div>
-                    )}
-                  </label>
-                  <input
-                    id={`post-upload-${form.id}`}
-                    type='file'
-                    accept='image/*'
-                    onChange={(e) => {
-                      const file = e.target.files?.[0] ?? null;
-                      updatePostForm(form.id, 'postImage', file);
-                      updatePostForm(form.id, 'thumbnailImage', file);
-                    }}
-                    className='hidden'
-                    disabled={isSubmitting}
-                  />
-                  {form.postImage && (
-                    <>
-                      <Image fill src={URL.createObjectURL(form.postImage)} alt='post' className='object-cover' />
-                      <button
-                        type='button'
-                        onClick={() => {
-                          updatePostForm(form.id, 'postImage', null);
-                          updatePostForm(form.id, 'thumbnailImage', null);
-                        }}
-                        className='absolute top-2 right-2 text-gray-400 transition hover:text-gray-600'
-                        disabled={isSubmitting}
-                      >
-                        <X size={20} />
-                      </button>
-                    </>
-                  )}
-                </div>
+        {/* 정보 입력 한 줄 */}
+        <section className='mb-8 w-full max-w-4xl overflow-hidden rounded-3xl bg-teal-50 p-6'>
+          <h3 className='mb-4 text-lg font-semibold'>정보</h3>
+          <div className='grid grid-cols-1 gap-4 sm:grid-cols-3'>
+            {/* 식물이름 (필수) */}
+            <div className='flex flex-col'>
+              <label htmlFor='name' className={`flex items-center text-sm font-medium ${nameError ? 'text-red-500' : 'text-gray-700'}`}>
+                식물이름<span className='ml-1 text-red-500'>*</span>
+              </label>
+              <input
+                id='name'
+                type='text'
+                value={name}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  if (nameError) setNameError(false);
+                }}
+                onBlur={() => {
+                  if (!name.trim()) setNameError(true);
+                }}
+                placeholder='예: 안스리움'
+                disabled={isSubmitting}
+                className={`mt-1 h-10 min-w-[160px] rounded border px-3 text-sm transition focus:ring-2 focus:ring-green-400 focus:outline-none ${nameError ? 'border-red-500' : 'border-gray-300 hover:border-green-500'}`}
+              />
+              {nameError && <p className='mt-1 text-xs text-red-500'>식물 이름을 입력해주세요.</p>}
+            </div>
 
-                {/* 내용 입력 */}
-                <textarea
-                  placeholder='내용을 입력해주세요.'
-                  value={form.content}
-                  onChange={(e) => updatePostForm(form.id, 'content', e.target.value)}
-                  className='min-h-[200px] w-full resize-none rounded-lg border border-gray-300 bg-white p-4 transition hover:border-green-500 focus:ring-2 focus:ring-green-400 focus:outline-none'
-                  disabled={isSubmitting}
-                />
+            {/* 애칭 */}
+            <div className='flex flex-col'>
+              <label htmlFor='nickname' className='text-sm font-medium text-gray-700'>
+                애칭
+              </label>
+              <input
+                id='nickname'
+                type='text'
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+                placeholder='애칭을 입력하세요'
+                disabled={isSubmitting}
+                className='mt-1 h-10 min-w-[140px] rounded border border-gray-300 px-3 text-sm transition hover:border-green-500 focus:ring-2 focus:ring-green-400 focus:outline-none'
+              />
+            </div>
+
+            {/* 종류 */}
+            <div className='flex flex-col'>
+              <label htmlFor='species' className='text-sm font-medium text-gray-700'>
+                종류
+              </label>
+              <input
+                id='species'
+                type='text'
+                value={species}
+                onChange={(e) => setSpecies(e.target.value)}
+                placeholder='종류를 입력하세요'
+                disabled={isSubmitting}
+                className='mt-1 h-10 min-w-[140px] rounded border border-gray-300 px-3 text-sm transition hover:border-green-500 focus:ring-2 focus:ring-green-400 focus:outline-none'
+              />
+            </div>
+          </div>
+        </section>
+
+        <div className='flex w-full max-w-4xl flex-col gap-6 px-4 md:flex-row'>
+          {/* 썸네일 섹션 */}
+          <div className='hidden flex-col items-end gap-4 md:flex'>
+            {postForms.map((form) => (
+              <div key={form.id}>
+                {form.thumbnailImage ? (
+                  <div className='relative h-20 w-20 overflow-hidden rounded-lg border border-gray-300'>
+                    <Image fill src={URL.createObjectURL(form.thumbnailImage)} alt='thumb' className='object-cover' priority />
+                  </div>
+                ) : (
+                  <div className='flex h-20 w-20 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-400'>
+                    <Plus size={24} />
+                  </div>
+                )}
               </div>
-            </section>
-          ))}
-        </div>
-      </div>
+            ))}
+          </div>
 
-      {/* 하단 버튼 */}
-      <div className='flex w-full max-w-4xl items-center justify-between px-4 md:pl-33'>
-        <div className='flex items-center gap-3'>
-          <Button onClick={addNewForm} disabled={isSubmitting || postForms.length >= MAX_FORMS} className='flex items-center gap-1'>
-            추가하기{' '}
-            <span className='text-sm text-gray-600'>
-              ({postForms.length}/{MAX_FORMS})
-            </span>
-          </Button>
+          {/* 글쓰기 폼 영역 */}
+          <div className='flex-1 space-y-6 bg-teal-50'>
+            {postForms.map((form, idx) => (
+              <section key={form.id} className='rounded-lg border p-4 transition hover:shadow-md'>
+                {idx === 0 ? (
+                  <div className='mb-6 flex items-center gap-4'>
+                    <input
+                      type='text'
+                      placeholder='제목을 입력해주세요.'
+                      maxLength={80}
+                      value={form.title}
+                      onChange={(e) => updatePostForm(form.id, 'title', e.target.value)}
+                      className='h-12 flex-1 rounded-lg border border-gray-300 px-4 transition hover:border-green-500 focus:ring-2 focus:ring-green-400 focus:outline-none'
+                      disabled={isSubmitting}
+                    />
+                    <Button variant='destructive' onClick={() => removePostForm(form.id)} disabled={isSubmitting || postForms.length === 1}>
+                      삭제
+                    </Button>
+                  </div>
+                ) : (
+                  <div className='mb-4 flex justify-end'>
+                    <Button variant='destructive' onClick={() => removePostForm(form.id)} disabled={isSubmitting}>
+                      삭제
+                    </Button>
+                  </div>
+                )}
+
+                <div className='grid grid-cols-1 gap-6 md:grid-cols-2'>
+                  {/* 이미지 업로드 */}
+                  <div className='relative min-h-[200px] overflow-hidden rounded-lg border border-gray-300 bg-gray-100 transition hover:border-green-500'>
+                    <label htmlFor={`post-upload-${form.id}`} className='absolute inset-0 flex cursor-pointer items-center justify-center text-gray-400'>
+                      {!form.postImage && (
+                        <div className='text-center'>
+                          <h1 className='mb-2 text-lg font-medium'>사진 첨부</h1>
+                          <Plus size={58} />
+                        </div>
+                      )}
+                    </label>
+                    <input
+                      id={`post-upload-${form.id}`}
+                      type='file'
+                      accept='image/*'
+                      onChange={(e) => {
+                        const file = e.target.files?.[0] || null;
+                        updatePostForm(form.id, 'postImage', file);
+                        updatePostForm(form.id, 'thumbnailImage', file);
+                      }}
+                      className='hidden'
+                      disabled={isSubmitting}
+                    />
+                    {form.postImage && (
+                      <>
+                        <Image fill src={URL.createObjectURL(form.postImage)} alt='post' className='object-cover' />
+                        <button
+                          type='button'
+                          onClick={() => {
+                            updatePostForm(form.id, 'postImage', null);
+                            updatePostForm(form.id, 'thumbnailImage', null);
+                          }}
+                          className='absolute top-2 right-2 text-gray-400 transition hover:text-gray-600'
+                          disabled={isSubmitting}
+                        >
+                          {' '}
+                          <X size={20} />{' '}
+                        </button>
+                      </>
+                    )}
+                  </div>
+
+                  {/* 내용 입력 */}
+                  <textarea
+                    placeholder='내용을 입력해주세요.'
+                    value={form.content}
+                    onChange={(e) => updatePostForm(form.id, 'content', e.target.value)}
+                    className='min-h-[200px] w-full resize-none rounded-lg border border-gray-300 bg-white p-4 transition hover:border-green-500 focus:ring-2 focus:ring-green-400 focus:outline-none'
+                    disabled={isSubmitting}
+                  />
+                </div>
+              </section>
+            ))}
+          </div>
         </div>
-        <div className='flex gap-2'>
-          <Button variant='secondary' onClick={() => router.push('/community')} disabled={isSubmitting}>
-            취소
-          </Button>
-          <Button variant='primary' onClick={handleSubmit} disabled={isSubmitting}>
-            {isSubmitting ? '작성 중...' : '작성하기'}
-          </Button>
+
+        {/* 하단 버튼 */}
+        <div className='flex w-full max-w-4xl items-center justify-between px-4 md:pl-33'>
+          <div className='flex items-center gap-3'>
+            <Button onClick={addNewForm} disabled={isSubmitting || postForms.length >= MAX_FORMS} className='flex items-center gap-1'>
+              추가하기{' '}
+              <span className='text-sm text-gray-600'>
+                ({postForms.length}/{MAX_FORMS})
+              </span>
+            </Button>
+          </div>
+          <div className='flex gap-2'>
+            <Button variant='secondary' onClick={() => router.push('/community')} disabled={isSubmitting}>
+              취소
+            </Button>
+            <Button variant='primary' onClick={handleSubmit} disabled={isSubmitting}>
+              {isSubmitting ? '작성 중...' : '작성하기'}
+            </Button>
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+
+      {/* 다이어로그 */}
+      <AlertDialog open={dialog.open} onOpenChange={(open) => setDialog((d) => ({ ...d, open }))}>
+        <AlertDialogContent className='fixed w-[90%] max-w-md -translate-x-1/2'>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{dialog.title}</AlertDialogTitle>
+            {dialog.description && <AlertDialogDescription>{dialog.description}</AlertDialogDescription>}
+          </AlertDialogHeader>
+          <AlertDialogFooter className='justify-end space-x-2'>
+            <AlertDialogCancel>취소</AlertDialogCancel>
+            <AlertDialogAction onClick={dialog.onConfirm}>확인</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

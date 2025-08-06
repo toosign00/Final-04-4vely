@@ -27,8 +27,6 @@ export default function OrderComplete() {
     const fetchOrderInfo = async () => {
       try {
         if (!orderId) {
-          console.log('[주문 완료] orderId 파라미터 없음');
-
           // 오류 상태 알림
           if (pageAnnouncementRef.current) {
             pageAnnouncementRef.current.textContent = '주문 정보를 찾을 수 없습니다. 쇼핑 페이지로 이동합니다.';
@@ -39,8 +37,6 @@ export default function OrderComplete() {
           return;
         }
 
-        console.log('[주문 완료] 주문 정보 조회 시작:', orderId);
-
         // 로딩 상태 알림
         if (pageAnnouncementRef.current) {
           pageAnnouncementRef.current.textContent = '주문 정보를 불러오고 있습니다.';
@@ -50,7 +46,6 @@ export default function OrderComplete() {
         const result = await getOrderByIdAction(parseInt(orderId));
 
         if (result.success && result.orderData) {
-          console.log('[주문 완료] 주문 정보 조회 성공:', result.orderData);
           setOrderInfo(result.orderData);
 
           // 주문 완료 상태 알림
@@ -62,7 +57,6 @@ export default function OrderComplete() {
           const tempOrderData = sessionStorage.getItem('lastOrderData');
           if (tempOrderData) {
             const parsedData = JSON.parse(tempOrderData);
-            console.log('[주문 완료] 임시 주문 데이터 사용:', parsedData);
 
             interface TempOrderItem {
               productId: number;
@@ -133,8 +127,6 @@ export default function OrderComplete() {
               pageAnnouncementRef.current.textContent = `주문번호 ${orderId}번 주문이 성공적으로 완료되었습니다.`;
             }
           } else {
-            console.error('[주문 완료] 주문 조회 실패:', result.message);
-
             // 오류 상태 알림
             if (pageAnnouncementRef.current) {
               pageAnnouncementRef.current.textContent = '주문 정보를 불러올 수 없습니다. 쇼핑 페이지로 이동합니다.';
@@ -145,10 +137,7 @@ export default function OrderComplete() {
             return;
           }
         }
-        console.log('[주문 완료] 주문 정보 설정 완료');
-      } catch (error) {
-        console.error('[주문 완료] 주문 정보 조회 오류:', error);
-
+      } catch {
         // 오류 상태 알림
         if (pageAnnouncementRef.current) {
           pageAnnouncementRef.current.textContent = '주문 정보를 불러오는 중 오류가 발생했습니다. 쇼핑 페이지로 이동합니다.';

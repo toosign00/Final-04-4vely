@@ -8,11 +8,6 @@ export default async function CartPage() {
   // 서버에서 장바구니 데이터 가져오기
   const cartItems = await getCartItemsActionOptimized();
 
-  console.log('[CartPage] 장바구니 데이터 조회:', {
-    아이템수: cartItems.length,
-    총금액: cartItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0),
-  });
-
   // 장바구니가 비어있는 경우
   if (cartItems.length === 0) {
     return (

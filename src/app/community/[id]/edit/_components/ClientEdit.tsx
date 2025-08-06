@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { ChangeEvent, useEffect, useState } from 'react';
 
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogOverlay, AlertDialogPortal, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/AlertDialog';
 import { Button } from '@/components/ui/Button';
 import { fetchPostById, updatePostById, uploadFile } from '@/lib/functions/communityFunctions';
 import { useAuth } from '@/store/authStore';
@@ -35,6 +36,8 @@ export default function ClientEdit({ postId }: ClientEditProps) {
   const [nickname, setNickname] = useState<string>('');
   const [species, setSpecies] = useState<string>('');
   const [nameError, setNameError] = useState(false);
+  const [successDialog, setSuccessDialog] = useState(false);
+  const [titleErrorDialog, setTitleErrorDialog] = useState(false);
   useEffect(() => {
     async function loadPost() {
       try {
@@ -80,7 +83,7 @@ export default function ClientEdit({ postId }: ClientEditProps) {
   const handleSubmit = async () => {
     const first = postForms[0];
     if (!first || !first.title.trim()) {
-      alert('제목을 입력해주세요.');
+      setTitleErrorDialog(true);
       return;
     }
     setIsSubmitting(true);
@@ -108,9 +111,7 @@ export default function ClientEdit({ postId }: ClientEditProps) {
         },
         token || '',
       );
-
-      alert('글이 성공적으로 수정되었습니다!');
-      router.push(`/community/${postId}`);
+      setSuccessDialog(true);
     } catch (e) {
       console.error('수정 에러:', e);
       alert(e instanceof Error ? e.message : '수정에 실패했습니다.');
@@ -121,6 +122,33 @@ export default function ClientEdit({ postId }: ClientEditProps) {
 
   return (
     <main className='flex flex-col items-center space-y-12 pb-8'>
+      <AlertDialog open={titleErrorDialog} onOpenChange={setTitleErrorDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>제목을 입력해주세요.</AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogFooter className='justify-end space-x-2'>
+            <AlertDialogAction onClick={() => setTitleErrorDialog(false)}>확인</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <AlertDialog open={successDialog} onOpenChange={setSuccessDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>수정이 완료되었습니다.</AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogFooter className='justify-end space-x-2'>
+            <AlertDialogAction
+              onClick={() => {
+                setSuccessDialog(false);
+                router.push(`/community/${postId}`);
+              }}
+            >
+              확인
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       {/* 대문이미지 */}
       <section className='w-full bg-white text-gray-500'>
         <label htmlFor='cover-upload' className='block w-full cursor-pointer'>
@@ -315,14 +343,48 @@ export default function ClientEdit({ postId }: ClientEditProps) {
           </Button>
         </div>
         <div className='flex gap-2'>
-          <Button variant='secondary' onClick={() => router.push('/community')} disabled={isSubmitting}>
+          <Button variant='secondary' onClick={() => router.push(`/community/${postId}`)} disabled={isSubmitting}>
             취소
           </Button>
-          <Button variant='primary' onClick={handleSubmit} disabled={isSubmitting}>
-            {isSubmitting ? '수정 중...' : '수정하기'}
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant='primary' disabled={isSubmitting}>
+                {isSubmitting ? '수정 중...' : '수정하기'}
+              </Button>
+            </AlertDialogTrigger>
+
+            <AlertDialogPortal>
+              <AlertDialogOverlay />
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>정말 이 수정 내용을 저장하시겠습니까?</AlertDialogTitle>
+                </AlertDialogHeader>
+                <AlertDialogFooter className='justify-end space-x-2'>
+                  <AlertDialogCancel>취소</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleSubmit}>확인</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialogPortal>
+          </AlertDialog>
         </div>
       </div>
+      <AlertDialog open={successDialog} onOpenChange={setSuccessDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>수정이 완료되었습니다.</AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogFooter className='justify-end space-x-2'>
+            <AlertDialogAction
+              onClick={() => {
+                setSuccessDialog(false);
+                router.push(`/community/${postId}`);
+              }}
+            >
+              확인
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </main>
   );
 }

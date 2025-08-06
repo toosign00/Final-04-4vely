@@ -3,7 +3,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/Carousel';
 import { ReviewPopCard } from '@/types/reviewPop.types';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Star } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -13,6 +13,10 @@ interface ReviewCarouselProps {
 
 // 리뷰 슬라이드
 export default function ReviewCarousel({ reviews }: ReviewCarouselProps) {
+  const renderStars = (rating: number) => {
+    return Array.from({ length: 5 }, (_, i) => <Star key={i} size={16} className={i < Math.round(rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'} />);
+  };
+
   return (
     <section className='bg-[#f2f0eb] py-8 lg:py-12'>
       <div className='mb-15 flex w-full flex-col justify-items-center px-4'>
@@ -34,8 +38,8 @@ export default function ReviewCarousel({ reviews }: ReviewCarouselProps) {
             <Carousel opts={{ loop: true, align: 'start', containScroll: 'trimSnaps' }}>
               <CarouselContent>
                 {reviews.map((review, index) => (
-                  <CarouselItem key={index} className='mb-3 flex min-h-[14rem] basis-full place-content-center md:px-6'>
-                    <Link href={`/shop/products/${review.product_id}`} className='flex w-full max-w-[60rem] items-stretch gap-6 rounded-xl bg-white shadow-md transition-all duration-300 hover:shadow-lg md:gap-8 lg:h-[20rem]'>
+                  <CarouselItem key={index} className='mb-5 flex min-h-[15rem] basis-full place-content-center md:px-6'>
+                    <Link href={`/shop/products/${review.product_id}`} className='flex w-full max-w-[60rem] gap-6 rounded-xl bg-white shadow-md transition-all duration-300 hover:shadow-lg md:gap-8 lg:h-[20rem]'>
                       {/* 좌측 상품 이미지 */}
                       <div className='relative h-full w-[80%] overflow-hidden rounded-l-xl'>
                         <Image src={review.product?.image ?? '/images/default_image.webp'} alt={`${review.product?.name}  상품 이미지`} sizes='(max-width: 768px) 100vw, 700px' fill className='object-cover' />
@@ -43,9 +47,17 @@ export default function ReviewCarousel({ reviews }: ReviewCarouselProps) {
 
                       {/* 우측 텍스트 영역 */}
                       <div className='flex w-full flex-col justify-between py-4 pr-4 md:gap-4 lg:pt-6 lg:pr-8'>
-                        <div className='flex flex-col gap-1 md:gap-4'>
-                          <h3 className='mb-2 text-lg font-semibold md:mb-0 lg:text-2xl'>{review.product?.name}</h3>
-                          <p className='text-muted line-clamp-3 max-w-[43ch] text-sm leading-relaxed md:text-base lg:line-clamp-4 lg:text-lg'>{review.content}</p>
+                        <div className='flex flex-col gap-2'>
+                          <h3 className='text-lg font-semibold lg:text-2xl'>{review.product?.name}</h3>
+
+                          {/* 평점 & 리뷰 수 */}
+                          <div className='flex items-center gap-1 text-sm text-gray-500 lg:text-base'>
+                            {renderStars(review.averageRating ?? 0)}
+                            <span className='ml-1'>{review.averageRating?.toFixed(1) ?? '0.0'}</span>
+                          </div>
+
+                          {/* 후기 */}
+                          <p className='text-muted line-clamp-2 max-w-[43ch] text-sm leading-relaxed md:text-base lg:line-clamp-3 lg:text-lg'>{review.content}</p>
                         </div>
 
                         <div className='mt-4 flex items-center gap-2 border-t pt-4'>

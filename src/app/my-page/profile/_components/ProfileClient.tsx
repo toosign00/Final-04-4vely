@@ -8,7 +8,6 @@ import { Calendar, Camera, ChevronRight, Mail, MapPin, Phone, User } from 'lucid
 import { useEffect, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import ErrorDisplay from '../../_components/ErrorDisplay';
 import ChangePasswordDialog from './ChangePasswordDialog';
 
 interface ProfileClientProps {
@@ -30,6 +29,39 @@ export default function ProfileClient({ user }: ProfileClientProps) {
   const [displayName, setDisplayName] = useState(user?.name || '');
   const [displayEmail, setDisplayEmail] = useState(user?.email || '');
 
+  // 소셜 로그인 여부 확인
+  const isSocialLogin = user?.loginType && user.loginType !== 'email';
+
+  // 네이버 전화번호 형식 변환 함수 (010-1234-5678 -> 01012345678)
+  const formatPhoneForApi = (phone: string): string => {
+    if (!phone) return '';
+    return phone.replace(/-/g, '');
+  };
+
+  // 소셜 로그인 사용자의 추가 정보 추출
+  const getSocialUserData = () => {
+    if (!isSocialLogin || !user?.extra) return null;
+
+    const extraData = user.extra;
+    let socialEmail = user.email;
+    let socialPhone = user.phone;
+
+    // Naver 및 기타 소셜 로그인에서 추가 정보 추출
+    if (extraData.response) {
+      socialEmail = socialEmail || extraData.response.email || '';
+      // 네이버 전화번호 형식 변환
+      const rawPhone = socialPhone || extraData.response.mobile || '';
+      socialPhone = rawPhone ? formatPhoneForApi(rawPhone) : '';
+    }
+
+    return {
+      email: socialEmail,
+      phone: socialPhone,
+    };
+  };
+
+  const socialData = getSocialUserData();
+
   const {
     register,
     handleSubmit,
@@ -38,8 +70,8 @@ export default function ProfileClient({ user }: ProfileClientProps) {
   } = useForm<ProfileFormValues>({
     defaultValues: {
       name: user?.name || '',
-      email: user?.email || '',
-      phone: user?.phone || '',
+      email: socialData?.email || user?.email || '',
+      phone: socialData?.phone || user?.phone || '',
       address: user?.address || '',
     },
     mode: 'onBlur',
@@ -48,16 +80,39 @@ export default function ProfileClient({ user }: ProfileClientProps) {
   // user가 바뀔 때마다 reset을 호출하여 폼 초기값을 맞춰줌
   useEffect(() => {
     if (user) {
+      // 소셜 로그인 사용자의 추가 정보 추출 (함수를 useEffect 내부로 이동)
+      const getUpdatedSocialData = () => {
+        if (!isSocialLogin || !user?.extra) return null;
+
+        const extraData = user.extra;
+        let socialEmail = user.email;
+        let socialPhone = user.phone;
+
+        // Naver 및 기타 소셜 로그인에서 추가 정보 추출
+        if (extraData.response) {
+          socialEmail = socialEmail || extraData.response.email || '';
+          // 네이버 전화번호 형식 변환 (010-1234-5678 -> 01012345678)
+          const rawPhone = socialPhone || extraData.response.mobile || '';
+          socialPhone = rawPhone ? formatPhoneForApi(rawPhone) : '';
+        }
+
+        return {
+          email: socialEmail,
+          phone: socialPhone,
+        };
+      };
+
+      const updatedSocialData = getUpdatedSocialData();
       reset({
         name: user.name || '',
-        email: user.email || '',
-        phone: user.phone || '',
+        email: updatedSocialData?.email || user.email || '',
+        phone: updatedSocialData?.phone || user.phone || '',
         address: user.address || '',
       });
       setDisplayName(user.name || '');
-      setDisplayEmail(user.email || '');
+      setDisplayEmail(updatedSocialData?.email || user.email || '');
     }
-  }, [user, reset]);
+  }, [user, reset, isSocialLogin]);
 
   // 파일 변경 시 미리보기
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,8 +122,9 @@ export default function ProfileClient({ user }: ProfileClientProps) {
     }
   };
 
+  // user가 null인 경우는 상위 컴포넌트에서 ErrorDisplay로 처리됨
   if (!user) {
-    return <ErrorDisplay title='프로필 정보를 불러오지 못했습니다' message='일시적인 오류가 발생했어요.' />;
+    return null;
   }
 
   // 저장 핸들러
@@ -129,17 +185,17 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                 accept='image/*'
                 className='hidden'
                 id='avatar-upload'
-                disabled={isPending}
+                disabled={isPending || isSocialLogin}
                 {...register('attach')}
                 onChange={(e) => {
                   handleFileChange(e);
                   register('attach').onChange(e);
                 }}
               />
-              <label htmlFor='avatar-upload'>
-                <Button variant='primary' size='icon' className='bg-primary hover:bg-primary/90 absolute -right-1 -bottom-1 size-8 rounded-full shadow-lg' asChild disabled={isPending}>
-                  <span>
-                    <Camera className='size-4' />
+              <label htmlFor='avatar-upload' className={isSocialLogin ? 'cursor-not-allowed' : ''}>
+                <Button variant='primary' size='icon' className={`bg-primary hover:bg-primary/90 absolute -right-1 -bottom-1 size-8 rounded-full shadow-lg ${isSocialLogin ? 'cursor-not-allowed' : ''}`} asChild disabled={isPending || isSocialLogin}>
+                  <span className={isSocialLogin ? 'cursor-not-allowed' : ''}>
+                    <Camera className={`size-4 ${isSocialLogin ? 'cursor-not-allowed' : ''}`} />
                   </span>
                 </Button>
               </label>
@@ -164,9 +220,10 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                   이름
                 </div>
                 <input
-                  className='t-body text-secondary focus:ring-primary flex h-12 w-full items-center rounded-xl border border-gray-200 bg-gray-50 px-4 outline-none focus:ring-2'
+                  className={`t-body text-secondary focus:ring-primary flex h-12 w-full items-center rounded-xl border border-gray-200 bg-gray-50 px-4 outline-none focus:ring-2 ${isSocialLogin ? 'cursor-not-allowed' : ''}`}
                   {...register('name', { required: true, maxLength: 20 })}
-                  disabled={isPending}
+                  disabled={isPending || isSocialLogin}
+                  placeholder={isSocialLogin ? '소셜 로그인 사용자는 변경할 수 없습니다' : '이름을 입력하세요'}
                 />
                 <div className='min-h-[1.5rem]'>{errors.name ? <span className='text-error text-sm'>이름을 입력해 주세요.</span> : null}</div>
               </div>
@@ -174,12 +231,14 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                 <div className='t-small text-secondary/70 mb-1 flex items-center gap-2'>
                   <Mail className='size-4' />
                   이메일
+                  <span className='text-secondary/50 ml-2 text-sm'>* 이메일 변경 시 로그인 정보가 변경됩니다</span>
                 </div>
                 <input
-                  className='t-body text-secondary focus:ring-primary flex h-12 w-full items-center rounded-xl border border-gray-200 bg-gray-50 px-4 outline-none focus:ring-2'
+                  className={`t-body text-secondary focus:ring-primary flex h-12 w-full items-center rounded-xl border border-gray-200 bg-gray-50 px-4 outline-none focus:ring-2 ${isSocialLogin ? 'cursor-not-allowed' : ''}`}
                   {...register('email', { required: true, minLength: 10, maxLength: 30 })}
-                  disabled={isPending}
+                  disabled={isPending || isSocialLogin}
                   type='email'
+                  placeholder={isSocialLogin ? '소셜 로그인 사용자는 변경할 수 없습니다' : '이메일을 입력하세요'}
                 />
                 <div className='min-h-[1.5rem]'>
                   {errors.email?.type === 'required' && <span className='text-error text-sm'>이메일을 입력해 주세요.</span>}
@@ -194,16 +253,16 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                   전화번호
                 </div>
                 <input
-                  className='t-body text-secondary focus:ring-primary flex h-12 w-full items-center rounded-xl border border-gray-200 bg-gray-50 px-4 outline-none focus:ring-2'
+                  className={`t-body text-secondary focus:ring-primary flex h-12 w-full items-center rounded-xl border border-gray-200 bg-gray-50 px-4 outline-none focus:ring-2 ${isSocialLogin ? 'cursor-not-allowed' : ''}`}
                   {...register('phone', {
-                    required: true,
+                    required: !isSocialLogin || !!socialData?.phone,
                     minLength: 10,
                     maxLength: 11,
                     pattern: { value: /^[0-9]*$/, message: '숫자만 입력하세요.' },
                   })}
-                  disabled={isPending}
+                  disabled={isPending || isSocialLogin}
                   type='tel'
-                  placeholder='전화번호를 입력하세요'
+                  placeholder={isSocialLogin ? '소셜 로그인 사용자는 변경할 수 없습니다' : '전화번호를 입력하세요'}
                 />
                 <div className='min-h-[1.5rem]'>
                   {errors.phone?.type === 'required' && <span className='text-error text-sm'>전화번호를 입력해 주세요.</span>}
@@ -221,6 +280,7 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                   className='t-body text-secondary focus:ring-primary flex h-12 w-full items-center rounded-xl border border-gray-200 bg-gray-50 px-4 outline-none focus:ring-2'
                   {...register('address', { required: true, minLength: 3, maxLength: 50 })}
                   disabled={isPending}
+                  placeholder='주소를 입력하세요'
                 />
                 <div className='min-h-[1.5rem]'>{errors.address ? <span className='text-error text-sm'>주소를 입력해 주세요.</span> : null}</div>
               </div>
@@ -240,14 +300,26 @@ export default function ProfileClient({ user }: ProfileClientProps) {
           </div>
 
           <div className='divide-y divide-gray-200 bg-white'>
-            {/* 비밀번호 변경 */}
-            <button type='button' onClick={() => setIsPasswordDialogOpen(true)} className='flex h-auto w-full cursor-pointer items-center justify-between rounded-none px-8 py-6 text-left transition-colors hover:bg-gray-50'>
-              <div className='flex-1'>
-                <h4 className='t-body text-secondary mb-1 font-semibold'>비밀번호 변경</h4>
-                <p className='t-small text-secondary/70'>계정 보안을 위해 주기적으로 비밀번호를 변경하세요</p>
+            {/* 비밀번호 변경 - 이메일 로그인 사용자만 표시 */}
+            {!isSocialLogin && (
+              <button type='button' onClick={() => setIsPasswordDialogOpen(true)} className='flex h-auto w-full cursor-pointer items-center justify-between rounded-none px-8 py-6 text-left transition-colors hover:bg-gray-50'>
+                <div className='flex-1'>
+                  <h4 className='t-body text-secondary mb-1 font-semibold'>비밀번호 변경</h4>
+                  <p className='t-small text-secondary/70'>계정 보안을 위해 주기적으로 비밀번호를 변경하세요</p>
+                </div>
+                <ChevronRight className='text-secondary/50 size-5' />
+              </button>
+            )}
+
+            {/* 소셜 로그인 사용자를 위한 안내 */}
+            {isSocialLogin && (
+              <div className='flex h-auto w-full items-center justify-between rounded-none px-8 py-6 text-left opacity-50'>
+                <div className='flex-1'>
+                  <h4 className='t-body text-secondary mb-1 font-semibold'>소셜 로그인 계정</h4>
+                  <p className='t-small text-secondary/70'>{user?.loginType} 계정으로 로그인하셨습니다. 비밀번호 변경은 해당 서비스에서 진행해주세요.</p>
+                </div>
               </div>
-              <ChevronRight className='text-secondary/50 size-5' />
-            </button>
+            )}
 
             {/* 이메일 알림 */}
             <div className='flex h-auto w-full cursor-not-allowed items-center justify-between rounded-none border-t border-gray-100 px-8 py-6 text-left opacity-50'>

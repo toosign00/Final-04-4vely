@@ -11,11 +11,7 @@ import { useState } from 'react';
 // 카드의 기본 구조와 콘텐츠 영역 레이아웃
 function Card({ className, ...props }: CardProps) {
   return (
-    <div
-      data-slot='card'
-      className={cn('text-secondary flex h-full w-full max-w-[22rem] min-w-[16rem] cursor-pointer flex-col gap-6 overflow-hidden rounded-2xl border-0 bg-white shadow-md transition-all duration-300 hover:shadow-lg', className)}
-      {...props}
-    />
+    <div data-slot='card' className={cn('text-secondary flex h-full w-full max-w-[22rem] min-w-[16rem] flex-col gap-6 overflow-hidden rounded-2xl border-0 bg-white shadow-md transition-all duration-300 hover:shadow-lg', className)} {...props} />
   );
 }
 
@@ -88,25 +84,25 @@ function CardFooter({ className, likes = 0, comments = 0, views = 0, timeAgo = '
         {/* 좋아요 버튼/표시 */}
         {onLike ? (
           <button type='button' onClick={onLike} className='focus-visible flex cursor-pointer items-center gap-1 rounded-sm' aria-label={`좋아요 ${likes}개${isLiked ? ' (눌러진 상태)' : ''}`} aria-pressed={isLiked}>
-            <Heart className={cn('transition-all duration-200', isLiked ? 'fill-red-500 text-red-500' : 'text-red-400')} size={14} aria-hidden='true' />
+            <Heart className={cn('h-[14px] w-[14px] transition-all duration-200 md:h-[16px] md:w-[16px] lg:h-[18px] lg:w-[18px]', isLiked ? 'fill-red-500 text-red-500' : 'text-red-400')} aria-hidden='true' />
             <span>{likes}</span>
           </button>
         ) : (
           <span className='flex items-center gap-1' aria-label={`좋아요 ${likes}개`}>
-            <Heart className='text-red-400' size={14} aria-hidden='true' />
+            <Heart className='h-[14px] w-[14px] text-red-400 md:h-[16px] md:w-[16px] lg:h-[18px] lg:w-[18px]' aria-hidden='true' />
             <span>{likes}</span>
           </span>
         )}
 
         {/* 댓글 수 표시 */}
         <span className='flex items-center gap-1' aria-label={`댓글 ${comments}개`}>
-          <MessageCircle size={14} aria-hidden='true' />
+          <MessageCircle className='h-[14px] w-[14px] text-gray-600 md:h-[16px] md:w-[16px] lg:h-[18px] lg:w-[18px]' aria-hidden='true' />
           <span>{comments}</span>
         </span>
 
         {/* 조회수 표시 */}
         <span className='flex items-center gap-1' aria-label={`조회수 ${views}회`}>
-          <Eye size={14} aria-hidden='true' />
+          <Eye className='h-[14px] w-[14px] text-gray-600 md:h-[16px] md:w-[16px] lg:h-[18px] lg:w-[18px]' aria-hidden='true' />
           <span>{views}</span>
         </span>
       </div>

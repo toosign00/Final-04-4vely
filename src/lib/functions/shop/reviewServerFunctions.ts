@@ -14,9 +14,8 @@ const CLIENT_ID = process.env.CLIENT_ID || 'febc13-final04-emjf';
  */
 export async function getProductReplies(productId: number): ApiResPromise<ProductReply[]> {
   try {
-    console.log(`[리뷰 조회] 상품 ID: ${productId}`);
-
-    const res = await fetch(`${API_URL}/replies/products/${productId}?full_name=true`, { // full_name을 사용하여 작성자명의 마스킹 해제
+    const res = await fetch(`${API_URL}/replies/products/${productId}?full_name=true`, {
+      // full_name을 사용하여 작성자명의 마스킹 해제
       headers: {
         'Content-Type': 'application/json',
         'client-id': CLIENT_ID,
@@ -25,14 +24,8 @@ export async function getProductReplies(productId: number): ApiResPromise<Produc
     });
 
     const data = await res.json();
-    console.log(`[리뷰 조회] 응답:`, {
-      status: res.status,
-      ok: data.ok,
-      itemCount: data.item?.length || 0,
-    });
 
     if (!res.ok) {
-      console.error('[리뷰 조회] 오류:', data.message);
       return {
         ok: 0,
         message: data.message || '리뷰 조회에 실패했습니다.',
@@ -40,8 +33,7 @@ export async function getProductReplies(productId: number): ApiResPromise<Produc
     }
 
     return data;
-  } catch (error) {
-    console.error('[리뷰 조회] 네트워크 오류:', error);
+  } catch {
     return {
       ok: 0,
       message: '일시적인 네트워크 문제로 리뷰 조회에 실패했습니다.',
@@ -56,8 +48,6 @@ export async function getProductReplies(productId: number): ApiResPromise<Produc
  */
 export async function getReply(replyId: number): ApiResPromise<ProductReply> {
   try {
-    console.log(`[리뷰 상세 조회] 리뷰 ID: ${replyId}`);
-
     const res = await fetch(`${API_URL}/replies/${replyId}`, {
       headers: {
         'Content-Type': 'application/json',
@@ -67,10 +57,8 @@ export async function getReply(replyId: number): ApiResPromise<ProductReply> {
     });
 
     const data = await res.json();
-    console.log(`[리뷰 상세 조회] 응답:`, { status: res.status, ok: data.ok });
 
     if (!res.ok) {
-      console.error('[리뷰 상세 조회] 오류:', data.message);
       return {
         ok: 0,
         message: data.message || '리뷰 조회에 실패했습니다.',
@@ -78,8 +66,7 @@ export async function getReply(replyId: number): ApiResPromise<ProductReply> {
     }
 
     return data;
-  } catch (error) {
-    console.error('[리뷰 상세 조회] 네트워크 오류:', error);
+  } catch {
     return {
       ok: 0,
       message: '일시적인 네트워크 문제로 리뷰 조회에 실패했습니다.',
@@ -99,8 +86,7 @@ export async function isReplyAuthor(replyUserId: number): Promise<boolean> {
     if (!authInfo) return false;
 
     return authInfo.userId === replyUserId;
-  } catch (error) {
-    console.error('[리뷰 작성자 확인] 오류:', error);
+  } catch {
     return false;
   }
 }

@@ -48,9 +48,14 @@ export async function getReviewPopPosts(): Promise<ReviewPopCard[]> {
       .sort((a, b) => b[1].length - a[1].length)
       .slice(0, 4);
 
-    // 각 상품에서 평점 높은 리뷰 1개 추출
+    // 각 상품에서 질 좋은 리뷰 1개씩 추출 (내용 20자 이상, 평점순)
     const result = top4.map(([, replies]) => {
-      const best = replies.sort((a, b) => b.rating - a.rating)[0];
+      const filtered = replies.filter((result) => result.content.trim().length >= 20);
+      // 조건 만족하는 리뷰 있으면 평점 높은 순으로 정렬해서 뽑기
+      const best = filtered.length > 0 ? filtered.sort((a, b) => b.rating - a.rating)[0] : replies.sort((a, b) => b.rating - a.rating)[0];
+
+      const totalRating = replies.reduce((sum, r) => sum + r.rating, 0);
+      const averageRating = replies.length > 0 ? totalRating / replies.length : 0;
 
       return {
         content: best.content,
@@ -62,6 +67,7 @@ export async function getReviewPopPosts(): Promise<ReviewPopCard[]> {
           image: best.user.image,
         },
         product: best.product,
+        averageRating,
       };
     });
 

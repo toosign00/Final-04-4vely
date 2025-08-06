@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/Button';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/Dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/Dialog';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
 import { Input } from '@/components/ui/Input';
 import { createPlant } from '@/lib/actions/mypage/myPlant/plantActions';
@@ -184,9 +184,7 @@ const PlantRegisterModal = memo(function PlantRegisterModal({ open, onClose, onS
         const result = await createPlant(formData);
 
         if (result.ok) {
-          toast.success('식물이 성공적으로 등록되었습니다!', {
-            description: '1페이지에서 확인하세요!',
-          });
+          toast.success('식물이 성공적으로 등록되었습니다!');
 
           // 폼과 이미지 상태 초기화
           form.reset();
@@ -237,6 +235,7 @@ const PlantRegisterModal = memo(function PlantRegisterModal({ open, onClose, onS
       <DialogContent className='max-h-[90vh] overflow-y-auto sm:max-w-3xl'>
         <DialogHeader className='pb-4'>
           <DialogTitle className='t-h4'>새 식물 등록</DialogTitle>
+          <DialogDescription>새로운 식물의 정보를 입력하고 사진을 업로드해주세요.</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>

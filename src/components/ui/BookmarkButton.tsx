@@ -80,7 +80,6 @@ export default function BookmarkButton({ targetId: propTargetId, type = 'product
   }, [isLoggedIn]);
 
   if (!targetId) {
-    console.error('[BookmarkButton] targetId 또는 productId가 필요합니다.');
     return null;
   }
 
@@ -158,12 +157,11 @@ export default function BookmarkButton({ targetId: propTargetId, type = 'product
           setIsBookmarked(previousIsBookmarked);
           toast.error(result.message || '북마크 처리에 실패했습니다.');
         }
-      } catch (error) {
+      } catch {
         // 에러 발생 시 이전 상태로 롤백
         setLocalBookmarkId(previousBookmarkId);
         setIsBookmarked(previousIsBookmarked);
         toast.error('북마크 처리 중 오류가 발생했습니다.');
-        console.error('[BookmarkButton] 에러:', error);
       } finally {
         setIsProcessing(false);
       }

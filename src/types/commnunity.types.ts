@@ -33,7 +33,7 @@ export interface Post {
     avatar: string;
   };
   stats: {
-    likes: number;
+    bookmarks: number;
     comments: number;
     views: number;
   };

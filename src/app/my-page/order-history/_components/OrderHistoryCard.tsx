@@ -141,17 +141,11 @@ export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
 
                   {/* 기본 3개 상품 표시 */}
                   <div className='space-y-3'>
-                    {order.products?.slice(0, 5).map((product) => (
-                      <div key={product.id} className='flex gap-3 rounded-lg border border-gray-100 bg-gray-50 p-3 transition-colors hover:bg-gray-100'>
+                    {order.products?.slice(0, 5).map((product, index) => (
+                      <div key={`${order.id}-product-${index}`} className='flex gap-3 rounded-lg border border-gray-100 bg-gray-50 p-3 transition-colors hover:bg-gray-100'>
                         <div className='flex-shrink-0'>
                           <div className='h-14 w-14 overflow-hidden rounded-lg border border-gray-200 bg-white'>
-                            <Image
-                              src={product.image || product.imageUrl || (order.memo?.selectedImage && order.memo.selectedImage[order.products?.indexOf(product) || 0]) || ''}
-                              alt={product.name}
-                              width={56}
-                              height={56}
-                              className='h-full w-full object-cover'
-                            />
+                            <Image src={product.image || product.imageUrl || (order.memo?.selectedImage && order.memo.selectedImage[index]) || ''} alt={product.name} width={56} height={56} className='h-full w-full object-cover' />
                           </div>
                         </div>
                         <div className='min-w-0 flex-1'>
@@ -182,17 +176,11 @@ export default function OrderHistoryCard({ order }: OrderHistoryCardProps) {
                   {/* 추가 상품 목록 */}
                   {showAllProducts && order.products && order.products.length > 3 && (
                     <div className='space-y-3'>
-                      {order.products.slice(3).map((product) => (
-                        <div key={product.id} className='flex gap-3 rounded-lg border border-gray-100 bg-gray-50 p-3 transition-colors hover:bg-gray-100'>
+                      {order.products.slice(3).map((product, index) => (
+                        <div key={`${order.id}-product-${index + 3}`} className='flex gap-3 rounded-lg border border-gray-100 bg-gray-50 p-3 transition-colors hover:bg-gray-100'>
                           <div className='flex-shrink-0'>
                             <div className='h-14 w-14 overflow-hidden rounded-lg border border-gray-200 bg-white'>
-                              <Image
-                                src={product.image || product.imageUrl || (order.memo?.selectedImage && order.memo.selectedImage[order.products?.indexOf(product) || 0]) || ''}
-                                alt={product.name}
-                                width={56}
-                                height={56}
-                                className='h-full w-full object-cover'
-                              />
+                              <Image src={product.image || product.imageUrl || (order.memo?.selectedImage && order.memo.selectedImage[index + 3]) || ''} alt={product.name} width={56} height={56} className='h-full w-full object-cover' />
                             </div>
                           </div>
                           <div className='min-w-0 flex-1'>

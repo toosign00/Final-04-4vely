@@ -15,11 +15,8 @@ const CLIENT_ID = process.env.CLIENT_ID || 'febc13-final04-emjf';
  */
 export async function getCartItemsActionOptimized(): Promise<CartItem[]> {
   try {
-    console.log('[Cart 서버 액션] 장바구니 목록 조회 시작');
-
     const authInfo = await getAuthInfo();
     if (!authInfo) {
-      console.log('[Cart 서버 액션] 로그인되지 않은 사용자');
       return [];
     }
     const { accessToken } = authInfo;
@@ -82,8 +79,8 @@ export async function getCartItemsActionOptimized(): Promise<CartItem[]> {
               }
             }
           }
-        } catch (error) {
-          console.error(`[Cart 서버 액션] 상품 ${item.product._id} 상세 조회 실패:`, error);
+        } catch {
+          // 상품 상세 조회 실패해도 계속 진행
         }
 
         return item;
@@ -91,8 +88,7 @@ export async function getCartItemsActionOptimized(): Promise<CartItem[]> {
     );
 
     return enrichedCartItems;
-  } catch (error) {
-    console.error('[Cart 서버 액션] 네트워크 오류:', error);
+  } catch {
     return [];
   }
 }
@@ -110,12 +106,9 @@ export async function getCartItemsActionOptimized(): Promise<CartItem[]> {
  */
 export async function addToCartAction(cartData: AddToCartRequest): Promise<CartActionResult> {
   try {
-    console.log('[Cart 서버 액션] 장바구니 추가 시작:', cartData);
-
     // 액세스 토큰 확인
     const authInfo = await getAuthInfo();
     if (!authInfo) {
-      console.log('[Cart 서버 액션] 로그인 필요');
       return {
         success: false,
         message: '로그인이 필요합니다.',
@@ -139,7 +132,6 @@ export async function addToCartAction(cartData: AddToCartRequest): Promise<CartA
     });
 
     const data: CartApiResponse = await res.json();
-    console.log('[Cart 서버 액션] API 응답:', { status: res.status, ok: data.ok });
 
     if (!res.ok || data.ok === 0) {
       return {
@@ -151,14 +143,12 @@ export async function addToCartAction(cartData: AddToCartRequest): Promise<CartA
     // 장바구니 페이지 재검증
     revalidatePath('/cart');
 
-    console.log('[Cart 서버 액션] 장바구니 추가 성공');
     return {
       success: true,
       message: '장바구니에 추가되었습니다.',
       data: data.item,
     };
-  } catch (error) {
-    console.error('[Cart 서버 액션] 네트워크 오류:', error);
+  } catch {
     return {
       success: false,
       message: '일시적인 네트워크 문제로 장바구니 추가에 실패했습니다.',
@@ -173,12 +163,9 @@ export async function addToCartAction(cartData: AddToCartRequest): Promise<CartA
  */
 export async function removeFromCartAction(cartId: number): Promise<CartActionResult> {
   try {
-    console.log('[Cart 서버 액션] 장바구니 삭제 시작:', cartId);
-
     // 액세스 토큰 확인
     const authInfo = await getAuthInfo();
     if (!authInfo) {
-      console.log('[Cart 서버 액션] 로그인 필요');
       return {
         success: false,
         message: '로그인이 필요합니다.',
@@ -197,7 +184,6 @@ export async function removeFromCartAction(cartId: number): Promise<CartActionRe
     });
 
     const data = await res.json();
-    console.log('[Cart 서버 액션] API 응답:', { status: res.status, ok: data.ok });
 
     if (!res.ok || data.ok === 0) {
       return {
@@ -209,13 +195,11 @@ export async function removeFromCartAction(cartId: number): Promise<CartActionRe
     // 장바구니 페이지 재검증
     revalidatePath('/cart');
 
-    console.log('[Cart 서버 액션] 장바구니 삭제 성공');
     return {
       success: true,
       message: '장바구니에서 삭제되었습니다.',
     };
-  } catch (error) {
-    console.error('[Cart 서버 액션] 네트워크 오류:', error);
+  } catch {
     return {
       success: false,
       message: '일시적인 네트워크 문제로 장바구니 삭제에 실패했습니다.',
@@ -231,12 +215,9 @@ export async function removeFromCartAction(cartId: number): Promise<CartActionRe
  */
 export async function updateCartQuantityAction(cartId: number, quantity: number): Promise<CartActionResult> {
   try {
-    console.log('[Cart 서버 액션] 수량 업데이트 시작:', { cartId, quantity });
-
     // 액세스 토큰 확인
     const authInfo = await getAuthInfo();
     if (!authInfo) {
-      console.log('[Cart 서버 액션] 로그인 필요');
       return {
         success: false,
         message: '로그인이 필요합니다.',
@@ -256,7 +237,6 @@ export async function updateCartQuantityAction(cartId: number, quantity: number)
     });
 
     const data: CartApiResponse = await res.json();
-    console.log('[Cart 서버 액션] API 응답:', { status: res.status, ok: data.ok });
 
     if (!res.ok || data.ok === 0) {
       return {
@@ -268,14 +248,12 @@ export async function updateCartQuantityAction(cartId: number, quantity: number)
     // 장바구니 페이지 재검증
     revalidatePath('/cart');
 
-    console.log('[Cart 서버 액션] 수량 업데이트 성공');
     return {
       success: true,
       message: '수량이 업데이트되었습니다.',
       data: data.item,
     };
-  } catch (error) {
-    console.error('[Cart 서버 액션] 네트워크 오류:', error);
+  } catch {
     return {
       success: false,
       message: '일시적인 네트워크 문제로 수량 업데이트에 실패했습니다.',
@@ -294,12 +272,9 @@ export async function updateCartQuantityAction(cartId: number, quantity: number)
  */
 export async function updateCartOptionAction(cartId: number, productId: number, quantity: number, color: string): Promise<CartActionResult> {
   try {
-    console.log('[Cart 서버 액션] 옵션 업데이트 시작:', { cartId, productId, quantity, color });
-
     // 액세스 토큰 확인
     const authInfo = await getAuthInfo();
     if (!authInfo) {
-      console.log('[Cart 서버 액션] 로그인 필요');
       return {
         success: false,
         message: '로그인이 필요합니다.',
@@ -318,7 +293,6 @@ export async function updateCartOptionAction(cartId: number, productId: number, 
     });
 
     const deleteData = await deleteRes.json();
-    console.log('[Cart 서버 액션] 삭제 응답:', { status: deleteRes.status, ok: deleteData.ok });
 
     if (!deleteRes.ok || deleteData.ok === 0) {
       return {
@@ -343,11 +317,9 @@ export async function updateCartOptionAction(cartId: number, productId: number, 
     });
 
     const addData: CartApiResponse = await addRes.json();
-    console.log('[Cart 서버 액션] 추가 응답:', { status: addRes.status, ok: addData.ok });
 
     if (!addRes.ok || addData.ok === 0) {
       // 추가 실패 시 원래 상태로 복구 시도
-      console.error('[Cart 서버 액션] 재추가 실패, 복구 불가능');
       return {
         success: false,
         message: '옵션 변경에 실패했습니다. 장바구니를 다시 확인해주세요.',
@@ -357,14 +329,12 @@ export async function updateCartOptionAction(cartId: number, productId: number, 
     // 장바구니 페이지 재검증
     revalidatePath('/cart');
 
-    console.log('[Cart 서버 액션] 옵션 업데이트 성공');
     return {
       success: true,
       message: '옵션이 변경되었습니다.',
       data: addData.item,
     };
-  } catch (error) {
-    console.error('[Cart 서버 액션] 네트워크 오류:', error);
+  } catch {
     return {
       success: false,
       message: '일시적인 네트워크 문제로 옵션 변경에 실패했습니다.',

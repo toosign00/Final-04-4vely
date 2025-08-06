@@ -93,7 +93,7 @@ export default function OrdersClient({ initialOrders, initialPagination, initial
 
   const StatusSelect = ({ orderId, currentStatus, size = 'default' }: { orderId: string; currentStatus: string; size?: 'sm' | 'default' }) => {
     const isOpen = openDropdown === orderId;
-    const width = size === 'sm' ? '96px' : '112px';
+    const width = size === 'sm' ? '6rem' : '7rem';
 
     const statusOptions = [
       { value: '준비 중', label: '준비 중', hoverColor: 'rgba(249, 115, 22, 0.2)' },
@@ -110,7 +110,7 @@ export default function OrdersClient({ initialOrders, initialPagination, initial
           type='button'
           onClick={() => setOpenDropdown(isOpen ? null : orderId)}
           className='focus:ring-black-500 flex w-full cursor-pointer items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm hover:border-gray-400 focus:border-black focus:ring-1 focus:outline-none'
-          style={{ width, height: size === 'sm' ? '32px' : '36px' }}
+          style={{ width, height: size === 'sm' ? '2rem' : '2.25rem' }}
         >
           <span>{displayStatus}</span>
           <ChevronDownIcon className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
@@ -151,7 +151,7 @@ export default function OrdersClient({ initialOrders, initialPagination, initial
       <div className='flex items-center justify-center py-12'>
         <div className='text-center'>
           <p className='mb-4 text-red-500'>{error}</p>
-          <Button onClick={() => router.refresh()} variant='outline'>
+          <Button onClick={() => router.refresh()} variant='secondary'>
             다시 시도
           </Button>
         </div>
@@ -186,17 +186,20 @@ export default function OrdersClient({ initialOrders, initialPagination, initial
         <button
           type='button'
           onClick={() => setIsOpen(!isOpen)}
-          className='focus:border-black-500 focus:ring-black-500 flex cursor-pointer items-center gap-2 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm hover:border-gray-400 focus:ring-1 focus:outline-none'
+          className='focus:ring-black-500 flex cursor-pointer items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm hover:border-gray-400 focus:border-black focus:ring-1 focus:outline-none'
+          style={{ width: '7rem', height: '2.25rem' }}
         >
-          <span>{currentOption.icon}</span>
-          <span>{currentOption.label}</span>
+          <div className='flex items-center gap-1'>
+            <span>{currentOption.icon}</span>
+            <span>{currentOption.label}</span>
+          </div>
           <ChevronDownIcon className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
         </button>
 
         {isOpen && (
           <>
             <div className='fixed inset-0 z-10' onClick={() => setIsOpen(false)} />
-            <div className='absolute right-0 z-20 mt-1 w-32 rounded-md border border-gray-200 bg-white shadow-lg'>
+            <div className='absolute right-0 z-20 mt-1 rounded-md border border-gray-200 bg-white shadow-lg' style={{ width: '7rem' }}>
               {sortOptions.map((option) => (
                 <button
                   key={option.value}

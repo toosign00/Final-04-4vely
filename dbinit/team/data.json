@@ -2269,7 +2269,8 @@
         "nickname": "없음",
         "species": "몬스테라 아단소니"
       },
-      "views": 10,
+      "bookmarks": 102,
+      "views": 568,
       "user": {
         "_id": 2,
         "type": "user",
@@ -2328,7 +2329,8 @@
         "nickname": "없음",
         "species": "하얀색 난초"
       },
-      "views": 10,
+      "bookmarks": 502,
+      "views": 898,
       "user": {
         "_id": 3,
         "type": "user",
@@ -2387,7 +2389,8 @@
         "nickname": "수박이",
         "species": "페페로미아"
       },
-      "views": 10,
+      "bookmarks": 302,
+      "views": 1008,
       "user": {
         "_id": 2,
         "type": "user",
@@ -2451,7 +2454,8 @@
         "nickname": "붉은 악마",
         "species": "안스리움"
       },
-      "views": 10,
+      "bookmarks": 85,
+      "views": 500,
       "user": {
         "_id": 3,
         "type": "user",
@@ -2484,6 +2488,22 @@
       ]
     }
   ],
-  "code": [],
+  "codes": [
+    {
+      "sort": 1,
+      "code": "OS010",
+      "value": "주문 완료"
+    },
+    {
+      "sort": 2,
+      "code": "OS035",
+      "value": "배송중"
+    },
+    {
+      "sort": 3,
+      "code": "OS040",
+      "value": "배송 완료"
+    }
+  ],
   "config": []
 }

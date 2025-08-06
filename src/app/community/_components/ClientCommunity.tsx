@@ -32,15 +32,8 @@ export default function ClientCommunity({ initialPosts, initialPagination }: Pro
   const [error, setError] = useState<string | null>(null); // 에러 메시지
   const [showMine, setShowMine] = useState(false); // 내가 쓴 글만 보기
 
-  const [likedIds, setLikedIds] = useState<string[]>([]); // 좋아요된 게시물 ID 리스트
-
   // 정렬 옵션
   const [sortOrder, setSortOrder] = useState<'recent' | 'oldest' | 'popular'>('recent');
-
-  // 좋아요 토글
-  const handleToggleLike = (id: string) => {
-    setLikedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
-  };
 
   const handlePageChange = (page: number) => {
     router.push(`/community?page=${page}`);
@@ -78,7 +71,7 @@ export default function ClientCommunity({ initialPosts, initialPagination }: Pro
         case 'oldest': // 오래된순
           return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
         case 'popular': // 인기순
-          return (b.stats.views ?? 0) - (a.stats.views ?? 0);
+          return (b.stats.bookmarks ?? 0) - (a.stats.bookmarks ?? 0);
         default:
           return 0;
       }
@@ -105,6 +98,7 @@ export default function ClientCommunity({ initialPosts, initialPagination }: Pro
                   setPagination((prev) => ({ ...prev, page: 1 }));
                 }}
                 disabled={!isLoggedIn}
+                className='cursor-pointer'
               />
             </label>
             <Button variant='primary' onClick={() => router.push('/community/write')} className='h-8 w-25 px-5' disabled={!isLoggedIn}>
@@ -134,40 +128,35 @@ export default function ClientCommunity({ initialPosts, initialPagination }: Pro
               <span className='text-2xl text-gray-500'>등록된 글이 없습니다.</span>
             </div>
           ) : (
-            <div className='grid grid-cols-1 justify-items-center gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
-              {sortedPosts.map((post) => {
-                return (
-                  <div key={post.id}>
-                    <Card className='h-[30rem] w-[15rem] cursor-pointer' onClick={() => router.push(`/community/${post.id}`)}>
-                      <div className='relative h-40 overflow-hidden rounded-t-lg'>
-                        {/* 북마크 */}
-                        <div className='absolute top-2 right-2 z-1' onClick={(e) => e.stopPropagation()}>
-                          <BookmarkButton type='post' targetId={Number(post.id)} myBookmarkId={post.myBookmarkId ?? undefined} onBookmarkChange={(isBookmarked, bookmarkId) => handleBookmarkChange(post.id, isBookmarked, bookmarkId)} />
-                        </div>
-                        <CardImage src={post.coverImage} alt={post.title} priority />
+            <div className='grid grid-cols-1 justify-items-center gap-15 md:grid-cols-2 lg:grid-cols-3'>
+              {sortedPosts.map((post) => (
+                <div key={post.id} className='w-full'>
+                  <Card className='mx-auto flex cursor-pointer flex-col' onClick={() => router.push(`/community/${post.id}`)}>
+                    {/* 1. 이미지*/}
+                    <div className='relative w-full overflow-hidden rounded-t-lg'>
+                      <div className='absolute top-2 right-2 z-10' onClick={(e) => e.stopPropagation()}>
+                        <BookmarkButton type='post' targetId={Number(post.id)} myBookmarkId={post.myBookmarkId ?? undefined} onBookmarkChange={(isBookmarked, bookmarkId) => handleBookmarkChange(post.id, isBookmarked, bookmarkId)} />
                       </div>
-                      <CardContent>
-                        <CardTitle title={post.title} className='min-h-[45px]' />
-                        <CardDescription description={post.description} className='min-h-[4.5rem]' />
+                      <CardImage src={post.coverImage} alt={post.title} priority />
+                    </div>
 
+                    {/* 2. 콘텐츠 */}
+                    <CardContent className='flex flex-1 flex-col px-5 pb-5'>
+                      {/* 타이틀+설명 */}
+                      <div>
+                        <CardTitle className='line-clamp-2' title={post.title} />
+                        <CardDescription description={post.description} className='line-clamp-2 lg:!text-base' />
+                      </div>
+
+                      {/* 아바타+푸터: 항상 하단 고정 */}
+                      <div className='mt-auto' onClick={(e) => e.stopPropagation()}>
                         <CardAvatar src={post.author.avatar} fallback={post.author.username.charAt(0)} username={post.author.username} />
-
-                        {/* 푸터 영역(좋아요, view, 댓글수) */}
-                        <div onClick={(e) => e.stopPropagation()}>
-                          <CardFooter
-                            likes={post.stats.likes}
-                            isLiked={likedIds.includes(post.id)}
-                            comments={post.repliesCount ?? 0}
-                            views={post.stats.views}
-                            timeAgo={new Date(post.createdAt).toLocaleDateString('ko-KR')}
-                            onLike={() => handleToggleLike(post.id)}
-                          />
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-                );
-              })}
+                        <CardFooter likes={post.stats.bookmarks} comments={post.repliesCount ?? 0} views={post.stats.views} timeAgo={new Date(post.createdAt).toLocaleDateString('ko-KR')} onLike={() => {}} />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              ))}
             </div>
           )}
           {pagination.totalPages > 1 && (

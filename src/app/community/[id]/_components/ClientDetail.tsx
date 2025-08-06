@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 
 import UpdateButton from '@/app/community/[id]/_components/UpdateButton';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/AlertDialog';
 import BookmarkButton from '@/components/ui/BookmarkButton';
 import { createComment, deleteComment, fetchComments, updateComment } from '@/lib/functions/communityFunctions';
 import { useAuth } from '@/store/authStore';
@@ -19,7 +20,7 @@ export default function ClientDetail({ post }: { post: Post }) {
   const [comments, setComments] = useState<CommunityComment[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; commentId: string | null }>({ open: false, commentId: null });
   const { isLoggedIn, zustandUser, session } = useAuth();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingContent, setEditingContent] = useState('');
@@ -62,9 +63,13 @@ export default function ClientDetail({ post }: { post: Post }) {
 
   // 댓글 삭제
   async function handleDelete(commentId: string) {
-    if (!confirm('정말 삭제하시겠습니까?') || !token) return;
-    await deleteComment(id, commentId, token);
-    setComments((cs) => cs.filter((c) => c._id !== commentId));
+    setDeleteDialog({ open: true, commentId });
+  }
+  async function confirmDelete() {
+    if (!token || !deleteDialog.commentId) return;
+    await deleteComment(id, deleteDialog.commentId, token);
+    setComments((cs) => cs.filter((c) => c._id !== deleteDialog.commentId));
+    setDeleteDialog({ open: false, commentId: null });
   }
 
   return (
@@ -146,7 +151,7 @@ export default function ClientDetail({ post }: { post: Post }) {
           <div className='flex items-center gap-8 text-sm text-neutral-700'>
             <span className='flex items-center gap-1'>
               <Heart className='text-red-400' size={14} />
-              <span>{stats.likes}</span>
+              <span>{post.stats.bookmarks}</span>
             </span>
             <span className='flex items-center gap-1'>
               <MessageCircle size={14} />
@@ -220,6 +225,18 @@ export default function ClientDetail({ post }: { post: Post }) {
             ))
           )}
         </section>
+        {/* 댓글 삭제 확인 다이얼로그 */}
+        <AlertDialog open={deleteDialog.open} onOpenChange={(open) => setDeleteDialog((prev) => ({ ...prev, open }))}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>정말 삭제하시겠습니까?</AlertDialogTitle>
+            </AlertDialogHeader>
+            <AlertDialogFooter className='justify-end space-x-2'>
+              <AlertDialogCancel onClick={() => setDeleteDialog({ open: false, commentId: null })}>취소</AlertDialogCancel>
+              <AlertDialogAction onClick={confirmDelete}>삭제</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </main>
     </div>
   );

@@ -5,6 +5,8 @@ import { getTempOrderAction } from '@/lib/actions/order/orderServerActions';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
+export const dynamic = 'force-dynamic';
+
 export default async function OrderPage() {
   // 서버에서 임시 주문 데이터 가져오기
   const tempOrder = await getTempOrderAction();

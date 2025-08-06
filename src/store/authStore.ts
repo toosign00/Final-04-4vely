@@ -109,6 +109,35 @@ interface ExtendedUserState extends UserState {
 let refreshPromise: Promise<boolean> | null = null;
 
 /**
+ * 로그아웃 진행 중 플래그
+ * 토큰 갱신과 로그아웃의 경쟁 상태를 방지
+ */
+let isLoggingOut = false;
+
+/**
+ * 세션 시간 검증 함수 (2시간)
+ * 여러 곳에서 사용되는 세션 만료 검증 로직을 통합
+ */
+const isSessionExpired = (sessionStartTime: number | null, lastActivityTime: number | null, rememberLogin: boolean): boolean => {
+  if (rememberLogin) {
+    return false; // 자동 로그인은 세션 시간 제한 없음
+  }
+  
+  if (!sessionStartTime) {
+    return false; // 세션 시작 시간이 없으면 만료되지 않음
+  }
+  
+  const now = Date.now();
+  const twoHours = 2 * 60 * 60 * 1000;
+  
+  // 세션 시작 후 2시간 또는 마지막 활동 후 2시간 경과 시 만료
+  const sessionExpired = now - sessionStartTime > twoHours;
+  const activityExpired = lastActivityTime ? now - lastActivityTime > twoHours : false;
+  
+  return sessionExpired || activityExpired;
+};
+
+/**
  * 사용자 인증 상태 관리 Zustand 스토어
  *
  * persist 미들웨어를 사용하여 쿠키 기반 상태 지속화를 구현
@@ -155,6 +184,17 @@ const useUserStore = create(
        * 보안을 위해 모든 세션 정보와 토큰 관련 데이터를 완전히 제거
        */
       resetUser: () => {
+        // 로그아웃 플래그 설정
+        isLoggingOut = true;
+        
+        // 토큰 자동 갱신 인터벌 정리
+        stopTokenRefreshInterval();
+        
+        // 진행 중인 토큰 갱신 취소
+        if (refreshPromise) {
+          refreshPromise = null;
+        }
+        
         set({
           user: null,
           isLoading: false,
@@ -163,6 +203,11 @@ const useUserStore = create(
           rememberLogin: false,
           lastActivityTime: null,
         });
+        
+        // 로그아웃 완료 후 플래그 해제
+        setTimeout(() => {
+          isLoggingOut = false;
+        }, 100);
       },
 
       /**
@@ -248,6 +293,12 @@ const useUserStore = create(
        * await logout(); // 안전한 로그아웃 처리
        */
       logout: async (): Promise<void> => {
+        // 이미 로그아웃 진행 중이면 중복 실행 방지
+        if (isLoggingOut) {
+          return;
+        }
+        
+        isLoggingOut = true;
         set({ isLoading: true });
 
         try {
@@ -256,6 +307,14 @@ const useUserStore = create(
         } catch (error) {
           console.error('[로그아웃] 오류:', error);
         } finally {
+          // 토큰 자동 갱신 인터벌 정리
+          stopTokenRefreshInterval();
+          
+          // 진행 중인 토큰 갱신 취소
+          if (refreshPromise) {
+            refreshPromise = null;
+          }
+          
           // 로컬 상태도 초기화
           set({
             user: null,
@@ -265,6 +324,11 @@ const useUserStore = create(
             rememberLogin: false,
             lastActivityTime: null,
           });
+          
+          // 로그아웃 완료 후 플래그 해제
+          setTimeout(() => {
+            isLoggingOut = false;
+          }, 100);
         }
       },
     }),
@@ -276,22 +340,18 @@ const useUserStore = create(
        * @returns {Function} 상태 복원 후 실행될 콜백 함수
        */
       onRehydrateStorage: () => (state) => {
-        if (state?.user && !state.rememberLogin) {
-          const now = Date.now();
-          const sessionStart = state.sessionStartTime || now;
-          const lastActivity = state.lastActivityTime || now;
-
-          // 세션 시작 후 2시간 또는 마지막 활동 후 2시간 경과 시 로그아웃
-          const twoHours = 2 * 60 * 60 * 1000; // 2시간 (밀리초)
-
-          if (now - sessionStart > twoHours || now - lastActivity > twoHours) {
+        if (state?.user) {
+          // 통합된 세션 검증 함수 사용
+          if (isSessionExpired(state.sessionStartTime, state.lastActivityTime, state.rememberLogin)) {
             console.log('[세션 만료] 2시간 경과로 자동 로그아웃');
             state.logout();
             return;
           }
 
-          // 활동 시간 업데이트
-          state.lastActivityTime = now;
+          // 일반 로그인의 경우 활동 시간 업데이트
+          if (!state.rememberLogin) {
+            state.lastActivityTime = Date.now();
+          }
         }
       },
     },
@@ -311,6 +371,11 @@ const useUserStore = create(
  *
  */
 const performTokenRefresh = async (): Promise<boolean> => {
+  // 로그아웃 진행 중이면 토큰 갱신 중단
+  if (isLoggingOut) {
+    return false;
+  }
+  
   const { user, lastTokenRefresh, rememberLogin } = useUserStore.getState();
 
   if (!user?.token?.refreshToken) {
@@ -318,15 +383,11 @@ const performTokenRefresh = async (): Promise<boolean> => {
     return false;
   }
 
-  // 자동 로그인이 아닌 경우 세션 시간 검증 (2시간)
-  if (!rememberLogin && user.sessionStartTime) {
-    const now = Date.now();
-    const twoHours = 2 * 60 * 60 * 1000;
-
-    if (now - user.sessionStartTime > twoHours) {
-      useUserStore.getState().logout();
-      return false;
-    }
+  // 통합된 세션 검증 함수 사용
+  if (isSessionExpired(user.sessionStartTime || null, user.lastActivityTime || null, rememberLogin)) {
+    console.log('[토큰 갱신] 세션 만료로 로그아웃');
+    useUserStore.getState().logout();
+    return false;
   }
 
   // 토큰 검증: 액세스 토큰이 아직 유효하면 갱신하지 않음
@@ -343,8 +404,19 @@ const performTokenRefresh = async (): Promise<boolean> => {
   useUserStore.setState({ isLoading: true });
 
   try {
+    // 토큰 갱신 시작 전 다시 한 번 로그아웃 상태 확인
+    if (isLoggingOut) {
+      useUserStore.setState({ isLoading: false });
+      return false;
+    }
+    
     // 서버 액션을 통해 토큰 갱신 처리 (refreshToken 없이 호출하면 쿠키에서 가져옴)
     const refreshResult = (await refreshTokenAction()) as RefreshTokenResult;
+
+    // 토큰 갱신 완료 후에도 로그아웃 상태 확인
+    if (isLoggingOut) {
+      return false;
+    }
 
     if (refreshResult.ok === 1) {
       // 새로운 액세스 토큰으로 사용자 정보 업데이트
@@ -368,15 +440,14 @@ const performTokenRefresh = async (): Promise<boolean> => {
     } else {
       console.error('[토큰 갱신] 실패:', refreshResult.message);
 
-      // 리프레시 토큰도 만료된 경우 로그아웃 처리
-      useUserStore.setState({
-        user: null,
-        isLoading: false,
-        lastTokenRefresh: null,
-        sessionStartTime: null,
-        rememberLogin: false,
-        lastActivityTime: null,
-      });
+      // 리프레시 토큰도 만료된 경우 또는 인증 오류 시 로그아웃 처리
+      if (refreshResult.message?.includes('토큰') || refreshResult.message?.includes('인증')) {
+        console.log('[토큰 갱신] 인증 실패로 로그아웃 처리');
+        useUserStore.getState().logout();
+      } else {
+        // 네트워크 오류 등의 경우 상태 유지하고 로딩만 해제
+        useUserStore.setState({ isLoading: false });
+      }
 
       return false;
     }
@@ -424,8 +495,14 @@ export const startTokenRefreshInterval = () => {
       if (user?.token?.accessToken) {
         // 토큰이 만료되었거나 곧 만료될 예정이면 갱신
         if (isTokenExpired(user.token.accessToken) || isTokenExpiringSoon(user.token.accessToken)) {
-          refreshUserToken().catch(() => {
-            // 토큰 갱신 실패 시 무시
+          refreshUserToken().catch((error) => {
+            console.warn('[자동 토큰 갱신] 실패:', error);
+            
+            // 세션 만료 또는 인증 오류인 경우 로그아웃 처리
+            if (error?.message?.includes('refresh') || error?.status === 401 || error?.status === 403) {
+              console.log('[자동 토큰 갱신] 세션 만료로 자동 로그아웃');
+              useUserStore.getState().logout();
+            }
           });
         }
       }

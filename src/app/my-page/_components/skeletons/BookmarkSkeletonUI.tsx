@@ -5,7 +5,7 @@ export default function BookmarkSkeletonUI() {
       <div className='grid gap-8'>
         {[...Array(3)].map((_, i) => (
           <div key={i} className='animate-pulse'>
-            <div className='group relative mx-auto w-full max-w-6xl cursor-pointer rounded-2xl bg-white p-3 shadow-sm'>
+            <div className='group relative mx-auto w-full max-w-6xl rounded-2xl bg-white p-3 shadow-sm'>
               {/* 모바일 삭제 버튼 */}
               <div className='absolute top-3 right-3 z-10 md:hidden'>
                 <div className='h-8 w-8 rounded bg-gray-200' />

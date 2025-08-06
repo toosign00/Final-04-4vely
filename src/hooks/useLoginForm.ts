@@ -36,8 +36,8 @@ export const useLoginForm = () => {
   // React Hook Form 설정
   const form = useForm<LoginFormData>({
     defaultValues: {
-      email: '',
-      password: '',
+      email: 'test@test.com',
+      password: 'qwer1234',
       rememberLogin: false,
     },
     mode: 'onSubmit', // 제출 시 검증

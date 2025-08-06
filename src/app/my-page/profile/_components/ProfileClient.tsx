@@ -8,7 +8,6 @@ import { Calendar, Camera, ChevronRight, Mail, MapPin, Phone, User } from 'lucid
 import { useEffect, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import ErrorDisplay from '../../_components/ErrorDisplay';
 import ChangePasswordDialog from './ChangePasswordDialog';
 
 interface ProfileClientProps {
@@ -123,8 +122,9 @@ export default function ProfileClient({ user }: ProfileClientProps) {
     }
   };
 
+  // user가 null인 경우는 상위 컴포넌트에서 ErrorDisplay로 처리됨
   if (!user) {
-    return <ErrorDisplay title='프로필 정보를 불러오지 못했습니다' message='일시적인 오류가 발생했어요.' />;
+    return null;
   }
 
   // 저장 핸들러
@@ -185,17 +185,17 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                 accept='image/*'
                 className='hidden'
                 id='avatar-upload'
-                disabled={isPending}
+                disabled={isPending || isSocialLogin}
                 {...register('attach')}
                 onChange={(e) => {
                   handleFileChange(e);
                   register('attach').onChange(e);
                 }}
               />
-              <label htmlFor='avatar-upload'>
-                <Button variant='primary' size='icon' className='bg-primary hover:bg-primary/90 absolute -right-1 -bottom-1 size-8 rounded-full shadow-lg' asChild disabled={isPending}>
-                  <span>
-                    <Camera className='size-4' />
+              <label htmlFor='avatar-upload' className={isSocialLogin ? 'cursor-not-allowed' : ''}>
+                <Button variant='primary' size='icon' className={`bg-primary hover:bg-primary/90 absolute -right-1 -bottom-1 size-8 rounded-full shadow-lg ${isSocialLogin ? 'cursor-not-allowed' : ''}`} asChild disabled={isPending || isSocialLogin}>
+                  <span className={isSocialLogin ? 'cursor-not-allowed' : ''}>
+                    <Camera className={`size-4 ${isSocialLogin ? 'cursor-not-allowed' : ''}`} />
                   </span>
                 </Button>
               </label>
@@ -220,10 +220,10 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                   이름
                 </div>
                 <input
-                  className='t-body text-secondary focus:ring-primary flex h-12 w-full items-center rounded-xl border border-gray-200 bg-gray-50 px-4 outline-none focus:ring-2'
+                  className={`t-body text-secondary focus:ring-primary flex h-12 w-full items-center rounded-xl border border-gray-200 bg-gray-50 px-4 outline-none focus:ring-2 ${isSocialLogin ? 'cursor-not-allowed' : ''}`}
                   {...register('name', { required: true, maxLength: 20 })}
-                  disabled={isPending}
-                  placeholder='이름을 입력하세요'
+                  disabled={isPending || isSocialLogin}
+                  placeholder={isSocialLogin ? '소셜 로그인 사용자는 변경할 수 없습니다' : '이름을 입력하세요'}
                 />
                 <div className='min-h-[1.5rem]'>{errors.name ? <span className='text-error text-sm'>이름을 입력해 주세요.</span> : null}</div>
               </div>
@@ -231,13 +231,14 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                 <div className='t-small text-secondary/70 mb-1 flex items-center gap-2'>
                   <Mail className='size-4' />
                   이메일
+                  <span className='text-secondary/50 ml-2 text-sm'>* 이메일 변경 시 로그인 정보가 변경됩니다</span>
                 </div>
                 <input
-                  className='t-body text-secondary focus:ring-primary flex h-12 w-full items-center rounded-xl border border-gray-200 bg-gray-50 px-4 outline-none focus:ring-2'
+                  className={`t-body text-secondary focus:ring-primary flex h-12 w-full items-center rounded-xl border border-gray-200 bg-gray-50 px-4 outline-none focus:ring-2 ${isSocialLogin ? 'cursor-not-allowed' : ''}`}
                   {...register('email', { required: true, minLength: 10, maxLength: 30 })}
-                  disabled={isPending}
+                  disabled={isPending || isSocialLogin}
                   type='email'
-                  placeholder='이메일을 입력하세요'
+                  placeholder={isSocialLogin ? '소셜 로그인 사용자는 변경할 수 없습니다' : '이메일을 입력하세요'}
                 />
                 <div className='min-h-[1.5rem]'>
                   {errors.email?.type === 'required' && <span className='text-error text-sm'>이메일을 입력해 주세요.</span>}
@@ -252,16 +253,16 @@ export default function ProfileClient({ user }: ProfileClientProps) {
                   전화번호
                 </div>
                 <input
-                  className='t-body text-secondary focus:ring-primary flex h-12 w-full items-center rounded-xl border border-gray-200 bg-gray-50 px-4 outline-none focus:ring-2'
+                  className={`t-body text-secondary focus:ring-primary flex h-12 w-full items-center rounded-xl border border-gray-200 bg-gray-50 px-4 outline-none focus:ring-2 ${isSocialLogin ? 'cursor-not-allowed' : ''}`}
                   {...register('phone', {
                     required: !isSocialLogin || !!socialData?.phone,
                     minLength: 10,
                     maxLength: 11,
                     pattern: { value: /^[0-9]*$/, message: '숫자만 입력하세요.' },
                   })}
-                  disabled={isPending}
+                  disabled={isPending || isSocialLogin}
                   type='tel'
-                  placeholder='전화번호를 입력하세요'
+                  placeholder={isSocialLogin ? '소셜 로그인 사용자는 변경할 수 없습니다' : '전화번호를 입력하세요'}
                 />
                 <div className='min-h-[1.5rem]'>
                   {errors.phone?.type === 'required' && <span className='text-error text-sm'>전화번호를 입력해 주세요.</span>}

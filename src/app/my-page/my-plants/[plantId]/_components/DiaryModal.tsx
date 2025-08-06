@@ -35,13 +35,31 @@ export default function DiaryModal({ isOpen, onClose, diary, onSave, mode, plant
   const [imageError, setImageError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  // 날짜 형식 변환 함수 (YYYY.MM.DD -> YYYY-MM-DD)
+  const formatDateForInput = (dateString: string) => {
+    if (!dateString) return new Date().toISOString().split('T')[0];
+    
+    // 이미 올바른 형식인지 확인
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+      return dateString;
+    }
+    
+    // YYYY.MM.DD 형식을 YYYY-MM-DD로 변환
+    if (/^\d{4}\.\d{2}\.\d{2}$/.test(dateString)) {
+      return dateString.replace(/\./g, '-');
+    }
+    
+    // 기타 형식은 현재 날짜로 대체
+    return new Date().toISOString().split('T')[0];
+  };
+
   // 폼 초기화 함수
   const resetForm = useCallback(() => {
     if (mode === 'edit' && diary) {
       setFormData({
         title: diary.title,
         content: diary.content,
-        date: diary.date,
+        date: formatDateForInput(diary.date),
         newImages: [],
       });
       // 기존 이미지들 설정

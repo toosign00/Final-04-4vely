@@ -25,6 +25,7 @@ export function useActivityTracker() {
     // 기존 타이머 클리어
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
     }
 
     // 새로운 2시간 타이머 설정 (자동 로그인이 아닌 경우만)
@@ -55,8 +56,19 @@ export function useActivityTracker() {
       document.addEventListener(event, handleActivity, true);
     });
 
-    // 초기 타이머 설정
-    handleActivity();
+    // 초기 타이머 설정 (이벤트 없이 직접 타이머만 설정)
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    
+    timeoutRef.current = setTimeout(
+      () => {
+        console.log('[Activity Tracker] 2시간 비활성으로 자동 로그아웃');
+        zustandLogout();
+      },
+      2 * 60 * 60 * 1000,
+    ); // 2시간
 
     // 컴포넌트 언마운트 시 정리
     return () => {
@@ -66,19 +78,25 @@ export function useActivityTracker() {
 
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
       }
     };
-  }, [zustandUser, handleActivity, activityEvents]);
+  }, [zustandUser, handleActivity, activityEvents, zustandLogout]);
 
   // 페이지 가시성 변경 처리 (탭 전환 감지)
   const handleVisibilityChange = useCallback(() => {
     if (!document.hidden && zustandUser && !zustandUser.rememberLogin) {
-      // 탭이 다시 활성화될 때 세션 검증
+      // 탭이 다시 활성화될 때 세션 검증 (2시간 체크)
       const now = Date.now();
       const lastActivity = lastActivityRef.current;
+      const sessionStart = zustandUser.sessionStartTime || now;
       const twoHours = 2 * 60 * 60 * 1000;
 
-      if (now - lastActivity > twoHours) {
+      // 세션 시작 또는 마지막 활동 후 2시간 경과 체크
+      const sessionExpired = now - sessionStart > twoHours;
+      const activityExpired = now - lastActivity > twoHours;
+
+      if (sessionExpired || activityExpired) {
         console.log('[Activity Tracker] 탭 복귀 시 세션 만료 확인 - 자동 로그아웃');
         zustandLogout();
       } else {

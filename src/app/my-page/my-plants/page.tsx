@@ -17,8 +17,6 @@ interface MyPlantsPageProps {
 
 // 페이지당 표시할 식물 개수 설정
 const PLANTS_PER_PAGE = 4;
-// 전체 페이지 수 고정 (4개씩 10페이지 = 총 40개 슬롯)
-const TOTAL_PAGES = 10;
 // 기본 정렬 순서 (서버에서는 정렬하지 않고 클라이언트에서 처리)
 // const DEFAULT_SORT = '{"createdAt": -1}';
 
@@ -28,8 +26,8 @@ export default async function MyPlantsPage({ searchParams }: MyPlantsPageProps) 
   // 현재 페이지 번호 파싱 (기본값: 1)
   const currentPage = parseInt(resolvedSearchParams.page || '1', 10);
 
-  // 페이지 범위 검증
-  if (currentPage < 1 || currentPage > TOTAL_PAGES) {
+  // 페이지 범위 검증 (최소값만 체크, 최대값은 실제 데이터 기반으로 동적 결정)
+  if (currentPage < 1) {
     redirect('/my-page/my-plants');
   }
 
@@ -48,7 +46,7 @@ export default async function MyPlantsPage({ searchParams }: MyPlantsPageProps) 
     page: currentPage,
     limit: PLANTS_PER_PAGE,
     total: 0,
-    totalPages: TOTAL_PAGES,
+    totalPages: 1,
   };
   const latestDiaries: { [plantId: number]: Diary | undefined } = {};
 
@@ -57,10 +55,12 @@ export default async function MyPlantsPage({ searchParams }: MyPlantsPageProps) 
     if (result.ok) {
       // PlantPost[] 배열을 Plant[] 배열로 변환
       plants = mapPlantPostsToPlants(result.item.plants);
-      pagination = {
-        ...result.item.pagination,
-        totalPages: TOTAL_PAGES, // 고정된 총 페이지 수 사용
-      };
+      pagination = result.item.pagination;
+
+      // 현재 페이지가 실제 총 페이지 수를 초과하는 경우 리다이렉트
+      if (currentPage > pagination.totalPages && pagination.totalPages > 0) {
+        redirect('/my-page/my-plants');
+      }
 
       // 현재 페이지의 식물들의 최신 일지를 배치로 조회
       if (plants.length > 0) {

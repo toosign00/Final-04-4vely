@@ -1,20 +1,36 @@
 'use client';
 
+import OrderHistorySkeletonUI from '@/app/my-page/_components/skeletons/OrderHistorySkeletonUI';
 import PaginationWrapper from '@/components/ui/PaginationWrapper';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { OrderHistoryListProps } from '../_types';
 import OrderHistoryCard from './OrderHistoryCard';
 
-export default function OrderHistoryList({ orders, pagination }: OrderHistoryListProps) {
+export default function OrderHistoryList({ orders: initialOrders, pagination }: OrderHistoryListProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const { page: currentPage, totalPages } = pagination;
 
-  // Optimized page change handler with useCallback to prevent unnecessary re-renders
+  // 로딩 상태 관리
+  const [isPageLoading, setIsPageLoading] = useState(false);
+  const [orders, setOrders] = useState(initialOrders);
+
+  // 부모로부터 받은 데이터가 변경될 때 상태 동기화
+  useEffect(() => {
+    setOrders(initialOrders);
+    setIsPageLoading(false);
+  }, [initialOrders]);
+
   const handlePageChange = useCallback(
     (page: number) => {
+      // 로딩 상태 시작
+      setIsPageLoading(true);
+
+      // 스크롤을 즉시 최상단으로 이동
+      window.scrollTo({ top: 0, behavior: 'auto' });
+
       const params = new URLSearchParams(searchParams.toString());
 
       if (page === 1) {
@@ -31,20 +47,21 @@ export default function OrderHistoryList({ orders, pagination }: OrderHistoryLis
     [router, searchParams],
   );
 
-  // This component should not render if orders are empty
-  // Empty state is handled in the parent page component
   if (orders.length === 0) {
     return null;
   }
 
+  // 페이지 로딩 중일 때 스켈레톤 UI 표시
+  if (isPageLoading) {
+    return <OrderHistorySkeletonUI />;
+  }
+
   return (
     <>
-      {/* Order history cards */}
       {orders.map((order) => (
         <OrderHistoryCard key={order.id} order={order} />
       ))}
 
-      {/* Pagination UI - only show if more than one page */}
       {totalPages > 1 && (
         <div className='mt-10 mb-6 flex justify-center'>
           <PaginationWrapper currentPage={currentPage} totalPages={totalPages} setCurrentPage={handlePageChange} className='w-full max-w-md' />

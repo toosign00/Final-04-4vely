@@ -1,9 +1,10 @@
 import { updateOrderStatusAction } from '@/lib/actions/order/orderSchedulerActions';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const orderId = parseInt(params.id);
+    const { id } = await params;
+    const orderId = parseInt(id);
 
     if (isNaN(orderId)) {
       return NextResponse.json({ success: false, message: '유효하지 않은 주문 ID입니다.' }, { status: 400 });
@@ -36,9 +37,10 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
   }
 }
 
-export async function GET(_request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const orderId = parseInt(params.id);
+    const { id } = await params;
+    const orderId = parseInt(id);
 
     if (isNaN(orderId)) {
       return NextResponse.json({ success: false, message: '유효하지 않은 주문 ID입니다.' }, { status: 400 });

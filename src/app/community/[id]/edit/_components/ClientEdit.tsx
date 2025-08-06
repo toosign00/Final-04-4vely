@@ -48,7 +48,7 @@ export default function ClientEdit({ postId }: ClientEditProps) {
           title: c.title || (idx === 0 ? post.title : ''),
           content: c.content,
           postImage: c.postImage || '',
-          thumbnailImage: c.thumbnailImage || (idx === 0 ? post.coverImage || '' : ''),
+          thumbnailImage: c.thumbnailImage || c.postImage || null,
         }));
         setPostForms(forms.length ? forms : [{ id: '1', title: post.title, content: post.description, postImage: null, thumbnailImage: null }]);
       } catch {

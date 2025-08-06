@@ -3,8 +3,8 @@
 
 import { Button } from '@/components/ui/Button';
 import { getOrderByIdAction } from '@/lib/actions/order/orderServerActions';
+import { getImageUrl } from '@/lib/utils/product.utils';
 import { Order } from '@/types/order.types';
-import { getImageUrl } from '@/types/product.types';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -368,7 +368,7 @@ export default function OrderComplete() {
             </div>
             <div className='mt-2 flex justify-between border-t pt-2 font-semibold' role='listitem'>
               <span>총 결제 금액</span>
-              <span className='text-primary' aria-label={`총 결제 금액 ${orderInfo.cost.total.toLocaleString()}원`}>
+              <span className='text-secondary' aria-label={`총 결제 금액 ${orderInfo.cost.total.toLocaleString()}원`}>
                 {orderInfo.cost.total.toLocaleString()}원
               </span>
             </div>

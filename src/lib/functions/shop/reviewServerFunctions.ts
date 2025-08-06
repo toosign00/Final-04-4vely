@@ -1,8 +1,8 @@
 // src/lib/functions/shop/reviewServerFunctions.ts
 
+import { getAuthInfo } from '@/lib/utils/auth.server';
 import { ApiResPromise } from '@/types/api.types';
 import { ProductReply } from '@/types/review.types';
-import { getAuthInfo } from '@/lib/utils/auth.server';
 
 const API_URL = process.env.API_URL || 'https://fesp-api.koyeb.app/market';
 const CLIENT_ID = process.env.CLIENT_ID || 'febc13-final04-emjf';
@@ -16,7 +16,8 @@ export async function getProductReplies(productId: number): ApiResPromise<Produc
   try {
     console.log(`[리뷰 조회] 상품 ID: ${productId}`);
 
-    const res = await fetch(`${API_URL}/replies/products/${productId}`, {
+    const res = await fetch(`${API_URL}/replies/products/${productId}?full_name=true`, {
+      // full_name을 사용하여 작성자명의 마스킹 해제
       headers: {
         'Content-Type': 'application/json',
         'client-id': CLIENT_ID,

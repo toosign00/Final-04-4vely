@@ -7,7 +7,7 @@ import { mapWeatherToTips } from '@/lib/functions/weather/mapWeatherToTips';
 import { weatherImage } from '@/lib/utils/weaterImage';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FiMapPin, FiWind } from 'react-icons/fi';
 import { IoWaterOutline } from 'react-icons/io5';
 
@@ -16,51 +16,75 @@ interface WeatherTipData {
   plants: string[];
 }
 
+// 모바일만 true로 판별
+const isMobileDevice = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  return /iPhone|Android.*Mobile/.test(navigator.userAgent);
+};
+
 export default function WeatherWidget() {
   const [tipsData, setTipsData] = useState<WeatherTipData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [requested, setRequested] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
-  // 사용자 위치 요청
   useEffect(() => {
+    setIsMobile(isMobileDevice());
+  }, []);
+
+  // 날씨 정보 요청
+  const fetchWeatherByLocation = useCallback(async (lat: number, lon: number) => {
+    try {
+      const tips = await mapWeatherToTips(lat, lon);
+      setTipsData({
+        weather: tips.weather,
+        plants: tips.plants.map((p) => p.name),
+      });
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // 위치 요청
+  const requestWeather = useCallback(() => {
+    setRequested(true);
+    setLoading(true);
+
     navigator.geolocation.getCurrentPosition(
-      // 허용
-      async (position) => {
-        const latitude = Number(position.coords.latitude.toFixed(4));
-        const longitude = Number(position.coords.longitude.toFixed(4));
-
-        try {
-          const tips = await mapWeatherToTips(latitude, longitude);
-          setTipsData({
-            weather: tips.weather,
-            plants: tips.plants.map((p) => p.name),
-          });
-        } catch {
-          setError(true);
-        }
-        setLoading(false);
+      async (pos) => {
+        const lat = Number(pos.coords.latitude.toFixed(4));
+        const lon = Number(pos.coords.longitude.toFixed(4));
+        await fetchWeatherByLocation(lat, lon);
       },
-      // 사용자 위치 거부 시 기본값이 서울
       async () => {
-        const latitude = 37.5665;
-        const longitude = 126.978;
-
-        try {
-          const tips = await mapWeatherToTips(latitude, longitude);
-          setTipsData({
-            weather: tips.weather,
-            plants: tips.plants.map((p) => p.name),
-          });
-        } catch {
-          setError(true);
-        }
-        setLoading(false);
+        // 기본 좌표: 서울
+        await fetchWeatherByLocation(37.5665, 126.978);
       },
     );
-  }, []);
+  }, [fetchWeatherByLocation]);
+  // PC/태블릿인 경우 자동 위치 요청
+  useEffect(() => {
+    if (!isMobile) {
+      requestWeather();
+    }
+  }, [isMobile, requestWeather]);
 
   return (
     <section className='relative mx-auto my-14 flex w-full flex-col px-5 sm:max-w-[40rem] md:max-w-none lg:max-w-[70rem]' aria-label='현재 날씨 정보'>
+      {/* 모바일에서만 위치 요청 버튼 노출 */}
+      {isMobile && !requested && (
+        <div className='mb-4 flex flex-col items-center gap-2 md:flex-row md:justify-center'>
+          <Button onClick={requestWeather} variant='default' size='lg' className='flex items-center gap-2 px-6 py-3'>
+            <FiMapPin className='h-5 w-5' />
+            현재 위치 기반 추천 보기
+          </Button>
+          <p className='text-sm text-gray-500'>위치 허용 시 날씨 기반 식물 팁을 받아보실 수 있어요</p>
+        </div>
+      )}
+
       {/* 스켈레톤 UI */}
       {loading && <SkeletonWeatherCard />}
 

@@ -1,4 +1,5 @@
 import { MagazinePostData } from '@/app/green-magazine/_types/magazine.types';
+import { formatDate } from '@/app/my-page/my-plants/_utils/diaryUtils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import BookmarkButton from '@/components/ui/BookmarkButton';
 import { Eye } from 'lucide-react';
@@ -29,8 +30,7 @@ export default function MagazineDetailContent({ post, myBookmarkId }: DetailCont
               </Avatar>
               <span>{post.user.name}</span>
               <span>·</span>
-              {/* 시간 어떻게 처리할지 월요일에 다시 정리 */}
-              <span>{post.createdAt}</span>
+              <span>{formatDate(post.createdAt)}</span>
             </div>
             <span className='flex items-center gap-1'>
               <Eye size={14} />
@@ -40,11 +40,11 @@ export default function MagazineDetailContent({ post, myBookmarkId }: DetailCont
         </section>
 
         {/* 본문 내용 */}
-        <section className='mx-auto mb-10 max-w-[50rem] px-5 text-center'>
+        <section className='mx-auto mb-10 max-w-[52rem] px-4 text-center'>
           {post.extra?.contents?.map((item, i) => (
             <div className='mb-10' key={i}>
               <Image src={item.postImage} alt={`콘텐츠 이미지 ${i + 1}`} width={300} height={400} className='mx-auto w-full max-w-[30rem] rounded-xl border' />
-              <p className='mt-6 lg:text-lg'>{item.content}</p>
+              <p className='mx-auto mt-6 leading-7 sm:max-w-[55ch] md:max-w-[60ch] lg:max-w-[65ch] lg:text-lg'>{item.content}</p>
             </div>
           ))}
         </section>

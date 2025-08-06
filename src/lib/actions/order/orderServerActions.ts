@@ -31,10 +31,8 @@ export async function saveTempOrderAction(orderData: OrderPageData): Promise<boo
       path: '/',
     });
 
-    console.log('[Order 서버 액션] 임시 주문 저장 완료');
     return true;
-  } catch (error) {
-    console.error('[Order 서버 액션] 임시 주문 저장 실패:', error);
+  } catch {
     return false;
   }
 }
@@ -49,20 +47,13 @@ export async function getTempOrderAction(): Promise<OrderPageData | null> {
     const tempOrderCookie = cookieStore.get('temp-order')?.value;
 
     if (!tempOrderCookie) {
-      console.log('[Order 서버 액션] 임시 주문 데이터 없음');
       return null;
     }
 
     const orderData = JSON.parse(tempOrderCookie) as OrderPageData;
-    console.log('[Order 서버 액션] 임시 주문 데이터 조회:', {
-      type: orderData.type,
-      itemCount: orderData.items.length,
-      totalAmount: orderData.totalAmount,
-    });
 
     return orderData;
-  } catch (error) {
-    console.error('[Order 서버 액션] 임시 주문 조회 실패:', error);
+  } catch {
     return null;
   }
 }
@@ -75,9 +66,8 @@ export async function clearTempOrderAction(): Promise<void> {
   try {
     const cookieStore = await cookies();
     cookieStore.delete('temp-order');
-    console.log('[Order 서버 액션] 임시 주문 데이터 삭제 완료');
-  } catch (error) {
-    console.error('[Order 서버 액션] 임시 주문 삭제 실패:', error);
+  } catch {
+    // 에러가 발생해도 계속 진행
   }
 }
 
@@ -99,8 +89,7 @@ export async function createDirectPurchaseTempOrderAction(item: DirectPurchaseIt
     };
 
     return await saveTempOrderAction(orderData);
-  } catch (error) {
-    console.error('[Order 서버 액션] 직접 구매 임시 주문 생성 실패:', error);
+  } catch {
     return false;
   }
 }
@@ -112,12 +101,9 @@ export async function createDirectPurchaseTempOrderAction(item: DirectPurchaseIt
  */
 export async function createCartPurchaseTempOrderAction(selectedCartIds: number[]): Promise<boolean> {
   try {
-    console.log('[Order 서버 액션] 장바구니 구매 임시 주문 생성 시작:', selectedCartIds);
-
     // 액세스 토큰 확인
     const authInfo = await getAuthInfo();
     if (!authInfo) {
-      console.log('[Order 서버 액션] 로그인 필요');
       return false;
     }
 
@@ -129,7 +115,6 @@ export async function createCartPurchaseTempOrderAction(selectedCartIds: number[
     const selectedItems = cartItems.filter((item) => selectedCartIds.includes(item._id));
 
     if (selectedItems.length === 0) {
-      console.log('[Order 서버 액션] 선택된 장바구니 아이템이 없음');
       return false;
     }
 
@@ -176,7 +161,6 @@ export async function createCartPurchaseTempOrderAction(selectedCartIds: number[
     // 임시 주문 데이터 저장
     const orderSaved = await saveTempOrderAction(orderData);
     if (!orderSaved) {
-      console.log('[Order 서버 액션] 임시 주문 데이터 저장 실패');
       return false;
     }
 
@@ -190,10 +174,8 @@ export async function createCartPurchaseTempOrderAction(selectedCartIds: number[
       path: '/',
     });
 
-    console.log('[Order 서버 액션] 장바구니 구매 임시 주문 생성 완료');
     return true;
-  } catch (error) {
-    console.error('[Order 서버 액션] 장바구니 구매 임시 주문 생성 실패:', error);
+  } catch {
     return false;
   }
 }
@@ -207,14 +189,12 @@ export async function updateTempOrderAddressAction(address: OrderPageData['addre
   try {
     const orderData = await getTempOrderAction();
     if (!orderData) {
-      console.error('[Order 서버 액션] 임시 주문 데이터 없음');
       return false;
     }
 
     orderData.address = address;
     return await saveTempOrderAction(orderData);
-  } catch (error) {
-    console.error('[Order 서버 액션] 배송 정보 업데이트 실패:', error);
+  } catch {
     return false;
   }
 }
@@ -228,14 +208,12 @@ export async function updateTempOrderMemoAction(memo: string): Promise<boolean> 
   try {
     const orderData = await getTempOrderAction();
     if (!orderData) {
-      console.error('[Order 서버 액션] 임시 주문 데이터 없음');
       return false;
     }
 
     orderData.memo = memo;
     return await saveTempOrderAction(orderData);
-  } catch (error) {
-    console.error('[Order 서버 액션] 배송 메모 업데이트 실패:', error);
+  } catch {
     return false;
   }
 }
@@ -247,12 +225,9 @@ export async function updateTempOrderMemoAction(memo: string): Promise<boolean> 
  */
 export async function createOrderAction(orderData: CreateOrderRequest): Promise<PurchaseActionResult> {
   try {
-    console.log('[Order 서버 액션] 주문 생성 시작:', orderData);
-
     // 액세스 토큰 확인
     const authInfo = await getAuthInfo();
     if (!authInfo) {
-      console.log('[Order 서버 액션] 로그인 필요');
       return {
         success: false,
         message: '로그인이 필요합니다.',
@@ -271,7 +246,6 @@ export async function createOrderAction(orderData: CreateOrderRequest): Promise<
       const cartIdsCookie = cookieStore.get('temp-cart-ids')?.value;
       if (cartIdsCookie) {
         cartItemIds = JSON.parse(cartIdsCookie);
-        console.log('[Order 서버 액션] 삭제할 장바구니 아이템 IDs:', cartItemIds);
       }
     }
 
@@ -287,11 +261,9 @@ export async function createOrderAction(orderData: CreateOrderRequest): Promise<
     });
 
     const data: CreateOrderApiResponse = await res.json();
-    console.log('[Order 서버 액션] API 응답:', { status: res.status, ok: data.ok });
 
     if (!res.ok || data.ok === 0) {
       const errorMessage = '주문 생성에 실패했습니다.';
-      console.error('[Order 서버 액션] 오류:', errorMessage);
 
       return {
         success: false,
@@ -301,21 +273,14 @@ export async function createOrderAction(orderData: CreateOrderRequest): Promise<
 
     // 주문 생성 성공 후 장바구니 아이템 삭제
     if (isCartOrder && cartItemIds.length > 0) {
-      console.log('[Order 서버 액션] 장바구니 아이템 삭제 시작');
-
       // removeFromCartAction 임포트해서 사용
       const { removeFromCartAction } = await import('@/lib/actions/cartServerActions');
 
       // 모든 장바구니 아이템 삭제 (병렬 처리)
-      const deletePromises = cartItemIds.map((cartId) =>
-        removeFromCartAction(cartId).catch((error) => {
-          console.error(`[Order 서버 액션] 장바구니 아이템 ${cartId} 삭제 실패:`, error);
-          return null;
-        }),
-      );
-
+      const deletePromises = cartItemIds.map((cartId) => removeFromCartAction(cartId), {
+        return: null,
+      });
       await Promise.all(deletePromises);
-      console.log('[Order 서버 액션] 장바구니 아이템 삭제 완료');
 
       // temp-cart-ids 쿠키 삭제
       const cookieStore = await cookies();
@@ -330,7 +295,6 @@ export async function createOrderAction(orderData: CreateOrderRequest): Promise<
       revalidatePath('/cart');
     }
 
-    console.log('[Order 서버 액션] 주문 생성 성공:', data.item);
     return {
       success: true,
       message: '주문이 성공적으로 생성되었습니다.',
@@ -339,8 +303,7 @@ export async function createOrderAction(orderData: CreateOrderRequest): Promise<
         redirectUrl: `/order/order-complete?orderId=${data.item?._id}`,
       },
     };
-  } catch (error) {
-    console.error('[Order 서버 액션] 네트워크 오류:', error);
+  } catch {
     return {
       success: false,
       message: '일시적인 네트워크 문제로 주문 생성에 실패했습니다.',
@@ -355,12 +318,9 @@ export async function createOrderAction(orderData: CreateOrderRequest): Promise<
  */
 export async function getOrderByIdAction(orderId: number): Promise<PurchaseActionResult & { orderData?: Order }> {
   try {
-    console.log('[Order 서버 액션] 주문 조회 시작:', orderId);
-
     // 액세스 토큰 확인
     const authInfo = await getAuthInfo();
     if (!authInfo) {
-      console.log('[Order 서버 액션] 로그인 필요');
       return {
         success: false,
         message: '로그인이 필요합니다.',
@@ -379,7 +339,6 @@ export async function getOrderByIdAction(orderId: number): Promise<PurchaseActio
     });
 
     const data: CreateOrderApiResponse = await res.json();
-    console.log('[Order 서버 액션] 주문 조회 API 응답:', { status: res.status, ok: data.ok });
 
     if (!res.ok || data.ok === 0) {
       return {
@@ -408,7 +367,6 @@ export async function getOrderByIdAction(orderId: number): Promise<PurchaseActio
       }
     }
 
-    console.log('[Order 서버 액션] 주문 조회 성공:', data.item);
     return {
       success: true,
       message: '주문 정보를 성공적으로 조회했습니다.',
@@ -417,8 +375,7 @@ export async function getOrderByIdAction(orderId: number): Promise<PurchaseActio
       },
       orderData: data.item, // 전체 주문 데이터 반환
     };
-  } catch (error) {
-    console.error('[Order 서버 액션] 주문 조회 네트워크 오류:', error);
+  } catch {
     return {
       success: false,
       message: '일시적인 네트워크 문제로 주문 조회에 실패했습니다.',
@@ -440,20 +397,13 @@ export async function getUserAddressAction(): Promise<{
     // getAuthInfo를 사용하여 인증 정보 가져오기
     const authInfo = await getAuthInfo();
     if (!authInfo) {
-      console.log('[getUserAddressAction] 로그인되지 않은 사용자');
       return { address: null, name: null, phone: null, userId: null };
     }
 
     const { accessToken, userId } = authInfo;
 
-    console.log('[getUserAddressAction] 사용자 정보:', {
-      userId,
-      hasToken: !!accessToken,
-    });
-
     // API 요청
     const apiUrl = `${API_URL}/users/${userId}`;
-    console.log('[getUserAddressAction] API 호출:', apiUrl);
 
     const res = await fetch(apiUrl, {
       method: 'GET',
@@ -465,30 +415,20 @@ export async function getUserAddressAction(): Promise<{
     });
 
     const responseText = await res.text();
-    console.log('[getUserAddressAction] API 응답 상태:', res.status);
-    console.log('[getUserAddressAction] API 응답 텍스트:', responseText);
 
     let data;
     try {
       data = JSON.parse(responseText);
-    } catch (e) {
-      console.error('[getUserAddressAction] JSON 파싱 오류:', e);
+    } catch {
       return { address: null, name: null, phone: null, userId: null };
     }
 
     if (!res.ok || data.ok === 0) {
-      console.error('[getUserAddressAction] API 오류:', data.message || 'Unknown error');
       return { address: null, name: null, phone: null, userId: null };
     }
 
     // API 응답에서 사용자 정보 추출
     const userInfo = data.item;
-    console.log('[getUserAddressAction] 사용자 정보 조회 성공:', {
-      name: userInfo?.name,
-      phone: userInfo?.phone,
-      address: userInfo?.address,
-      hasAddress: !!userInfo?.address,
-    });
 
     return {
       address: userInfo?.address || null,
@@ -496,8 +436,7 @@ export async function getUserAddressAction(): Promise<{
       phone: userInfo?.phone || null,
       userId: userId,
     };
-  } catch (error) {
-    console.error('[getUserAddressAction] 예외 발생:', error);
+  } catch {
     return { address: null, name: null, phone: null, userId: null };
   }
 }
@@ -510,8 +449,7 @@ export async function checkOrderLoginStatusAction(): Promise<boolean> {
   try {
     const authInfo = await getAuthInfo();
     return !!authInfo;
-  } catch (error) {
-    console.error('[Order 서버 액션] 로그인 상태 확인 오류:', error);
+  } catch {
     return false;
   }
 }

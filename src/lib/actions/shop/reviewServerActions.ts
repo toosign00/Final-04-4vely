@@ -18,12 +18,9 @@ const CLIENT_ID = process.env.CLIENT_ID || 'febc13-final04-emjf';
  */
 export async function updateReplyAction(replyId: number, updateData: UpdateReplyRequest): Promise<ReplyActionResult> {
   try {
-    console.log('[Reply 서버 액션] 리뷰 수정 시작:', { replyId, updateData });
-
     // 액세스 토큰 확인
     const authInfo = await getAuthInfo();
     if (!authInfo) {
-      console.log('[Reply 서버 액션] 로그인 필요');
       return {
         success: false,
         message: '로그인이 필요합니다.',
@@ -43,7 +40,6 @@ export async function updateReplyAction(replyId: number, updateData: UpdateReply
     });
 
     const data: ApiRes<ProductReply> = await res.json();
-    console.log('[Reply 서버 액션] API 응답:', { status: res.status, ok: data.ok });
 
     if (!res.ok || data.ok === 0) {
       return {
@@ -57,14 +53,12 @@ export async function updateReplyAction(replyId: number, updateData: UpdateReply
       revalidatePath(`/shop/products/${data.item.product_id}`);
     }
 
-    console.log('[Reply 서버 액션] 리뷰 수정 성공');
     return {
       success: true,
       message: '리뷰가 수정되었습니다.',
       data: data.item,
     };
-  } catch (error) {
-    console.error('[Reply 서버 액션] 네트워크 오류:', error);
+  } catch {
     return {
       success: false,
       message: '일시적인 네트워크 문제로 리뷰 수정에 실패했습니다.',
@@ -80,12 +74,9 @@ export async function updateReplyAction(replyId: number, updateData: UpdateReply
  */
 export async function deleteReplyAction(replyId: number, productId: number): Promise<ReplyActionResult> {
   try {
-    console.log('[Reply 서버 액션] 리뷰 삭제 시작:', { replyId, productId });
-
     // 액세스 토큰 확인
     const authInfo = await getAuthInfo();
     if (!authInfo) {
-      console.log('[Reply 서버 액션] 로그인 필요');
       return {
         success: false,
         message: '로그인이 필요합니다.',
@@ -104,7 +95,6 @@ export async function deleteReplyAction(replyId: number, productId: number): Pro
     });
 
     const data = await res.json();
-    console.log('[Reply 서버 액션] API 응답:', { status: res.status, ok: data.ok });
 
     if (!res.ok || data.ok === 0) {
       return {
@@ -116,13 +106,11 @@ export async function deleteReplyAction(replyId: number, productId: number): Pro
     // 상품 상세 페이지 재검증
     revalidatePath(`/shop/products/${productId}`);
 
-    console.log('[Reply 서버 액션] 리뷰 삭제 성공');
     return {
       success: true,
       message: '리뷰가 삭제되었습니다.',
     };
-  } catch (error) {
-    console.error('[Reply 서버 액션] 네트워크 오류:', error);
+  } catch {
     return {
       success: false,
       message: '일시적인 네트워크 문제로 리뷰 삭제에 실패했습니다.',
@@ -150,8 +138,7 @@ export async function getCurrentUserAction(): Promise<{ id: number | null; name:
       id: user?._id || null,
       name: user?.name || null,
     };
-  } catch (error) {
-    console.error('[Reply 서버 액션] 사용자 정보 조회 오류:', error);
+  } catch {
     return { id: null, name: null };
   }
 }

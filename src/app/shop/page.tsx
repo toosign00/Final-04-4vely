@@ -24,14 +24,6 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   const currentPage = Number(params.page) || 1;
   const itemsPerPage = 12;
 
-  console.log('[ShopPage] 페이지 로드 시작:', {
-    페이지: currentPage,
-    검색어: params.search,
-    정렬: params.sort,
-    카테고리: params.category || 'plant',
-    전체파라미터: params,
-  });
-
   // 필터 파라미터 파싱
   const filters = {
     size: params.size?.split(',').filter(Boolean) || [],
@@ -51,18 +43,6 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
     category: params.category || 'plant',
     filters,
   });
-
-  console.log('[ShopPage] 상품 목록 로드 완료:', {
-    총상품수: pagination.total,
-    현재페이지: pagination.page,
-    전체페이지수: pagination.totalPages,
-    현재페이지상품수: products.length,
-  });
-
-  // 에러 처리
-  if (products.length === 0 && pagination.total === 0) {
-    console.warn('[ShopPage] 상품이 없습니다.');
-  }
 
   // URL 파라미터 전달
   const urlParams = {

@@ -66,8 +66,7 @@ export async function getAllProducts(params?: { page?: number; limit?: number; k
     });
 
     return res.json();
-  } catch (error) {
-    console.error('상품 목록 조회 실패:', error);
+  } catch {
     return {
       ok: 0,
       message: '일시적인 네트워크 문제로 상품 목록 조회에 실패했습니다.',
@@ -92,8 +91,7 @@ export async function getProductById(productId: number): ApiResPromise<Product> 
     });
 
     return res.json();
-  } catch (error) {
-    console.error('상품 상세 조회 실패:', error);
+  } catch {
     return {
       ok: 0,
       message: '일시적인 네트워크 문제로 상품 상세 조회에 실패했습니다.',
@@ -115,8 +113,7 @@ export async function getBestProducts(limit: number = 4): ApiResPromise<Product[
     });
 
     return res.json();
-  } catch (error) {
-    console.error('베스트 상품 조회 실패:', error);
+  } catch {
     return {
       ok: 0,
       message: '일시적인 네트워크 문제로 베스트 상품 조회에 실패했습니다.',
@@ -146,8 +143,7 @@ export async function getNewProducts(limit: number = 4): ApiResPromise<Product[]
     });
 
     return res.json();
-  } catch (error) {
-    console.error('신상품 조회 실패:', error);
+  } catch {
     return {
       ok: 0,
       message: '일시적인 네트워크 문제로 신상품 조회에 실패했습니다.',
@@ -183,8 +179,7 @@ export async function getProductsByCategory(category: string, options?: { limit?
     });
 
     return res.json();
-  } catch (error) {
-    console.error(`${category} 상품 조회 실패:`, error);
+  } catch {
     return {
       ok: 0,
       message: `일시적인 네트워크 문제로 ${category} 상품 조회에 실패했습니다.`,
@@ -234,8 +229,7 @@ export async function searchProducts(
     });
 
     return res.json();
-  } catch (error) {
-    console.error('상품 검색 실패:', error);
+  } catch {
     return {
       ok: 0,
       message: '일시적인 네트워크 문제로 상품 검색에 실패했습니다.',

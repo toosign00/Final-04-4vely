@@ -74,7 +74,6 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
     { value: 'recommend', label: '추천순' },
     { value: 'name', label: '이름순' },
     { value: 'new', label: '최신순' },
-    { value: 'old', label: '오래된순' },
     { value: 'price-low', label: '가격 낮은 순' },
     { value: 'price-high', label: '가격 높은 순' },
   ];
@@ -129,8 +128,6 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
 
       const newURL = `/shop?${params.toString()}`; // params가 항상 있으므로 ? 사용
 
-      console.log('[URL 업데이트]:', newURL);
-
       // 페이지 이동 시 스크롤 최상단으로
       startTransition(() => {
         router.push(newURL, { scroll: true });
@@ -164,12 +161,6 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
     const categoryChanged = prevCategoryRef.current !== selectedCategory;
 
     if (filtersChanged || sortByChanged || categoryChanged) {
-      console.log('[필터/정렬/카테고리 변경 감지]:', {
-        filtersChanged,
-        sortByChanged,
-        categoryChanged,
-      });
-
       // 값 업데이트
       prevFiltersRef.current = filters;
       prevSortByRef.current = sortBy;
@@ -185,7 +176,6 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
   useEffect(() => {
     const timer = setTimeout(() => {
       if (searchTerm !== urlParams.search) {
-        console.log('[검색어 변경]:', { from: urlParams.search, to: searchTerm });
         setCurrentPage(1);
         updateURLAndNavigate(1);
       }
@@ -198,7 +188,6 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
   const handlePageChange = (page: number) => {
     if (page < 1 || page > totalPages || isPending) return;
 
-    console.log('[페이지 변경]:', { from: currentPage, to: page });
     setCurrentPage(page);
 
     // 페이지 변경 알림
@@ -211,8 +200,6 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
 
   // 필터 변경 핸들러
   const handleFilterChange = (category: keyof CategoryFilter, value: string) => {
-    console.log('[필터 변경]:', { category, value });
-
     setFilters((prev) => {
       const currentValues = prev[category];
       const newValues = currentValues.includes(value) ? currentValues.filter((item) => item !== value) : [...currentValues, value];
@@ -232,7 +219,6 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
 
   // 카테고리 변경 핸들러
   const handleCategoryChange = (category: ProductCategory) => {
-    console.log('[카테고리 변경]:', { from: selectedCategory, to: category });
     setSelectedCategory(category);
 
     // 카테고리 변경 시 필터 초기화
@@ -254,7 +240,6 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
 
   // 정렬 변경 핸들러
   const handleSortChange = (value: string) => {
-    console.log('[정렬 변경]:', { from: sortBy, to: value });
     setSortBy(value);
 
     // 정렬 변경 알림
@@ -267,13 +252,11 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
   // 검색어 변경 핸들러
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    console.log('[검색어 입력]:', value);
     setSearchTerm(value);
   };
 
   // 필터 초기화 핸들러
   const handleResetFilters = () => {
-    console.log('[필터 초기화]');
     setFilters({
       size: [],
       difficulty: [],
@@ -294,7 +277,6 @@ export default function ShopClientContent({ initialProducts, pagination, urlPara
 
   // 상품 클릭 핸들러
   const handleProductClick = (productId: number) => {
-    console.log('[상품 클릭]:', productId);
     router.push(`/shop/products/${productId}`);
   };
 

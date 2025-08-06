@@ -169,7 +169,18 @@ export async function verifyPaymentAndCompleteOrderAction(paymentId: string, ord
     // 6. 임시 주문 데이터 쿠키 정리
     cookieStore.delete('temp-order');
 
-    // 7. 관련 페이지 재검증
+    // 7. 결제 완료 후 배송 상태 자동화 스케줄러 등록
+    const { registerShippingStatusScheduler, registerDeliveryCompleteScheduler } = await import('./orderSchedulerActions');
+    try {
+      await registerShippingStatusScheduler(parseInt(orderIdFromClient));
+      await registerDeliveryCompleteScheduler(parseInt(orderIdFromClient));
+      console.log(`주문 ${orderIdFromClient} 배송 자동화 스케줄러 등록 완료`);
+    } catch (error) {
+      console.error('배송 자동화 스케줄러 등록 중 오류:', error);
+      // 스케줄러 등록 실패해도 결제는 성공으로 처리
+    }
+
+    // 8. 관련 페이지 재검증
     revalidatePath('/shop');
     revalidatePath('/cart');
     revalidatePath('/my-page/order-history');

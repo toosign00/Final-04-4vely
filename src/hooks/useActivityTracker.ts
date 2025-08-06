@@ -61,7 +61,7 @@ export function useActivityTracker() {
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
     }
-    
+
     timeoutRef.current = setTimeout(
       () => {
         console.log('[Activity Tracker] 2시간 비활성으로 자동 로그아웃');

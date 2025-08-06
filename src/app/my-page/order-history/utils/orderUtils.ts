@@ -57,14 +57,11 @@ export function getDeliveryStatus(stateCode: string): DeliveryStatus {
   }
 
   switch (stateCode) {
-    case 'OS010':
-    case 'OS020':
-    case 'OS030':
+    case 'OS010': // 주문 완료
       return 'preparing';
-    case 'OS040':
+    case 'OS035': // 배송중
       return 'shipping';
-    case 'OS050':
-    case 'OS060':
+    case 'OS040': // 배송 완료
       return 'completed';
     default:
       return 'preparing';

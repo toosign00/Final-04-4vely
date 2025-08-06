@@ -1,0 +1,39 @@
+meta {
+  name: 코드 등록
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{url}}/admin/codes
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "_id": "deliveryStatus",
+    "title": "배송 상황 추적 코드",
+    "codes": [
+      {
+        "sort": 1,
+        "code": "OS010",
+        "value": "주문 완료"
+      },
+      {
+        "sort": 2,
+        "code": "OS035",
+        "value": "배송중"
+      },
+      {
+        "sort": 3,
+        "code": "OS040",
+        "value": "배송 완료"
+      }
+    ]
+  }
+}
+
+settings {
+  encodeUrl: true
+}

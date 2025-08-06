@@ -122,18 +122,18 @@ const isSessionExpired = (sessionStartTime: number | null, lastActivityTime: num
   if (rememberLogin) {
     return false; // 자동 로그인은 세션 시간 제한 없음
   }
-  
+
   if (!sessionStartTime) {
     return false; // 세션 시작 시간이 없으면 만료되지 않음
   }
-  
+
   const now = Date.now();
   const twoHours = 2 * 60 * 60 * 1000;
-  
+
   // 세션 시작 후 2시간 또는 마지막 활동 후 2시간 경과 시 만료
   const sessionExpired = now - sessionStartTime > twoHours;
   const activityExpired = lastActivityTime ? now - lastActivityTime > twoHours : false;
-  
+
   return sessionExpired || activityExpired;
 };
 
@@ -186,15 +186,15 @@ const useUserStore = create(
       resetUser: () => {
         // 로그아웃 플래그 설정
         isLoggingOut = true;
-        
+
         // 토큰 자동 갱신 인터벌 정리
         stopTokenRefreshInterval();
-        
+
         // 진행 중인 토큰 갱신 취소
         if (refreshPromise) {
           refreshPromise = null;
         }
-        
+
         set({
           user: null,
           isLoading: false,
@@ -203,7 +203,7 @@ const useUserStore = create(
           rememberLogin: false,
           lastActivityTime: null,
         });
-        
+
         // 로그아웃 완료 후 플래그 해제
         setTimeout(() => {
           isLoggingOut = false;
@@ -297,7 +297,7 @@ const useUserStore = create(
         if (isLoggingOut) {
           return;
         }
-        
+
         isLoggingOut = true;
         set({ isLoading: true });
 
@@ -309,12 +309,12 @@ const useUserStore = create(
         } finally {
           // 토큰 자동 갱신 인터벌 정리
           stopTokenRefreshInterval();
-          
+
           // 진행 중인 토큰 갱신 취소
           if (refreshPromise) {
             refreshPromise = null;
           }
-          
+
           // 로컬 상태도 초기화
           set({
             user: null,
@@ -324,7 +324,7 @@ const useUserStore = create(
             rememberLogin: false,
             lastActivityTime: null,
           });
-          
+
           // 로그아웃 완료 후 플래그 해제
           setTimeout(() => {
             isLoggingOut = false;
@@ -375,7 +375,7 @@ const performTokenRefresh = async (): Promise<boolean> => {
   if (isLoggingOut) {
     return false;
   }
-  
+
   const { user, lastTokenRefresh, rememberLogin } = useUserStore.getState();
 
   if (!user?.token?.refreshToken) {
@@ -409,7 +409,7 @@ const performTokenRefresh = async (): Promise<boolean> => {
       useUserStore.setState({ isLoading: false });
       return false;
     }
-    
+
     // 서버 액션을 통해 토큰 갱신 처리 (refreshToken 없이 호출하면 쿠키에서 가져옴)
     const refreshResult = (await refreshTokenAction()) as RefreshTokenResult;
 
@@ -497,7 +497,7 @@ export const startTokenRefreshInterval = () => {
         if (isTokenExpired(user.token.accessToken) || isTokenExpiringSoon(user.token.accessToken)) {
           refreshUserToken().catch((error) => {
             console.warn('[자동 토큰 갱신] 실패:', error);
-            
+
             // 세션 만료 또는 인증 오류인 경우 로그아웃 처리
             if (error?.message?.includes('refresh') || error?.status === 401 || error?.status === 403) {
               console.log('[자동 토큰 갱신] 세션 만료로 자동 로그아웃');

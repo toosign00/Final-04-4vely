@@ -177,12 +177,12 @@ export default function ClientDetail({ post }: { post: Post }) {
           </div>
         </section>
 
-        <section className='space-y-6'>
+        <section className='space-y-3'>
           {comments.length === 0 ? (
             <p className='text-center text-gray-500'>아직 아무 댓글도 없습니다. 첫 댓글을 남겨보세요!</p>
           ) : (
             comments.map((comment: CommunityComment) => (
-              <div key={comment._id} className='flex gap-3'>
+              <div key={comment._id} className='flex gap-3 border-t pt-6'>
                 <Avatar className='h-9 w-9 shrink-0'>{comment.user.image ? <AvatarImage src={comment.user.image} alt={comment.user.name} /> : <AvatarFallback>{comment.user.name.charAt(0)}</AvatarFallback>}</Avatar>
                 <div className='flex-1'>
                   <div className='mb-1 flex items-center justify-between gap-2'>
@@ -219,7 +219,7 @@ export default function ClientDetail({ post }: { post: Post }) {
                   {editingId === comment._id ? (
                     <textarea value={editingContent} onChange={(e) => setEditingContent(e.target.value)} className='mb-2 w-full resize-none rounded border px-3 py-2 text-base' />
                   ) : (
-                    <div className='p-4 text-base leading-relaxed whitespace-pre-wrap'>{comment.content}</div>
+                    <div className='p-4 text-sm leading-relaxed whitespace-pre-wrap md:text-base'>{comment.content}</div>
                   )}
                 </div>
               </div>

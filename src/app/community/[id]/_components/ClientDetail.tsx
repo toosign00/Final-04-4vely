@@ -1,19 +1,19 @@
 // app/community/[id]/_components/ClientDetail.tsx
 'use client';
 
-import Image from 'next/image';
-import { useEffect, useState } from 'react';
 import DeleteButton from '@/app/community/[id]/_components/DeleteButton';
 import UpdateButton from '@/app/community/[id]/_components/UpdateButton';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
-import { Button } from '@/components/ui/Button';
 import { formatDate } from '@/app/my-page/my-plants/_utils/diaryUtils';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/AlertDialog';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import BookmarkButton from '@/components/ui/BookmarkButton';
+import { Button } from '@/components/ui/Button';
 import { createComment, deleteComment, fetchComments, updateComment } from '@/lib/functions/communityFunctions';
 import { useAuth } from '@/store/authStore';
 import { CommunityComment, Post } from '@/types/commnunity.types';
 import { Eye, Heart, MessageCircle } from 'lucide-react';
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
 
 export default function ClientDetail({ post }: { post: Post }) {
   const { id, title, coverImage, contents, author, createdAt, stats, name, nickname, species } = post;
@@ -168,13 +168,12 @@ export default function ClientDetail({ post }: { post: Post }) {
           </div>
         </section>
 
-        {/* 댓글 리스트 */}
-        <section className='space-y-6'>
+        <section className='space-y-3'>
           {comments.length === 0 ? (
             <p className='text-center text-gray-500'>아직 아무 댓글도 없습니다. 첫 댓글을 남겨보세요!</p>
           ) : (
-            comments.map((comment) => (
-              <div key={comment._id} className='flex gap-3'>
+            comments.map((comment: CommunityComment) => (
+              <div key={comment._id} className='flex gap-3 border-t pt-6'>
                 <Avatar className='h-9 w-9 shrink-0'>{comment.user.image ? <AvatarImage src={comment.user.image} alt={comment.user.name} /> : <AvatarFallback>{comment.user.name.charAt(0)}</AvatarFallback>}</Avatar>
                 <div className='flex-1'>
                   <div className='mb-1 flex items-center justify-between gap-2'>
@@ -210,7 +209,7 @@ export default function ClientDetail({ post }: { post: Post }) {
                   {editingId === comment._id ? (
                     <textarea value={editingContent} onChange={(e) => setEditingContent(e.target.value)} className='mb-2 w-full resize-none rounded border px-3 py-2 text-base' />
                   ) : (
-                    <div className='p-4 text-base leading-relaxed whitespace-pre-wrap'>{comment.content}</div>
+                    <div className='p-4 text-sm leading-relaxed whitespace-pre-wrap md:text-base'>{comment.content}</div>
                   )}
                 </div>
               </div>

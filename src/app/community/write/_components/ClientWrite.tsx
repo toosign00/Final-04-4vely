@@ -6,7 +6,7 @@ import { useAuth } from '@/store/authStore';
 import { Plus, X } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 
 interface PostForm {
   id: string;
@@ -23,8 +23,55 @@ export default function ClientWrite() {
   const { zustandUser, session } = useAuth();
   const token = zustandUser?.token?.accessToken || session?.accessToken;
 
+  // cover 이미지 & 미리보기
   const [cover, setCover] = useState<File | null>(null);
+  const [coverUrl, setCoverUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!cover) {
+      setCoverUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(cover);
+    setCoverUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [cover]);
+
+  // 본문 이미지 & 미리보기 (PostForms)
   const [postForms, setPostForms] = useState<PostForm[]>([{ id: '1', title: '', content: '', postImage: null, thumbnailImage: null }]);
+  const [postImageUrls, setPostImageUrls] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    // 각 postForm의 postImage가 바뀔 때마다 url 재생성/해제
+    const urls: Record<string, string> = {};
+    postForms.forEach((form) => {
+      if (form.postImage) {
+        urls[form.id] = URL.createObjectURL(form.postImage);
+      }
+    });
+    setPostImageUrls(urls);
+    return () => {
+      Object.values(urls).forEach((url) => URL.revokeObjectURL(url));
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(postForms.map((f) => [f.id, f.postImage]))]);
+
+  // 썸네일 이미지 url
+  const [thumbUrls, setThumbUrls] = useState<Record<string, string>>({});
+  useEffect(() => {
+    const urls: Record<string, string> = {};
+    postForms.forEach((form) => {
+      if (form.thumbnailImage) {
+        urls[form.id] = URL.createObjectURL(form.thumbnailImage);
+      }
+    });
+    setThumbUrls(urls);
+    return () => {
+      Object.values(urls).forEach((url) => URL.revokeObjectURL(url));
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(postForms.map((f) => [f.id, f.thumbnailImage]))]);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [name, setName] = useState('');
   const [nickname, setNickname] = useState('');
@@ -81,7 +128,7 @@ export default function ClientWrite() {
     setIsSubmitting(true);
     try {
       // 1) 커버 업로드
-      const coverUrl = cover ? await uploadFile(cover) : '';
+      const coverUrlUploaded = cover ? await uploadFile(cover) : '';
 
       // 2) 이미지 업로드
       const contentsPayload = await Promise.all(
@@ -104,7 +151,7 @@ export default function ClientWrite() {
           type: 'community',
           title: first.title,
           content: first.content,
-          image: coverUrl || contentsPayload[0]?.postImage || '',
+          image: coverUrlUploaded || contentsPayload[0]?.postImage || '',
           extra: { contents: contentsPayload, name, nickname, species },
         },
         token,
@@ -141,8 +188,8 @@ export default function ClientWrite() {
         <section className='w-full text-gray-500'>
           <label htmlFor='cover-upload' className='block w-full cursor-pointer'>
             <div className='relative flex h-64 w-full items-center justify-center overflow-hidden border border-dashed border-gray-300 bg-white'>
-              {cover ? (
-                <Image src={URL.createObjectURL(cover)} alt='cover' fill className='object-cover' priority />
+              {coverUrl ? (
+                <Image src={coverUrl} alt='cover' fill className='object-cover' priority />
               ) : (
                 <div className='flex flex-col items-center gap-1'>
                   <h2 className='text-2xl font-semibold'>대문 이미지 추가</h2>
@@ -223,9 +270,9 @@ export default function ClientWrite() {
           <div className='hidden flex-col items-end gap-4 md:flex'>
             {postForms.map((form) => (
               <div key={form.id}>
-                {form.thumbnailImage ? (
+                {form.thumbnailImage && thumbUrls[form.id] ? (
                   <div className='relative h-20 w-20 overflow-hidden rounded-lg border border-gray-300'>
-                    <Image fill src={URL.createObjectURL(form.thumbnailImage)} alt='thumb' className='object-cover' priority />
+                    <Image fill src={thumbUrls[form.id]} alt='thumb' className='object-cover' priority />
                   </div>
                 ) : (
                   <div className='flex h-20 w-20 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-400'>
@@ -286,9 +333,9 @@ export default function ClientWrite() {
                       className='hidden'
                       disabled={isSubmitting}
                     />
-                    {form.postImage && (
+                    {form.postImage && postImageUrls[form.id] && (
                       <>
-                        <Image fill src={URL.createObjectURL(form.postImage)} alt='post' className='object-cover' />
+                        <Image fill src={postImageUrls[form.id]} alt='post' className='object-cover' />
                         <button
                           type='button'
                           onClick={() => {
@@ -298,8 +345,7 @@ export default function ClientWrite() {
                           className='text-secondary absolute top-2 right-2 cursor-pointer rounded-full bg-white'
                           disabled={isSubmitting}
                         >
-                          {' '}
-                          <X size={20} />{' '}
+                          <X size={20} />
                         </button>
                       </>
                     )}
